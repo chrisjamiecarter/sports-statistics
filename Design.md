@@ -77,3 +77,129 @@ They also need the ability to show data charts to help their coaches visualize t
 - Button clicks trigger async service calls  
 - Server processes and stores data  
 - Statistics UI and charts re-render via signalR
+
+---
+
+# Low-Level Design Document  
+**Project**: Bytechester Rovers – Team Statistics Tracker  
+**Technology Stack**: C#, ASP.NET Core, Blazor, Charting Library  
+**Author**: Chris Carter
+**Date**: 2025-07-04
+**Version**: 0.1
+
+---
+
+## 1. Purpose  
+Brief explanation of the document’s goal:  
+> “This LLD outlines the internal architecture and component-level design for the football statistics tracking system, enabling real-time data capture and visualization through a Blazor-based web application.”
+
+---
+
+## 2. Module Overview  
+A high-level listing of core modules with a 1-2 line description per module:
+- **Authentication Module** – Manages user login, roles, and access rights.
+- **Match Tracker Module** – Handles live in-game statistics entry.
+- **Reports Module** – Displays aggregated player data with interactive charts.
+- **Admin Module** – Allows management of players, fixtures, and users.
+- **Data Sync Module** – Handles real-time UI updates via SignalR or state binding.
+
+---
+
+## 3. Component Design  
+Describe each module’s internal components:
+- **Component Name**  
+  - *Function*: Brief description.  
+  - *Inputs*: Props, parameters, or data received.  
+  - *Outputs*: Events, rendered data, or state changes.  
+  - *Interactions*: Other components/services it communicates with.
+
+Repeat per component.
+
+---
+
+## 4. Class Diagram & Data Models  
+Include (or link to) detailed class definitions:
+- **Player**  
+  > Properties: ID, Name, Position, etc.  
+- **MatchEvent**  
+  > Records timestamped actions like passes, shots...
+
+Use diagrams or nested bullet points for relationships.
+
+---
+
+## 5. Sequence Diagrams  
+Describe system behavior for key operations:
+- *Tracking a stat (e.g., a pass)*  
+- *Rendering updated statistics*  
+- *Loading a report*  
+Use simplified flow diagrams or markdown sequences.
+
+---
+
+## 6. Authentication and Authorization  
+Explain identity setup:
+- Roles: Admin, Viewer  
+- Role-based page access (e.g., `/admin` restricted to Admins)  
+- Identity integration and linked user data
+
+---
+
+## 7. UI/UX Structure  
+Define component layouts and logic:
+- Component tree for each page  
+- Key interactions and data bindings  
+- Conditional rendering (e.g., roles, dynamic states)
+
+---
+
+## 8. Chart Integration  
+Explain how data connects to charting:
+- Chart types used (e.g., bar chart per player)  
+- Trigger logic for updates  
+- Handling filters and drill-downs
+
+---
+
+## 9. Database Schema  
+Outline major tables and relationships:
+- ER diagram (if available)  
+- Table: Players, Matches, Events, Stats, Users  
+Include foreign key links and indexing strategy if applicable
+
+---
+
+## 10. API Endpoints  
+List internal service endpoints:
+- `POST /api/event` – Tracks a new match action  
+- `GET /api/player/{id}/stats` – Fetch player report  
+Document inputs, outputs, status codes.
+
+---
+
+## 11. Error Handling & Logging  
+Define failure scenarios and recovery logic:
+- Retry policies  
+- Logging strategy  
+- UI feedback for failed actions
+
+---
+
+## 12. Testing Strategy  
+How modules/components will be tested:
+- Unit tests  
+- Integration tests  
+- Mocked data for frontend rendering  
+
+---
+
+## 13. Environment & Deployment  
+Mention environment setup:
+- Configuration structure  
+- Hosting model (e.g., Blazor Server vs WASM)  
+- Deployment steps
+
+---
+
+## 14. Future Extensions  
+Optional section for scalability, new feature ideas, or roadmap notes.
