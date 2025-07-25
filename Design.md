@@ -81,7 +81,7 @@ They also need the ability to show data charts to help their coaches visualize t
 ---
 
 # Low-Level Design Document  
-**Project**: Bytechester Rovers – Team Statistics Tracker  
+**Project**: Bytechester Rovers ï¿½ Team Statistics Tracker  
 **Technology Stack**: C#, ASP.NET Core, Blazor, Charting Library  
 **Author**: Chris Carter
 **Date**: 2025-07-04
@@ -90,23 +90,75 @@ They also need the ability to show data charts to help their coaches visualize t
 ---
 
 ## 1. Purpose  
-Brief explanation of the document’s goal:  
-> “This LLD outlines the internal architecture and component-level design for the football statistics tracking system, enabling real-time data capture and visualization through a Blazor-based web application.”
+
+This Low-Level Design (LLD) document provides a detailed blueprint for the implementation of a football statistics tracking application commissioned by Bytechester Rovers FC. The primary goal is to deliver a responsive, real-time system that captures match data and visualizes individual and team performance for coaches, analysts, and stakeholders.
+
+The application will be developed using C# and Blazor, leveraging modern component-driven architecture and a clean, modular codebase. Key features include:
+
+- Real-time in-game tracking of player statistics via an intuitive UI.
+- Dynamic reporting and visualization of performance data across fixtures and seasons.
+- Role-based authentication and authorization to support administrators and viewers.
+- Administrative tools to manage players, fixtures, and system data.
+
+This document outlines the internal structure, component responsibilities, data flows, and integration patterns required to achieve a scalable, maintainable, and user-centric solution.
 
 ---
 
-## 2. Module Overview  
-A high-level listing of core modules with a 1-2 line description per module:
-- **Authentication Module** – Manages user login, roles, and access rights.
-- **Match Tracker Module** – Handles live in-game statistics entry.
-- **Reports Module** – Displays aggregated player data with interactive charts.
-- **Admin Module** – Allows management of players, fixtures, and users.
-- **Data Sync Module** – Handles real-time UI updates via SignalR or state binding.
+## 2. System Overview
+
+### Authentication
+
+| Component | Description |
+|-----------|-------------|
+| **User Login Service** | Handles credential validation and token issuance upon successful login. Interfaces with the identity store and supports session persistence. |
+| **Role Management** | Defines and maps user roles such as Admin, Coach, Analyst, and Viewer. Manages role assignment and retrieval logic. |
+| **Authorization Middleware** | Intercepts navigation and data access requests to enforce role-based policies. Ensures restricted views and actions are properly protected. |
+| **Identity Store (User DB)** | Stores user profiles, hashed credentials, role bindings, and login history. Backed by a secure data access layer. |
+| **Password Recovery & Reset** | Supports recovery workflows via email or system admin reset. Ensures secure credential updates. |
+| **Registration Workflow** | Allows onboarding of new users via controlled registration or invitation codes. May include email verification and role pre-assignment. |
+
+### Administration
+
+| Component | Description |
+|-----------|-------------|
+| **Player Management Service** | Enables creation, editing, and archival of player profiles, including stats, positions, and availability status. |
+| **Fixture Scheduler & Editor** | Supports the planning and editing of fixtures with venue, time, opponent, and status tracking. Includes bulk upload/import capabilities. |
+| **User Administration Panel** | Allows admins to manage system users, assign or modify roles, and deactivate accounts when needed. |
+| **Data Integrity Validator** | Performs pre-submit checks to ensure input data for players, fixtures, and users adheres to system rules. |
+| **Audit & History Tracker** | Logs administrative actions and changes for transparency and rollback capabilities. |
+| **Bulk Operations Handler** | Optimizes processing for batch operations like importing player data or updating fixture statuses. |
+| **Admin Dashboard UI** | A dedicated interface presenting key management tools, shortcuts, and system health indicators for ease of operation. |
+
+### Match Tracker
+
+| Component | Description |
+|-----------|-------------|
+| **Live Match Console UI** | An interactive interface for recording match events, player actions, and team metrics in real time. Optimized for speed and usability. |
+| **Event Entry Service** | Handles the creation and categorization of match events (goals, assists, tackles, substitutions, etc.) with timestamp and context. |
+| **Player Action Logger** | Tracks individual player contributions with positional and event metadata. Syncs directly with live stats view. |
+| **Game Timeline Generator** | Builds and updates a visual timeline of match progress and key moments, accessible during and after the game. |
+| **Real-Time Sync Engine** | Ensures updates propagate instantly across connected sessions; allowing coaches and analysts to view stats live from multiple devices. |
+| **Undo & Correction Flow** | Supports quick edits and rollback of accidental entries with audit logs for transparency. |
+| **Match Metadata Handler** | Captures fixture info, referee details, pitch condition, and kickoff parameters as contextual data for analysis. |
+| **Session Save & Resume** | Allows sessions to be paused and resumed, preserving in-game progress even under connectivity interruptions. |
+
+### Reports
+
+| Component | Description |
+|-----------|-------------|
+| **Data Aggregation Engine** | Consolidates raw match data into structured player and team metrics, such as goals, assists, pass accuracy, and minutes played. |
+| **Charting & Visualization Service** | Renders interactive graphs using libraries like Chart.js or Plotly for performance trends, comparisons, and KPIs. |
+| **Filter & Segmentation Controls** | Allows users to drill down by player, position, fixture, or season; supporting targeted analysis and exploration. |
+| **Performance Summary View** | Displays key stats in concise dashboards with rankings, averages, and benchmarks per player or team. |
+| **Comparative Analysis Tool** | Enables side-by-side comparison between players, matches, or seasons, highlighting differences and progress. |
+| **Export & Sharing Options** | Provides download formats for PDF, CSV, or image snapshots of reports for external use or printing. |
+| **Access Control Hooks** | Ensures report visibility adheres to user roles (e.g. analysts vs. coaches vs. viewers). |
+| **Historical Data Renderer** | Visualizes trends over time to assess improvement, consistency, or performance dips across the season. |
 
 ---
 
 ## 3. Component Design  
-Describe each module’s internal components:
+Describe each moduleï¿½s internal components:
 - **Component Name**  
   - *Function*: Brief description.  
   - *Inputs*: Props, parameters, or data received.  
@@ -171,8 +223,8 @@ Include foreign key links and indexing strategy if applicable
 
 ## 10. API Endpoints  
 List internal service endpoints:
-- `POST /api/event` – Tracks a new match action  
-- `GET /api/player/{id}/stats` – Fetch player report  
+- `POST /api/event` ï¿½ Tracks a new match action  
+- `GET /api/player/{id}/stats` ï¿½ Fetch player report  
 Document inputs, outputs, status codes.
 
 ---
@@ -203,3 +255,11 @@ Mention environment setup:
 
 ## 14. Future Extensions  
 Optional section for scalability, new feature ideas, or roadmap notes.
+
+
+NOTES:
+- Business Rules
+  - Import a match from JSON/CSV
+    - Only one match per day
+    - If match exists and no game data - add, if game data - error.
+    - Create match and add game data.
