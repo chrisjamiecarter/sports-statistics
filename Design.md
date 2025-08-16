@@ -158,7 +158,7 @@ This document outlines the internal structure, component responsibilities, data 
 ---
 
 ## 3. Component Design  
-Describe each module�s internal components:
+Describe each module's internal components:
 - **Component Name**  
   - *Function*: Brief description.  
   - *Inputs*: Props, parameters, or data received.  
@@ -263,3 +263,92 @@ NOTES:
     - Only one match per day
     - If match exists and no game data - add, if game data - error.
     - Create match and add game data.
+
+---
+
+## 🏗️ Project Kickoff & Setup
+
+### 1. **Create Solution & Core Projects**
+- Set up a new .NET solution with separate projects for:
+  - Blazor Server frontend
+  - Backend services
+  - Shared models and utilities
+
+### 2. **Configure Basic Routing & Layout**
+- Establish main pages: Home, Match Tracker, Reports, Admin
+- Add navigation and layout components
+
+---
+
+## 🔐 Authentication & Identity
+
+### 3. **Integrate ASP.NET Core Identity**
+- Add user login, registration, and role management
+- Seed initial roles: Administrator, Viewer
+
+### 4. **Secure Page Access**
+- Apply role-based authorization to routes and components
+- Add login/logout UI and session handling
+
+---
+
+## ⚽ Match Tracking Core
+
+### 5. **Build Player Grid & Action Buttons**
+- Create UI for listing players and tracking actions (passes, shots, etc.)
+
+### 6. **Implement Match Event Logging**
+- Capture and store player actions with timestamps
+- Wire up backend service to persist events
+
+---
+
+## 📊 Reports & Visualization
+
+### 7. **Design Reports Page Layout**
+- Add filters for player, match, and season
+- Create placeholder charts and summary panels
+
+### 8. **Connect Aggregated Data to Charts**
+- Build backend logic to compute player stats
+- Render charts dynamically based on selected filters
+
+---
+
+## 🛠️ Admin Tools
+
+### 9. **Add Player Management UI**
+- Create forms to add/edit/delete players
+- Connect to backend CRUD services
+
+### 10. **Add Fixture Management UI**
+- Build interface for scheduling and editing games
+- Link fixtures to match tracking and reports
+
+---
+
+## 🔄 Real-Time Sync (Optional Enhancement)
+
+### 11. **Enable Multi-User Live Sync**
+- Set up SignalR hub for broadcasting match events
+- Update UI components to respond to live data
+
+---
+
+## 🧪 Testing & Polish
+
+### 12. **Add Unit & Integration Tests**
+- Cover core services and data logic
+- Validate key workflows (tracking, reporting, admin)
+
+### 13. **Refine UX & Error Handling**
+- Add loading states, validation messages, and fallback flows
+- Polish layout and responsiveness
+
+---
+
+## 🚀 Deployment Prep
+
+### 14. **Configure Hosting & Environment Settings**
+- Set up appsettings, connection strings, and deployment profiles
+- Prepare for hosting on IIS, Azure, or Linux server
