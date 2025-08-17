@@ -269,10 +269,70 @@ NOTES:
 ## 🏗️ Project Kickoff & Setup
 
 ### 1. **Create Solution & Core Projects**
-- Set up a new .NET solution with separate projects for:
-  - Blazor Server frontend
-  - Backend services
-  - Shared models and utilities
+
+#### Create the Root Solution
+
+- Open **Visual Studio**.
+- Create a new **Blank Solution** named: `SportsStatistics`.
+- Add existing files to the solution:
+  - `.editorconfig`
+  - `gitignore`
+  - `DESIGN.md`
+  - `LICENSE`    
+  - `README.md`
+  - `REQUIREMENTS.md`
+- Create the following files:
+  - `Directory.Build.props`
+  - `Directory.Package.props`
+- Create the following folders:
+  - `_resources`
+  - `src` (also solution folder)
+  - `tests` (also solution folder)
+
+#### Add Core Layered Projects
+
+- Add the following projects to the `src` folder:
+
+| Layer           | Project Name                     | Project Type                  | Purpose |
+|----------------|----------------------------------|-------------------------------|---------|
+| **Domain**      | `SportsStatistics.Domain`        | .NET Class Library            | Entities, value objects, domain events |
+| **Application** | `SportsStatistics.Application`   | .NET Class Library            | Use cases, interfaces, DTOs |
+| **Infrastructure** | `SportsStatistics.Infrastructure` | .NET Class Library            | EF Core, external services, persistence |
+| **Web (UI)**    | `SportsStatistics.Web`           | Blazor Server App             | Frontend UI, DI setup, routing |
+| **Shared**      | `SportsStatistics.Shared`        | .NET Class Library (optional) | Common utilities, enums, constants |
+
+#### Add Aspire Host Project
+- Add a new **Aspire AppHost** project:
+  - Name: `SportsStatistics.AppHost`
+
+#### Set Up Project References
+
+| From → To                             | Reason |
+|--------------------------------------|--------|
+| `Application` → `Domain`             | Use domain models in use cases |
+| `Infrastructure` → `Application`     | Implement interfaces |
+| `Web` → `Application`, `Infrastructure` | Inject services |
+| `AppHost` → All other projects       | Aspire orchestration |
+| `Shared` → All other projects        | If using shared utilities |
+
+#### Scaffold EF Core Setup in Infrastructure
+
+- Add EF Core packages:
+  - `Microsoft.EntityFrameworkCore`
+  - `Microsoft.EntityFrameworkCore.SqlServer`
+- Create `SportsStatisticsDbContext` in `Persistence/EF/`
+- Configure DbContext in `Web` via DI:
+  ```csharp
+  builder.Services.AddDbContext<SportsStatisticsDbContext>(options =>
+      options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  ```
+
+#### Aspire Integration Basics
+- In `AppHost`, register services:
+  ```csharp
+  builder.AddProject<Projects.SportsStatistics_Web>("web");
+  builder.AddProject<Projects.SportsStatistics_Infrastructure>("infra");
+  ```
 
 ### 2. **Configure Basic Routing & Layout**
 - Establish main pages: Home, Match Tracker, Reports, Admin
