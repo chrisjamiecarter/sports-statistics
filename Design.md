@@ -301,9 +301,11 @@ NOTES:
 | **Web (UI)**    | `SportsStatistics.Web`           | Blazor Server App             | Frontend UI, DI setup, routing |
 | **Shared**      | `SportsStatistics.Shared`        | .NET Class Library (optional) | Common utilities, enums, constants |
 
-#### Add Aspire Host Project
+#### Add Aspire Host Projects
 - Add a new **Aspire AppHost** project:
   - Name: `SportsStatistics.AppHost`
+- Add a new **Aspire ServiceDefaults** project:
+  - Name: `SportsStatistics.ServiceDefaults`
 
 #### Set Up Project References
 
@@ -311,7 +313,7 @@ NOTES:
 |--------------------------------------|--------|
 | `Application` → `Domain`             | Use domain models in use cases |
 | `Infrastructure` → `Application`     | Implement interfaces |
-| `Web` → `Application`, `Infrastructure` | Inject services |
+| `Web` → `Application`, `Infrastructure`, `ServiceDefaults` | Inject services |
 | `AppHost` → All other projects       | Aspire orchestration |
 | `Shared` → All other projects        | If using shared utilities |
 
