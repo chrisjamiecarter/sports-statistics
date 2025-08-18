@@ -333,14 +333,15 @@ NOTES:
 
 - Configure DbContext in `Web` via DI:
   ```csharp
-  builder.AddSqlServerDbContext<SportsStatisticsDbContext>("sports-statistics-db");
+  builder.AddSqlServerDbContext<SportsStatisticsDbContext>("sportsstatistics-db");
   ```
 
-#### Aspire Integration Basics
+#### Integrate with Aspire
 - In `AppHost`, register services:
   ```csharp
-  builder.AddProject<Projects.SportsStatistics_Web>("web");
-  builder.AddProject<Projects.SportsStatistics_Infrastructure>("infra");
+  var sqlServer = builder.AddSqlServer("sql");
+  var database = sqlServer.AddDatabase("sportsstatistics-db")
+  builder.AddProject<Projects.SportsStatistics_Web>("sportsstatistics-web");
   ```
 
 ### 2. **Configure Basic Routing & Layout**
