@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Sdk Name="Aspire.AppHost.Sdk" Version="9.3.1" />
 
@@ -9,6 +9,15 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SportsStatistics.Application\SportsStatistics.Application.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Domain\SportsStatistics.Domain.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Infrastructure\SportsStatistics.Infrastructure.csproj" />
+    <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Shared\SportsStatistics.Shared.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Web\SportsStatistics.Web.csproj" />
   </ItemGroup>
 
 </Project>

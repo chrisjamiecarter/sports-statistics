@@ -4,4 +4,9 @@
     
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SportsStatistics.Application\SportsStatistics.Application.csproj" />
+    <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.ServiceDefaults.csproj" />
+  </ItemGroup>
+
 </Project>
