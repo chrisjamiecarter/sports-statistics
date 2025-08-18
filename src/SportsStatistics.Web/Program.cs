@@ -1,3 +1,4 @@
+using SportsStatistics.Infrastructure;
 using SportsStatistics.Web.Components;
 
 internal class Program
@@ -9,6 +10,8 @@ internal class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+
+        builder.AddInfrastructureDependencies();
 
         var app = builder.Build();
 

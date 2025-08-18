@@ -313,20 +313,27 @@ NOTES:
 |--------------------------------------|--------|
 | `Application` → `Domain`             | Use domain models in use cases |
 | `Infrastructure` → `Application`     | Implement interfaces |
-| `Web` → `Application`, `Infrastructure`, `ServiceDefaults` | Inject services |
+| `Web` → `Application`, `ServiceDefaults` | Inject services |
 | `AppHost` → All other projects       | Aspire orchestration |
 | `Shared` → All other projects        | If using shared utilities |
 
-#### Scaffold EF Core Setup in Infrastructure
+#### Setup SQL Server and EF Core
 
-- Add EF Core packages:
+- Add the following packages in AppHost:
+  - `Aspire.Hosting.SqlServer`
+
+- Add the following packages in Infrastructure:
+  - `Aspire.Microsoft.EntityFrameworkCore.SqlServer`
   - `Microsoft.EntityFrameworkCore`
+  - `Microsoft.EntityFrameworkCore.Design`
   - `Microsoft.EntityFrameworkCore.SqlServer`
-- Create `SportsStatisticsDbContext` in `Persistence/EF/`
+  - `Microsoft.EntityFrameworkCore.Tools`
+
+- Create `SportsStatisticsDbContext` in `Persistence/`
+
 - Configure DbContext in `Web` via DI:
   ```csharp
-  builder.Services.AddDbContext<SportsStatisticsDbContext>(options =>
-      options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  builder.AddSqlServerDbContext<SportsStatisticsDbContext>("sports-statistics-db");
   ```
 
 #### Aspire Integration Basics
