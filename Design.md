@@ -348,6 +348,22 @@ NOTES:
 - Establish main pages: Home, Match Tracker, Reports, Admin
 - Add navigation and layout components
 
+#### Define Page Components
+
+Create Razor pages for each main route in `SportsStatistics.Web/Pages/`:
+
+| Page Name        | File Name             | Route             | Purpose |
+|------------------|-----------------------|-------------------|---------|
+| Home             | `Home/Index.razor`          | `/`               | Landing page, welcome message, quick links |
+| Match Tracker    | `MatchTracker/Index.razor`  | `/match-tracker`  | Live in-game stat tracking UI |
+| Reports          | `Reports/Index.razor`       | `/reports`        | Player and team performance charts |
+| Admin            | `Admin/Index.razor`         | `/admin`          | Player and fixture management (role-restricted) |
+
+Each page should include:
+- `@page` directive for routing
+- Basic layout placeholder
+- Role-based access logic (for Admin)
+
 ---
 
 ## 🔐 Authentication & Identity
