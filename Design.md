@@ -412,6 +412,19 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 .AddEntityFrameworkStores<AppIdentityDbContext>();
 ```
 
+#### Add Identity Routing
+
+In `SportsStatistics.Web`.
+
+- Create a `Signin.razor` component to `Components\Signin\`.
+  - This component will be a placeholder for now with `@page "/signin"`.
+- Create a `RedirectToSignin.razor` component in `Components\Shared\`.
+  - This component will navigate to the `signin` page and force a reload.
+- Update `_Imports.razor`, to include:
+  - `Microsoft.AspNetCore.Components.Authorization`.
+  - `SportsStatistics.Web.Components.Shared`.
+- Update `Routes.razor`, to change the `RouteView` element to an `AuthorizeRouteView` element.
+
 ---
 
 ## 🔐 Authentication & Identity
