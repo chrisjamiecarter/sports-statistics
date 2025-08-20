@@ -364,6 +364,54 @@ Each page should include:
 - Basic layout placeholder
 - Role-based access logic (for Admin)
 
+
+#### Add Identity NuGet Packages
+
+Add the following packages to the `SportsStatistics.Web` project:
+
+- `Microsoft.AspNetCore.Identity.EntityFrameworkCore`
+- `Microsoft.AspNetCore.Identity.UI`
+
+#### Create Identity Data Context
+
+Create `ApplicationUser.cs` to extend Identity:
+
+```csharp
+public class ApplicationUser : IdentityUser
+{
+}
+```
+
+Update the existing `DbContext` to inherit from `IdentityDbContext`.
+
+```csharp
+public class SportsStatisticsDbContext : IdentityDbContext<ApplicationUser>
+{
+    public SportsStatisticsIdentityDbContext(DbContextOptions<SportsStatisticsDbContext> options)
+        : base(options) { }
+}
+```
+
+#### Register Identity Services
+
+In `InfrastructureServiceRegistration.cs` of `SportsStatistics.Infrastructure`:
+
+```csharp
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+  options.Password.RequiredLength = 6;
+  options.Password.RequireDigit = true;
+  options.Password.RequireLowercase = true;
+  options.Password.RequireUppercase = true;
+  options.Password.RequireNonAlphanumeric = true;
+  options.SignIn.RequireConfirmedAccount = false;
+  options.User.RequireUniqueEmail = true;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<AppIdentityDbContext>();
+```
+
 ---
 
 ## 🔐 Authentication & Identity
