@@ -1,4 +1,5 @@
 using SportsStatistics.Infrastructure;
+using SportsStatistics.Web;
 using SportsStatistics.Web.Components;
 
 internal class Program
@@ -12,24 +13,11 @@ internal class Program
             .AddInteractiveServerComponents();
 
         builder.AddInfrastructureDependencies();
+        builder.AddWebDependencies();
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
-        if (!app.Environment.IsDevelopment())
-        {
-            app.UseExceptionHandler("/Error", createScopeForErrors: true);
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            app.UseHsts();
-        }
-
-        app.UseHttpsRedirection();
-
-        app.UseStaticFiles();
-        app.UseAntiforgery();
-
-        app.MapRazorComponents<App>()
-            .AddInteractiveServerRenderMode();
+        app.AddWebMiddleware();
 
         app.Run();
     }
