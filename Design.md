@@ -425,6 +425,15 @@ In `SportsStatistics.Web`.
   - `SportsStatistics.Web.Components.Shared`.
 - Update `Routes.razor`, to change the `RouteView` element to an `AuthorizeRouteView` element.
 
+##### Add Identity Links to NavMenu
+
+In `SportsStatistics.Web`.
+
+- Update the `Components/Layout/NavMenu.razor` component to include:
+  - AuthorizeView.
+    - Authorized element for logout links.
+    - NotAuthorized element for login and register links.
+
 ---
 
 ## 🔐 Authentication & Identity
