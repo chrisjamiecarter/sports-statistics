@@ -1,15 +1,17 @@
-﻿using SportsStatistics.Web.Components;
+﻿using SportsStatistics.Shared.Security;
+using SportsStatistics.Web.Components;
 
 namespace SportsStatistics.Web;
 
-public static class WebServiceRegistration
+internal static class WebServiceRegistration
 {
     public static IHostApplicationBuilder AddWebDependencies(this IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
         builder.Services.AddAuthentication();
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+                        .AddPolicy(Policies.RequireAdministratorRole, policy => policy.RequireRole([Roles.Administrator]));
 
         return builder;
     }

@@ -364,7 +364,6 @@ Each page should include:
 - Basic layout placeholder
 - Role-based access logic (for Admin)
 
-
 #### Add Identity NuGet Packages
 
 Add the following packages to the `SportsStatistics.Web` project:
@@ -433,6 +432,24 @@ In `SportsStatistics.Web`.
   - AuthorizeView.
     - Authorized element for logout links.
     - NotAuthorized element for login and register links.
+
+#### Apply Role-Based Access
+
+In `SportsStatistics.Shared`.
+
+- Create `Security/Roles.razor` component to include:
+  - `public const string Administrator = nameof(Administrator);`
+
+- Create `Security/Polices.razor` component to include:
+  - `public const string RequireAdministratorRole = nameof(RequireAdministratorRole)`
+
+In `SportsStatistics.Web`.
+
+- Create `Admin/Pages/_Imports.razor`, and include:
+  - `@attribute [Authorize(Policies.RequireAdministratorRole)]`
+
+- Update `WebServiceRegistration.cs`, to include:
+  - An `AddAuthorizationBuilder()` call on `builder.Service`, and then chain a call to `AddPolicy` to add the `RequireAdministratorRole` policy.
 
 ---
 
