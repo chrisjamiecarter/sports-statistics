@@ -1,19 +1,28 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SportsStatistics.Application.Interfaces;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
+using SportsStatistics.Infrastructure.Persistence.Services;
 using SportsStatistics.Shared.Aspire;
 
 namespace SportsStatistics.Infrastructure;
 
-public static class InfrastructureServiceRegistration
+public static class DependencyInjection
 {
     public static IHostApplicationBuilder AddInfrastructureDependencies(this IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-        builder.AddSqlServerDbContext<SportsStatisticsDbContext>(SqlResourceConstants.Database);
+        builder.AddSqlServerDbContext<SportsStatisticsDbContext>(SqlResourceConstants.Database, configureDbContextOptions: options =>
+        {
+            options.UseSqlServer(sqlOptions =>
+            {
+                sqlOptions.MigrationsHistoryTable("MigrationsHistory", "efcore");
+            });
+        });
 
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
         {
@@ -27,6 +36,8 @@ public static class InfrastructureServiceRegistration
         })
         .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<SportsStatisticsDbContext>();
+
+        builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
 
         return builder;
     }
