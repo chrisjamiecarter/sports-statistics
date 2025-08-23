@@ -462,6 +462,7 @@ In `SportsStatistics.Web`.
   - Name: `SportsStatistics.Tools.DatabaseMigrator`
 
 - Add project references to:
+  - `SportsStatistics.Application`
   - `SportsStatistics.Infrastructure`
   - `SportsStatistics.ServiceDefaults`
   - `SportsStatistics.Shared`
@@ -488,6 +489,10 @@ In `SportsStatistics.AppHost`.
   - With a reference to the `database` project variable.
   - With a wait for `database` to be available.
   - Update the `web` project varibale to wait for `migrator` instead of `database`.
+
+#### Implement DatabaseMigrator
+
+
 
 ---
 
