@@ -492,7 +492,47 @@ In `SportsStatistics.AppHost`.
 
 #### Implement DatabaseMigrator
 
+In `SportsStatistics.Application`.
 
+- Create a new record `MigrationResult.cs` in `Models/`
+- Add the following properties:
+  - `bool Success`
+  - `string Message`
+  - `int MigrationsApplied = 0`
+  - `TimeSpan Duration = default`
+  - `Exception? Exception = null`
+- Add the following contructors:
+  - `Success(int migrationsApplied, TimeSpan duration, string? message = null)`s
+  - `Failure(string message, Exception? exception = null)`
+  - `UpToDate(TimeSpan duration)`
+
+- Create an interface `IDatabaseMigrationService` in `Interfaces/`
+- Define the following contracts:
+  - `Task<MigrationResult> MigrateAsync(CancellationToken cancellationToken = default);`
+
+In `SportsStatistics.Infrastructure`.
+
+- Create a new class `DatabaseMigrationService` in `Persistence/Services/`, that implements `IDatabaseMigrationService`.
+- Implement the methods using `SportsStatisticsDbContext` to:
+  - Use ExecutionStategy for resiliency.
+  - Check connection.
+  - Get pending and applied migrations.
+  - Apply migrations and return a `MigrationResult`.
+
+In `SportsStatistics.Tools.DatabaseMigrator`.
+
+- Implement the `ExecuteAsync` method in the `Worker` class to:
+  - Start a new `Activity` for tracing.
+  - Call the `MigrateAsync` method on `IDatabaseMigrationService`.
+  
+
+#### Create Initial Migration and Update Database
+
+In `Package Manager Console`
+
+- Create the initial migration:
+  - `Add-Migration InitialCreate -project SportsStatistics.Infrastructure -startupproject SportsStatistics.Web`.
+- Run the `SportsStatistics.AppHost` application to trigger the migration via `SportsStatistics.Tools.DatabaseMigrator`.
 
 ---
 

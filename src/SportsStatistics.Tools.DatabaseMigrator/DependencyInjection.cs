@@ -1,6 +1,4 @@
 ﻿using SportsStatistics.Infrastructure;
-using SportsStatistics.Infrastructure.Persistence;
-using SportsStatistics.Shared.Aspire;
 
 namespace SportsStatistics.Tools.DatabaseMigrator;
 
