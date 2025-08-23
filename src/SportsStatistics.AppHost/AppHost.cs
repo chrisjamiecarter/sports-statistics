@@ -14,9 +14,13 @@ internal static class Program
 
         var database = sqlServer.AddDatabase(SqlResourceConstants.Database);
         
-        builder.AddProject<SportsStatistics_Web>(ProjectResourceConstants.Web)
-               .WithReference(database)
-               .WaitFor(database);
+        var migrator = builder.AddProject<SportsStatistics_Tools_DatabaseMigrator>(ProjectResourceConstants.DatabaseMigrator)
+                              .WithReference(database)
+                              .WaitFor(database);
+
+        var web = builder.AddProject<SportsStatistics_Web>(ProjectResourceConstants.Web)
+                         .WithReference(database)
+                         .WaitFor(migrator);
 
         await builder.Build().RunAsync();
     }
