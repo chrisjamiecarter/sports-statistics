@@ -18,6 +18,7 @@
     <ProjectReference Include="..\SportsStatistics.Infrastructure\SportsStatistics.Infrastructure.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.ServiceDefaults.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\SportsStatistics.Shared\SportsStatistics.Shared.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\SportsStatistics.Tools.DatabaseMigrator\SportsStatistics.Tools.DatabaseMigrator.csproj" />
     <ProjectReference Include="..\SportsStatistics.Web\SportsStatistics.Web.csproj" />
   </ItemGroup>
 

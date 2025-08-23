@@ -347,6 +347,9 @@ NOTES:
 ### 2. **Configure Basic Routing & Layout**
 - Establish main pages: Home, Match Tracker, Reports, Admin
 - Add navigation and layout components
+- TODO:
+  - Layout
+  - Signin, Register, Logout
 
 #### Define Page Components
 
@@ -450,6 +453,41 @@ In `SportsStatistics.Web`.
 
 - Update `WebServiceRegistration.cs`, to include:
   - An `AddAuthorizationBuilder()` call on `builder.Service`, and then chain a call to `AddPolicy` to add the `RequireAdministratorRole` policy.
+
+### 3. **Add DatabaseMigrator Project**
+
+#### Create the DatabaseMigrator Project
+
+- Add a new **Worker Service** project to the `src` folder:
+  - Name: `SportsStatistics.Tools.DatabaseMigrator`
+
+- Add project references to:
+  - `SportsStatistics.Infrastructure`
+  - `SportsStatistics.ServiceDefaults`
+  - `SportsStatistics.Shared`
+
+- Update `Program.cs` to include:
+  - Call to `AddServiceDefaults`.
+  - Add open telementry with tracing to `Services`.
+  - Add the `ApplicationDbContext` to `Services`.
+  - Make `Main` async.
+
+#### Configure DatabaseMigrator for Aspire
+
+In `SportsStatistics.Shared`.
+
+- Update `Aspire\ProjectResourceConstants`, to include:
+  - `public const string DatabaseMigrator = "sportsstatistics-databasemigrator";`
+
+In `SportsStatistics.AppHost`.
+
+- Update `AppHost.cs`, to include:
+  - Declare a migrator project variable.
+  - Add the project `SportsStatistics_Tools_DatabaseMigrator`.
+  - With the name `ProjectResourceConstants.DatabaseMigrator`.
+  - With a reference to the `database` project variable.
+  - With a wait for `database` to be available.
+  - Update the `web` project varibale to wait for `migrator` instead of `database`.
 
 ---
 
