@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <UserSecretsId>dotnet-SportsStatistics.Tools.DatabaseMigrator-6a787e57-cfdd-47c0-8a5d-41e1088356e5</UserSecretsId>

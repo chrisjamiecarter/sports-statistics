@@ -1,24 +1,15 @@
-using SportsStatistics.Infrastructure;
 using SportsStatistics.Web;
-using SportsStatistics.Web.Components;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // Add services to the container.
-        builder.Services.AddRazorComponents()
-            .AddInteractiveServerComponents();
-
-        builder.AddInfrastructureDependencies();
-        builder.AddWebDependencies();
+        builder.AddProjectDependencies();
 
         var app = builder.Build();
+        app.AddProjectMiddleware();
 
-        app.AddWebMiddleware();
-
-        app.Run();
+        await app.RunAsync();
     }
 }

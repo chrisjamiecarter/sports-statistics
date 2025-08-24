@@ -12,10 +12,34 @@ namespace SportsStatistics.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IHostApplicationBuilder AddInfrastructureDependencies(this IHostApplicationBuilder builder)
+    public enum SourceProject
+    {
+        Unknown = 0,
+        DatabaseMigrator,
+        WebApplication
+    }
+
+    public static IHostApplicationBuilder AddInfrastructureDependencies(this IHostApplicationBuilder builder, SourceProject project)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
+        switch (project)
+        {
+            case SourceProject.DatabaseMigrator:
+                AddDatabaseMigratorDependencies(builder);
+                break;
+            case SourceProject.WebApplication:
+                AddWebApplicationDependencies(builder);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(project));
+        }
+
+        return builder;
+    }
+
+    private static IHostApplicationBuilder AddDatabaseMigratorDependencies(this IHostApplicationBuilder builder)
+    {
         builder.AddSqlServerDbContext<SportsStatisticsDbContext>(SqlResourceConstants.Database, configureDbContextOptions: options =>
         {
             options.UseSqlServer(sqlOptions =>
@@ -23,6 +47,15 @@ public static class DependencyInjection
                 sqlOptions.MigrationsHistoryTable("MigrationsHistory", "efcore");
             });
         });
+
+        builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
+
+        return builder;
+    }
+
+    private static IHostApplicationBuilder AddWebApplicationDependencies(this IHostApplicationBuilder builder)
+    {
+        builder.AddSqlServerDbContext<SportsStatisticsDbContext>(SqlResourceConstants.Database);
 
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
         {
@@ -35,9 +68,11 @@ public static class DependencyInjection
             options.User.RequireUniqueEmail = true;
         })
         .AddRoles<IdentityRole>()
-        .AddEntityFrameworkStores<SportsStatisticsDbContext>();
+        .AddEntityFrameworkStores<SportsStatisticsDbContext>()
+        .AddSignInManager()
+        .AddDefaultTokenProviders();
 
-        builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
+        //builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
         return builder;
     }

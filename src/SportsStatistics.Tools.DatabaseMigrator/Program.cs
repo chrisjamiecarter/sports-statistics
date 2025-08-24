@@ -5,9 +5,11 @@ internal static class Program
     public static async Task Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        builder.AddDatabaseMigratorDependencies();
+        builder.AddProjectDependencies();
 
         var host = builder.Build();
+        host.AddProjectMiddleware();
+
         await host.RunAsync();
     }
 }

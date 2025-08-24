@@ -15,6 +15,9 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.3.1" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.12.1" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.12.1" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.12.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />

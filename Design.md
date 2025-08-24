@@ -2,7 +2,7 @@
 
 ## Overview
 
-I was hired by a Bytechester Rovers footbal club to build a software application that will keep track of their teams statistics. 
+I was hired by the Bytechester Rovers footbal club to build a software application that will keep track of their teams statistics. 
 They want to use C# and Blazor to deliver the product.
 They also need the ability to show data charts to help their coaches visualize the players performances.
 
