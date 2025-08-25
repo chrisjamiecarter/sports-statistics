@@ -539,8 +539,24 @@ In `Package Manager Console`
 ## 🔐 Authentication & Identity
 
 ### 3. **Integrate ASP.NET Core Identity**
+
+#### Create Authentication Service
+
 - Add user login, registration, and role management
 - Seed initial roles: Administrator, Viewer
+
+- In `SportsStatistics.Application`
+
+- Create class `Models/ApplicationUserDto`:
+  - `string Id`
+  - `string Email`
+  - `string? Role`
+
+- Create interface `Interfaces/Infrastruture/IAuthentication`:
+  - `Task<SignInResult> SignInAsync(string email, string password);`
+  - `Task SignOutAsync();`
+  - `Task<ApplicationUserDto?> GetCurrentUserAsync();`
+
 
 ### 4. **Secure Page Access**
 - Apply role-based authorization to routes and components
