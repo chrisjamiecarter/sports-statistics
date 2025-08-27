@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SportsStatistics.Application.Interfaces;
+using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
 
 namespace SportsStatistics.Infrastructure.Persistence.Services;

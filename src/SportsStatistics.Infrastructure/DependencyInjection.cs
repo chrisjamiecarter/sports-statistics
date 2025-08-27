@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SportsStatistics.Application.Interfaces;
+using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Services;
@@ -48,8 +48,22 @@ public static class DependencyInjection
             });
         });
 
-        builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
+        builder.Services.AddIdentityCore<ApplicationUser>(options =>
+        {
+            options.Password.RequiredLength = 6;
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.SignIn.RequireConfirmedAccount = false;
+            options.User.RequireUniqueEmail = true;
+        })
+        .AddRoles<IdentityRole>()
+        .AddEntityFrameworkStores<SportsStatisticsDbContext>();
 
+        builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
+        builder.Services.AddScoped<IDatabaseSeederService, DatabaseSeederService>();
+        
         return builder;
     }
 

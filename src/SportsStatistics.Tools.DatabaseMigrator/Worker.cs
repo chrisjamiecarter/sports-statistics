@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using SportsStatistics.Application.Interfaces;
+using SportsStatistics.Application.Interfaces.Infrastructure;
 
 namespace SportsStatistics.Tools.DatabaseMigrator;
 
@@ -30,18 +30,34 @@ public class Worker : BackgroundService
             using var scope = _serviceProvider.CreateScope();
             var migrationService = scope.ServiceProvider.GetRequiredService<IDatabaseMigrationService>();
 
-            var result = await migrationService.MigrateAsync(stoppingToken);
+            var migrationResult = await migrationService.MigrateAsync(stoppingToken);
 
-            if (result.IsSuccess)
+            if (migrationResult.IsSuccess)
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Database migration result: {Result}", result);
+                    _logger.LogInformation("Database migration result: {Result}", migrationResult);
                 }
             }
             else
             {
-                throw result.Exception ?? new InvalidOperationException(result.Message);
+                throw migrationResult.Exception ?? new InvalidOperationException(migrationResult.Message);
+            }
+
+            var seederService = scope.ServiceProvider.GetRequiredService<IDatabaseSeederService>();
+
+            var seederResult = await seederService.SeedAsync(stoppingToken);
+
+            if (seederResult.IsSuccess)
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Database seeding completed successfully.");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException(seederResult.Error.ToString());
             }
         }
         catch (Exception exception)

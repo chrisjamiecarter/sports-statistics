@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SportsStatistics.Domain\SportsStatistics.Domain.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Shared\SportsStatistics.Shared.csproj" />
   </ItemGroup>
 
 </Project>

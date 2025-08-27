@@ -36,4 +36,6 @@ public class Result
     public static Result<TValue> Failure<TValue>(ResultError error) => new(default, false, error);
 
     public static Result<TValue> Create<TValue>(TValue? value) => value is not null ? Success(value) : Failure<TValue>(ResultError.NullValue);
+
+    public override string ToString() => IsSuccess ? "Success" : $"Failure: {Error.Code} - {Error.Message}";
 }
