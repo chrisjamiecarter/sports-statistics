@@ -208,3 +208,14 @@ code {
         right: unset;
     }
 }
+
+.container-centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
