@@ -4,6 +4,7 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using SportsStatistics.Infrastructure;
 using SportsStatistics.Shared.Security;
 using SportsStatistics.Web.Components;
+using SportsStatistics.Web.Services;
 
 namespace SportsStatistics.Web;
 
@@ -20,7 +21,7 @@ internal static class DependencyInjection
 
         builder.Services.AddCascadingAuthenticationState();
         //builder.Services.AddScoped<IdentityUserAccessor>();
-        //builder.Services.AddScoped<IdentityRedirectManager>();
+        builder.Services.AddScoped<IdentityRedirectService>();
         //builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
         builder.Services.AddHttpClient();
