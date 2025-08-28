@@ -88,6 +88,8 @@ public static class DependencyInjection
 
         //builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
         return builder;
     }
 }
