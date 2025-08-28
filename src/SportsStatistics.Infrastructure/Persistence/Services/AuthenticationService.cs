@@ -38,7 +38,13 @@ internal class AuthenticationService : IAuthenticationService
 
     public async Task<Result> SignInAsync(string email, string password, bool isPersistant)
     {
-        var result = await _signInManager.PasswordSignInAsync(email, password, isPersistant, false);
+        var user = await GetApplicationUserByEmailAsync(email);
+        if (user == null)
+        {
+            return Result.Failure(new("Authentication.InvalidSignInAttempt", "Invalid Sign In Attempt"));
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(user, password, isPersistant, false);
         return result switch
         {
             { Succeeded: true } => Result.Success(),
@@ -52,5 +58,20 @@ internal class AuthenticationService : IAuthenticationService
     public async Task SignOutAsync()
     {
         await _signInManager.SignOutAsync();
+    }
+
+    private async Task<ApplicationUser?> GetApplicationUserByEmailAsync(string email)
+    {
+        return await _userManager.FindByEmailAsync(email);
+    }
+
+    private async Task<ApplicationUser?> GetApplicationUserByIdAsync(string id)
+    {
+        return await _userManager.FindByIdAsync(id);
+    }
+
+    private async Task<ApplicationUser?> GetApplicationUserByUserNameAsync(string userName)
+    {
+        return await _userManager.FindByNameAsync(userName);
     }
 }
