@@ -30,7 +30,7 @@ internal class DatabaseSeederService : IDatabaseSeederService
     {
         var adminUsername = "admin";
         var adminPassword = "Admin123#";
-        var adminEmail = "admail@sportsstatistics.com";
+        var adminEmail = "admin@sportsstatistics.com";
         var adminRole = Roles.Administrator;
 
         var roleNames = typeof(Roles).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
