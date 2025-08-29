@@ -5,6 +5,9 @@ namespace SportsStatistics.Web.Services;
 
 internal sealed class IdentityRedirectService
 {
+    public const string StatusMessageCookieName = "Identity.StatusMessage";
+    public const string StatusLevelCookieName = "Identity.StatusLevel";
+
     private readonly NavigationManager _navigationManager;
 
     public IdentityRedirectService(NavigationManager navigationManager)

@@ -1,0 +1,44 @@
+﻿@if (HasMessage)
+{
+    <FluentMessageBar Intent="@(StatusMessageIntent)" AllowDismiss="@false">
+        @StatusModel.Message
+    </FluentMessageBar>
+}
+
+@code {
+    [Parameter]
+    public StatusModel StatusModel { get; set; } = new();
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private bool HasMessage => !string.IsNullOrEmpty(StatusModel.Message);
+
+    private MessageIntent StatusMessageIntent => StatusModel.Level switch
+    {
+        StatusLevel.Error => MessageIntent.Error,
+        StatusLevel.Info => MessageIntent.Info,
+        StatusLevel.Success => MessageIntent.Success,
+        StatusLevel.Warning => MessageIntent.Warning,
+        _ => MessageIntent.Info,
+    };
+
+    protected override void OnParametersSet()
+    {
+        // Get status message from cookies.
+        var cookieMessage = HttpContext.Request.Cookies[IdentityRedirectService.StatusMessageCookieName];
+        var cookieLevel = HttpContext.Request.Cookies[IdentityRedirectService.StatusLevelCookieName];
+
+        if (string.IsNullOrWhiteSpace(cookieMessage) && string.IsNullOrWhiteSpace(cookieLevel))
+        {
+            return;
+        }
+
+        // Set status model.
+        StatusModel = new StatusModel(cookieMessage, cookieLevel);
+
+        // Delete cookies.
+        HttpContext.Response.Cookies.Delete(IdentityRedirectService.StatusMessageCookieName);
+        HttpContext.Response.Cookies.Delete(IdentityRedirectService.StatusLevelCookieName);
+    }
+}

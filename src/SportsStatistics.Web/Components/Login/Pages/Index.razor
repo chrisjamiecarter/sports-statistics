@@ -17,7 +17,7 @@
 
             <FluentSpacer />
 
-            @* <StatusMessage Message="@errorMessage" /> *@
+            <IdentityStatus StatusModel="@(IdentityStatus)" />
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login" style="width: 100%">
                 <DataAnnotationsValidator />
                 
@@ -51,8 +51,6 @@
 </div>
 
 @code {
-    private string? errorMessage;
-
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
@@ -61,6 +59,8 @@
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+
+    private StatusModel IdentityStatus { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,7 +80,7 @@
         }
         else
         {
-            errorMessage = result.Error.Message;
+            IdentityStatus = new(result.Error.Message, StatusLevel.Error);
         }
     }
 }
