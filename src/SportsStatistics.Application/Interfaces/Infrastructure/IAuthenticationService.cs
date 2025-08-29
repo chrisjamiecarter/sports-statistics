@@ -1,5 +1,5 @@
 ﻿using SportsStatistics.Application.Models;
-using SportsStatistics.Shared.Results;
+using SportsStatistics.Core.Results;
 
 namespace SportsStatistics.Application.Interfaces.Infrastructure;
 

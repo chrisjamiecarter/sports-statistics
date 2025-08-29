@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Interfaces.Infrastructure;
+using SportsStatistics.Core.Aspire;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Services;
-using SportsStatistics.Shared.Aspire;
 
 namespace SportsStatistics.Infrastructure;
 

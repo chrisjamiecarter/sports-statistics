@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
+using SportsStatistics.Core.Results;
+using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure.Persistence.Models;
-using SportsStatistics.Shared.Results;
-using SportsStatistics.Shared.Security;
 
 namespace SportsStatistics.Infrastructure.Persistence.Services;
 
-internal class DatabaseSeederService : IDatabaseSeederService
+internal sealed class DatabaseSeederService : IDatabaseSeederService
 {
     private readonly SportsStatisticsDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;

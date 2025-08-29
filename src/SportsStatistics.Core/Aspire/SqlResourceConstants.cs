@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Shared.Aspire;
+﻿namespace SportsStatistics.Core.Aspire;
 
 public static class SqlResourceConstants
 {

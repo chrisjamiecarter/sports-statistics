@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Shared.Security;
+﻿namespace SportsStatistics.Core.Security;
 
 public static class Policies
 {

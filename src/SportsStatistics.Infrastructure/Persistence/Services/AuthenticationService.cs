@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
+using SportsStatistics.Core.Results;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Models.Mappings;
-using SportsStatistics.Shared.Results;
 
 namespace SportsStatistics.Infrastructure.Persistence.Services;
 
-internal class AuthenticationService : IAuthenticationService
+internal sealed class AuthenticationService : IAuthenticationService
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;

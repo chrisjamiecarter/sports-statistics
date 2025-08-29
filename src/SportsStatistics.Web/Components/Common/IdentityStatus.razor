@@ -1,4 +1,6 @@
-﻿@if (HasMessage)
+﻿@using SportsStatistics.Web.Components.Common.Enums
+@using SportsStatistics.Web.Components.Common.Models
+@if (HasMessage)
 {
     <FluentMessageBar Intent="@(StatusMessageIntent)" AllowDismiss="@false">
         @StatusModel.Message

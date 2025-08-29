@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Web.Components.Shared.Enums;
+﻿namespace SportsStatistics.Web.Components.Common.Enums;
 
 /// <summary>
 /// Defines the available levels for status messages.

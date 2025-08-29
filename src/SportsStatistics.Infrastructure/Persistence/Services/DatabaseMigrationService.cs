@@ -6,7 +6,7 @@ using SportsStatistics.Application.Models;
 
 namespace SportsStatistics.Infrastructure.Persistence.Services;
 
-internal class DatabaseMigrationService : IDatabaseMigrationService
+internal sealed class DatabaseMigrationService : IDatabaseMigrationService
 {
     private readonly SportsStatisticsDbContext _dbContext;
     private readonly ILogger<DatabaseMigrationService> _logger;

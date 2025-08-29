@@ -1,6 +1,6 @@
-﻿using SportsStatistics.Web.Components.Shared.Enums;
+﻿using SportsStatistics.Web.Components.Common.Enums;
 
-namespace SportsStatistics.Web.Components.Shared.Models;
+namespace SportsStatistics.Web.Components.Common.Models;
 
 public sealed class StatusModel
 {

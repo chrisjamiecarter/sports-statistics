@@ -1,5 +1,5 @@
 using Projects;
-using SportsStatistics.Shared.Aspire;
+using SportsStatistics.Core.Aspire;
 
 internal static class Program
 {

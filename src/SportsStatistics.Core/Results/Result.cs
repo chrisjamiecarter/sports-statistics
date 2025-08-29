@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Shared.Results;
+﻿namespace SportsStatistics.Core.Results;
 
 /// <summary>
 /// Represents the outcome of an operation, including success or failure and associated result error.

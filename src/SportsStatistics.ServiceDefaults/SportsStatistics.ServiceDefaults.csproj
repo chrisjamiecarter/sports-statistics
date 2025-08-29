@@ -16,4 +16,8 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SportsStatistics.Core\SportsStatistics.Core.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SportsStatistics.Application\SportsStatistics.Application.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Core\SportsStatistics.Core.csproj" />
     <ProjectReference Include="..\SportsStatistics.Infrastructure\SportsStatistics.Infrastructure.csproj" />
     <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\SportsStatistics.Shared\SportsStatistics.Shared.csproj" />
   </ItemGroup>
 </Project>

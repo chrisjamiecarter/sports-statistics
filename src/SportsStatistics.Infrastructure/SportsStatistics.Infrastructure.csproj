@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SportsStatistics.Application\SportsStatistics.Application.csproj" />
-    <ProjectReference Include="..\SportsStatistics.Shared\SportsStatistics.Shared.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Core\SportsStatistics.Core.csproj" />
   </ItemGroup>
 
 </Project>

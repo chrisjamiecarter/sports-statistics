@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.FluentUI.AspNetCore.Components;
+using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure;
-using SportsStatistics.Shared.Security;
 using SportsStatistics.Web.Components;
 using SportsStatistics.Web.Services;
 
