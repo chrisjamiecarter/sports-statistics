@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SportsStatistics.Web.Components.Login.Models;
+namespace SportsStatistics.Web.Components.Signin.Models;
 
-internal sealed class LoginInputModel
+internal sealed class SigninInputModel
 {
     [Required]
     [EmailAddress]

@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/signin"
 
 @inject IAuthService AuthenticationService
 @inject NavigationManager NavigationManager
@@ -18,7 +18,7 @@
             <FluentSpacer />
 
             <IdentityStatus StatusModel="@(IdentityStatus)" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login" style="width: 100%">
+            <EditForm Model="Input" method="post" OnValidSubmit="SignInUserAsync" FormName="signin" style="width: 100%">
                 <DataAnnotationsValidator />
                 
                 <FluentStack Orientation="Orientation.Vertical">
@@ -55,7 +55,7 @@
     private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    private LoginInputModel Input { get; set; } = new();
+    private SigninInputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
@@ -66,12 +66,12 @@
     {
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
-            // Clear the existing external cookie to ensure a clean login process.
+            // Clear the existing external cookie to ensure a clean sign in process.
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
     }
 
-    public async Task LoginUser()
+    public async Task SignInUserAsync()
     {
         var result = await AuthenticationService.SignInAsync(Input.Email, Input.Password, Input.RememberMe);
         if (result.IsSuccess)
