@@ -18,8 +18,4 @@
     <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.ServiceDefaults.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\Signout\" />
-  </ItemGroup>
-
 </Project>

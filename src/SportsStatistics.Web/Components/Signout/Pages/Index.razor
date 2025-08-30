@@ -1,0 +1,17 @@
+﻿@page "/signout"
+
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager Navigation
+@inject IdentityRedirectService Redirect
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthenticationService.SignOutAsync();
+        
+        // NOTE: Let Blazor finish circuit teardown. Otherwise: NavigationException.
+        await Task.Yield();
+
+        Navigation.NavigateTo("/", true);
+    }
+}

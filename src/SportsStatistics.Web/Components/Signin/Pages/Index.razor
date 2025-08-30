@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectService RedirectService
 
-<PageTitle>Log in</PageTitle>
+<PageTitle>Sign In</PageTitle>
 
 <div class="container-centered">
 
@@ -12,7 +12,7 @@
         <FluentStack Orientation="Orientation.Vertical">
 
             <FluentLabel Typo="Typography.H3" Alignment="HorizontalAlignment.Center">
-                Log in
+                Sign In
             </FluentLabel>
 
             <FluentSpacer />
@@ -76,7 +76,7 @@
         var result = await AuthenticationService.SignInAsync(Input.Email, Input.Password, Input.RememberMe);
         if (result.IsSuccess)
         {
-            RedirectService.RedirctTo(ReturnUrl);
+            RedirectService.RedirectTo(ReturnUrl);
         }
         else
         {

@@ -16,7 +16,7 @@ internal sealed class IdentityRedirectService
     }
 
     [DoesNotReturn]
-    public void RedirctTo(string? uri)
+    public void RedirectTo(string? uri)
     {
         uri ??= string.Empty;
 

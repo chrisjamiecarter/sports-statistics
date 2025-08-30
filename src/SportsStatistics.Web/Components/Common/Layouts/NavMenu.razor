@@ -12,11 +12,7 @@
             <AuthorizeView>
                 <Authorized>
                     <FluentNavLink Href="Account/Manage">@context.User.Identity?.Name</FluentNavLink>
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <FluentButton Type="ButtonType.Submit" Style="width: 100%;">Sign out</FluentButton>
-                    </form>
+                    <FluentNavLink Href="signout" Icon="@(new Icons.Regular.Size20.DoorArrowRight())" IconColor="Color.Accent">Sign out</FluentNavLink>
                 </Authorized>
                 <NotAuthorized>
                     <FluentNavLink Href="signin" Icon="@(new Icons.Regular.Size20.PersonArrowRight())" IconColor="Color.Accent">Sign In</FluentNavLink>
