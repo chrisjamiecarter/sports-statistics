@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery Antiforgery
+@{
+    var tokens = Antiforgery.GetAndStoreTokens(HttpContext);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,6 +15,7 @@
     <link rel="stylesheet" href="SportsStatistics.Web.styles.css" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <HeadOutlet @rendermode="PageRenderMode" />
+    <meta name="xsrf-token" content="@tokens.RequestToken"/>
 </head>
 
 <body>

@@ -10,7 +10,7 @@ namespace SportsStatistics.Web;
 
 internal static class DependencyInjection
 {
-    public static IHostApplicationBuilder AddProjectDependencies(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddSportsStatisticsWeb(this IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
@@ -39,7 +39,7 @@ internal static class DependencyInjection
         return builder;
     }
 
-    public static WebApplication AddProjectMiddleware(this WebApplication app)
+    public static WebApplication ConfigureSportsStatisticsWeb(this WebApplication app)
     {
         ArgumentNullException.ThrowIfNull(app, nameof(app));
 
@@ -59,8 +59,9 @@ internal static class DependencyInjection
 
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseAntiforgery();
 
-        //app.MapAdditionalIdentityEndpoints();
+        app.MapAdditionalIdentityEndpoints();
 
         return app;
     }

@@ -13,5 +13,5 @@ internal sealed class SigninInputModel
     public string Password { get; set; } = string.Empty;
 
     [Display(Name = "Remember me?")]
-    public bool RememberMe { get; set; } = false;
+    public bool IsPersistant { get; set; } = false;
 }

@@ -1,8 +1,6 @@
 ﻿@page "/signin"
 
-@inject IAuthService AuthenticationService
-@inject NavigationManager NavigationManager
-@inject IdentityRedirectService RedirectService
+@inject IAuthenticationService AuthenticationService
 
 <PageTitle>Sign In</PageTitle>
 
@@ -17,7 +15,6 @@
 
             <FluentSpacer />
 
-            <IdentityStatus StatusModel="@(IdentityStatus)" />
             <EditForm Model="Input" method="post" OnValidSubmit="SignInUserAsync" FormName="signin" style="width: 100%">
                 <DataAnnotationsValidator />
                 
@@ -31,7 +28,7 @@
                         <FluentValidationMessage For="() => Input.Password" class="text-danger" />
                     </div>
                     <div class="full-width">
-                        <FluentCheckbox Name="Input.RememberMe" @bind-Value="Input.RememberMe" Label="Remember me" />
+                        <FluentCheckbox Name="Input.RememberMe" @bind-Value="Input.IsPersistant" Label="Remember me" />
                     </div>
                     <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%">Log in</FluentButton>
                 </FluentStack>
@@ -41,8 +38,6 @@
 
             <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
                 <FluentAnchor Appearance="Appearance.Hypertext" Href="Account/ForgotPassword">Forgot your password?</FluentAnchor>
-                <FluentSpacer />
-                <FluentAnchor Appearance="Appearance.Hypertext" Href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</FluentAnchor>
             </FluentStack>
 
         </FluentStack>
@@ -51,8 +46,7 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private IJSObjectReference? _authJS;
 
     [SupplyParameterFromForm]
     private SigninInputModel Input { get; set; } = new();
@@ -60,27 +54,34 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
-    private StatusModel IdentityStatus { get; set; } = new();
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        if (firstRender)
         {
-            // Clear the existing external cookie to ensure a clean sign in process.
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            _authJS = await JS.InvokeAsync<IJSObjectReference>("import", "/js/auth.js");
         }
     }
 
     public async Task SignInUserAsync()
     {
-        var result = await AuthenticationService.SignInAsync(Input.Email, Input.Password, Input.RememberMe);
+        var result = await AuthenticationService.CheckPasswordAsync(Input.Email, Input.Password);
         if (result.IsSuccess)
         {
-            RedirectService.RedirectTo(ReturnUrl);
+            if (_authJS is not null)
+            {
+                await _authJS.InvokeVoidAsync("postSignin", new
+                {
+                    email = Input.Email,
+                    password = Input.Password,
+                    isPersistant = Input.IsPersistant,
+                    returnUrl = ReturnUrl,
+                });
+            }
         }
         else
         {
-            IdentityStatus = new(result.Error.Message, StatusLevel.Error);
+            // TODO: Show error message.
+            // IdentityStatus = new(result.Error.Message, StatusLevel.Error);
         }
     }
 }

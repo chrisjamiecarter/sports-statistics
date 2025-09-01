@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Core.Aspire;
+using SportsStatistics.Infrastructure.Identity.Providers;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Services;
@@ -63,7 +65,7 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
         builder.Services.AddScoped<IDatabaseSeederService, DatabaseSeederService>();
-        
+
         return builder;
     }
 
@@ -89,6 +91,7 @@ public static class DependencyInjection
         //builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+        builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingServerAuthenticationStateProvider>();
 
         return builder;
     }

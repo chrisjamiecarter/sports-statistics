@@ -1,17 +1,22 @@
 ﻿@page "/signout"
 
-@inject IAuthenticationService AuthenticationService
-@inject NavigationManager Navigation
-@inject IdentityRedirectService Redirect
-
 @code {
+    private IJSObjectReference? _authJS;
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+    
     protected override async Task OnInitializedAsync()
     {
-        await AuthenticationService.SignOutAsync();
-        
-        // NOTE: Let Blazor finish circuit teardown. Otherwise: NavigationException.
-        await Task.Yield();
-
-        Navigation.NavigateTo("/", true);
+        _authJS = await JS.InvokeAsync<IJSObjectReference>("import", "/js/auth.js");
+            
+        if (_authJS is not null)
+        {
+            await _authJS.InvokeVoidAsync("postSignout", new
+            {
+                returnUrl = ReturnUrl,
+            });
+        }
     }
 }
+

@@ -6,6 +6,7 @@ namespace SportsStatistics.Application.Interfaces.Infrastructure;
 public interface IAuthenticationService
 {
     Task<ApplicationUserDto?> GetCurrentUserAsync();
-    Task<Result> SignInAsync(string email, string password, bool isPersistant);
+    Task<Result> CheckPasswordAsync(string email, string password);
+    Task<Result> PasswordSignInAsync(string email, string password, bool isPersistant);
     Task SignOutAsync();
 }
