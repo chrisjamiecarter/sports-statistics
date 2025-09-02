@@ -18,36 +18,6 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
 
         var accountGroup = builder.MapGroup(IdentityRoutePrefix);
 
-        // Configure signin endpoint.
-        accountGroup.MapPost("signin", async (
-            SignInRequest request,
-            IAuthenticationService authenticationService,
-            CancellationToken cancellationToken) =>
-        {
-            // Validate required authentication parameters.
-            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
-            {
-                return Results.BadRequest("Email and password are required.");
-            }
-
-            // Attempt password sign-in.
-            var signInResult = await authenticationService.PasswordSignInAsync(request.Email, request.Password, request.IsPersistant);
-            if (signInResult.IsFailure)
-            {
-                return Results.BadRequest(new SignInResponse(false, null, signInResult.Error.Message));
-            }
-
-            var decodedUrl = Uri.UnescapeDataString(request.ReturnUrl ?? string.Empty);
-
-            if (string.IsNullOrWhiteSpace(decodedUrl) || !decodedUrl.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-            {
-                decodedUrl = "/"; // TODO: RedirectUrls.Home;
-            }
-
-            //return Results.Redirect(decodedUrl);
-            return Results.Ok(new SignInResponse(true, decodedUrl, null));
-        });
-
         // Configure signout endpoint.
         accountGroup.MapPost("signout", async (
             ClaimsPrincipal user,

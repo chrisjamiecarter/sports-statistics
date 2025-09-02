@@ -1,6 +1,6 @@
 ﻿// wwwroot/js/auth.js
 export async function postSignin({ email, password, isPersistant, returnUrl }) {
-    const response = await fetch("/api/authentication/signin", {
+    const response = await fetch("/api/identity/signin", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

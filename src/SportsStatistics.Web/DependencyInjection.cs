@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure;
+using SportsStatistics.Web.Api.Endpoints;
 using SportsStatistics.Web.Components;
 using SportsStatistics.Web.Services;
 
@@ -61,6 +62,7 @@ internal static class DependencyInjection
         app.UseAuthorization();
         app.UseAntiforgery();
 
+        app.MapApiEndpoints();
         app.MapAdditionalIdentityEndpoints();
 
         return app;
