@@ -1,4 +1,5 @@
 ﻿@page "/signin"
+@using SportsStatistics.Web.Contracts.Requests
 
 @inject IAuthenticationService AuthenticationService
 
@@ -64,18 +65,27 @@
 
     public async Task SignInUserAsync()
     {
-        var result = await AuthenticationService.CheckPasswordAsync(Input.Email, Input.Password);
-        if (result.IsSuccess)
+        var checkPasswordResult = await AuthenticationService.CheckPasswordAsync(Input.Email, Input.Password);
+        if (checkPasswordResult.IsSuccess)
         {
             if (_authJS is not null)
             {
-                await _authJS.InvokeVoidAsync("postSignin", new
+                var signInResult = await _authJS.InvokeAsync<SignInResponse>("postSignin", new
                 {
                     email = Input.Email,
                     password = Input.Password,
                     isPersistant = Input.IsPersistant,
                     returnUrl = ReturnUrl,
                 });
+
+                if (signInResult.IsSuccess)
+                {
+                    Navigation.NavigateTo(signInResult.ReturnUrl ?? "/", true);
+                }
+                else
+                {
+                    // TODO: Show error message.
+                }
             }
         }
         else

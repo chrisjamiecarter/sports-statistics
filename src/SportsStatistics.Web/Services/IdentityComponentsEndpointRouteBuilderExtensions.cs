@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using SportsStatistics.Application.Interfaces.Infrastructure;
+using SportsStatistics.Web.Contracts.Requests;
 
 namespace SportsStatistics.Web.Services;
 
@@ -19,36 +20,32 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
 
         // Configure signin endpoint.
         accountGroup.MapPost("signin", async (
-            HttpContext context,
-            [FromServices] IAuthenticationService authenticationService,
-            [FromForm] string? email = null,
-            [FromForm] string? password = null,
-            [FromForm] bool isPersistant = false,
-            [FromForm] string? returnUrl = null) =>
+            SignInRequest request,
+            IAuthenticationService authenticationService,
+            CancellationToken cancellationToken) =>
         {
-            // Security validation: Ensure request originates from the same domain to prevent CSRF attacks.
-            if (!ValidateRequestOrigin(context, logger))
-            {
-                return Results.Forbid();
-            }
-
             // Validate required authentication parameters.
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             {
                 return Results.BadRequest("Email and password are required.");
             }
 
             // Attempt password sign-in.
-            var signInResult = await authenticationService.PasswordSignInAsync(email, password, isPersistant);
+            var signInResult = await authenticationService.PasswordSignInAsync(request.Email, request.Password, request.IsPersistant);
+            if (signInResult.IsFailure)
+            {
+                return Results.BadRequest(new SignInResponse(false, null, signInResult.Error.Message));
+            }
 
-            var decodedUrl = Uri.UnescapeDataString(returnUrl ?? string.Empty);
+            var decodedUrl = Uri.UnescapeDataString(request.ReturnUrl ?? string.Empty);
 
             if (string.IsNullOrWhiteSpace(decodedUrl) || !decodedUrl.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 decodedUrl = "/"; // TODO: RedirectUrls.Home;
             }
 
-            return Results.Redirect(decodedUrl);
+            //return Results.Redirect(decodedUrl);
+            return Results.Ok(new SignInResponse(true, decodedUrl, null));
         });
 
         // Configure signout endpoint.
@@ -71,7 +68,7 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
             return TypedResults.LocalRedirect($"{decodedUrl}");
         })
         .RequireAuthorization()
-        .DisableAntiforgery();
+        .DisableAntiforgery(); // TODO: Consider enabling antiforgery protection if needed.
 
         return accountGroup;
     }
