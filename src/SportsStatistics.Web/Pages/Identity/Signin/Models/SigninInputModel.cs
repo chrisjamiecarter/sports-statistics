@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SportsStatistics.Web.Components.Signin.Models;
+namespace SportsStatistics.Web.Pages.Identity.Signin.Models;
 
 internal sealed class SigninInputModel
 {
