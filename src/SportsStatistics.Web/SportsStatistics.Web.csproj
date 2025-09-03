@@ -18,4 +18,8 @@
     <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\" />
+  </ItemGroup>
+
 </Project>

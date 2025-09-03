@@ -1,7 +1,4 @@
 ﻿@page "/signin"
-@using SportsStatistics.Web.Contracts.Requests
-
-@inject IAuthenticationService AuthenticationService
 
 <PageTitle>Sign In</PageTitle>
 
@@ -16,6 +13,7 @@
 
             <FluentSpacer />
 
+            <StatusMessageBar StatusModel="SignInStatus" />
             <EditForm Model="Input" method="post" OnValidSubmit="SignInUserAsync" FormName="signin" style="width: 100%">
                 <DataAnnotationsValidator />
                 
@@ -55,6 +53,8 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
+    private StatusModel SignInStatus { get; set; } = new();
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -65,33 +65,23 @@
 
     public async Task SignInUserAsync()
     {
-        var checkPasswordResult = await AuthenticationService.CheckPasswordAsync(Input.Email, Input.Password);
-        if (checkPasswordResult.IsSuccess)
+        if (_authJS is not null)
         {
-            if (_authJS is not null)
+            var response = await _authJS.InvokeAsync<SignInResponse>("postSignin", new
             {
-                var signInResult = await _authJS.InvokeAsync<SignInResponse>("postSignin", new
-                {
-                    email = Input.Email,
-                    password = Input.Password,
-                    isPersistant = Input.IsPersistant,
-                    returnUrl = ReturnUrl,
-                });
+                email = Input.Email,
+                password = Input.Password,
+                isPersistant = Input.IsPersistant,
+            });
 
-                if (signInResult.IsSuccess)
-                {
-                    Navigation.NavigateTo(signInResult.ReturnUrl ?? "/", true);
-                }
-                else
-                {
-                    // TODO: Show error message.
-                }
+            if (response.IsSuccess)
+            {
+                Navigation.NavigateTo(ReturnUrl ?? Routes.Home, true);
             }
-        }
-        else
-        {
-            // TODO: Show error message.
-            // IdentityStatus = new(result.Error.Message, StatusLevel.Error);
+            else
+            {
+                SignInStatus = new StatusModel(response.Message, StatusLevel.Error);
+            }
         }
     }
 }

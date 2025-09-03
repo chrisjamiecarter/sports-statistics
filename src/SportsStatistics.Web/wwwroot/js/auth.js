@@ -1,5 +1,5 @@
 ﻿// wwwroot/js/auth.js
-export async function postSignin({ email, password, isPersistant, returnUrl }) {
+export async function postSignin({ email, password, isPersistant }) {
     const response = await fetch("/api/identity/signin", {
         method: "POST",
         headers: {
@@ -9,7 +9,6 @@ export async function postSignin({ email, password, isPersistant, returnUrl }) {
             email,
             password,
             isPersistant,
-            returnUrl
         })
     });
 

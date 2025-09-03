@@ -21,21 +21,13 @@ internal static class SigninEndpoint
                 }
 
                 // Attempt password sign-in.
-                var signInResult = await authenticationService.PasswordSignInAsync(request.Email, request.Password, request.IsPersistant);
-                if (signInResult.IsFailure)
+                var result = await authenticationService.PasswordSignInAsync(request.Email, request.Password, request.IsPersistant);
+                if (result.IsFailure)
                 {
-                    return Results.BadRequest(new SignInResponse(false, null, signInResult.Error.Message));
+                    return Results.BadRequest(new SignInResponse(false, result.Error.Message));
                 }
 
-                var decodedUrl = Uri.UnescapeDataString(request.ReturnUrl ?? string.Empty);
-
-                if (string.IsNullOrWhiteSpace(decodedUrl) || !decodedUrl.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    decodedUrl = "/"; // TODO: RedirectUrls.Home;
-                }
-
-                //return Results.Redirect(decodedUrl);
-                return Results.Ok(new SignInResponse(true, decodedUrl, null));
+                return Results.Ok(new SignInResponse(true, "User signed in successfully."));
             })
             .WithName(Name)
             .Produces<SignInResponse>(StatusCodes.Status200OK)

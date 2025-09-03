@@ -8,3 +8,13 @@
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
 </Router>
+
+@code{
+    public const string Home = "/";
+    
+    public static class Identity
+    {
+        public const string SignIn = "/signin";
+        public const string SignOut = "/signout";
+    }
+}
