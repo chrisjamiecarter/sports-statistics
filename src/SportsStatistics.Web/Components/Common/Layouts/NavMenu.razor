@@ -7,15 +7,17 @@
     <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
     <nav class="sitenav" aria-labelledby="main-menu">
         <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
-            <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
-            <FluentNavLink Href="auth" Icon="@(new Icons.Regular.Size20.LockClosedKey())" IconColor="Color.Accent">Auth Required</FluentNavLink>
+            <FluentNavLink Href="@(Routes.Home)" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
+            <FluentNavLink Href="@(Routes.Admin)" Icon="@(new Icons.Regular.Size20.LockClosedKey())" IconColor="Color.Accent">Admin</FluentNavLink>
+            <FluentNavLink Href="@(Routes.MatchTracker)" Icon="@(new Icons.Regular.Size20.LockClosedKey())" IconColor="Color.Accent">Match Tracker</FluentNavLink>
+            <FluentNavLink Href="@(Routes.Reports)" Icon="@(new Icons.Regular.Size20.LockClosedKey())" IconColor="Color.Accent">Reports</FluentNavLink>
             <AuthorizeView>
                 <Authorized>
-                    <FluentNavLink Href="Account/Manage">@context.User.Identity?.Name</FluentNavLink>
-                    <FluentNavLink Href="signout" Icon="@(new Icons.Regular.Size20.DoorArrowRight())" IconColor="Color.Accent">Sign out</FluentNavLink>
+                    @* <FluentNavLink Href="Account/Manage">@context.User.Identity?.Name</FluentNavLink> *@
+                    <FluentNavLink Href="@(Routes.Identity.SignOut)" Icon="@(new Icons.Regular.Size20.DoorArrowRight())" IconColor="Color.Accent">Sign Out</FluentNavLink>
                 </Authorized>
                 <NotAuthorized>
-                    <FluentNavLink Href="signin" Icon="@(new Icons.Regular.Size20.PersonArrowRight())" IconColor="Color.Accent">Sign In</FluentNavLink>
+                    <FluentNavLink Href="@(Routes.Identity.SignIn)" Icon="@(new Icons.Regular.Size20.PersonArrowRight())" IconColor="Color.Accent">Sign In</FluentNavLink>
                 </NotAuthorized>
             </AuthorizeView>
         </FluentNavMenu>
