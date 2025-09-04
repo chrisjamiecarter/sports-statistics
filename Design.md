@@ -355,8 +355,8 @@ NOTES:
 
 Create Razor pages for each main route in `SportsStatistics.Web/Pages/`:
 
-| Page Name        | File Name             | Route             | Purpose |
-|------------------|-----------------------|-------------------|---------|
+| Page Name        | File Name                   | Route             | Purpose |
+|------------------|-----------------------------|-------------------|---------|
 | Home             | `Home/Index.razor`          | `/`               | Landing page, welcome message, quick links |
 | Match Tracker    | `MatchTracker/Index.razor`  | `/match-tracker`  | Live in-game stat tracking UI |
 | Reports          | `Reports/Index.razor`       | `/reports`        | Player and team performance charts |
@@ -549,14 +549,13 @@ In `Package Manager Console`
 
 - Create class `Models/ApplicationUserDto`:
   - `string Id`
+  - `string Username`
   - `string Email`
-  - `string? Role`
 
-- Create interface `Interfaces/Infrastruture/IAuthentication`:
-  - `Task<SignInResult> SignInAsync(string email, string password);`
-  - `Task SignOutAsync();`
+- Create interface `Interfaces/Infrastruture/IAuthenticationService`:
   - `Task<ApplicationUserDto?> GetCurrentUserAsync();`
-
+  - `Task<Result> PasswordSignInAsync(string email, string password, bool isPersistant);`
+  - `Task SignOutAsync();`
 
 ### 4. **Secure Page Access**
 - Apply role-based authorization to routes and components
