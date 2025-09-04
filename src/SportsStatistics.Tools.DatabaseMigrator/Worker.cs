@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 
@@ -9,12 +8,12 @@ public class Worker : BackgroundService
     public const string ActivitySourceName = "Migrations";
 
     private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
-    
+
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<Worker> _logger;
     private readonly IServiceProvider _serviceProvider;
 
-    public Worker(IHostApplicationLifetime hostApplicationLifetime , ILogger<Worker> logger, IServiceProvider serviceProvider)
+    public Worker(IHostApplicationLifetime hostApplicationLifetime, ILogger<Worker> logger, IServiceProvider serviceProvider)
     {
         _hostApplicationLifetime = hostApplicationLifetime;
         _logger = logger;

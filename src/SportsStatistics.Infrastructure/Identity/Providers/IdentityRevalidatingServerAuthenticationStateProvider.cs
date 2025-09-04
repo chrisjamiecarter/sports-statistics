@@ -9,7 +9,7 @@ namespace SportsStatistics.Infrastructure.Identity.Providers;
 
 /// <summary>
 /// This is a server-side AuthenticationStateProvider that revalidates the security stamp for the connected user
-/// every 30 minutes. an interactive circuit is connected.
+/// every 30 minutes an interactive circuit is connected.
 /// </summary>
 internal sealed class IdentityRevalidatingServerAuthenticationStateProvider : RevalidatingServerAuthenticationStateProvider
 {
