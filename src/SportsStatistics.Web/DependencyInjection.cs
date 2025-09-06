@@ -55,7 +55,6 @@ internal static class DependencyInjection
         app.UseHttpsRedirection();
 
         app.UseStaticFiles();
-        app.UseAntiforgery();
 
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
@@ -65,7 +64,6 @@ internal static class DependencyInjection
         app.UseAntiforgery();
 
         app.MapApiEndpoints();
-        app.MapAdditionalIdentityEndpoints();
 
         return app;
     }

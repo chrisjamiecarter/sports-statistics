@@ -16,19 +16,22 @@ export async function postSignin({ email, password, isPersistant }) {
     return result;
 }
 
-export function postSignout(returnUrl) {
-    const f = document.createElement("form");
-    f.method = "POST";
-    f.action = "/api/authentication/signout";
-    f.style.display = "none";
-    const add = (n, v) => {
-        const i = document.createElement("input");
-        i.type = "hidden";
-        i.name = n;
-        i.value = v ?? "";
-        f.appendChild(i);
-    };
-    if (returnUrl) add("returnUrl", returnUrl);
-    document.body.appendChild(f);
-    f.submit();
+export async function postSignout() {
+    const xsrf = document.querySelector('meta[name="xsrf-token"]')?.content;
+    const formData = new URLSearchParams();
+    if (xsrf) {
+        formData.append("__RequestVerificationToken", xsrf);
+    }
+
+    const response = await fetch("/api/identity/signout", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        credentials: "include",
+        body: formData
+    });
+
+    const result = await response.json();
+    return result;
 }
