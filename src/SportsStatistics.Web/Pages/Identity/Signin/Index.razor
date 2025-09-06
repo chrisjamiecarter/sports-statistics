@@ -67,7 +67,7 @@
     {
         if (_authJS is not null)
         {
-            var response = await _authJS.InvokeAsync<SignInResponse>("postSignin", new
+            var response = await _authJS.InvokeAsync<SigninResponse>("postSignin", new
             {
                 email = Input.Email,
                 password = Input.Password,

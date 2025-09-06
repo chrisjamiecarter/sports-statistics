@@ -3,9 +3,9 @@ using SportsStatistics.Web.Contracts.Requests;
 
 namespace SportsStatistics.Web.Api.Validators;
 
-internal sealed class SignInRequestValidator : AbstractValidator<SignInRequest>
+internal sealed class SigninRequestValidator : AbstractValidator<SigninRequest>
 {
-    public SignInRequestValidator()
+    public SigninRequestValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")

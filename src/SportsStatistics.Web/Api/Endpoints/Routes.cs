@@ -8,7 +8,7 @@ internal static class Routes
     {
         private const string IdentityBase = $"{ApiBase}/identity";
 
-        public const string SignIn = $"{IdentityBase}/signin";
-        public const string SignOut = $"{IdentityBase}/signout";
+        public const string Signin = $"{IdentityBase}/signin";
+        public const string Signout = $"{IdentityBase}/signout";
     }
 }

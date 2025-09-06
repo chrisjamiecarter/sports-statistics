@@ -3,8 +3,8 @@ using SportsStatistics.Web.Contracts.Requests;
 
 namespace SportsStatistics.Web.Api.Mappings;
 
-internal static class SignInResponseMapping
+internal static class SigninResponseMapping
 {
-    public static SignInResponse ToResponse(this Result result)
+    public static SigninResponse ToResponse(this Result result)
         => new(result.IsSuccess, result.Error.Message);
 }

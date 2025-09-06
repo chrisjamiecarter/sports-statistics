@@ -12,10 +12,10 @@ internal static class SigninEndpoint
 
     public static IEndpointRouteBuilder MapSigninEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost(Routes.Identity.SignIn,
-            async (SignInRequest request,
+        builder.MapPost(Routes.Identity.Signin,
+            async (SigninRequest request,
                    IAuthenticationService authenticationService,
-                   IValidator<SignInRequest> validator,
+                   IValidator<SigninRequest> validator,
                    CancellationToken cancellationToken) =>
             {
                 await validator.ValidateAndThrowAsync(request, cancellationToken);
@@ -28,8 +28,8 @@ internal static class SigninEndpoint
             })
             .WithName(Name)
             .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
-            .Produces<SignInResponse>(StatusCodes.Status200OK)
-            .Produces<SignInResponse>(StatusCodes.Status400BadRequest);
+            .Produces<SigninResponse>(StatusCodes.Status200OK)
+            .Produces<SigninResponse>(StatusCodes.Status400BadRequest);
 
         return builder;
     }

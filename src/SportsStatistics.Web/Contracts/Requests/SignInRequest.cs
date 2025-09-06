@@ -1,5 +1,5 @@
 ﻿namespace SportsStatistics.Web.Contracts.Requests;
 
-internal sealed record SignInRequest(string? Email = null,
+internal sealed record SigninRequest(string? Email = null,
                                      string? Password = null,
                                      bool IsPersistant = false);
