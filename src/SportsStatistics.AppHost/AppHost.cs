@@ -13,7 +13,7 @@ internal static class Program
                                .WithContainerName(SqlResourceConstants.ContainerName);
 
         var database = sqlServer.AddDatabase(SqlResourceConstants.Database);
-        
+
         var migrator = builder.AddProject<SportsStatistics_Tools_DatabaseMigrator>(ProjectResourceConstants.DatabaseMigrator)
                               .WithReference(database)
                               .WaitFor(database);

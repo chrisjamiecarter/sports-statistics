@@ -6,7 +6,7 @@ public sealed class StatusModel
 {
     public StatusModel() : this(string.Empty)
     {
-        
+
     }
 
     public StatusModel(string? message) : this(message, StatusLevel.Primary)
@@ -21,7 +21,7 @@ public sealed class StatusModel
             Level = level;
         }
     }
-    
+
     public StatusModel(string? message, StatusLevel level)
     {
         Message = message ?? string.Empty;

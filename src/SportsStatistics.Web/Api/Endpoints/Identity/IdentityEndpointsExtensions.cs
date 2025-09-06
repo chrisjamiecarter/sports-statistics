@@ -7,7 +7,7 @@ internal static class IdentityEndpointsExtensions
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
         builder.MapSigninEndpoint();
-        
+
         return builder;
     }
 }

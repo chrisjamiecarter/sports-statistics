@@ -3,7 +3,7 @@ using SportsStatistics.Web.Contracts.Requests;
 
 namespace SportsStatistics.Web.Api.Validators;
 
-internal class SignInRequestValidator : AbstractValidator<SignInRequest>
+internal sealed class SignInRequestValidator : AbstractValidator<SignInRequest>
 {
     public SignInRequestValidator()
     {

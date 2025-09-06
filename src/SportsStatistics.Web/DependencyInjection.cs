@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SportsStatistics.Core.Security;
@@ -33,9 +33,11 @@ internal static class DependencyInjection
             options.DefaultScheme = IdentityConstants.ApplicationScheme;
             options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
         }).AddIdentityCookies();
-        
+
         builder.Services.AddAuthorizationBuilder()
                         .AddPolicy(Policies.RequireAdministratorRole, policy => policy.RequireRole([Roles.Administrator]));
+
+        builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, includeInternalTypes: true);
 
         return builder;
     }

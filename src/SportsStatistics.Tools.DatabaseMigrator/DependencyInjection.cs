@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using SportsStatistics.Infrastructure;
+﻿using SportsStatistics.Infrastructure;
 using static SportsStatistics.Infrastructure.DependencyInjection;
 
 namespace SportsStatistics.Tools.DatabaseMigrator;

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace SportsStatistics.Infrastructure;
+namespace SportsStatistics.Web;
 
 internal static class AssemblyReference
 {

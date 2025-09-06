@@ -12,7 +12,7 @@ internal sealed class SportsStatisticsDbContext(DbContextOptions<SportsStatistic
         ArgumentNullException.ThrowIfNull(builder);
 
         base.OnModelCreating(builder);
-    
+
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
     }
 }

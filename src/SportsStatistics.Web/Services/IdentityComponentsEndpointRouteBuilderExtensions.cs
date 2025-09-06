@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using SportsStatistics.Application.Interfaces.Infrastructure;
-using SportsStatistics.Web.Contracts.Requests;
 
 namespace SportsStatistics.Web.Services;
 
