@@ -573,17 +573,10 @@ In `Package Manager Console`
 
 In `SportsStatistics.Domain`.
 
-- Create a new class `Position.cs` in `Entities/`
-  - `Guid Id`
-  - `string Role`
-  - `string Area`
-  - `string Title`
-  - `string Code`
-
 - Create a new class `Player.cs` in `Entities/`
   - `Guid Id`
   - `string Name`
-  - `Position Position`
+  - `string Role`
   - `int SquadNumber`
   - `string Nationality`
   - `DateOnly DateOfBirth`
