@@ -268,7 +268,7 @@ NOTES:
 
 ## 🏗️ Project Kickoff & Setup
 
-### 1. **Create Solution & Core Projects**
+### **Create Solution & Core Projects**
 
 #### Create the Root Solution
 
@@ -344,7 +344,8 @@ NOTES:
   builder.AddProject<Projects.SportsStatistics_Web>("sportsstatistics-web");
   ```
 
-### 2. **Configure Basic Routing & Layout**
+### **Configure Basic Routing & Layout**
+
 - Establish main pages: Home, Match Tracker, Reports, Admin
 - Add navigation and layout components
 - TODO:
@@ -454,7 +455,7 @@ In `SportsStatistics.Web`.
 - Update `WebServiceRegistration.cs`, to include:
   - An `AddAuthorizationBuilder()` call on `builder.Service`, and then chain a call to `AddPolicy` to add the `RequireAdministratorRole` policy.
 
-### 3. **Add DatabaseMigrator Project**
+### **Add DatabaseMigrator Project**
 
 #### Create the DatabaseMigrator Project
 
@@ -538,7 +539,7 @@ In `Package Manager Console`
 
 ## 🔐 Authentication & Identity
 
-### 3. **Integrate ASP.NET Core Identity**
+### **Integrate ASP.NET Core Identity**
 
 #### Create Authentication Service
 
@@ -557,9 +558,43 @@ In `Package Manager Console`
   - `Task<Result> PasswordSignInAsync(string email, string password, bool isPersistant);`
   - `Task SignOutAsync();`
 
-### 4. **Secure Page Access**
+### **Secure Page Access**
+
 - Apply role-based authorization to routes and components
 - Add login/logout UI and session handling
+
+---
+
+## 🛠️ Admin Tools
+
+### **Add Player Management UI**
+
+#### `Player` Entity
+
+In `SportsStatistics.Domain`.
+
+- Create a new class `Position.cs` in `Entities/`
+  - `Guid Id`
+  - `string Role`
+  - `string Area`
+  - `string Title`
+  - `string Code`
+
+- Create a new class `Player.cs` in `Entities/`
+  - `Guid Id`
+  - `string Name`
+  - `Position Position`
+  - `int SquadNumber`
+  - `string Nationality`
+  - `DateOnly DateOfBirth`
+  - `int Age`
+
+- Create forms to add/edit/delete players
+- Connect to backend CRUD services
+
+### 10. **Add Fixture Management UI**
+- Build interface for scheduling and editing games
+- Link fixtures to match tracking and reports
 
 ---
 
@@ -583,18 +618,6 @@ In `Package Manager Console`
 ### 8. **Connect Aggregated Data to Charts**
 - Build backend logic to compute player stats
 - Render charts dynamically based on selected filters
-
----
-
-## 🛠️ Admin Tools
-
-### 9. **Add Player Management UI**
-- Create forms to add/edit/delete players
-- Connect to backend CRUD services
-
-### 10. **Add Fixture Management UI**
-- Build interface for scheduling and editing games
-- Link fixtures to match tracking and reports
 
 ---
 
