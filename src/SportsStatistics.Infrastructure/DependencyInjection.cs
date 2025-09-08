@@ -8,6 +8,7 @@ using SportsStatistics.Core.Aspire;
 using SportsStatistics.Infrastructure.Identity.Providers;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
+using SportsStatistics.Infrastructure.Persistence.Schemas;
 using SportsStatistics.Infrastructure.Persistence.Services;
 
 namespace SportsStatistics.Infrastructure;
@@ -46,7 +47,7 @@ public static class DependencyInjection
         {
             options.UseSqlServer(sqlOptions =>
             {
-                sqlOptions.MigrationsHistoryTable("MigrationsHistory", "efcore");
+                sqlOptions.MigrationsHistoryTable(EntityFrameworkCoreSchema.MigrationsHistory.Table, EntityFrameworkCoreSchema.MigrationsHistory.Schema);
             });
         });
 
