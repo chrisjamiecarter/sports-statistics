@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Infrastructure.Schemas;
+﻿namespace SportsStatistics.Infrastructure.Persistence.Schemas;
 
 internal static class Sports
 {
