@@ -1,8 +1,8 @@
 ﻿namespace SportsStatistics.Infrastructure.Persistence.Schemas;
 
-internal static class Sports
+internal static class SportsSchema
 {
     private const string Schema = "sports";
 
-    public static readonly Metadata Players = new(Schema, "Players");
+    public static readonly SchemaMetadata Players = new(Schema, "Players");
 }

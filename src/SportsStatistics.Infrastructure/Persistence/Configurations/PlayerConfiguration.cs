@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Entities;
-using SportsStatistics.Infrastructure.Schemas;
+using SportsStatistics.Infrastructure.Persistence.Schemas;
 
 namespace SportsStatistics.Infrastructure.Persistence.Configurations;
 
@@ -9,7 +9,7 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
 {
     public void Configure(EntityTypeBuilder<Player> builder)
     {
-        builder.ToTable(Sports.Players.Table, Sports.Players.Schema);
+        builder.ToTable(SportsSchema.Players.Table, SportsSchema.Players.Schema);
 
         builder.HasKey(p => p.Id);
 
