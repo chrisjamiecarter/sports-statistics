@@ -1,11 +1,11 @@
-﻿namespace SportsStatistics.Domain.Entities;
+﻿using SportsStatistics.Domain.Primitives;
 
-public sealed class Player
+namespace SportsStatistics.Domain.Entities;
+
+public sealed class Player : AggregateRoot
 {
-    public Player(Guid id, string name, string role, int squadNumber, string nationality, DateOnly dateOfBith)
+    public Player(Guid id, string name, string role, int squadNumber, string nationality, DateOnly dateOfBith) : base(id)
     {
-        ArgumentOutOfRangeException.ThrowIfEqual(id, Guid.Empty, nameof(id));
-
         ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
 
         ArgumentException.ThrowIfNullOrWhiteSpace(role, nameof(role));
@@ -17,15 +17,12 @@ public sealed class Player
 
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(dateOfBith, DateOnly.FromDateTime(DateTime.Today), nameof(dateOfBith));
 
-        Id = id;
         Name = name;
         Role = role;
         SquadNumber = squadNumber;
         Nationality = nationality;
         DateOfBirth = dateOfBith;
     }
-
-    public Guid Id { get; private set; }
         
     public string Name { get; private set; }
 

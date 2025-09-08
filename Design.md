@@ -581,6 +581,12 @@ In `SportsStatistics.Domain`.
   - `string Nationality`
   - `DateOnly DateOfBirth`
   - `int Age`
+  
+In `SportsStatistics.Infrastructure`.
+
+- Update `SportsStatisticsDbContext.cs` in `Persistence/`
+  - Add Players DbSet.
+  - Add Player entity configuration.
 
 - Create forms to add/edit/delete players
 - Connect to backend CRUD services

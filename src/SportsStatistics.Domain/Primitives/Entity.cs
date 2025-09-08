@@ -4,6 +4,8 @@ public abstract class Entity : IEquatable<Entity>
 {
     protected Entity(Guid id)
     {
+        ArgumentOutOfRangeException.ThrowIfEqual(id, Guid.Empty, nameof(id));
+
         Id = id;
     }
 
