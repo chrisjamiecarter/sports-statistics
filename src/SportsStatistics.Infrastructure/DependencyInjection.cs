@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SportsStatistics.Application.Abstractions.Repositories;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Core.Aspire;
 using SportsStatistics.Infrastructure.Identity.Providers;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
+using SportsStatistics.Infrastructure.Persistence.Players;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
 using SportsStatistics.Infrastructure.Persistence.Services;
 
@@ -94,6 +96,17 @@ public static class DependencyInjection
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingServerAuthenticationStateProvider>();
 
+        builder.Services.AddRepositories();
+
         return builder;
+    }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        services.AddScoped<IPlayerRepository, PlayerRepository>();
+
+        return services;
     }
 }

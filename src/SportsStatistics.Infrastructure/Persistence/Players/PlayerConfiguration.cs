@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Entities;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
 
-namespace SportsStatistics.Infrastructure.Persistence.Configurations;
+namespace SportsStatistics.Infrastructure.Persistence.Players;
 
 internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
 {
