@@ -1,0 +1,19 @@
+﻿@page "/players"
+@using SportsStatistics.Application.Players.Queries.GetPlayers
+
+<PageTitle>Home</PageTitle>
+
+<FluentCard>
+    <h2>Hello World!</h2>
+    <p>Welcome to your new app.</p>
+    <FluentButton Appearance="@Appearance.Accent">Click Me</FluentButton>
+</FluentCard>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new GetPlayersQuery();
+
+        var result = await Dispatcher.DispatchAsync(request, CancellationToken.None);
+    }
+}
