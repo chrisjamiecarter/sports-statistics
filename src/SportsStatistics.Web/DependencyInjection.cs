@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.FluentUI.AspNetCore.Components;
+using SportsStatistics.Application;
 using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure;
 using SportsStatistics.Web.Api.Endpoints;
@@ -15,6 +16,7 @@ internal static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
+        builder.AddApplicationDependencies();
         builder.AddInfrastructureDependencies(Infrastructure.DependencyInjection.SourceProject.WebApplication);
 
         builder.Services.AddRazorComponents()
@@ -38,6 +40,8 @@ internal static class DependencyInjection
                         .AddPolicy(Policies.RequireAdministratorRole, policy => policy.RequireRole([Roles.Administrator]));
 
         builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, includeInternalTypes: true);
+
+        builder.Services.AddScoped<IDispatcherService, DispatcherService>();
 
         return builder;
     }

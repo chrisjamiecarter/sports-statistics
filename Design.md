@@ -526,7 +526,6 @@ In `SportsStatistics.Tools.DatabaseMigrator`.
   - Start a new `Activity` for tracing.
   - Call the `MigrateAsync` method on `IDatabaseMigrationService`.
   
-
 #### Create Initial Migration and Update Database
 
 In `Package Manager Console`
@@ -573,7 +572,7 @@ In `Package Manager Console`
 
 In `SportsStatistics.Domain`.
 
-- Create a new class `Player.cs` in `Entities/`
+- Create a new class `Player.cs` in `Entities/`.
   - `Guid Id`
   - `string Name`
   - `string Role`
@@ -584,9 +583,41 @@ In `SportsStatistics.Domain`.
   
 In `SportsStatistics.Infrastructure`.
 
-- Update `SportsStatisticsDbContext.cs` in `Persistence/`
+- Update `SportsStatisticsDbContext.cs` in `Persistence/`.
   - Add Players DbSet.
   - Add Player entity configuration.
+  
+#### Create Players Migration
+
+In `Package Manager Console`
+
+- Create the initial migration:
+  - `Add-Migration PlayersEntity -project SportsStatistics.Infrastructure -startupproject SportsStatistics.Web`.
+- The next time the `SportsStatistics.AppHost` application is run will trigger the migration via `SportsStatistics.Tools.DatabaseMigrator`.
+
+#### `Players` Repository
+
+In `SportsStatistics.Application`.
+
+- Create `IPlayerRepository` in `Abstractions/Repositories/`.
+  - Add `GetAllAsync`.
+
+In `SportsStatistics.Infrastructure`.
+
+- Create `PlayerRepository.cs` in `Persistence/Players/`.
+  - Implement `IPlayerRepository`.
+- Register repository in `DependencyInjection.cs`
+
+#### `GetAllPlayers` Query
+
+In `SportsStatistics.Application`.
+
+- Create and implement `GetPlayers` query in `Players/GetPlayers/`
+  - `GetPlayersQuery`
+  - `GetPlayersQueryHandler`
+  - `GetPlayersResponse`
+  - `GetPlayersResponseExtensions`
+
 
 - Create forms to add/edit/delete players
 - Connect to backend CRUD services
