@@ -618,6 +618,14 @@ In `SportsStatistics.Application`.
   - `GetPlayersResponse`
   - `GetPlayersResponseExtensions`
 
+#### `Players` Pages
+
+In `SportsStatistics.Web`.
+
+- Create and implement the following pages/components in `Players/`
+  - `Index`
+  - `PlayerList`
+  - `PlayerForm`
 
 - Create forms to add/edit/delete players
 - Connect to backend CRUD services
