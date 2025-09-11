@@ -26,41 +26,31 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
         _logger = logger;
     }
 
-    public async Task<Result> SeedAsync(CancellationToken cancellationToken = default)
+    public async Task<Result> SeedAsync(CancellationToken cancellationToken)
     {
+        var rolesResult = await SeedRolesAsync();
+        if (rolesResult.IsFailure)
+        {
+            return rolesResult;
+        }
+
+        var usersResult = await SeedAdminUserAsync(cancellationToken);
+        if (usersResult.IsFailure)
+        {
+            return usersResult;
+        }
+
+        return Result.Success();
+    }
+
+    private async Task<Result> SeedAdminUserAsync(CancellationToken cancellationToken)
+    {
+        using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
         var adminUsername = "admin";
         var adminPassword = "Admin123#";
         var adminEmail = "admin@sportsstatistics.com";
         var adminRole = Roles.Administrator;
-
-        var roleNames = typeof(Roles).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                                     .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string))
-                                     .Select(f => f.GetRawConstantValue()?.ToString())
-                                     .Where(name => !string.IsNullOrWhiteSpace(name))
-                                     .ToList();
-
-        foreach (var roleName in roleNames)
-        {
-            if (string.IsNullOrWhiteSpace(roleName))
-            {
-                continue;
-            }
-
-            var roleExists = await _roleManager.RoleExistsAsync(roleName);
-            if (!roleExists)
-            {
-                var identityRole = new IdentityRole(roleName);
-
-                var createResult = await _roleManager.CreateAsync(identityRole);
-                if (!createResult.Succeeded)
-                {
-                    // TODO:
-                    var message = $"Failed to create role '{identityRole.Name}': {string.Join(", ", createResult.Errors.Select(e => e.Description))}";
-                    _logger.LogError("Failed to create role '{Role}': {ErrorsDescription}", identityRole.Name, string.Join(", ", createResult.Errors.Select(e => e.Description)));
-                    return Result.Failure(new("Role.Create", message));
-                }
-            }
-        }
 
         var adminExists = await _userManager.FindByEmailAsync(adminEmail) is not null || await _userManager.FindByNameAsync(adminUsername) is not null;
         if (!adminExists)
@@ -84,6 +74,43 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
             {
                 // TODO:
                 return Result.Failure(new("User.AddToRole", $"Failed to add user '{adminUsername}' to role '{adminRole}': {string.Join(", ", addToRoleResult.Errors.Select(e => e.Description))}"));
+            }
+        }
+
+        await transaction.CommitAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    private async Task<Result> SeedRolesAsync()
+    {
+        var roleNames = typeof(Roles).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                             .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string))
+                             .Select(f => f.GetRawConstantValue()?.ToString())
+                             .Where(roleName => !string.IsNullOrWhiteSpace(roleName))
+                             .ToList();
+
+        foreach (var roleName in roleNames)
+        {
+            var result = await SeedRoleAsync(roleName!);
+            if (result.IsFailure)
+            {
+                return result;
+            }
+        }
+
+        return Result.Success();
+    }
+
+    private async Task<Result> SeedRoleAsync(string roleName)
+    {
+        if (!await _roleManager.RoleExistsAsync(roleName))
+        {
+            var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+            if (!result.Succeeded)
+            {
+                // TODO:
+                return Result.Failure(new("Role.Create", $"Failed to create role '{roleName}': {string.Join(", ", result.Errors.Select(e => e.Description))}"));
             }
         }
 
