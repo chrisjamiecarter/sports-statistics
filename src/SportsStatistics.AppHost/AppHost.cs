@@ -7,10 +7,9 @@ internal static class Program
     {
         var builder = DistributedApplication.CreateBuilder(args);
 
-        var sqlServer = builder.AddSqlServer(SqlResourceConstants.Name)
-                               .WithHostPort(SqlResourceConstants.Port)
-                               .WithLifetime(ContainerLifetime.Persistent)
-                               .WithContainerName(SqlResourceConstants.ContainerName);
+        var sqlServer = builder.AddSqlServer(SqlResourceConstants.Name, port: SqlResourceConstants.Port)
+                               .WithContainerName(SqlResourceConstants.ContainerName)
+                               .WithLifetime(ContainerLifetime.Persistent);
 
         var database = sqlServer.AddDatabase(SqlResourceConstants.Database);
 

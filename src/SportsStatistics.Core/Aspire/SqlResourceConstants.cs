@@ -6,5 +6,4 @@ public static class SqlResourceConstants
     public const string Database = "sportsstatistic-db";
     public const string Name = "sql";
     public const int Port = 1433;
-
 }
