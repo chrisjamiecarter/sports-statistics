@@ -41,7 +41,7 @@ internal static class DependencyInjection
 
         builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, includeInternalTypes: true);
 
-        builder.Services.AddScoped<IDispatcherService, DispatcherService>();
+        builder.Services.AddScoped<ISenderService, SenderService>();
 
         return builder;
     }
