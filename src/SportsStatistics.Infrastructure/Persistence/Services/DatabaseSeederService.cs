@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Core.Results;
@@ -28,25 +29,28 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
 
     public async Task<Result> SeedAsync(CancellationToken cancellationToken)
     {
-        var rolesResult = await SeedRolesAsync();
-        if (rolesResult.IsFailure)
-        {
-            return rolesResult;
-        }
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
 
-        var usersResult = await SeedAdminUserAsync(cancellationToken);
-        if (usersResult.IsFailure)
+        return await strategy.ExecuteAsync(async () =>
         {
-            return usersResult;
-        }
+            var rolesResult = await SeedRolesAsync();
+            if (rolesResult.IsFailure)
+            {
+                return rolesResult;
+            }
 
-        return Result.Success();
+            var usersResult = await SeedAdminUserAsync();
+            if (usersResult.IsFailure)
+            {
+                return usersResult;
+            }
+
+            return Result.Success();
+        });
     }
 
-    private async Task<Result> SeedAdminUserAsync(CancellationToken cancellationToken)
+    private async Task<Result> SeedAdminUserAsync()
     {
-        using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
         var adminUsername = "admin";
         var adminPassword = "Admin123#";
         var adminEmail = "admin@sportsstatistics.com";
@@ -76,8 +80,6 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
                 return Result.Failure(new("User.AddToRole", $"Failed to add user '{adminUsername}' to role '{adminRole}': {string.Join(", ", addToRoleResult.Errors.Select(e => e.Description))}"));
             }
         }
-
-        await transaction.CommitAsync(cancellationToken);
 
         return Result.Success();
     }
