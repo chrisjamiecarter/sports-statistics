@@ -1,16 +1,70 @@
 ﻿@page "/players"
 
-<PageTitle>Players</PageTitle>
+<PageTitle>Players / Team Management</PageTitle>
 
 <FluentCard>
-    <h2>Players</h2>
+    
+    <FluentLabel Typo="Typography.Header">
+        Players / Team Management
+    </FluentLabel>
+
+    @if (PlayerFormVisible)
+    {
+        <PlayerForm Player="@SelectedPlayer" OnCancel="HidePlayerForm" OnClose="HidePlayerForm"  OnSubmit="HandleSubmitAsync" />
+    }
+    else
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="(() => ShowPlayerForm())">
+            Add Player
+        </FluentButton>
+
+        <PlayerList Players="@Players" OnDeletePlayer="@Test" OnEditPlayer="@Test" />
+    }
+
 </FluentCard>
 
+
+
 @code {
+    // TODO: decide route:
+    // players or team-management.
+    // admin/players or admin/team-management.
+
+    private IQueryable<PlayerDto>? Players { get; set; }
+
+    private bool PlayerFormVisible { get; set; }
+
+    private PlayerDto? SelectedPlayer { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var request = new GetPlayersQuery();
 
         var result = await Sender.SendAsync(request, CancellationToken.None);
+
+        Players = result.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.Age)).AsQueryable();
+    }
+
+    public async Task Test(PlayerDto player)
+    {
+        await Task.CompletedTask;
+    }
+
+    private void HidePlayerForm()
+    {
+        PlayerFormVisible = false;
+        SelectedPlayer = null;
+    }
+
+    private void ShowPlayerForm(PlayerDto? player = null)
+    {
+        SelectedPlayer = player;
+        PlayerFormVisible = true;
+    }
+
+    private async Task HandleSubmitAsync(PlayerInputModel player)
+    {
+        await Task.CompletedTask;
+        HidePlayerForm();
     }
 }

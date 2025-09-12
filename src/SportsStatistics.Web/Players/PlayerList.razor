@@ -1,0 +1,52 @@
+﻿<FluentCard Width="100%">
+    
+    <FluentLabel Typo="Typography.Header">
+        Players
+    </FluentLabel>
+
+    <FluentDivider />
+
+    @if(Players is null)
+    {
+        <FluentProgressRing />
+    }
+    else
+    {
+        <FluentPaginator State="@_pagination" SummaryTemplate="@_blank" />
+
+        <FluentDataGrid Items="@Players.AsQueryable()">
+            <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="@true" />
+            <PropertyColumn Property="@(p => p.Name)" Sortable="@true" />
+            <PropertyColumn Property="@(p => p.Role)" Sortable="@true" />
+            <PropertyColumn Property="@(p => p.Age)" Sortable="@true" />
+            <PropertyColumn Property="@(p => p.Nationality)" Sortable="@true" />
+        </FluentDataGrid>
+
+        <FluentPaginator State="@_pagination" />
+    }
+
+</FluentCard>
+
+@code {
+    private RenderFragment _blank = @<span />;
+    private PaginationState _pagination = new() { ItemsPerPage = 2 };
+
+    [Parameter]
+    public EventCallback<PlayerDto> OnDeletePlayer { get; set; }
+
+    [Parameter]
+    public EventCallback<PlayerDto> OnEditPlayer { get; set; }
+
+    [Parameter]
+    public IQueryable<PlayerDto>? Players { get; set; }
+
+    private async Task Delete(PlayerDto player)
+    {
+        await OnEditPlayer.InvokeAsync(player);
+    }
+
+    private async Task Edit(PlayerDto player)
+    {
+        await OnEditPlayer.InvokeAsync(player);
+    }
+}
