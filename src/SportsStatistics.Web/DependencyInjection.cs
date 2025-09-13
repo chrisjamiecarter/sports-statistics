@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SportsStatistics.Application;
+using SportsStatistics.Common.Abstractions.Messaging;
 using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure;
+using SportsStatistics.Web.Abstractions.Messaging;
 using SportsStatistics.Web.Api.Endpoints;
 using SportsStatistics.Web.Components;
 using SportsStatistics.Web.Services;
@@ -41,7 +43,7 @@ internal static class DependencyInjection
 
         builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, includeInternalTypes: true);
 
-        builder.Services.AddScoped<ISenderService, SenderService>();
+        builder.Services.AddScoped<IMessenger, Messenger>();
 
         return builder;
     }

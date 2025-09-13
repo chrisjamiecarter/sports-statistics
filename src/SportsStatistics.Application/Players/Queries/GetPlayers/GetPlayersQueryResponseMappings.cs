@@ -2,7 +2,7 @@
 
 namespace SportsStatistics.Application.Players.Queries.GetPlayers;
 
-internal static class GetPlayersQueryResponseExtensions
+internal static class GetPlayersQueryResponseMappings
 {
     public static List<GetPlayersQueryResponse> ToResponse(this IEnumerable<Player> players)
         => [.. players.Select(ToResponse)];

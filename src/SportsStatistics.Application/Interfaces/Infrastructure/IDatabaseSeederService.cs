@@ -1,4 +1,4 @@
-﻿using SportsStatistics.Core.Results;
+﻿using SportsStatistics.Common.Primitives.Results;
 
 namespace SportsStatistics.Application.Interfaces.Infrastructure;
 

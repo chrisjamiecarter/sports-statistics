@@ -1,4 +1,4 @@
-﻿using SportsStatistics.Core.Application.Abstractions;
+﻿using SportsStatistics.Common.Abstractions.Messaging;
 
 namespace SportsStatistics.Application.Players.Queries.GetPlayers;
 

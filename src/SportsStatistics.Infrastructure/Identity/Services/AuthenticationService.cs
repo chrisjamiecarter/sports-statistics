@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
-using SportsStatistics.Core.Results;
+using SportsStatistics.Common.Primitives.Results;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Models.Mappings;
 

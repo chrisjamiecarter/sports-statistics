@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
-using SportsStatistics.Core.Results;
+using SportsStatistics.Common.Primitives.Results;
 using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure.Persistence.Models;
 

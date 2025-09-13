@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Core.Application.Abstractions;
+﻿using SportsStatistics.Common.Abstractions.Messaging;
+using SportsStatistics.Common.Primitives.Results;
 
 namespace SportsStatistics.Application.Players.Queries.GetPlayers;
 
@@ -6,7 +7,7 @@ internal sealed class GetPlayersQueryHandler(IPlayerRepository repository) : IQu
 {
     private readonly IPlayerRepository _repository = repository;
 
-    public async Task<List<GetPlayersQueryResponse>> HandleAsync(GetPlayersQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<List<GetPlayersQueryResponse>>> Handle(GetPlayersQuery query, CancellationToken cancellationToken)
     {
         var players = await _repository.GetAllAsync(cancellationToken);
         return players.ToResponse();

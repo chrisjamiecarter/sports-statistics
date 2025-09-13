@@ -1,6 +1,7 @@
 ﻿@page "/players"
 @using SportsStatistics.Application.Players.Commands.CreatePlayer
 @using SportsStatistics.Application.Players.Commands.UpdatePlayer
+@using SportsStatistics.Web.Abstractions.Messaging
 
 <PageTitle>Players / Team Management</PageTitle>
 
@@ -55,9 +56,13 @@
     private async Task LoadPlayersAsync()
     {
         var request = new GetPlayersQuery();
-        var result = await Sender.SendAsync(request);
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError("Unable to load players");
+        }
 
-        Players = result.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.DateOfBirth, player.Age)).AsQueryable();
+        Players = result.Value.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.DateOfBirth, player.Age)).AsQueryable();
     }
 
     private void ShowPlayerForm(PlayerDto? player = null)
@@ -76,7 +81,7 @@
         if (SelectedPlayer is null)
         {
             var command = new CreatePlayerCommand(player.Name, player.Role, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()));
-            var result = await Sender.SendAsync(command);
+            var result = await Messenger.SendAsync(command);
 
             if (result.IsSuccess)
             {
@@ -90,7 +95,7 @@
         else
         {
             var command = new UpdatePlayerCommand(SelectedPlayer.Id, player.Name, player.Role, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()));
-            var result = await Sender.SendAsync(command);
+            var result = await Messenger.SendAsync(command);
 
             if (result.IsSuccess)
             {

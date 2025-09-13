@@ -1,4 +1,5 @@
-﻿@if (HasMessage)
+﻿@using SportsStatistics.Web.Abstractions.Messaging
+@if (HasMessage)
 {
     <FluentMessageBar Intent="@(StatusMessageIntent)" AllowDismiss="@false">
         @StatusModel.Message

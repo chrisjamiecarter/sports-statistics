@@ -1,13 +1,13 @@
-﻿using SportsStatistics.Core.Application.Abstractions;
-using SportsStatistics.Core.Results;
+﻿using SportsStatistics.Common.Abstractions.Messaging;
+using SportsStatistics.Common.Primitives.Results;
 
 namespace SportsStatistics.Application.Players.Commands.UpdatePlayer;
 
-internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<UpdatePlayerCommand, Result>
+internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<UpdatePlayerCommand>
 {
     private readonly IPlayerRepository _repository = repository;
 
-    public async Task<Result> HandleAsync(UpdatePlayerCommand request, CancellationToken cancellationToken = default)
+    public async Task<Result> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
     {
         var player = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (player is null)

@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Core.Results;
+﻿namespace SportsStatistics.Common.Primitives.Results;
 
 /// <summary>
 /// Represents aresult error with a code and message.

@@ -1,7 +1,9 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
+﻿@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using SportsStatistics.Common.Abstractions.Messaging
+@using SportsStatistics.Web.Abstractions.Messaging
 @using SportsStatistics.Web.Components
 @using SportsStatistics.Web.Components.Common
 @using SportsStatistics.Web.Components.Common.Enums
@@ -10,5 +12,5 @@
 @using SportsStatistics.Web.Services
 
 @inject IToastService ToastService
+@inject IMessenger Messenger
 @inject NavigationManager Navigation
-@inject ISenderService Sender

@@ -5,6 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SportsStatistics.Common.Abstractions\SportsStatistics.Common.Abstractions.csproj" />
     <ProjectReference Include="..\SportsStatistics.Core\SportsStatistics.Core.csproj" />
     <ProjectReference Include="..\SportsStatistics.Domain\SportsStatistics.Domain.csproj" />
   </ItemGroup>

@@ -3,6 +3,7 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -14,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SportsStatistics.Application\SportsStatistics.Application.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Common.Abstractions\SportsStatistics.Common.Abstractions.csproj" />
     <ProjectReference Include="..\SportsStatistics.Core\SportsStatistics.Core.csproj" />
     <ProjectReference Include="..\SportsStatistics.Domain\SportsStatistics.Domain.csproj" />
     <ProjectReference Include="..\SportsStatistics.Infrastructure\SportsStatistics.Infrastructure.csproj" />

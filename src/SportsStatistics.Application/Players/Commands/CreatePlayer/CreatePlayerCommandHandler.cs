@@ -1,14 +1,14 @@
-﻿using SportsStatistics.Core.Application.Abstractions;
-using SportsStatistics.Core.Results;
+﻿using SportsStatistics.Common.Abstractions.Messaging;
+using SportsStatistics.Common.Primitives.Results;
 using SportsStatistics.Domain.Entities;
 
 namespace SportsStatistics.Application.Players.Commands.CreatePlayer;
 
-internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<CreatePlayerCommand, Result>
+internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<CreatePlayerCommand>
 {
     private readonly IPlayerRepository _repository = repository;
 
-    public async Task<Result> HandleAsync(CreatePlayerCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result> Handle(CreatePlayerCommand command, CancellationToken cancellationToken)
     {
         var player = new Player(Guid.CreateVersion7(),
                                 command.Name,

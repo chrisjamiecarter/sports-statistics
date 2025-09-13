@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Antiforgery
+@using SportsStatistics.Web.Abstractions.Messaging
 @inject IAntiforgery Antiforgery
 @{
     var tokens = Antiforgery.GetAndStoreTokens(HttpContext);

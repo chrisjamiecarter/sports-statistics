@@ -1,4 +1,4 @@
-﻿using SportsStatistics.Core.Results;
+﻿using SportsStatistics.Common.Primitives.Results;
 using SportsStatistics.Web.Contracts.Requests;
 
 namespace SportsStatistics.Web.Api.Mappings;
