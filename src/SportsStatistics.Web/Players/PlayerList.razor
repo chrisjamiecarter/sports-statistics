@@ -15,7 +15,7 @@
         <FluentPaginator State="@_pagination" SummaryTemplate="@_blank" />
 
         <FluentDataGrid Items="@Players.AsQueryable()">
-            <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="@true" />
+            <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="@true" IsDefaultSortColumn="@true" />
             <PropertyColumn Property="@(p => p.Name)" Sortable="@true" />
             <PropertyColumn Property="@(p => p.Role)" Sortable="@true" />
             <PropertyColumn Property="@(p => p.Age)" Sortable="@true" />
