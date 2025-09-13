@@ -3,7 +3,7 @@ using SportsStatistics.Core.Results;
 
 namespace SportsStatistics.Application.Players.Commands.UpdatePlayer;
 
-internal class UpdatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<UpdatePlayerCommand, Result>
+internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<UpdatePlayerCommand, Result>
 {
     private readonly IPlayerRepository _repository = repository;
 
