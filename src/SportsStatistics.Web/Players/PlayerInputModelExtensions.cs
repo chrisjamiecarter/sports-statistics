@@ -1,4 +1,4 @@
-﻿using static SportsStatistics.Web.Players.PlayerForm;
+﻿using Microsoft.FluentUI.AspNetCore.Components.Extensions;
 
 namespace SportsStatistics.Web.Players;
 
@@ -14,7 +14,8 @@ public static class PlayerInputModelExtensions
             Name = dto.Name,
             Role = dto.Role,
             SquadNumber = dto.SquadNumber,
-            Nationality = dto.Nationality
+            Nationality = dto.Nationality,
+            DateOfBirth = dto.DateOfBirth.ToDateTime(),
         };
     }
 }

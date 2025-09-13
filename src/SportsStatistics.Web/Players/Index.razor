@@ -57,7 +57,7 @@
         var request = new GetPlayersQuery();
         var result = await Sender.SendAsync(request);
 
-        Players = result.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.Age)).AsQueryable();
+        Players = result.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.DateOfBirth, player.Age)).AsQueryable();
     }
 
     private void ShowPlayerForm(PlayerDto? player = null)

@@ -5,4 +5,5 @@ public sealed record GetPlayersQueryResponse(Guid Id,
                                              string Role,
                                              int SquadNumber,
                                              string Nationalty,
+                                             DateOnly DateOfBirth,
                                              int Age);
