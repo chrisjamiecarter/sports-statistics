@@ -19,7 +19,7 @@
             Add Player
         </FluentButton>
 
-        <PlayerList Players="@Players" OnDeletePlayer="@Test" OnEditPlayer="@Test" />
+        <PlayerList Players="@Players" OnDeletePlayer="@Test" OnEditPlayer="@HandleEditPlayer" />
     }
 
 </FluentCard>
@@ -63,6 +63,11 @@
     {
         SelectedPlayer = player;
         PlayerFormVisible = true;
+    }
+
+    private void HandleEditPlayer(PlayerDto player)
+    {
+        ShowPlayerForm(player);
     }
 
     private async Task HandleSubmitAsync(PlayerInputModel player)
