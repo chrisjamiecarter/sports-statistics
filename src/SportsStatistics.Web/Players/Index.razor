@@ -1,5 +1,6 @@
 ﻿@page "/players"
 @using SportsStatistics.Application.Players.Commands.CreatePlayer
+@using SportsStatistics.Application.Players.Commands.UpdatePlayer
 
 <PageTitle>Players / Team Management</PageTitle>
 
@@ -80,6 +81,20 @@
             if (result.IsSuccess)
             {
                 ToastService.ShowSuccess("Player created successfully.");
+            }
+            else
+            {
+                ToastService.ShowError(result.Error.Message);
+            }
+        }
+        else
+        {
+            var command = new UpdatePlayerCommand(SelectedPlayer.Id, player.Name, player.Role, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()));
+            var result = await Sender.SendAsync(command);
+
+            if (result.IsSuccess)
+            {
+                ToastService.ShowSuccess("Player updated successfully.");
             }
             else
             {
