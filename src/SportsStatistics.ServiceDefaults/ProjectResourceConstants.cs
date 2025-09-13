@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Core.Aspire;
+﻿namespace SportsStatistics.ServiceDefaults;
 
 public static class ProjectResourceConstants
 {

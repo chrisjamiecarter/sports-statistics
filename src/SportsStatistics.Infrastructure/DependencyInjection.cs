@@ -5,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Players;
-using SportsStatistics.Core.Aspire;
 using SportsStatistics.Infrastructure.Identity.Providers;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Players;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
 using SportsStatistics.Infrastructure.Persistence.Services;
+using SportsStatistics.ServiceDefaults;
 
 namespace SportsStatistics.Infrastructure;
 
