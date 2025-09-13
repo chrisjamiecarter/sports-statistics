@@ -10,6 +10,7 @@ public sealed class Player : AggregateRoot
 
         ArgumentException.ThrowIfNullOrWhiteSpace(role, nameof(role));
 
+        // TODO: Possibility that squad number can be null.
         ArgumentOutOfRangeException.ThrowIfNegative(squadNumber, nameof(squadNumber));
         ArgumentOutOfRangeException.ThrowIfGreaterThan(squadNumber, 99, nameof(squadNumber));
 
@@ -51,5 +52,15 @@ public sealed class Player : AggregateRoot
 
             return age;
         }
+    }
+
+    public void Update(string name, string role, int squadNumber, string nationality, DateOnly dateOfBirth)
+    {
+        // TODO: validation.
+        Name = name;
+        Role = role;
+        SquadNumber = squadNumber;
+        Nationality = nationality;
+        DateOfBirth = dateOfBirth;
     }
 }

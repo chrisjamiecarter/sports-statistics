@@ -20,4 +20,32 @@ internal sealed class PlayerRepository(SportsStatisticsDbContext dbContext) : IP
         return await _dbContext.Players.AsNoTracking()
                                        .ToListAsync(cancellationToken);
     }
+
+    public async Task<Player?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _dbContext.Players.AsNoTracking().SingleAsync(x => x.Id == id, cancellationToken);
+        }
+        catch (Exception)
+        {
+            // TODO: log exception?
+            return null;
+        }
+    }
+
+    public async Task<bool> UpdateAsync(Player player, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _dbContext.Players.Update(player);
+            var result = await _dbContext.SaveChangesAsync(cancellationToken);
+            return result > 0;
+        }
+        catch (Exception)
+        {
+            // TODO: log exception?
+            return false;
+        }
+    }
 }
