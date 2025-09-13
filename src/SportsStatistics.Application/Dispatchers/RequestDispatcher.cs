@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SportsStatistics.Core.Application.Abstractions;
 
-namespace SportsStatistics.Core.Application.Dispatchers;
+namespace SportsStatistics.Application.Dispatchers;
 
 public class RequestDispatcher(IServiceProvider provider) : IRequestDispatcher
 {

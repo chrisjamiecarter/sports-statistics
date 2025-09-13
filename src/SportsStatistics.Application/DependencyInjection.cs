@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SportsStatistics.Application.Dispatchers;
 using SportsStatistics.Core.Application.Abstractions;
-using SportsStatistics.Core.Application.Dispatchers;
 
 namespace SportsStatistics.Application;
 

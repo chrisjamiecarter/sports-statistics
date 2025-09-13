@@ -1,4 +1,5 @@
 ﻿@page "/players"
+@using SportsStatistics.Application.Players.Commands.CreatePlayer
 
 <PageTitle>Players / Team Management</PageTitle>
 
@@ -23,8 +24,6 @@
 
 </FluentCard>
 
-
-
 @code {
     // TODO: decide route:
     // players or team-management.
@@ -38,11 +37,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new GetPlayersQuery();
-
-        var result = await Sender.SendAsync(request, CancellationToken.None);
-
-        Players = result.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.Age)).AsQueryable();
+        await LoadPlayersAsync();
     }
 
     public async Task Test(PlayerDto player)
@@ -56,6 +51,14 @@
         SelectedPlayer = null;
     }
 
+    private async Task LoadPlayersAsync()
+    {
+        var request = new GetPlayersQuery();
+        var result = await Sender.SendAsync(request);
+
+        Players = result.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.Age)).AsQueryable();
+    }
+
     private void ShowPlayerForm(PlayerDto? player = null)
     {
         SelectedPlayer = player;
@@ -64,7 +67,22 @@
 
     private async Task HandleSubmitAsync(PlayerInputModel player)
     {
-        await Task.CompletedTask;
+        if (SelectedPlayer is null)
+        {
+            var command = new CreatePlayerCommand(player.Name, player.Role, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()));
+            var result = await Sender.SendAsync(command);
+
+            if (result.IsSuccess)
+            {
+                ToastService.ShowSuccess("Player created successfully.");
+            }
+            else
+            {
+                ToastService.ShowError(result.Error.Message);
+            }
+        }
+
+        await LoadPlayersAsync();
         HidePlayerForm();
     }
 }
