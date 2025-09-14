@@ -1,6 +1,6 @@
-﻿namespace SportsStatistics.Application.Players.Queries.GetPlayers;
+﻿namespace SportsStatistics.Application.Players.GetAll;
 
-public sealed record GetPlayersQueryResponse(Guid Id,
+public sealed record PlayerResponse(Guid Id,
                                              string Name,
                                              string Role,
                                              int SquadNumber,

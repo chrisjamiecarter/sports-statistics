@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SportsStatistics.Common.Abstractions\SportsStatistics.Common.Abstractions.csproj" />
     <ProjectReference Include="..\SportsStatistics.Core\SportsStatistics.Core.csproj" />
     <ProjectReference Include="..\SportsStatistics.Domain\SportsStatistics.Domain.csproj" />
+    <ProjectReference Include="..\SportsStatistics.SharedKernel\SportsStatistics.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SportsStatistics.Application;
-using SportsStatistics.Common.Abstractions.Messaging;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure;
 using SportsStatistics.Web.Abstractions.Messaging;

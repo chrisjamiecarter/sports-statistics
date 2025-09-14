@@ -1,8 +1,8 @@
-﻿using SportsStatistics.Common.Abstractions.Messaging;
-using SportsStatistics.Common.Primitives.Results;
+﻿using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Entities;
+using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Application.Players.Commands.CreatePlayer;
+namespace SportsStatistics.Application.Players.Create;
 
 internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<CreatePlayerCommand>
 {
@@ -21,6 +21,6 @@ internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository) :
 
         return created
             ? Result.Success()
-            : Result.Failure(new("Player.Create", "Unable to create player."));
+            : Result.Failure(Error.Failure("Player.Create", "Unable to create player."));
     }
 }

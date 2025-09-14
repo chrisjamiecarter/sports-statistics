@@ -1,7 +1,7 @@
-﻿using SportsStatistics.Common.Abstractions.Messaging;
-using SportsStatistics.Common.Primitives.Results;
+﻿using SportsStatistics.Application.Abstractions.Messaging;
+using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Application.Players.Commands.UpdatePlayer;
+namespace SportsStatistics.Application.Players.Update;
 
 internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<UpdatePlayerCommand>
 {
@@ -12,7 +12,7 @@ internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) :
         var player = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (player is null)
         {
-            return Result.Failure(new("Player.Update", "Player not found."));
+            return Result.Failure(Error.NotFound("Player.Update", "Player not found."));
         }
 
         player.Update(request.Name, request.Role, request.SquadNumber, request.Nationality, request.DateOfBirth);
@@ -21,6 +21,6 @@ internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) :
 
         return updated
             ? Result.Success()
-            : Result.Failure(new("Player.Update", "Unable to update player."));
+            : Result.Failure(Error.Failure("Player.Update", "Unable to update player."));
     }
 }

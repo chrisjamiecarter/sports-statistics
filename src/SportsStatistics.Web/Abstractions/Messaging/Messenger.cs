@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SportsStatistics.Common.Abstractions.Messaging;
+using SportsStatistics.Application.Abstractions.Messaging;
 
 namespace SportsStatistics.Web.Abstractions.Messaging;
 

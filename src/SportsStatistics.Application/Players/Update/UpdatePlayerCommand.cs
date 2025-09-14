@@ -1,8 +1,9 @@
-﻿using SportsStatistics.Common.Abstractions.Messaging;
+﻿using SportsStatistics.Application.Abstractions.Messaging;
 
-namespace SportsStatistics.Application.Players.Commands.CreatePlayer;
+namespace SportsStatistics.Application.Players.Update;
 
-public sealed record CreatePlayerCommand(string Name,
+public sealed record UpdatePlayerCommand(Guid Id,
+                                         string Name,
                                          string Role,
                                          int SquadNumber,
                                          string Nationality,

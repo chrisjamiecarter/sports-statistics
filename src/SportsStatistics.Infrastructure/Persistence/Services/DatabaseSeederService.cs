@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
-using SportsStatistics.Common.Primitives.Results;
 using SportsStatistics.Core.Security;
 using SportsStatistics.Infrastructure.Persistence.Models;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Infrastructure.Persistence.Services;
 
@@ -70,14 +70,14 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
             if (!createResult.Succeeded)
             {
                 // TODO:
-                return Result.Failure(new("User.Create", $"Failed to create user '{adminUsername}': {string.Join(", ", createResult.Errors.Select(e => e.Description))}"));
+                return Result.Failure(Error.Failure("User.Create", $"Failed to create user '{adminUsername}': {string.Join(", ", createResult.Errors.Select(e => e.Description))}"));
             }
 
             var addToRoleResult = await _userManager.AddToRoleAsync(adminUser, adminRole);
             if (!addToRoleResult.Succeeded)
             {
                 // TODO:
-                return Result.Failure(new("User.AddToRole", $"Failed to add user '{adminUsername}' to role '{adminRole}': {string.Join(", ", addToRoleResult.Errors.Select(e => e.Description))}"));
+                return Result.Failure(Error.Failure("User.AddToRole", $"Failed to add user '{adminUsername}' to role '{adminRole}': {string.Join(", ", addToRoleResult.Errors.Select(e => e.Description))}"));
             }
         }
 
@@ -112,7 +112,7 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
             if (!result.Succeeded)
             {
                 // TODO:
-                return Result.Failure(new("Role.Create", $"Failed to create role '{roleName}': {string.Join(", ", result.Errors.Select(e => e.Description))}"));
+                return Result.Failure(Error.Failure("Role.Create", $"Failed to create role '{roleName}': {string.Join(", ", result.Errors.Select(e => e.Description))}"));
             }
         }
 

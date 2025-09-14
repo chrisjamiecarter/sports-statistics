@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace SportsStatistics.Common.Abstractions.Messaging;
+namespace SportsStatistics.Application.Abstractions.Messaging;
 
 /// <summary>
 /// Defines a messenger for sending requests and retrieving responses.

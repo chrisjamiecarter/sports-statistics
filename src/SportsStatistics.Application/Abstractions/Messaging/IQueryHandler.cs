@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using SportsStatistics.Common.Primitives.Results;
+using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Common.Abstractions.Messaging;
+namespace SportsStatistics.Application.Abstractions.Messaging;
 
 /// <summary>
 /// Defines a handler for a query request that returns a <see cref="Result"> response of type <see cref="TResponse".

@@ -1,7 +1,4 @@
 ﻿@page "/players"
-@using SportsStatistics.Application.Players.Commands.CreatePlayer
-@using SportsStatistics.Application.Players.Commands.UpdatePlayer
-@using SportsStatistics.Web.Abstractions.Messaging
 
 <PageTitle>Players / Team Management</PageTitle>
 
@@ -89,7 +86,7 @@
             }
             else
             {
-                ToastService.ShowError(result.Error.Message);
+                ToastService.ShowError(result.Error.Description);
             }
         }
         else
@@ -103,7 +100,7 @@
             }
             else
             {
-                ToastService.ShowError(result.Error.Message);
+                ToastService.ShowError(result.Error.Description);
             }
         }
 

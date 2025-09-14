@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
-using SportsStatistics.Common.Primitives.Results;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Models.Mappings;
+using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Infrastructure.Persistence.Services;
+namespace SportsStatistics.Infrastructure.Identity.Services;
 
 internal sealed class AuthenticationService : IAuthenticationService
 {
@@ -43,17 +43,17 @@ internal sealed class AuthenticationService : IAuthenticationService
         var user = await GetApplicationUserByEmailAsync(email);
         if (user == null)
         {
-            return Result.Failure(new("Authentication.InvalidSignInAttempt", "Invalid Sign In Attempt"));
+            return Result.Failure(Error.Failure("Authentication.InvalidSignInAttempt", "Invalid Sign In Attempt"));
         }
 
         var result = await _signInManager.PasswordSignInAsync(user, password, isPersistant, false);
         return result switch
         {
             { Succeeded: true } => Result.Success(),
-            { IsLockedOut: true } => Result.Failure(new("Authentication.UserLockedOut", "User account is locked out")),
-            { IsNotAllowed: true } => Result.Failure(new("Authentication.UserNotAllowed", "User is not allowed to sign in")),
-            { RequiresTwoFactor: true } => Result.Failure(new("Authentication.TwoFactorRequired", "Two-factor authentication is required")),
-            _ => Result.Failure(new("Authentication.InvalidSignInAttempt", "Invalid Sign In Attempt")),
+            { IsLockedOut: true } => Result.Failure(Error.Failure("Authentication.UserLockedOut", "User account is locked out")),
+            { IsNotAllowed: true } => Result.Failure(Error.Failure("Authentication.UserNotAllowed", "User is not allowed to sign in")),
+            { RequiresTwoFactor: true } => Result.Failure(Error.Failure("Authentication.TwoFactorRequired", "Two-factor authentication is required")),
+            _ => Result.Failure(Error.Failure("Authentication.InvalidSignInAttempt", "Invalid Sign In Attempt")),
         };
     }
 
