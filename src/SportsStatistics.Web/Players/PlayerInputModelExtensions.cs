@@ -10,12 +10,11 @@ public static class PlayerInputModelExtensions
 
         return new()
         {
-            Id = dto.Id,
             Name = dto.Name,
-            Role = dto.Role,
             SquadNumber = dto.SquadNumber,
             Nationality = dto.Nationality,
             DateOfBirth = dto.DateOfBirth.ToDateTime(),
+            Position = dto.Position,
         };
     }
 }

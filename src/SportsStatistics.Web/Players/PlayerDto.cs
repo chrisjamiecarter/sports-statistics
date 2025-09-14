@@ -2,8 +2,8 @@
 
 public sealed record PlayerDto(Guid Id,
                                string Name,
-                               string Role,
                                int SquadNumber,
                                string Nationality,
                                DateOnly DateOfBirth,
+                               string Position,
                                int Age);

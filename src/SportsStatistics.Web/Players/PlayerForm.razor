@@ -11,19 +11,19 @@
     <EditForm Model="@Input" OnSubmit="@HandleSubmitAsync" FormName="player-form" style="width: 100%">
         <FluentStack Orientation="Orientation.Vertical">
             <div class="full-width">
-                <FluentTextField Name="Input.Name" @bind-Value="Input.Name" AutoComplete="player-name" Required="true" Placeholder="player name" Label="Name" Style="width: 100%" />
+                <FluentTextField Name="Input.Name" @bind-Value="Input.Name" AutoComplete="player-name" Required="true" Placeholder="Name" Label="Name" Style="width: 100%" />
             </div>
             <div class="full-width">
-                <FluentTextField Name="Input.Role" @bind-Value="Input.Role" AutoComplete="player-role" Required="true" Placeholder="player role" Label="Role" Style="width: 100%" />
+                <FluentDatePicker Name="Input.DateOfBirth" @bind-Value="Input.DateOfBirth" Required="true" Label="Date of Birth" Style="width: 100%" />
+            </div>
+            <div class="full-width">
+                <FluentTextField Name="Input.Nationality" @bind-Value="Input.Nationality" AutoComplete="player-nationality" Required="true" Placeholder="Nationality" Label="Nationality" Style="width: 100%" />
             </div>
             <div class="full-width">
                 <FluentNumberField Name="Input.SquadNumber" @bind-Value="Input.SquadNumber" Required="true" Label="Squad Number" />
             </div>
             <div class="full-width">
-                <FluentTextField Name="Input.Nationality" @bind-Value="Input.Nationality" AutoComplete="player-nationality" Required="true" Placeholder="player nationality" Label="Nationality" Style="width: 100%" />
-            </div>
-            <div class="full-width">
-                <FluentDatePicker Name="Input.DateOfBirth" @bind-Value="Input.DateOfBirth" Required="true" Label="Date of Birth" Style="width: 100%" />
+                <FluentTextField Name="Input.Position" @bind-Value="Input.Position" AutoComplete="player-position" Required="true" Placeholder="Position" Label="Position" Style="width: 100%" />
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
                 <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%">

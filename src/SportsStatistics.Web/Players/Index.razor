@@ -59,7 +59,7 @@
             ToastService.ShowError("Unable to load players");
         }
 
-        Players = result.Value.Select(player => new PlayerDto(player.Id, player.Name, player.Role, player.SquadNumber, player.Nationalty, player.DateOfBirth, player.Age)).AsQueryable();
+        Players = result.Value.ToQueryable();
     }
 
     private void ShowPlayerForm(PlayerDto? player = null)
@@ -77,7 +77,7 @@
     {
         if (SelectedPlayer is null)
         {
-            var command = new CreatePlayerCommand(player.Name, player.Role, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()));
+            var command = new CreatePlayerCommand(player.Name, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()), player.Position);
             var result = await Messenger.SendAsync(command);
 
             if (result.IsSuccess)
@@ -91,7 +91,7 @@
         }
         else
         {
-            var command = new UpdatePlayerCommand(SelectedPlayer.Id, player.Name, player.Role, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()));
+            var command = new UpdatePlayerCommand(SelectedPlayer.Id, player.Name, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()), player.Position);
             var result = await Messenger.SendAsync(command);
 
             if (result.IsSuccess)

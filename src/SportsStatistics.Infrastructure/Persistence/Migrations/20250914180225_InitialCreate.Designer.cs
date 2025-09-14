@@ -9,11 +9,11 @@ using SportsStatistics.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SportsStatistics.Infrastructure.Migrations
+namespace SportsStatistics.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SportsStatisticsDbContext))]
-    [Migration("20250910184807_PlayersEntity")]
-    partial class PlayersEntity
+    [Migration("20250914180225_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,7 +158,7 @@ namespace SportsStatistics.Infrastructure.Migrations
                     b.ToTable("UserTokens", "identity");
                 });
 
-            modelBuilder.Entity("SportsStatistics.Domain.Entities.Player", b =>
+            modelBuilder.Entity("SportsStatistics.Domain.Players.Player", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -176,10 +176,9 @@ namespace SportsStatistics.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("Position")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SquadNumber")
                         .HasColumnType("int");

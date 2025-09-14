@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Players;
-using SportsStatistics.Domain.Entities;
+using SportsStatistics.Domain.Players;
 
 namespace SportsStatistics.Infrastructure.Persistence.Players;
 
@@ -41,8 +41,7 @@ internal sealed class PlayerRepository(SportsStatisticsDbContext dbContext) : IP
     {
         try
         {
-            return await _dbContext.Players.AsNoTracking()
-                                           .SingleAsync(x => x.Id == id, cancellationToken);
+            return await _dbContext.Players.FindAsync([id], cancellationToken);
         }
         catch (Exception)
         {

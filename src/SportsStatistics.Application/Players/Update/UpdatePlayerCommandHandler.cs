@@ -1,4 +1,5 @@
 ﻿using SportsStatistics.Application.Abstractions.Messaging;
+using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Update;
@@ -12,15 +13,17 @@ internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) :
         var player = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (player is null)
         {
-            return Result.Failure(Error.NotFound("Player.Update", "Player not found."));
+            return Result.Failure(PlayerErrors.NotFound(request.Id));
         }
 
-        player.Update(request.Name, request.Role, request.SquadNumber, request.Nationality, request.DateOfBirth);
+        var position = Position.FromName(request.Position);
+
+        player.Update(request.Name, request.SquadNumber, request.Nationality, request.DateOfBirth, position);
 
         var updated = await _repository.UpdateAsync(player, cancellationToken);
 
         return updated
             ? Result.Success()
-            : Result.Failure(Error.Failure("Player.Update", "Unable to update player."));
+            : Result.Failure(PlayerErrors.NotUpdated(player.Id));
     }
 }

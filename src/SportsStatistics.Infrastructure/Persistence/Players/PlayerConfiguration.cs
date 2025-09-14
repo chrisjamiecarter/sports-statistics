@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SportsStatistics.Domain.Entities;
+using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
 
 namespace SportsStatistics.Infrastructure.Persistence.Players;
@@ -18,22 +18,23 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
                .ValueGeneratedNever();
 
         builder.Property(p => p.Name)
-               .IsRequired()
-               .HasMaxLength(100);
+               .HasMaxLength(100)
+               .IsRequired();
 
-        builder.Property(p => p.Role)
-               .IsRequired()
-               .HasMaxLength(100);
-
-        builder.HasIndex(p => p.SquadNumber).IsUnique();
+        builder.HasIndex(p => p.SquadNumber)
+               .IsUnique();
 
         builder.Property(p => p.Nationality)
-               .IsRequired()
-               .HasMaxLength(100);
+               .HasMaxLength(100)
+               .IsRequired();
 
         builder.Property(p => p.DateOfBirth)
-               .IsRequired()
-               .HasColumnType("date");
+               .HasColumnType("date")
+               .IsRequired();
+
+        builder.Property(p => p.Position)
+               .HasConversion(v => v.Name, v => Position.FromName(v))
+               .IsRequired();
 
         builder.Ignore(p => p.Age);
     }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using SportsStatistics.Domain.Entities;
+using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Persistence.Models;
 
 namespace SportsStatistics.Infrastructure.Persistence;

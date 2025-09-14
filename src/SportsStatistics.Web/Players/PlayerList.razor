@@ -1,5 +1,6 @@
 ﻿@using SportsStatistics.Application.Abstractions.Messaging
 @using SportsStatistics.Web.Abstractions.Messaging
+
 <FluentCard Width="100%">
     
     <FluentLabel Typo="Typography.Header">
@@ -19,7 +20,7 @@
         <FluentDataGrid Items="@Players.AsQueryable()" RowSize="@DataGridRowSize.Medium">
             <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="@true" IsDefaultSortColumn="@true" />
             <PropertyColumn Property="@(p => p.Name)" Sortable="@true" />
-            <PropertyColumn Property="@(p => p.Role)" Sortable="@true" />
+            <PropertyColumn Property="@(p => p.Position)" Sortable="@true" />
             <PropertyColumn Property="@(p => p.Age)" Sortable="@true" />
             <PropertyColumn Property="@(p => p.Nationality)" Sortable="@true" />
             

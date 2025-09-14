@@ -1,5 +1,5 @@
 ﻿using SportsStatistics.Application.Abstractions.Messaging;
-using SportsStatistics.Domain.Entities;
+using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Create;
@@ -10,17 +10,22 @@ internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository) :
 
     public async Task<Result> Handle(CreatePlayerCommand command, CancellationToken cancellationToken)
     {
-        var player = new Player(Guid.CreateVersion7(),
-                                command.Name,
-                                command.Role,
-                                command.SquadNumber,
-                                command.Nationality,
-                                command.DateOfBirth);
+        var position = Position.FromName(command.Position);
+
+        var player = new Player
+        {
+            Id = Guid.CreateVersion7(),
+            Name = command.Name,
+            SquadNumber = command.SquadNumber,
+            Nationality = command.Nationality,
+            DateOfBirth = command.DateOfBirth,
+            Position = position,
+        };
 
         var created = await _repository.CreateAsync(player, cancellationToken);
 
         return created
             ? Result.Success()
-            : Result.Failure(Error.Failure("Player.Create", "Unable to create player."));
+            : Result.Failure(PlayerErrors.NotCreated(player.Id));
     }
 }

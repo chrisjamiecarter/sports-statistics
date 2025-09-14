@@ -1,4 +1,4 @@
-﻿using SportsStatistics.Domain.Entities;
+﻿using SportsStatistics.Domain.Players;
 
 namespace SportsStatistics.Application.Players;
 
