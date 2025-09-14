@@ -39,6 +39,8 @@
 </FluentCard>
 
 @code {
+    private bool isSubmitting = false;
+
     public enum FormMode
     {
         Add = 1,
@@ -61,14 +63,14 @@
     private PlayerInputModel Input { get; set; } = new();
 
     public FormMode Mode => Player is null ? FormMode.Add : FormMode.Edit;
-    
+
     public string HeaderText => $"{(Mode is FormMode.Add ? "Add" : "Edit")} Player";
 
     public string SubmitButtonText => Mode is FormMode.Add ? "Create" : "Update";
-    
+
     protected override void OnParametersSet()
     {
-        if (Player is not null)
+        if (!isSubmitting && Player is not null)
         {
             Input = Player.ToInputModel();
         }
@@ -86,6 +88,7 @@
 
     private async Task HandleSubmitAsync(EditContext context)
     {
+        isSubmitting = true;
         if (context.Model is PlayerInputModel player)
         {
             // TODO: Validation.
