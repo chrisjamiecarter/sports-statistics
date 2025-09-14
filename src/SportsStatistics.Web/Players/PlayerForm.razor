@@ -1,7 +1,8 @@
 ﻿@using SportsStatistics.Application.Abstractions.Messaging
+@using SportsStatistics.Domain.Players
 @using SportsStatistics.Web.Abstractions.Messaging
 <FluentCard Width="100%">
-    
+
     <FluentLabel Typo="Typography.Header">
         @HeaderText
     </FluentLabel>
@@ -23,7 +24,17 @@
                 <FluentNumberField Name="Input.SquadNumber" @bind-Value="Input.SquadNumber" Required="true" Label="Squad Number" />
             </div>
             <div class="full-width">
-                <FluentTextField Name="Input.Position" @bind-Value="Input.Position" AutoComplete="player-position" Required="true" Placeholder="Position" Label="Position" Style="width: 100%" />
+                <FluentSelect Id="PositionSelect"
+                              Name="Input.Position"
+                              TOption="@PositionOptionDto"
+                              Label="Position"
+                              Items="@Position.All.Select(p => p.ToDto())"
+                              Width="100%"
+                              Placeholder="Select a position..."
+                              OptionValue="@(p => p.Name)"
+                              OptionText="@(p => p.Name)"
+                              @bind-Value="@Input.Position"
+                              Required="@true" />
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
                 <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%">
@@ -39,7 +50,7 @@
 </FluentCard>
 
 @code {
-    private bool isSubmitting = false;
+    private bool IsSubmitting = false;
 
     public enum FormMode
     {
@@ -70,7 +81,7 @@
 
     protected override void OnParametersSet()
     {
-        if (!isSubmitting && Player is not null)
+        if (!IsSubmitting && Player is not null)
         {
             Input = Player.ToInputModel();
         }
@@ -88,7 +99,7 @@
 
     private async Task HandleSubmitAsync(EditContext context)
     {
-        isSubmitting = true;
+        IsSubmitting = true;
         if (context.Model is PlayerInputModel player)
         {
             // TODO: Validation.

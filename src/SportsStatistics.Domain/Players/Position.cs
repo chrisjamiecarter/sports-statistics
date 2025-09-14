@@ -14,7 +14,6 @@ public sealed class Position : Enumeration
 
     public static IReadOnlyCollection<Position> All =>
     [
-        Unknown,
         Goalkeeper,
         Defender,
         Midfielder,
