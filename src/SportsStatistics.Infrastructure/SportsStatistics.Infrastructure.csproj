@@ -19,8 +19,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SportsStatistics.Application\SportsStatistics.Application.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Aspire.Constants\SportsStatistics.Aspire.Constants.csproj" />
     <ProjectReference Include="..\SportsStatistics.Core\SportsStatistics.Core.csproj" />
-    <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.Aspire.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

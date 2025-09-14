@@ -1,5 +1,5 @@
 using Projects;
-using SportsStatistics.ServiceDefaults;
+using SportsStatistics.Aspire.Constants;
 
 internal static class Program
 {
@@ -7,17 +7,17 @@ internal static class Program
     {
         var builder = DistributedApplication.CreateBuilder(args);
 
-        var sqlServer = builder.AddSqlServer(SqlResourceConstants.Name, port: SqlResourceConstants.Port)
-                               .WithContainerName(SqlResourceConstants.ContainerName)
+        var sqlServer = builder.AddSqlServer(Resources.SqlName, port: Resources.SqlPort)
+                               .WithContainerName(Resources.SqlContainerName)
                                .WithLifetime(ContainerLifetime.Persistent);
 
-        var database = sqlServer.AddDatabase(SqlResourceConstants.Database);
+        var database = sqlServer.AddDatabase(Resources.SqlDatabase);
 
-        var migrator = builder.AddProject<SportsStatistics_Tools_DatabaseMigrator>(ProjectResourceConstants.DatabaseMigrator)
+        var migrator = builder.AddProject<DatabaseMigratorProject>(Resources.DatabaseMigrator)
                               .WithReference(database)
                               .WaitFor(database);
 
-        var web = builder.AddProject<SportsStatistics_Web>(ProjectResourceConstants.Web)
+        var web = builder.AddProject<WebProject>(Resources.Web)
                          .WithReference(database)
                          .WaitFor(migrator);
 

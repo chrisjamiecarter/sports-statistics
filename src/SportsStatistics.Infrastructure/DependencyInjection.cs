@@ -5,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Players;
+using SportsStatistics.Aspire.Constants;
 using SportsStatistics.Infrastructure.Identity.Providers;
 using SportsStatistics.Infrastructure.Persistence;
 using SportsStatistics.Infrastructure.Persistence.Models;
 using SportsStatistics.Infrastructure.Persistence.Players;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
 using SportsStatistics.Infrastructure.Persistence.Services;
-using SportsStatistics.ServiceDefaults;
 
 namespace SportsStatistics.Infrastructure;
 
@@ -45,7 +45,7 @@ public static class DependencyInjection
 
     private static IHostApplicationBuilder AddDatabaseMigratorDependencies(this IHostApplicationBuilder builder)
     {
-        builder.AddSqlServerDbContext<SportsStatisticsDbContext>(SqlResourceConstants.Database, configureDbContextOptions: options =>
+        builder.AddSqlServerDbContext<SportsStatisticsDbContext>(Resources.SqlDatabase, configureDbContextOptions: options =>
         {
             options.UseSqlServer(sqlOptions =>
             {
@@ -74,7 +74,7 @@ public static class DependencyInjection
 
     private static IHostApplicationBuilder AddWebApplicationDependencies(this IHostApplicationBuilder builder)
     {
-        builder.AddSqlServerDbContext<SportsStatisticsDbContext>(SqlResourceConstants.Database);
+        builder.AddSqlServerDbContext<SportsStatisticsDbContext>(Resources.SqlDatabase);
 
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
         {
