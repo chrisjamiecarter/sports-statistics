@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SportsStatistics.Application.Abstractions.Behaviours;
 
 namespace SportsStatistics.Application;
 
@@ -10,6 +13,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
         builder.Services.AddMessaging();
+        builder.Services.AddValidators();
 
         return builder;
     }
@@ -22,6 +26,17 @@ public static class DependencyInjection
         {
             configuration.RegisterServicesFromAssembly(AssemblyReference.Assembly);
         });
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
+
+        return services;
+    }
+
+    private static IServiceCollection AddValidators(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services, nameof(services));
+
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);
 
         return services;
     }
