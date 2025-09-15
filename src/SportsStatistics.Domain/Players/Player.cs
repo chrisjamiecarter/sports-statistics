@@ -17,21 +17,7 @@ public sealed class Player : Entity
 
     public Position Position { get; set; } = Position.Unknown;
 
-    public int Age
-    {
-        get
-        {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var age = today.Year - DateOfBirth.Year;
-
-            if (DateOfBirth > today.AddYears(-age))
-            {
-                age--;
-            }
-
-            return age;
-        }
-    }
+    public int Age => DateOfBirth.CalculateAge();
 
     public void Update(string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position)
     {

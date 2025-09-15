@@ -50,6 +50,21 @@ internal sealed class PlayerRepository(SportsStatisticsDbContext dbContext) : IP
         }
     }
 
+    public async Task<bool> IsSquadNumberAvailableAsync(int squadNumber, Guid? excludingPlayerId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var taken = await _dbContext.Players.AsNoTracking()
+                                                .AnyAsync(p => p.SquadNumber == squadNumber && p.Id != excludingPlayerId, cancellationToken);
+            return !taken;
+        }
+        catch (Exception)
+        {
+            // TODO: log exception?
+            return false;
+        }
+    }
+
     public async Task<bool> UpdateAsync(Player player, CancellationToken cancellationToken)
     {
         try
