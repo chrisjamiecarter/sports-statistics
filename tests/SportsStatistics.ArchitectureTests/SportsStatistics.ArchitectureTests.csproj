@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="NetArchTest.Rules" />
+    <Using Include="Shouldly" />
     <Using Include="Xunit" />
   </ItemGroup>
 
