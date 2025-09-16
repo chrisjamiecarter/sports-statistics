@@ -21,4 +21,8 @@
     <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.Aspire.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SportsStatistics.ArchitectureTests"/>
+  </ItemGroup>
+
 </Project>
