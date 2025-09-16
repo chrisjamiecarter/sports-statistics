@@ -42,6 +42,6 @@ public class UpdatePlayerCommandValidator : AbstractValidator<UpdatePlayerComman
             {
                 return Position.All.Any(p => string.Equals(p.Name, position, StringComparison.OrdinalIgnoreCase));
             })
-            .WithMessage($"Invalid position. Valid positions: {string.Join(", ", Position.All)}");
+            .WithMessage($"Invalid position. Valid positions: {string.Join(", ", Position.All)}.");
     }
 }
