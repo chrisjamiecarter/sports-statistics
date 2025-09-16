@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.SharedKern
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.ArchitectureTests", "tests\SportsStatistics.ArchitectureTests\SportsStatistics.ArchitectureTests.csproj", "{EA650635-72AE-4DC9-B3EF-689986DD286A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Application.Tests", "tests\SportsStatistics.Application.Tests\SportsStatistics.Application.Tests.csproj", "{428967C8-A737-433F-8C8B-41DD7A6F22DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{EA650635-72AE-4DC9-B3EF-689986DD286A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA650635-72AE-4DC9-B3EF-689986DD286A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA650635-72AE-4DC9-B3EF-689986DD286A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{428967C8-A737-433F-8C8B-41DD7A6F22DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{428967C8-A737-433F-8C8B-41DD7A6F22DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{428967C8-A737-433F-8C8B-41DD7A6F22DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{428967C8-A737-433F-8C8B-41DD7A6F22DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{AEB87240-655A-4697-9487-43B9FE6AFC82} = {6FA02733-1927-4E63-83F7-79363EA70FF2}
 		{C3F4B56F-7F67-4E70-8541-D1AADDD871DA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{EA650635-72AE-4DC9-B3EF-689986DD286A} = {C73F358D-DF79-4FB2-A513-6C8C79D37ACA}
+		{428967C8-A737-433F-8C8B-41DD7A6F22DD} = {C73F358D-DF79-4FB2-A513-6C8C79D37ACA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19099E31-A7B7-4282-87B7-128596FE65FD}
