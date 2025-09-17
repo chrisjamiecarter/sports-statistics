@@ -5,10 +5,9 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Create;
 
-internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository, IValidator<CreatePlayerCommand> validator) : ICommandHandler<CreatePlayerCommand>
+internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<CreatePlayerCommand>
 {
     private readonly IPlayerRepository _repository = repository;
-    private readonly IValidator<CreatePlayerCommand> _validator = validator;
 
     public async Task<Result> Handle(CreatePlayerCommand command, CancellationToken cancellationToken)
     {
