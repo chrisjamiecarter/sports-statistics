@@ -1,6 +1,4 @@
-﻿@using SportsStatistics.Application.Abstractions.Messaging
-@using SportsStatistics.Web.Abstractions.Messaging
-<Router AppAssembly="typeof(Program).Assembly">
+﻿<Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
             <NotAuthorized>
@@ -13,18 +11,21 @@
 
 @code{
     public const string Home = "/";
-    public const string Admin = "/admin";
     public const string Error = "/error";
     public const string MatchTracker = "/match-tracker";
     public const string Reports = "/reports";
+
+    // TODO: Change Admin to Team Management?
+    public static class Admin
+    {
+        public const string Index = "/admin";
+        public const string Fixtures = $"{Index}/fixtures";
+        public const string Players = $"{Index}/players";
+    }
 
     public static class Identity
     {
         public const string Signin = "/signin";
         public const string Signout = "/signout";
     }
-
-    // TODO:
-    public const string Fixtures = "/fixtures";
-    public const string Players = "/players";
 }

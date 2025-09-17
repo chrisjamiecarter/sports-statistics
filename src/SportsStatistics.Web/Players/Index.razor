@@ -1,4 +1,4 @@
-﻿@page "/players"
+﻿@page "/admin/players"
 
 <PageTitle>Players / Team Management</PageTitle>
 
@@ -24,10 +24,6 @@
 </FluentCard>
 
 @code {
-    // TODO: decide route:
-    // players or team-management.
-    // admin/players or admin/team-management.
-
     private IQueryable<PlayerDto>? Players { get; set; }
 
     private bool PlayerFormVisible { get; set; }

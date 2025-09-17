@@ -11,13 +11,13 @@
     <FluentDivider />
 
     <FluentStack Wrap="@true">
-        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Players))">
+        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Players))">
             <FluentLabel>Players / Team Management</FluentLabel>
             <p>Manage players, positions, and squad details</p>
             <FluentButton Appearance="Appearance.Accent">Go to Players</FluentButton>
         </FluentCard>
 
-        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Fixtures))">
+        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Fixtures))">
             <FluentLabel>Fixtures Management</FluentLabel>
             <p>Manage fixtures, results, and match data.</p>
             <FluentButton Appearance="Appearance.Accent">Go to Fixtures</FluentButton>
