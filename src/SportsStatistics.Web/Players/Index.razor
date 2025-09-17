@@ -18,7 +18,7 @@
             Add Player
         </FluentButton>
 
-        <PlayerList Players="@Players" OnDeletePlayer="@Test" OnEditPlayer="@HandleEditPlayer" />
+        <PlayerList Players="@Players" OnDeletePlayer="@HandleDeletePlayer" OnEditPlayer="@HandleEditPlayer" />
     }
 
 </FluentCard>
@@ -66,6 +66,72 @@
     {
         SelectedPlayer = player;
         PlayerFormVisible = true;
+    }
+
+    private async Task HandleCreatePlayer(PlayerInputModel player)
+    {
+        var command = new CreatePlayerCommand(player.Name, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()), player.Position);
+        var result = await Messenger.SendAsync(command);
+
+        if (result.IsSuccess)
+        {
+            ToastService.ShowSuccess("Player created successfully.");
+            await LoadPlayersAsync();
+            HidePlayerForm();
+        }
+        else
+        {
+            ToastService.ShowError(result.Error.Description);
+        }
+    }
+
+    private async Task HandleDeletePlayer(PlayerDto player)
+    {
+        var dialog = await DialogService.ShowConfirmationAsync($"Are you sure you want to delete {player.Name}?", "Delete", "Cancel", "Confirm player delete");
+        var dialogResult = await dialog.Result;
+
+        if (dialogResult.Cancelled)
+        {
+            return;
+        }
+
+        var command = new DeletePlayerCommand(player.Id);
+        var commandResult = await Messenger.SendAsync(command);
+
+        if (commandResult.IsSuccess)
+        {
+            ToastService.ShowSuccess("Player deleted successfully.");
+        }
+        else
+        {
+            ToastService.ShowError(commandResult.Error.Description);
+        }
+
+        await LoadPlayersAsync();
+    }
+
+    private async Task HandleUpdatePlayer(PlayerInputModel player)
+    {
+        // TODO: Split out PlayerInputModel into CreatePlayerDto and UpdatePlayerDto
+        if (SelectedPlayer is null)
+        {
+            ToastService.ShowError("No player selected.");
+            return;
+        }
+
+        var command = new UpdatePlayerCommand(SelectedPlayer.Id, player.Name, player.SquadNumber, player.Nationality, DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()), player.Position);
+        var result = await Messenger.SendAsync(command);
+
+        if (result.IsSuccess)
+        {
+            ToastService.ShowSuccess("Player updated successfully.");
+            await LoadPlayersAsync();
+            HidePlayerForm();
+        }
+        else
+        {
+            ToastService.ShowError(result.Error.Description);
+        }
     }
 
     private void HandleEditPlayer(PlayerDto player)

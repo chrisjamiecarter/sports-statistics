@@ -26,6 +26,7 @@
             
             <TemplateColumn>
                 <FluentButton Appearance="Appearance.Accent" @onclick="@(() => Edit(context))">Edit</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" @onclick="@(() => Delete(context))">Delete</FluentButton>
             </TemplateColumn>
         </FluentDataGrid>
 
@@ -49,7 +50,7 @@
 
     private async Task Delete(PlayerDto player)
     {
-        await OnEditPlayer.InvokeAsync(player);
+        await OnDeletePlayer.InvokeAsync(player);
     }
 
     private async Task Edit(PlayerDto player)
