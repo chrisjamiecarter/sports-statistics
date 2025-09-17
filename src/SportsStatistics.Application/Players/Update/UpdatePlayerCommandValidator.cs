@@ -4,7 +4,7 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Update;
 
-public class UpdatePlayerCommandValidator : AbstractValidator<UpdatePlayerCommand>
+internal sealed class UpdatePlayerCommandValidator : AbstractValidator<UpdatePlayerCommand>
 {
     public UpdatePlayerCommandValidator(IPlayerRepository repository)
     {

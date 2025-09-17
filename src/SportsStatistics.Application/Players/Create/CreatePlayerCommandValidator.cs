@@ -4,7 +4,7 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Create;
 
-public class CreatePlayerCommandValidator : AbstractValidator<CreatePlayerCommand>
+internal sealed class CreatePlayerCommandValidator : AbstractValidator<CreatePlayerCommand>
 {
     public CreatePlayerCommandValidator(IPlayerRepository repository)
     {
