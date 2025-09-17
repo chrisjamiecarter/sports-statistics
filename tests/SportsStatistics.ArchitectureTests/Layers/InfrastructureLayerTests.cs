@@ -3,7 +3,7 @@
 public class InfrastructureLayerTests : BaseTest
 {
     [Fact]
-    public void InfrastructureLayer_Should_NotHaveDependencyOn_PresentationLayer()
+    public void Should_NotHaveDependencyOn_PresentationLayer()
     {
         TestResult result = Types.InAssembly(InfrastructureAssembly)
                                  .Should()

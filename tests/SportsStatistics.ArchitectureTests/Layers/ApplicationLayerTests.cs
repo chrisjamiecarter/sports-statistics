@@ -3,7 +3,7 @@
 public class ApplicationLayerTests : BaseTest
 {
     [Fact]
-    public void ApplicationLayer_Should_NotHaveDependencyOn_InfrastructureLayer()
+    public void Should_NotHaveDependencyOn_InfrastructureLayer()
     {
         TestResult result = Types.InAssembly(ApplicationAssembly)
                                  .Should()
@@ -14,7 +14,7 @@ public class ApplicationLayerTests : BaseTest
     }
 
     [Fact]
-    public void ApplicationLayer_Should_NotHaveDependencyOn_PresentationLayer()
+    public void Should_NotHaveDependencyOn_PresentationLayer()
     {
         TestResult result = Types.InAssembly(ApplicationAssembly)
                                  .Should()
