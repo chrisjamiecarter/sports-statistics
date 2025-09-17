@@ -23,6 +23,21 @@ internal sealed class PlayerRepository(SportsStatisticsDbContext dbContext) : IP
         }
     }
 
+    public async Task<bool> DeleteAsync(Player player, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _dbContext.Players.Remove(player);
+            var result = await _dbContext.SaveChangesAsync(cancellationToken);
+            return result > 0;
+        }
+        catch (Exception)
+        {
+            // TODO: log exception?
+            return false;
+        }
+    }
+
     public async Task<List<Player>> GetAllAsync(CancellationToken cancellationToken)
     {
         try
