@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
-using SportsStatistics.Infrastructure.Persistence.Models;
-using SportsStatistics.Infrastructure.Persistence.Models.Mappings;
+using SportsStatistics.Authorization.Entities;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Infrastructure.Identity.Services;
+namespace SportsStatistics.Authorization.Services;
 
 internal sealed class AuthenticationService : IAuthenticationService
 {

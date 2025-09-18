@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportsStatistics.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using SportsStatistics.Infrastructure.Persistence;
 namespace SportsStatistics.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SportsStatisticsDbContext))]
-    partial class SportsStatisticsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250917174814_InitialCreateApplication")]
+    partial class InitialCreateApplication
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

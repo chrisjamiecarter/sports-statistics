@@ -2,6 +2,6 @@
 
 namespace SportsStatistics.Infrastructure.Persistence.Models;
 
-public class ApplicationUser : IdentityUser
-{
-}
+//public class ApplicationUser : IdentityUser
+//{
+//}

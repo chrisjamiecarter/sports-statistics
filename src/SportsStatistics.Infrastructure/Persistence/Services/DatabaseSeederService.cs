@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
-using SportsStatistics.Core.Security;
-using SportsStatistics.Infrastructure.Persistence.Models;
+using SportsStatistics.Authorization.Constants;
+using SportsStatistics.Authorization.Entities;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Infrastructure.Persistence.Services;

@@ -27,20 +27,24 @@ public class Worker : BackgroundService
         try
         {
             using var scope = _serviceProvider.CreateScope();
-            var migrationService = scope.ServiceProvider.GetRequiredService<IDatabaseMigrationService>();
 
-            var migrationResult = await migrationService.MigrateAsync(stoppingToken);
+            var migrationServices = scope.ServiceProvider.GetServices<IDatabaseMigrationService>();
 
-            if (migrationResult.IsSuccess)
+            foreach (var migrationService in migrationServices)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
+                var migrationResult = await migrationService.MigrateAsync(stoppingToken);
+
+                if (migrationResult.IsSuccess)
                 {
-                    _logger.LogInformation("Database migration result: {Result}", migrationResult);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Database migration result: {Result}", migrationResult);
+                    }
                 }
-            }
-            else
-            {
-                throw migrationResult.Exception ?? new InvalidOperationException(migrationResult.Message);
+                else
+                {
+                    throw migrationResult.Exception ?? new InvalidOperationException(migrationResult.Message);
+                }
             }
 
             var seederService = scope.ServiceProvider.GetRequiredService<IDatabaseSeederService>();

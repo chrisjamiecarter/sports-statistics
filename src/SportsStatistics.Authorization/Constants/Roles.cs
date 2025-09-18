@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Core.Security;
+﻿namespace SportsStatistics.Authorization.Constants;
 
 public static class Roles
 {

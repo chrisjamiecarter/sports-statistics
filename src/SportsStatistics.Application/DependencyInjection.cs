@@ -8,7 +8,7 @@ namespace SportsStatistics.Application;
 
 public static class DependencyInjection
 {
-    public static IHostApplicationBuilder AddApplicationDependencies(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddApplication(this IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 

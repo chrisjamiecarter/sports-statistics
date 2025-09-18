@@ -3,36 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SportsStatistics.Infrastructure.Persistence.Migrations
+namespace SportsStatistics.Authorization.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateIdentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "sports");
-
-            migrationBuilder.EnsureSchema(
                 name: "identity");
-
-            migrationBuilder.CreateTable(
-                name: "Players",
-                schema: "sports",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    SquadNumber = table.Column<int>(type: "int", nullable: false),
-                    Nationality = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
-                    Position = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Players", x => x.Id);
-                });
 
             migrationBuilder.CreateTable(
                 name: "Roles",
@@ -193,13 +173,6 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Players_SquadNumber",
-                schema: "sports",
-                table: "Players",
-                column: "SquadNumber",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
                 schema: "identity",
                 table: "RoleClaims",
@@ -249,10 +222,6 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Players",
-                schema: "sports");
-
             migrationBuilder.DropTable(
                 name: "RoleClaims",
                 schema: "identity");

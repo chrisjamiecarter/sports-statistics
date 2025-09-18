@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SportsStatistics.Infrastructure.Persistence.Schemas;
+using SportsStatistics.Authorization.Schemas;
 
-namespace SportsStatistics.Infrastructure.Persistence.Configurations;
+namespace SportsStatistics.Authorization.Configurations;
 
 internal sealed class IdentityUserClaimConfiguration : IEntityTypeConfiguration<IdentityUserClaim<string>>
 {

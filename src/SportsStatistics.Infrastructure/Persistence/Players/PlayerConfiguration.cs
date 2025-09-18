@@ -9,7 +9,7 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
 {
     public void Configure(EntityTypeBuilder<Player> builder)
     {
-        builder.ToTable(SportsSchema.Players.Table, SportsSchema.Players.Schema);
+        builder.ToTable(SportsStatisticsSchema.Players.Table, SportsStatisticsSchema.Players.Schema);
 
         builder.HasKey(p => p.Id);
 

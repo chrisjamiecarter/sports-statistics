@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SportsStatistics.Infrastructure.Persistence;
+using SportsStatistics.Authorization.Persistence;
 
 #nullable disable
 
-namespace SportsStatistics.Infrastructure.Persistence.Migrations
+namespace SportsStatistics.Authorization.Persistence.Migrations
 {
-    [DbContext(typeof(SportsStatisticsDbContext))]
-    [Migration("20250914180225_InitialCreate")]
-    partial class InitialCreate
+    [DbContext(typeof(IdentityDbContext))]
+    partial class IdentityDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,40 +155,7 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
                     b.ToTable("UserTokens", "identity");
                 });
 
-            modelBuilder.Entity("SportsStatistics.Domain.Players.Player", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Nationality")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SquadNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SquadNumber")
-                        .IsUnique();
-
-                    b.ToTable("Players", "sports");
-                });
-
-            modelBuilder.Entity("SportsStatistics.Infrastructure.Persistence.Models.ApplicationUser", b =>
+            modelBuilder.Entity("SportsStatistics.Authorization.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -267,7 +231,7 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("SportsStatistics.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("SportsStatistics.Authorization.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -276,7 +240,7 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("SportsStatistics.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("SportsStatistics.Authorization.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -291,7 +255,7 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SportsStatistics.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("SportsStatistics.Authorization.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -300,7 +264,7 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("SportsStatistics.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("SportsStatistics.Authorization.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -531,7 +531,8 @@ In `SportsStatistics.Tools.DatabaseMigrator`.
 In `Package Manager Console`
 
 - Create the initial migration:
-  - `Add-Migration InitialCreate -Project SportsStatistics.Infrastructure -StartupProject SportsStatistics.Web -OutputDir Persistence\Migrations`
+  - `Add-Migration InitialCreateApplication -Project SportsStatistics.Infrastructure -StartupProject SportsStatistics.Web -OutputDir Persistence\Migrations -Context SportsStatisticsDbContext`
+  - `Add-Migration InitialCreateIdentity -Project SportsStatistics.Authorization -StartupProject SportsStatistics.Web -OutputDir Persistence\Migrations -Context IdentityDbContext`
 - Run the `SportsStatistics.AppHost` application to trigger the migration via `SportsStatistics.Tools.DatabaseMigrator`.
 
 ---
