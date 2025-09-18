@@ -26,9 +26,9 @@
             <PropertyColumn Property="@(p => p.Age)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Nationality)" Sortable="true" />
             
-            <TemplateColumn>
-                <FluentButton Appearance="Appearance.Accent" @onclick="@(() => Edit(context))">Edit</FluentButton>
-                <FluentButton Appearance="Appearance.Accent" @onclick="@(() => Delete(context))">Delete</FluentButton>
+            <TemplateColumn Align="Align.End">
+                <FluentButton IconEnd="@(new Icons.Regular.Size20.EditPerson())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
+                <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonDelete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
             </TemplateColumn>
         </FluentDataGrid>
 
