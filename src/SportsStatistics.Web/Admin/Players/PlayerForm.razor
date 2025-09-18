@@ -1,24 +1,31 @@
-﻿<FluentCard Width="100%">
+﻿<FluentStack Orientation="Orientation.Vertical">
 
     <FluentLabel Typo="Typography.Header">
         @HeaderText
     </FluentLabel>
 
-    <FluentDivider />
+    <FluentSpacer />
 
     <EditForm Model="@Input" OnSubmit="OnSubmitAsync" FormName="player-form" style="width: 100%">
+        <FluentValidator />
+
         <FluentStack Orientation="Orientation.Vertical">
             <div class="full-width">
                 <FluentTextField Name="Input.Name" @bind-Value="Input.Name" AutoComplete="player-name" Required="true" Placeholder="Name" Label="Name" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.Name" class="text-danger" />
             </div>
             <div class="full-width">
                 <FluentDatePicker Name="Input.DateOfBirth" @bind-Value="Input.DateOfBirth" Required="true" Label="Date of Birth" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.DateOfBirth" class="text-danger" />
             </div>
             <div class="full-width">
                 <FluentTextField Name="Input.Nationality" @bind-Value="Input.Nationality" AutoComplete="player-nationality" Required="true" Placeholder="Nationality" Label="Nationality" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.Nationality" class="text-danger" />
             </div>
             <div class="full-width">
-                <FluentNumberField Name="Input.SquadNumber" @bind-Value="Input.SquadNumber" Required="true" Label="Squad Number" />
+                <FluentNumberField Name="Input.SquadNumber" @bind-Value="Input.SquadNumber" Required="true" Label="Squad Number" Min="1" />
+                <ValidationMessage For="@(() => Input.SquadNumber)" />
+                <FluentValidationMessage For="() => Input.SquadNumber" class="text-danger" />
             </div>
             <div class="full-width">
                 <FluentSelect Id="PositionSelect"
@@ -31,6 +38,7 @@
                               OptionText="(p => p.Name)"
                               @bind-SelectedOption="Input.Position"
                               Required="!IsUpdateMode"/>
+                <FluentValidationMessage For="() => Input.Position" class="text-danger" />
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
                 <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">
@@ -43,7 +51,7 @@
         </FluentStack>
     </EditForm>
 
-</FluentCard>
+</FluentStack>
 
 @code {
     private bool IsSubmitting = false;

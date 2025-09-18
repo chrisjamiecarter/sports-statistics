@@ -2,26 +2,18 @@
 
 <PageTitle>Players</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical">
+<FluentCard>
     
-    <FluentLabel Typo="Typography.Header">
-        Players
-    </FluentLabel>
-
     @if (IsPlayerFormVisible)
     {
         <PlayerForm OnCancel="HidePlayerForm" OnSubmit="OnSubmitAsync" SelectedPlayer="SelectedPlayer" />
     }
     else
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="() => ShowPlayerForm()">
-            Add Player
-        </FluentButton>
-
-        <PlayerList Players="Players" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" />
+        <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" />
     }
 
-</FluentStack>
+</FluentCard>
 
 @code {
     private enum PlayerFormMode

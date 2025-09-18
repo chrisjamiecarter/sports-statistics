@@ -1,10 +1,17 @@
-﻿<FluentCard Width="100%">
+﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
 
-    <FluentLabel Typo="Typography.Header">
-        Players
-    </FluentLabel>
+    <FluentStack>
+        <FluentLabel Typo="Typography.Header">
+            Players
+        </FluentLabel>
 
-    <FluentDivider />
+        <FluentSpacer />
+
+        <FluentButton Appearance="Appearance.Accent" OnClick="Add">
+            Add Player
+        </FluentButton>
+    </FluentStack>
+
 
     @if(Players is null)
     {
@@ -12,9 +19,7 @@
     }
     else
     {
-        <FluentPaginator State="@pagination" SummaryTemplate="@blankFragment" />
-
-        <FluentDataGrid Items="@Players?.AsQueryable()" Pagination="@pagination" RowSize="DataGridRowSize.Medium">
+        <FluentDataGrid Items="@Players?.AsQueryable()" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
             <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="true" IsDefaultSortColumn="true" />
             <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Position)" Sortable="true" />
@@ -27,15 +32,16 @@
             </TemplateColumn>
         </FluentDataGrid>
 
-        <FluentPaginator State="@pagination" />
+        <FluentPaginator State="@Pagination" />
     }
 
-</FluentCard>
+</FluentStack>
 
 @code {
-    RenderFragment blankFragment = @<span />;
-    PaginationState pagination = new PaginationState() { ItemsPerPage = 10 };
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
 
+    [Parameter]
+    public EventCallback OnAddPlayer { get; set; }
 
     [Parameter]
     public EventCallback<PlayerDto> OnDeletePlayer { get; set; }
@@ -45,6 +51,11 @@
 
     [Parameter]
     public IQueryable<PlayerDto>? Players { get; set; }
+
+    private async Task Add()
+    {
+        await OnAddPlayer.InvokeAsync();
+    }
 
     private async Task Delete(PlayerDto player)
     {

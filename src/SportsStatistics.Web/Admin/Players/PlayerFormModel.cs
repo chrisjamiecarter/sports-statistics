@@ -2,13 +2,13 @@
 
 public sealed class PlayerFormModel
 {
-    public string Name { get; set; } = "Joe Bloggs";//string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-    public int SquadNumber { get; set; } = 1;
+    public int SquadNumber { get; set; }
 
-    public string Nationality { get; set; } = "British";//string.Empty;
+    public string Nationality { get; set; } = string.Empty;
 
-    public DateTime? DateOfBirth { get; set; } = DateTime.UtcNow.AddYears(-21);
+    public DateTime? DateOfBirth { get; set; }
 
     public PositionOptionDto? Position { get; set; }
 }
