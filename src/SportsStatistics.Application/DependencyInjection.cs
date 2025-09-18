@@ -25,9 +25,12 @@ public static class DependencyInjection
         services.AddMediatR(configuration =>
         {
             configuration.RegisterServicesFromAssembly(AssemblyReference.Assembly);
+
+            configuration.AddOpenBehavior(typeof(RequestLoggingBehaviour<,>));
+            configuration.AddOpenBehavior(typeof(RequestValidationBehaviour<,>));
         });
 
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
+        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
 
         return services;
     }

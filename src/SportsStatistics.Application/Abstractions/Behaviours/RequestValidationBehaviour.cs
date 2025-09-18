@@ -5,8 +5,8 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Abstractions.Behaviours;
 
-internal sealed class ValidationPipelineBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
+internal sealed class RequestValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators = validators;
 
@@ -21,7 +21,14 @@ internal sealed class ValidationPipelineBehaviour<TRequest, TResponse>(IEnumerab
         {
             var validationError = CreateValidationError(validationFailures);
 
-            if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+            // IRequest<Result>.
+            if (typeof(Result).IsAssignableTo(typeof(TResponse)))// typeof(TResponse) == typeof(Result))
+            {
+                return (TResponse)(object)Result.Failure(validationError);
+            }
+
+            // IRequest<Result<TResponse>>.
+            if (typeof(Result<>).IsAssignableTo(typeof(TResponse))) //typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
             {
                 var innerType = typeof(TResponse).GetGenericArguments()[0];
                 var failureMethod = typeof(Result).GetMethod(nameof(Result.Failure), [typeof(ValidationError)])!.MakeGenericMethod();
@@ -29,10 +36,8 @@ internal sealed class ValidationPipelineBehaviour<TRequest, TResponse>(IEnumerab
                 return (TResponse)failureMethod.Invoke(null, [validationError])!;
             }
 
-            if (typeof(TResponse) == typeof(Result))
-            {
-                return (TResponse)(object)Result.Failure(validationError);
-            }
+            // Fallback.
+            throw new ValidationException(validationFailures);
         }
 
         return await next(cancellationToken);
