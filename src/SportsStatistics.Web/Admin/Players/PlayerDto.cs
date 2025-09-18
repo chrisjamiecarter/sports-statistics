@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Web.Players;
+﻿namespace SportsStatistics.Web.Admin.Players;
 
 public sealed record PlayerDto(Guid Id,
                                string Name,

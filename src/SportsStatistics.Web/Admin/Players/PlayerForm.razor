@@ -1,7 +1,4 @@
-﻿@using SportsStatistics.Application.Abstractions.Messaging
-@using SportsStatistics.Domain.Players
-@using SportsStatistics.Web.Abstractions.Messaging
-<FluentCard Width="100%">
+﻿<FluentCard Width="100%">
 
     <FluentLabel Typo="Typography.Header">
         @HeaderText
@@ -9,7 +6,7 @@
 
     <FluentDivider />
 
-    <EditForm Model="@Input" OnSubmit="@HandleSubmitAsync" FormName="player-form" style="width: 100%">
+    <EditForm Model="@Input" OnSubmit="OnSubmitAsync" FormName="player-form" style="width: 100%">
         <FluentStack Orientation="Orientation.Vertical">
             <div class="full-width">
                 <FluentTextField Name="Input.Name" @bind-Value="Input.Name" AutoComplete="player-name" Required="true" Placeholder="Name" Label="Name" Style="width: 100%" />
@@ -26,24 +23,23 @@
             <div class="full-width">
                 <FluentSelect Id="PositionSelect"
                               Name="Input.Position"
-                              TOption="@PositionOptionDto"
+                              TOption=PositionOptionDto
                               Label="Position"
-                              Items="@Position.All.Select(p => p.ToDto())"
+                              Items="PositionOptions"
                               Width="100%"
                               Placeholder="Select a position..."
-                              OptionValue="@(p => p.Name)"
-                              OptionText="@(p => p.Name)"
-                              @bind-Value="@Input.Position"                              
-                              Required="@(Mode is FormMode.Add)" />
+                              OptionText="(p => p.Name)"
+                              @bind-SelectedOption="Input.Position"
+                              Required="!IsUpdateMode"/>
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
-                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%">
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">
                     @SubmitButtonText
                 </FluentButton>
-                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="@HandleCancelAsync">
+                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="OnCancelAsync">
                     Cancel
                 </FluentButton>
-            </FluentStack>
+             </FluentStack>
         </FluentStack>
     </EditForm>
 
@@ -51,59 +47,49 @@
 
 @code {
     private bool IsSubmitting = false;
-
-    public enum FormMode
-    {
-        Add = 1,
-        Edit = 2,
-    }
+    private IEnumerable<PositionOptionDto> PositionOptions = Position.All.Select(p => p.ToDto());
 
     [Parameter]
-    public PlayerDto? Player { get; set; }
+    public PlayerDto? SelectedPlayer { get; set; }
 
     [Parameter]
     public EventCallback OnCancel { get; set; }
 
     [Parameter]
-    public EventCallback OnClose { get; set; }
-
-    [Parameter]
-    public EventCallback<PlayerInputModel> OnSubmit { get; set; }
+    public EventCallback<PlayerFormModel> OnSubmit { get; set; }
 
     [SupplyParameterFromForm]
-    private PlayerInputModel Input { get; set; } = new();
+    private PlayerFormModel Input { get; set; } = new();
 
-    public FormMode Mode => Player is null ? FormMode.Add : FormMode.Edit;
+    private bool IsUpdateMode => SelectedPlayer is not null;
 
-    public string HeaderText => $"{(Mode is FormMode.Add ? "Add" : "Edit")} Player";
+    private string HeaderText => $"{(IsUpdateMode ? "Edit" : "Add")} Player";
 
-    public string SubmitButtonText => Mode is FormMode.Add ? "Create" : "Update";
+    private string SubmitButtonText => IsUpdateMode ? "Update" : "Create";
 
     protected override void OnParametersSet()
     {
-        if (!IsSubmitting && Player is not null)
+        if (!IsSubmitting && SelectedPlayer is not null)
         {
-            Input = Player.ToInputModel();
+            Input = SelectedPlayer.ToInputModel(PositionOptions);
         }
     }
 
-    private async Task HandleCancelAsync()
+    private async Task OnCancelAsync()
     {
         await OnCancel.InvokeAsync();
     }
 
-    private async Task HandleCloseAsync()
-    {
-        await OnClose.InvokeAsync();
-    }
-
-    private async Task HandleSubmitAsync(EditContext context)
+    private async Task OnSubmitAsync(EditContext context)
     {
         IsSubmitting = true;
-        if (context.Model is PlayerInputModel player)
+
+        if (context.Model is PlayerFormModel player)
         {
             // TODO: Validation.
             await OnSubmit.InvokeAsync(player);
         }
+
+        IsSubmitting = false;
     }
 }

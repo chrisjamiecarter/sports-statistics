@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Web.Contracts.Requests;
+using SportsStatistics.Web.Contracts.Responses;
 
 namespace SportsStatistics.Web.Api.Endpoints.Identity;
 

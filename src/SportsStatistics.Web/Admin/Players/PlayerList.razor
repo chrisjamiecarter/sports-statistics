@@ -1,8 +1,5 @@
-﻿@using SportsStatistics.Application.Abstractions.Messaging
-@using SportsStatistics.Web.Abstractions.Messaging
+﻿<FluentCard Width="100%">
 
-<FluentCard Width="100%">
-    
     <FluentLabel Typo="Typography.Header">
         Players
     </FluentLabel>
@@ -15,14 +12,14 @@
     }
     else
     {
-        <FluentPaginator State="@_pagination" SummaryTemplate="@_blank" />
+        <FluentPaginator State="@pagination" SummaryTemplate="@blankFragment" />
 
-        <FluentDataGrid Items="@Players.AsQueryable()" RowSize="@DataGridRowSize.Medium">
-            <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="@true" IsDefaultSortColumn="@true" />
-            <PropertyColumn Property="@(p => p.Name)" Sortable="@true" />
-            <PropertyColumn Property="@(p => p.Position)" Sortable="@true" />
-            <PropertyColumn Property="@(p => p.Age)" Sortable="@true" />
-            <PropertyColumn Property="@(p => p.Nationality)" Sortable="@true" />
+        <FluentDataGrid Items="@Players?.AsQueryable()" Pagination="@pagination" RowSize="DataGridRowSize.Medium">
+            <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="true" IsDefaultSortColumn="true" />
+            <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.Position)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.Age)" Sortable="true" />
+            <PropertyColumn Property="@(p => p.Nationality)" Sortable="true" />
             
             <TemplateColumn>
                 <FluentButton Appearance="Appearance.Accent" @onclick="@(() => Edit(context))">Edit</FluentButton>
@@ -30,14 +27,15 @@
             </TemplateColumn>
         </FluentDataGrid>
 
-        <FluentPaginator State="@_pagination" />
+        <FluentPaginator State="@pagination" />
     }
 
 </FluentCard>
 
 @code {
-    private RenderFragment _blank = @<span />;
-    private PaginationState _pagination = new() { ItemsPerPage = 2 };
+    RenderFragment blankFragment = @<span />;
+    PaginationState pagination = new PaginationState() { ItemsPerPage = 10 };
+
 
     [Parameter]
     public EventCallback<PlayerDto> OnDeletePlayer { get; set; }

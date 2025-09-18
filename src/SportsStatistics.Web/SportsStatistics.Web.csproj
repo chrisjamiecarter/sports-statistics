@@ -1,6 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <Compile Remove="Admin\Players\Models\**" />
+    <Content Remove="Admin\Players\Models\**" />
+    <EmbeddedResource Remove="Admin\Players\Models\**" />
+    <None Remove="Admin\Players\Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="MediatR" />

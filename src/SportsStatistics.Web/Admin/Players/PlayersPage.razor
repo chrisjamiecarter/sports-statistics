@@ -1,0 +1,128 @@
+﻿@page "/admin/players"
+
+<PageTitle>Players</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical">
+    
+    <FluentLabel Typo="Typography.Header">
+        Players
+    </FluentLabel>
+
+    @if (IsPlayerFormVisible)
+    {
+        <PlayerForm OnCancel="HidePlayerForm" OnSubmit="OnSubmitAsync" SelectedPlayer="SelectedPlayer" />
+    }
+    else
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="() => ShowPlayerForm()">
+            Add Player
+        </FluentButton>
+
+        <PlayerList Players="Players" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" />
+    }
+
+</FluentStack>
+
+@code {
+    private enum PlayerFormMode
+    {
+        Hide,
+        Show,
+    }
+
+    private PlayerFormMode FormMode { get; set; } = PlayerFormMode.Hide;
+
+    private IQueryable<PlayerDto>? Players { get; set; }
+
+    private PlayerDto? SelectedPlayer { get; set; }
+
+    private bool IsPlayerFormVisible => FormMode == PlayerFormMode.Show;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPlayersAsync();
+    }
+
+    private void HidePlayerForm()
+    {
+        SelectedPlayer = null;
+        FormMode = PlayerFormMode.Hide;
+    }
+
+    private void ShowPlayerForm(PlayerDto? player = null)
+    {
+        SelectedPlayer = player;
+        FormMode = PlayerFormMode.Show;
+    }
+
+    private async Task LoadPlayersAsync()
+    {
+        var request = new GetPlayersQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError("Unable to load players");
+        }
+
+        Players = result.Value.ToQueryable();
+    }
+
+    private async Task<bool> GetUserConfirmation(string message, string primaryText, string secondaryText)
+    {
+        var dialog = await DialogService.ShowConfirmationAsync(message, primaryText, secondaryText);
+        var result = await dialog.Result;
+        return !result.Cancelled;
+    }
+
+    private async Task OnDeletePlayer(PlayerDto player)
+    {
+        if (await GetUserConfirmation($"Are you sure you want to delete <strong>{player.Name}</strong>?", "Delete", "Cancel"))
+        {
+            await HandleDeletePlayerAsync(new DeletePlayerCommand(player.Id));
+        }
+    }
+
+    private async Task OnSubmitAsync(PlayerFormModel formModel)
+    {
+        if (SelectedPlayer is null)
+        {
+            await HandleCreatePlayerAsync(formModel.ToCommand());
+        }
+        else
+        {
+            await HandleUpdatePlayerAsync(formModel.ToCommand(SelectedPlayer.Id));
+        }
+    }
+
+    private async Task HandleCreatePlayerAsync(CreatePlayerCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Player updated successfully.");
+    }
+
+    private async Task HandleDeletePlayerAsync(DeletePlayerCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Player deleted successfully.");
+    }
+
+    private async Task HandleUpdatePlayerAsync(UpdatePlayerCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Player updated successfully.");
+    }
+
+    private async Task HandleResultAsync(Result result, string successMessage)
+    {
+        if (result.IsSuccess)
+        {
+            ToastService.ShowSuccess(successMessage);
+            await LoadPlayersAsync();
+            HidePlayerForm();
+        }
+        else
+        {
+            ToastService.ShowError(result.Error.Description);
+        }
+    }
+}
