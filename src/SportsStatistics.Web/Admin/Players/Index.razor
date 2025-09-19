@@ -114,7 +114,15 @@
         }
         else
         {
-            ToastService.ShowError(result.Error.Description);
+            if (result.Error is ValidationError validationError)
+            {
+                var errorDescription = string.Join(Environment.NewLine, validationError.Errors.Select(e => e.Description));
+                ToastService.ShowError(errorDescription);
+            }
+            else
+            {
+                ToastService.ShowError(result.Error.Description);
+            }
         }
     }
 }
