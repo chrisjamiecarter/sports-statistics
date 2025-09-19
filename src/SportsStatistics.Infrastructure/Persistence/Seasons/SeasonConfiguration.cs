@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
 
-namespace SportsStatistics.Infrastructure.Persistence.Players;
+namespace SportsStatistics.Infrastructure.Persistence.Seasons;
 
 internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
 {
@@ -30,6 +29,6 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
                .HasColumnType("date")
                .IsRequired();
 
-        //builder.Ignore(p => p.Name);
+        builder.Ignore(p => p.Name);
     }
 }

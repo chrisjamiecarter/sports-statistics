@@ -4,6 +4,11 @@ namespace SportsStatistics.Domain.Seasons;
 
 public sealed class Season : Entity
 {
+    private Season() : base(EntityId.Create())
+    {
+        // EF Core.
+    }
+
     private Season(EntityId id, DateOnly startDate, DateOnly endDate, string? customDisplayName) : base(id)
     {
         StartDate = startDate;
