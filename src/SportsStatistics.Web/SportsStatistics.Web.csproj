@@ -26,7 +26,7 @@
     <ProjectReference Include="..\SportsStatistics.Authorization\SportsStatistics.Authorization.csproj" />
     <ProjectReference Include="..\SportsStatistics.Domain\SportsStatistics.Domain.csproj" />
     <ProjectReference Include="..\SportsStatistics.Infrastructure\SportsStatistics.Infrastructure.csproj" />
-    <ProjectReference Include="..\SportsStatistics.ServiceDefaults\SportsStatistics.Aspire.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\SportsStatistics.Aspire.ServiceDefaults\SportsStatistics.Aspire.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

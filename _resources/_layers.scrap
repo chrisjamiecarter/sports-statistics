@@ -1,0 +1,18 @@
+---
+
+## 🧠 UX Considerations
+
+- Toasts for success/failure (`FluentToastProvider`)
+- Confirmation modal before delete
+- Inline validation messages
+- Loading spinners for async actions
+- Role-based access: restrict to Admins
+
+---
+
+## 🧩 Bonus Ideas
+
+- Add avatar upload (with preview)
+- Track player stats inline (goals, assists)
+- Export player list to CSV or PDF (later phase)
+- Add “inactive” toggle for retired or benched players

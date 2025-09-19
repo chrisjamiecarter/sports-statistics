@@ -1,0 +1,142 @@
+Great—fixture management is a juicy domain with lots of modeling nuance. Let’s sketch out a clean, scalable design from Domain to Web, keeping it composable and testable. I’ll assume this is for a football context (Bytechester Rovers style), but let me know if it’s for something else.
+
+---
+
+## ⚽ Domain Layer
+
+### 📦 Entities
+
+**Fixture**
+- `FixtureId` (value object)
+- `HomeTeam` / `AwayTeam` (TeamId or Team reference)
+- `KickoffTime` (UTC DateTime)
+- `Venue` (string or Venue entity)
+- `Status` (enum: Scheduled, Completed, Postponed, Cancelled)
+- `Score` (optional: Score value object with HomeGoals, AwayGoals)
+- `Referee` (optional: string or PersonId)
+- `Competition` (e.g. League, Cup)
+
+**Team**
+- `TeamId`
+- `Name`
+- `ClubColors`
+- `LogoUrl` (optional)
+
+**Score** (Value Object)
+- `HomeGoals`
+- `AwayGoals`
+
+### 🎯 Enums
+
+- `FixtureStatus`: Scheduled, Completed, Postponed, Cancelled
+- `CompetitionType`: League, Cup, Friendly, Tournament
+
+### 📜 Domain Events
+
+- `FixtureScheduled`
+- `FixtureUpdated`
+- `FixtureCompleted`
+- `FixturePostponed`
+- `FixtureCancelled`
+
+---
+
+## 🧠 Application Layer
+
+### 🧾 Commands
+
+- `ScheduleFixtureCommand`
+  - HomeTeamId, AwayTeamId, KickoffTime, Venue, CompetitionType
+
+- `UpdateFixtureCommand`
+  - FixtureId, KickoffTime?, Venue?, Referee?, Status?
+
+- `RecordFixtureResultCommand`
+  - FixtureId, HomeGoals, AwayGoals
+
+- `CancelFixtureCommand`
+  - FixtureId, Reason?
+
+- `PostponeFixtureCommand`
+  - FixtureId, NewDateTime, Reason?
+
+### 🔍 Queries
+
+- `GetFixtureByIdQuery`
+- `GetFixturesByTeamQuery`
+- `GetUpcomingFixturesQuery`
+- `GetFixturesByDateRangeQuery`
+- `GetCompletedFixturesQuery`
+
+### 🧩 DTOs
+
+- `FixtureDto`
+  - FixtureId, HomeTeamName, AwayTeamName, KickoffTime, Status, Score, Venue
+
+- `TeamDto`
+  - TeamId, Name, LogoUrl
+
+---
+
+## 🏗️ Infrastructure Layer
+
+### 🗃️ Persistence Models
+
+- `FixtureEntity`
+  - Maps to Fixture aggregate
+  - Includes foreign keys for teams, venue, competition
+
+- `TeamEntity`
+- `ScoreEmbedded` (if using EF Core owned types)
+
+### 🛠️ Repositories
+
+- `IFixtureRepository`
+  - `Add`, `Update`, `GetById`, `GetByTeam`, `GetUpcoming`, etc.
+
+- `ITeamRepository`
+
+### 🧪 Data Seeding / Migrations
+
+- Seed initial fixtures for testing
+- Seed teams and competitions
+
+---
+
+## 🌐 Web Layer (Blazor or API)
+
+### 📥 Pages / Endpoints
+
+- `/fixtures`
+  - List view: upcoming, completed, filters
+
+- `/fixtures/{id}`
+  - Detail view: teams, score, status, actions
+
+- `/admin/fixtures/create`
+  - Form for scheduling fixture
+
+- `/admin/fixtures/{id}/edit`
+  - Update kickoff, venue, status
+
+- `/admin/fixtures/{id}/result`
+  - Record score
+
+### 🧾 ViewModels
+
+- `FixtureViewModel`
+  - For display: formatted kickoff time, team logos, status badge
+
+- `FixtureFormModel`
+  - For create/edit forms
+
+---
+
+## 🧠 Bonus Considerations
+
+- **Validation**: Kickoff must be in future when scheduling; score only allowed if status is Completed.
+- **Time Zones**: Store in UTC, display in user’s local time.
+- **Audit Trail**: Track who scheduled/updated fixtures.
+- **Feature Flags**: Enable/disable fixture editing based on status or role.
+
+---

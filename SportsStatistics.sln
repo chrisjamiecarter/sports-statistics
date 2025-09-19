@@ -27,9 +27,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Web", "src\SportsStatistics.Web\SportsStatistics.Web.csproj", "{42798A8D-83DF-476C-BFFA-B64B3C05D777}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Aspire.AppHost", "src\SportsStatistics.AppHost\SportsStatistics.Aspire.AppHost.csproj", "{03847DC0-EFCF-41DD-98FE-BADF77E869C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Aspire.AppHost", "src\SportsStatistics.Aspire.AppHost\SportsStatistics.Aspire.AppHost.csproj", "{03847DC0-EFCF-41DD-98FE-BADF77E869C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Aspire.ServiceDefaults", "src\SportsStatistics.ServiceDefaults\SportsStatistics.Aspire.ServiceDefaults.csproj", "{CEEAD7EB-2BD8-484D-B41E-C58F2CDE40E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Aspire.ServiceDefaults", "src\SportsStatistics.Aspire.ServiceDefaults\SportsStatistics.Aspire.ServiceDefaults.csproj", "{CEEAD7EB-2BD8-484D-B41E-C58F2CDE40E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Tools.DatabaseMigrator", "src\SportsStatistics.Tools.DatabaseMigrator\SportsStatistics.Tools.DatabaseMigrator.csproj", "{7BA9B27A-A80A-9988-8E79-E651E01E4027}"
 EndProject

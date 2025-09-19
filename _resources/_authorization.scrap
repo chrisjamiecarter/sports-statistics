@@ -1,0 +1,261 @@
+## 🏗️ Project Purpose
+
+`SportsStatistics.Authorization` will encapsulate all authentication and authorization logic, including:
+- IdentityCore configuration
+- User and role management
+- Policies and claims
+- Custom services (e.g., current user accessor, token generation)
+- Optional: seeding, password rules, and external login support
+
+---
+
+## 📁 Recommended Folder Structure
+
+```plaintext
+SportsStatistics.Identity/
+│
+├── Configuration/
+│   ├── IdentityServiceExtensions.cs       // DI setup for IdentityCore
+│   ├── AuthorizationPolicies.cs           // Centralized policy registration
+│   └── IdentityOptionsConfigurator.cs     // Password, lockout, etc.
+│
+├── Constants/
+│   ├── Roles.cs                           // Role names
+│   ├── Policies.cs                        // Policy names
+│   └── Claims.cs                          // Custom claim types
+│
+├── Services/
+│   ├── ICurrentUser.cs                    // Interface for accessing current user
+│   ├── CurrentUser.cs                     // Implementation using IHttpContextAccessor
+│   ├── IUserService.cs                    // Optional: abstraction for user management
+│   └── UserService.cs                     // Optional: wraps UserManager/SignInManager
+│
+├── Entities/
+│   ├── ApplicationUser.cs                 // Custom IdentityUser
+│   └── ApplicationRole.cs                 // Optional: custom IdentityRole
+│
+├── Persistence/
+│   ├── IdentityDbContext.cs               // DbContext for Identity tables
+│   └── IdentityDbSeeder.cs               // Optional: role/user seeding
+│
+└── Identity.csproj
+```
+
+---
+
+## 🧩 Key Components Explained
+
+### 🔹 `Configuration/IdentityServiceExtensions.cs`
+
+```csharp
+public static class IdentityServiceExtensions
+{
+    public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+    {
+        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            // Configure password, lockout, etc.
+        })
+        .AddEntityFrameworkStores<IdentityDbContext>()
+        .AddDefaultTokenProviders();
+
+        services.AddScoped<ICurrentUser, CurrentUser>();
+
+        return services;
+    }
+}
+```
+
+### 🔹 `Constants/Roles.cs`
+
+```csharp
+public static class Roles
+{
+    public const string Administrator = nameof(Administrator);
+    public const string Coach = nameof(Coach);
+    public const string Analyst = nameof(Analyst);
+}
+```
+
+### 🔹 `Services/ICurrentUser.cs`
+
+```csharp
+public interface ICurrentUser
+{
+    Guid? UserId { get; }
+    string? Email { get; }
+    bool IsInRole(string role);
+}
+```
+
+### 🔹 `Entities/ApplicationUser.cs`
+
+```csharp
+public class ApplicationUser : IdentityUser<Guid>
+{
+    // Add custom properties like DisplayName, AvatarUrl, etc.
+}
+```
+
+---
+
+## 🛠️ Integration with Other Projects
+
+- **Web Layer**: Use `[Authorize(Policy = Policies.RequireAdministratorRole)]` and inject `ICurrentUser`.
+- **Application Layer**: Use `ICurrentUser` to enforce business rules (e.g., audit trails, ownership).
+- **Infrastructure Layer**: Reference `IdentityDbContext` if needed for migrations.
+
+---
+
+## 🚀 Optional Enhancements
+
+- Add support for **JWT tokens** via a `TokenService`.
+- Implement **external login providers** (Google, GitHub, etc.).
+- Add **role seeding** via `IdentityDbSeeder`.
+- Create **custom claims transformation** for dynamic permissions.
+
+---
+You're absolutely on the right track, Chris — extracting Identity logic into an interface in the Application layer and implementing it in Infrastructure is a textbook clean architecture move. It decouples your business logic from framework-specific concerns and aligns beautifully with the **Dependency Inversion Principle** (the "D" in SOLID).
+
+Let’s walk through how to structure this cleanly and scalably.
+
+---
+
+## ✅ Architectural Strategy
+
+### 🔄 Replace Framework-Coupled Identity Logic With:
+- **Application Layer**: Interface that defines authentication behavior (e.g. `IUserAuthenticator`)
+- **Infrastructure Layer**: Concrete implementation using ASP.NET Core Identity
+- **Web Layer**: Calls the interface via DI, without knowing about Identity internals
+
+---
+
+## 🧱 Step-by-Step Structure
+
+### 1. **Define Interface in Application Layer**
+
+```csharp
+// SportsStatistics.Application.Identity/IUserAuthenticator.cs
+public interface IUserAuthenticator
+{
+    Task<SignInResult> SignInAsync(string email, string password);
+    Task SignOutAsync();
+    Task<ApplicationUserDto?> GetCurrentUserAsync();
+}
+```
+
+You can return DTOs or result objects that are **domain-safe** — no leaking Identity types like `ClaimsPrincipal` or `IdentityUser`.
+
+---
+
+### 2. **Create DTOs in Application Layer**
+
+```csharp
+public class ApplicationUserDto
+{
+    public string Id { get; set; } = default!;
+    public string Email { get; set; } = default!;
+    public string DisplayName { get; set; } = default!;
+}
+```
+
+This keeps your domain clean and avoids coupling to Identity’s internal model.
+
+---
+
+### 3. **Implement Interface in Infrastructure Layer**
+
+```csharp
+// SportsStatistics.Infrastructure.Identity/UserAuthenticator.cs
+public class UserAuthenticator : IUserAuthenticator
+{
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public UserAuthenticator(
+        SignInManager<ApplicationUser> signInManager,
+        UserManager<ApplicationUser> userManager,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        _signInManager = signInManager;
+        _userManager = userManager;
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    public async Task<SignInResult> SignInAsync(string email, string password)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null) return SignInResult.Failed;
+
+        return await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
+    }
+
+    public async Task SignOutAsync()
+    {
+        await _signInManager.SignOutAsync();
+    }
+
+    public async Task<ApplicationUserDto?> GetCurrentUserAsync()
+    {
+        var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+        if (user == null) return null;
+
+        return new ApplicationUserDto
+        {
+            Id = user.Id,
+            Email = user.Email!,
+            DisplayName = user.UserName!
+        };
+    }
+}
+```
+
+---
+
+### 4. **Register in DI Container**
+
+In `InfrastructureServiceRegistration.cs`:
+
+```csharp
+services.AddScoped<IUserAuthenticator, UserAuthenticator>();
+```
+
+---
+
+### 5. **Use in Web Layer**
+
+In your Blazor pages or components:
+
+```csharp
+@inject IUserAuthenticator Authenticator
+
+@code {
+    private async Task HandleLogin()
+    {
+        var result = await Authenticator.SignInAsync(email, password);
+        if (result.Succeeded)
+        {
+            // Redirect or show success
+        }
+        else
+        {
+            // Show error
+        }
+    }
+}
+```
+
+---
+
+## 🧠 SOLID Alignment
+
+| Principle | How You're Applying It |
+|----------|-------------------------|
+| **S**ingle Responsibility | Each class has one clear job: interface defines contract, implementation handles Identity |
+| **O**pen/Closed | You can extend auth logic (e.g. 2FA, external providers) without modifying existing code |
+| **L**iskov Substitution | Consumers rely on the interface, not the concrete type |
+| **I**nterface Segregation | You can split `IUserAuthenticator` into smaller interfaces if needed (e.g. `ISignInService`, `IUserContext`) |
+| **D**ependency Inversion | Web and Application depend on abstractions, not Identity framework classes |
+
+---

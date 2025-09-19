@@ -17,6 +17,7 @@ public record Error
         Description = description;
         Type = type;
     }
+
     public string Code { get; }
 
     public string Description { get; }
