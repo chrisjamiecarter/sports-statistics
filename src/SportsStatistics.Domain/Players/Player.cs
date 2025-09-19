@@ -2,8 +2,13 @@
 
 namespace SportsStatistics.Domain.Players;
 
-public sealed class Player : Entity
+public sealed class Player //: Entity
 {
+    //private Player(EntityId id) : base(id)
+    //{
+    //    // EF Core.
+    //}
+
     public Guid Id { get; set; }
 
     public string Name { get; set; } = string.Empty;

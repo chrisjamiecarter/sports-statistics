@@ -1,8 +1,10 @@
 ﻿namespace SportsStatistics.SharedKernel;
 
-public abstract class Entity
+public abstract class Entity(EntityId id)
 {
     private readonly List<IDomainEvent> _domainEvents = [];
+    
+    public Guid Id { get; } = id.Value;
 
     public List<IDomainEvent> DomainEvents => [.. _domainEvents];
 

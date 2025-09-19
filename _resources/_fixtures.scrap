@@ -1,10 +1,117 @@
-Great—fixture management is a juicy domain with lots of modeling nuance. Let’s sketch out a clean, scalable design from Domain to Web, keeping it composable and testable. I’ll assume this is for a football context (Bytechester Rovers style), but let me know if it’s for something else.
-
 ---
 
 ## ⚽ Domain Layer
 
 ### 📦 Entities
+
+#### 🔹 Entity: `Season`
+
+Represents a footballing year (e.g. 2024/2025), typically spanning July to June.
+
+**Properties:**
+- `SeasonId` – Value object
+- `Name` – e.g. "2024/2025"
+- `StartDate` / `EndDate` – DateTime
+- `IsCurrent` – Boolean flag
+
+**Behavioral Notes:**
+- You can derive `Name` from `StartDate.Year` and `EndDate.Year`, but storing it explicitly helps with display.
+- Useful for filtering fixtures, stats, and team participation.
+
+---
+
+### 🔹 Entity: `Competition`
+
+Represents a league, cup, or tournament.
+
+**Properties:**
+- `CompetitionId` – Value object
+- `Name` – e.g. "Premier League", "FA Cup"
+- `Type` – Enum: League, Cup, Friendly, Tournament
+- `SeasonId` – Foreign key or reference
+- `IsActive` – Boolean flag
+- `ParticipatingTeams` – Optional list of team names or IDs
+
+**Behavioral Notes:**
+- You can model team participation per season here.
+- Could evolve into a richer aggregate if you track standings, rounds, or rules.
+
+---
+
+### 🔹 Enum: `CompetitionType`
+
+```csharp
+public enum CompetitionType
+{
+    League,
+    Cup,
+    Friendly,
+    Tournament
+}
+```
+
+---
+
+## 🧱 Value Objects
+
+### `SeasonId`
+
+```csharp
+public readonly record struct SeasonId(Guid Value)
+{
+    public static SeasonId New() => new(Guid.NewGuid());
+    public override string ToString() => Value.ToString();
+}
+```
+
+### `CompetitionId`
+
+```csharp
+public readonly record struct CompetitionId(Guid Value)
+{
+    public static CompetitionId New() => new(Guid.NewGuid());
+    public override string ToString() => Value.ToString();
+}
+```
+
+---
+
+## 🧠 Relationships
+
+- A **Season** has many **Competitions**
+- A **Competition** belongs to one **Season**
+- A **Fixture** belongs to one **Competition**
+- You can optionally link a **Fixture** to a **Season** via its Competition
+
+---
+
+## 🗂️ Suggested Folder Structure
+
+```
+/Domain/Season/
+  ├── Season.cs
+  ├── SeasonId.cs
+
+/Domain/Competition/
+  ├── Competition.cs
+  ├── CompetitionId.cs
+  ├── CompetitionType.cs
+```
+
+---
+
+## 🧩 Future Extensions
+
+- Add `LeagueTable` or `KnockoutRound` entities under `Competition`
+- Track `TeamParticipation` per season
+- Filter fixtures by season and competition in queries
+
+---
+
+Want to sketch out the `Season` entity class next, or jump into how you'd seed competitions and link them to fixtures in the infrastructure layer?
+
+
+#### 🔹 Entity: `Fixture`
 
 **Fixture**
 - `FixtureId` (value object)
@@ -16,6 +123,107 @@ Great—fixture management is a juicy domain with lots of modeling nuance. Let�
 - `Referee` (optional: string or PersonId)
 - `Competition` (e.g. League, Cup)
 
+**Properties:**
+- `FixtureId` – Unique identifier (value object)
+- `HomeTeamId` – Reference to the home team
+- `AwayTeamId` – Reference to the away team
+- `KickoffTimeUtc` – Scheduled kickoff time (UTC)
+- `Venue` – Text or a `Venue` value object
+- `Status` – Enum (`Scheduled`, `Completed`, `Postponed`, `Cancelled`)
+- `Score` – Optional value object (only present if completed)
+- `Competition` – Optional string or enum (`League`, `Cup`, etc.)
+- `Referee` – Optional string or `PersonId`
+
+**Behavioral Methods (suggested):**
+- `Schedule()` – Factory or constructor logic
+- `UpdateDetails()` – Change time, venue, referee
+- `RecordResult()` – Set score and mark as completed
+- `Postpone()` – Change time and status
+- `Cancel()` – Mark as cancelled
+
+**Validation Rules:**
+- Kickoff must be in the future when scheduling
+- Score can only be recorded if status is `Completed`
+- Home and away teams must be different
+
+Absolutely, Chris. Here's a clean, domain-driven C# class for your `Fixture` aggregate root. It’s designed to be explicit, composable, and validation-friendly—just how you like it.
+
+```csharp
+public class Fixture
+{
+    public FixtureId Id { get; private set; }
+    public TeamId HomeTeamId { get; private set; }
+    public TeamId AwayTeamId { get; private set; }
+    public DateTime KickoffTimeUtc { get; private set; }
+    public string Venue { get; private set; }
+    public FixtureStatus Status { get; private set; }
+    public Score? Score { get; private set; }
+    public CompetitionType Competition { get; private set; }
+    public string? Referee { get; private set; }
+
+    private Fixture() { } // For EF Core or serialization
+
+    public Fixture(
+        FixtureId id,
+        TeamId homeTeamId,
+        TeamId awayTeamId,
+        DateTime kickoffTimeUtc,
+        string venue,
+        CompetitionType competition,
+        string? referee = null)
+    {
+        if (homeTeamId == awayTeamId)
+            throw new ArgumentException("Home and away teams must be different.");
+
+        if (kickoffTimeUtc <= DateTime.UtcNow)
+            throw new ArgumentException("Kickoff time must be in the future.");
+
+        Id = id;
+        HomeTeamId = homeTeamId;
+        AwayTeamId = awayTeamId;
+        KickoffTimeUtc = kickoffTimeUtc;
+        Venue = venue;
+        Competition = competition;
+        Referee = referee;
+        Status = FixtureStatus.Scheduled;
+    }
+
+    public void UpdateDetails(DateTime? newKickoffTimeUtc, string? newVenue, string? newReferee)
+    {
+        if (newKickoffTimeUtc.HasValue && newKickoffTimeUtc <= DateTime.UtcNow)
+            throw new ArgumentException("Kickoff time must be in the future.");
+
+        KickoffTimeUtc = newKickoffTimeUtc ?? KickoffTimeUtc;
+        Venue = newVenue ?? Venue;
+        Referee = newReferee ?? Referee;
+    }
+
+    public void RecordResult(int homeGoals, int awayGoals)
+    {
+        if (Status != FixtureStatus.Scheduled)
+            throw new InvalidOperationException("Only scheduled fixtures can be completed.");
+
+        Score = new Score(homeGoals, awayGoals);
+        Status = FixtureStatus.Completed;
+    }
+
+    public void Postpone(DateTime newKickoffTimeUtc)
+    {
+        if (newKickoffTimeUtc <= DateTime.UtcNow)
+            throw new ArgumentException("New kickoff time must be in the future.");
+
+        KickoffTimeUtc = newKickoffTimeUtc;
+        Status = FixtureStatus.Postponed;
+    }
+
+    public void Cancel()
+    {
+        Status = FixtureStatus.Cancelled;
+    }
+}
+```
+
+
 **Team**
 - `TeamId`
 - `Name`
@@ -25,6 +233,72 @@ Great—fixture management is a juicy domain with lots of modeling nuance. Let�
 **Score** (Value Object)
 - `HomeGoals`
 - `AwayGoals`
+
+#### 🔹 Value Object: `Score`
+
+This object should be immutable, validation-safe, and expressive. It represents the final result of a fixture and can optionally include logic for win/loss/draw outcomes.
+
+### 🔹 Properties
+
+- `HomeGoals` – int
+- `AwayGoals` – int
+
+### 🔹 Optional Derived Properties
+
+- `Outcome` – Enum: HomeWin, AwayWin, Draw
+- `GoalDifference` – int
+- `TotalGoals` – int
+
+### 🔹 Validation Rules
+
+- Goals must be zero or positive
+- Should only be created when fixture is marked as completed
+
+---
+
+### 🧱 C# Implementation
+
+```csharp
+public sealed class Score
+{
+    public int HomeGoals { get; }
+    public int AwayGoals { get; }
+
+    public Score(int homeGoals, int awayGoals)
+    {
+        if (homeGoals < 0 || awayGoals < 0)
+            throw new ArgumentException("Goals cannot be negative.");
+
+        HomeGoals = homeGoals;
+        AwayGoals = awayGoals;
+    }
+
+    public FixtureOutcome Outcome =>
+        HomeGoals > AwayGoals ? FixtureOutcome.HomeWin :
+        AwayGoals > HomeGoals ? FixtureOutcome.AwayWin :
+        FixtureOutcome.Draw;
+
+    public int GoalDifference => Math.Abs(HomeGoals - AwayGoals);
+    public int TotalGoals => HomeGoals + AwayGoals;
+
+    public override string ToString() => $"{HomeGoals}–{AwayGoals}";
+}
+```
+
+---
+
+### 🧩 Enum: `FixtureOutcome`
+
+```csharp
+public enum FixtureOutcome
+{
+    HomeWin,
+    AwayWin,
+    Draw
+}
+```
+
+---
 
 ### 🎯 Enums
 
