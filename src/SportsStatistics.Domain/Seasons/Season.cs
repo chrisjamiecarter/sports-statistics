@@ -4,12 +4,11 @@ namespace SportsStatistics.Domain.Seasons;
 
 public sealed class Season : Entity
 {
-    private Season() : base(EntityId.Create())
+    private Season(Guid id) : base(new EntityId(id))
     {
-        // EF Core.
     }
 
-    private Season(EntityId id, DateOnly startDate, DateOnly endDate, string? customDisplayName) : base(id)
+    private Season(EntityId id, DateOnly startDate, DateOnly endDate, string? customDisplayName) : this(id.Value)
     {
         StartDate = startDate;
         EndDate = endDate;
@@ -35,8 +34,7 @@ public sealed class Season : Entity
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startDate, endDate, nameof(startDate));
 
-        var id = EntityId.Create();
-        return new Season(id, startDate, endDate, customDisplayName);
+        return new Season(EntityId.Create(), startDate, endDate, customDisplayName);
     }
 
     public void Update(DateOnly startDate, DateOnly endDate, string? customDisplayName = null)

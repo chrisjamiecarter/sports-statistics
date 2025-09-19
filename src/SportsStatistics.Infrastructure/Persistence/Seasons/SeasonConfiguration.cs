@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Infrastructure.Persistence.Seasons;
 
@@ -17,10 +18,6 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
                .IsRequired()
                .ValueGeneratedNever();
 
-        builder.Property(p => p.Name)
-               .HasMaxLength(20)
-               .IsRequired();
-
         builder.Property(p => p.StartDate)
                .HasColumnType("date")
                .IsRequired();
@@ -28,6 +25,10 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
         builder.Property(p => p.EndDate)
                .HasColumnType("date")
                .IsRequired();
+
+        builder.Property<string>("CustomDisplayName")
+               .HasColumnName("CustomDisplayName")
+               .HasMaxLength(20);
 
         builder.Ignore(p => p.Name);
     }
