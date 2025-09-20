@@ -16,6 +16,6 @@ internal sealed class CreateSeasonCommandHandler(ISeasonRepository repository) :
 
         return created
             ? Result.Success()
-            : Result.Failure(SeasonErrors.NotFound(season.Id));
+            : Result.Failure(SeasonErrors.NotCreated(season.Id));
     }
 }
