@@ -1,0 +1,35 @@
+﻿@page "/admin/fixtures"
+@using SportsStatistics.Application.Seasons.GetAll
+@* NOTE: Temp routing to this page. *@
+
+<PageTitle>Seasons</PageTitle>
+
+<FluentCard>
+
+
+
+</FluentCard>
+
+@code {
+    private IQueryable<SeasonDto>? Seasons { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFixturesAsync();
+    }
+
+    private async Task LoadFixturesAsync()
+    {
+        var request = new GetSeasonsQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            // TODO: confirm.
+            //ToastService.ShowError(result.Error.Description);
+            // OR
+            ToastService.ShowError("Unable to load seasons");
+        }
+
+        Seasons = result.Value.ToQueryable();
+    }
+}
