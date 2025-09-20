@@ -20,7 +20,7 @@ public sealed class Season : Entity
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startDate, endDate, nameof(startDate));
 
-        return new Season(EntityId.Create(), startDate, endDate);
+        return new Season(EntityId.Create().Value, startDate, endDate);
     }
 
     public void Update(DateOnly startDate, DateOnly endDate)
