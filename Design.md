@@ -20,6 +20,11 @@ They also need the ability to show data charts to help their coaches visualize t
 - [ ] Admin area to manage the team (current players and fixtures/games).
 - [ ] Authentication and authorization (Roles: Administator, Viewer)
 
+## Helpers
+
+  - `Add-Migration MigrationName -Project SportsStatistics.Infrastructure -StartupProject SportsStatistics.Web -OutputDir Persistence\Migrations -Context SportsStatisticsDbContext`
+  - `Add-Migration MigrationName -Project SportsStatistics.Authorization -StartupProject SportsStatistics.Web -OutputDir Persistence\Migrations -Context IdentityDbContext`
+
 ##  High-Level Design
 
 ### 1. **Frontend (Blazor Server)**
