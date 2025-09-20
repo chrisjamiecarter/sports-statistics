@@ -15,7 +15,9 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-               .HasConversion(id => id.Value, value => new EntityId(value))
+               .HasConversion(
+                    id => id.Value,
+                    value => EntityId.Create(value).Value)
                .IsRequired()
                .ValueGeneratedNever();
 
