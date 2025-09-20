@@ -3,13 +3,11 @@
 public readonly record struct EntityId
 {
     private static Error IncorrectVersion => Error.Failure(
-        "EntityId.IncorrectVersion",
-        "ID values must be version 7");
+    "EntityId.IncorrectVersion",
+    "ID values must be version 7");
 
     private EntityId(Guid value)
     {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(value.Version, 7, nameof(value));
-
         Value = value;
     }
 
@@ -20,11 +18,23 @@ public readonly record struct EntityId
         return new EntityId(Guid.CreateVersion7());
     }
 
-    public static Result<EntityId> FromValue(Guid value)
+    public static Result<EntityId> Create(Guid value)
     {
-        return value.Version == 7
-            ? new EntityId(value)
+        return TryParse(value, out var id) 
+            ? Result.Success(id) 
             : Result.Failure<EntityId>(IncorrectVersion);
+    }
+
+    public static bool TryParse(Guid value, out EntityId id)
+    {
+        if (value.Version != 7)
+        {
+            id = default;
+            return false;
+        }
+        
+        id = new EntityId(value);
+        return true;
     }
 
     public override string ToString() => Value.ToString();
