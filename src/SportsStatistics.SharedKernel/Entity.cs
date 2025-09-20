@@ -4,7 +4,7 @@ public abstract class Entity(EntityId id)
 {
     private readonly List<IDomainEvent> _domainEvents = [];
     
-    public Guid Id { get; } = id.Value;
+    public EntityId Id { get; } = id;
 
     public List<IDomainEvent> DomainEvents => [.. _domainEvents];
 

@@ -15,6 +15,7 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
+               .HasConversion(id => id.Value, value => new EntityId(value))
                .IsRequired()
                .ValueGeneratedNever();
 
@@ -25,10 +26,6 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
         builder.Property(p => p.EndDate)
                .HasColumnType("date")
                .IsRequired();
-
-        builder.Property<string>("CustomDisplayName")
-               .HasColumnName("CustomDisplayName")
-               .HasMaxLength(20);
 
         builder.Ignore(p => p.Name);
     }
