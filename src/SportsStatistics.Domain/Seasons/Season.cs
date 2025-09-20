@@ -16,10 +16,6 @@ public sealed class Season : Entity
 
     public string Name => $"{StartDate.Year}/{EndDate.Year}";
 
-    public bool IsCurrent(DateOnly referenceDate)
-        => referenceDate >= StartDate
-        && referenceDate <= EndDate;
-
     public static Season Create(DateOnly startDate, DateOnly endDate)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startDate, endDate, nameof(startDate));
