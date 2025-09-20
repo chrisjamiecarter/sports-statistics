@@ -1,11 +1,15 @@
 ﻿using FluentValidation;
 
-namespace SportsStatistics.Application.Seasons.Create;
+namespace SportsStatistics.Application.Seasons.Update;
 
-internal sealed class CreateSeasonCommandValidator : AbstractValidator<CreateSeasonCommand>
+internal sealed class UpdateSeasonCommandValidator : AbstractValidator<UpdateSeasonCommand>
 {
-    public CreateSeasonCommandValidator()
+    public UpdateSeasonCommandValidator()
     {
+        RuleFor(c => c.Id)
+            .NotEmpty()
+            .Must(guid => guid.Version == 7);
+
         // TODO: Can't be overlapping seasons?
         RuleFor(c => c.StartDate)
             .NotEmpty()
@@ -16,4 +20,3 @@ internal sealed class CreateSeasonCommandValidator : AbstractValidator<CreateSea
             .GreaterThan(c => c.StartDate);
     }
 }
-
