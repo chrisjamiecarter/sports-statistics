@@ -12,4 +12,6 @@ public readonly record struct EntityId
     public Guid Value { get; }
 
     public static EntityId Create() => new(Guid.CreateVersion7());
+    
+    public override string ToString() => Value.ToString();
 }
