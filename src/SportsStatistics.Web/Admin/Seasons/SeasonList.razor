@@ -1,0 +1,51 @@
+﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+
+    <FluentStack>
+        <FluentLabel Typo="Typography.Header">
+            Seasons
+        </FluentLabel>
+
+        <FluentSpacer />
+
+        <FluentButton Appearance="Appearance.Accent" OnClick="Add">
+            Add Season
+        </FluentButton>
+    </FluentStack>
+
+    <FluentDataGrid Items="@Seasons" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
+        <PropertyColumn Property="@(p => p.Name)" Sortable="true" IsDefaultSortColumn="true" />
+        <PropertyColumn Property="@(p => p.StartDate)" Sortable="true" />
+        <PropertyColumn Property="@(p => p.EndDate)" Sortable="true" />
+
+        <TemplateColumn Align="Align.End">
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.EditPerson())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonDelete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
+        </TemplateColumn>
+    </FluentDataGrid>
+
+    <FluentPaginator State="@Pagination" />
+
+
+</FluentStack>
+
+@code {
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+
+    [Parameter]
+    public IQueryable<SeasonDto>? Seasons { get; set; }
+
+    private async Task Add()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task Delete(SeasonDto season)
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task Edit(SeasonDto season)
+    {
+        await Task.CompletedTask;
+    }
+}
