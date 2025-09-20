@@ -17,8 +17,4 @@
     <InternalsVisibleTo Include="SportsStatistics.ArchitectureTests" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Seasons\Delete\" />
-  </ItemGroup>
-
 </Project>
