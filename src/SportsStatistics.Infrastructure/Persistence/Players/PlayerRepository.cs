@@ -10,88 +10,40 @@ internal sealed class PlayerRepository(SportsStatisticsDbContext dbContext) : IP
 
     public async Task<bool> CreateAsync(Player player, CancellationToken cancellationToken)
     {
-        try
-        {
-            _dbContext.Players.Add(player);
-            var result = await _dbContext.SaveChangesAsync(cancellationToken);
-            return result > 0;
-        }
-        catch (Exception)
-        {
-            // TODO: log exception?
-            return false;
-        }
+        _dbContext.Players.Add(player);
+        var result = await _dbContext.SaveChangesAsync(cancellationToken);
+        return result > 0;
     }
 
     public async Task<bool> DeleteAsync(Player player, CancellationToken cancellationToken)
     {
-        try
-        {
-            _dbContext.Players.Remove(player);
-            var result = await _dbContext.SaveChangesAsync(cancellationToken);
-            return result > 0;
-        }
-        catch (Exception)
-        {
-            // TODO: log exception?
-            return false;
-        }
+        _dbContext.Players.Remove(player);
+        var result = await _dbContext.SaveChangesAsync(cancellationToken);
+        return result > 0;
     }
 
     public async Task<List<Player>> GetAllAsync(CancellationToken cancellationToken)
     {
-        try
-        {
-            return await _dbContext.Players.AsNoTracking()
-                                           .ToListAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            // TODO: log exception?
-            return [];
-        }
+        return await _dbContext.Players.AsNoTracking()
+                                        .ToListAsync(cancellationToken);
     }
 
     public async Task<Player?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            return await _dbContext.Players.FindAsync([id], cancellationToken);
-        }
-        catch (Exception)
-        {
-            // TODO: log exception?
-            return null;
-        }
+        return await _dbContext.Players.FindAsync([id], cancellationToken);
     }
 
     public async Task<bool> IsSquadNumberAvailableAsync(int squadNumber, Guid? excludingPlayerId, CancellationToken cancellationToken)
     {
-        try
-        {
-            var taken = await _dbContext.Players.AsNoTracking()
-                                                .AnyAsync(p => p.SquadNumber == squadNumber && p.Id != excludingPlayerId, cancellationToken);
-            return !taken;
-        }
-        catch (Exception)
-        {
-            // TODO: log exception?
-            return false;
-        }
+        var taken = await _dbContext.Players.AsNoTracking()
+                                            .AnyAsync(p => p.SquadNumber == squadNumber && p.Id != excludingPlayerId, cancellationToken);
+        return !taken;
     }
 
     public async Task<bool> UpdateAsync(Player player, CancellationToken cancellationToken)
     {
-        try
-        {
-            _dbContext.Players.Update(player);
-            var result = await _dbContext.SaveChangesAsync(cancellationToken);
-            return result > 0;
-        }
-        catch (Exception)
-        {
-            // TODO: log exception?
-            return false;
-        }
+        _dbContext.Players.Update(player);
+        var result = await _dbContext.SaveChangesAsync(cancellationToken);
+        return result > 0;
     }
 }
