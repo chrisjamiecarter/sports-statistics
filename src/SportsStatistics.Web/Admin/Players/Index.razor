@@ -89,7 +89,7 @@
     private async Task HandleCreatePlayerAsync(CreatePlayerCommand command)
     {
         var result = await Messenger.SendAsync(command);
-        await HandleResultAsync(result, "Player updated successfully.");
+        await HandleResultAsync(result, "Player created successfully.");
     }
 
     private async Task HandleDeletePlayerAsync(DeletePlayerCommand command)
