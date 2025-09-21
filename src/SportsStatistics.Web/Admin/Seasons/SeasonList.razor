@@ -25,27 +25,36 @@
 
     <FluentPaginator State="@Pagination" />
 
-
 </FluentStack>
 
 @code {
     private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+    
+    [Parameter]
+    public EventCallback AddSeasonCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<SeasonDto> DeleteSeasonCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<SeasonDto> EditSeasonCallback { get; set; }
+
 
     [Parameter]
     public IQueryable<SeasonDto>? Seasons { get; set; }
 
     private async Task Add()
     {
-        await Task.CompletedTask;
+        await AddSeasonCallback.InvokeAsync();
     }
 
     private async Task Delete(SeasonDto season)
     {
-        await Task.CompletedTask;
+        await DeleteSeasonCallback.InvokeAsync(season);
     }
 
     private async Task Edit(SeasonDto season)
     {
-        await Task.CompletedTask;
+        await EditSeasonCallback.InvokeAsync(season);
     }
 }
