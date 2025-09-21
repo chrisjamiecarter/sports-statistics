@@ -25,7 +25,5 @@ internal static class PlayerDtoMapping
         };
 
     public static IQueryable<PlayerDto> ToQueryable(this List<PlayerResponse> players)
-    {
-        return players.Select(ToDto).AsQueryable();
-    }
+        => players.Select(ToDto).AsQueryable();
 }
