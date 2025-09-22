@@ -5,7 +5,6 @@ public class DomainLayerTests : BaseTest
     [Fact]
     public void Should_NotHaveDependencyOn_ApplicationLayer()
     {
-        var t = ApplicationAssembly.GetName().Name;
         TestResult result = Types.InAssembly(DomainAssembly)
                                  .Should()
                                  .NotHaveDependencyOn(ApplicationAssembly.GetName().Name)
