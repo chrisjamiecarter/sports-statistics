@@ -1,0 +1,4 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using SportsStatistics.Authorization.Constants
+
+@attribute [Authorize(Policies.RequireAdministratorRole)]
