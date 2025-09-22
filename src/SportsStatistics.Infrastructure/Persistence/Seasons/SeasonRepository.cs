@@ -23,6 +23,14 @@ internal sealed class SeasonRepository(SportsStatisticsDbContext dbContext) : IS
         return result > 0;
     }
 
+    public Task<bool> DoesDateOverlapExistingAsync(DateOnly startOrEndDate, EntityId? excludingSeasonId, CancellationToken cancellationToken)
+    {
+        return _dbContext.Seasons.AsNoTracking()
+                                 .AnyAsync(s => s.StartDate <= startOrEndDate
+                                                && s.EndDate >= startOrEndDate
+                                                && s.Id != excludingSeasonId, cancellationToken);
+    }
+
     public async Task<List<Season>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await _dbContext.Seasons.AsNoTracking()
@@ -31,7 +39,6 @@ internal sealed class SeasonRepository(SportsStatisticsDbContext dbContext) : IS
 
     public async Task<Season?> GetByIdAsync(EntityId id, CancellationToken cancellationToken)
     {
-        //TODO: Confirm works. Alternative = return await _dbContext.Seasons.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id, cancellationToken);
         return await _dbContext.Seasons.FindAsync([id], cancellationToken);
     }
 
