@@ -1,0 +1,131 @@
+﻿@page "/admin/competitions"
+@using SportsStatistics.Application.Competitions.GetAll
+
+<PageTitle>Competitions</PageTitle>
+
+<FluentCard>
+
+    @if (IsCompetitionFormVisible)
+    {
+        <CompetitionForm CancelCallback="HideCompetitionForm" SubmitCallback="OnSubmitAsync" SelectedCompetition="SelectedCompetition" />
+    }
+    else
+    {
+        <CompetitionList Competitions="Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" />
+    }
+</FluentCard>
+
+@code {
+    private enum CompetitionFormMode
+    {
+        Hide,
+        Show,
+    }
+
+    private CompetitionFormMode FormMode { get; set; } = CompetitionFormMode.Hide;
+
+    private IQueryable<CompetitionDto>? Competitions { get; set; }
+
+    private CompetitionDto? SelectedCompetition { get; set; }
+
+    private bool IsCompetitionFormVisible => FormMode == CompetitionFormMode.Show;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCompetitionsAsync();
+    }
+
+    private void HideCompetitionForm()
+    {
+        SelectedCompetition = null;
+        FormMode = CompetitionFormMode.Hide;
+    }
+
+    private void ShowCompetitionForm(CompetitionDto? competition = null)
+    {
+        SelectedCompetition = competition;
+        FormMode = CompetitionFormMode.Show;
+    }
+
+    private async Task LoadCompetitionsAsync()
+    {
+        var request = new GetCompetitionsQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            // TODO: confirm.
+            ToastService.ShowError(result.Error.Description);
+            // OR
+            ToastService.ShowError("Unable to load competitions");
+        }
+
+        Competitions = result.Value.ToQueryable();
+    }
+
+    private async Task<bool> GetUserConfirmationAsync(string message, string primaryText, string secondaryText)
+    {
+        var dialog = await DialogService.ShowConfirmationAsync(message, primaryText, secondaryText);
+        var result = await dialog.Result;
+        return !result.Cancelled;
+    }
+
+    private async Task OnDeleteCompetitionAsync(CompetitionDto competition)
+    {
+        if (await GetUserConfirmationAsync($"Are you sure you want to delete <strong>{competition.Name}</strong>?", "Delete", "Cancel"))
+        {
+            await DeleteCompetitionAsync(competition.ToDeleteCommand());
+        }
+    }
+
+    private async Task OnSubmitAsync(CompetitionFormModel competition)
+    {
+        if (SelectedCompetition is null)
+        {
+            await CreateCompetitionAsync(competition.ToCreateCommand());
+        }
+        else
+        {
+            await UpdateCompetitionAsync(competition.ToUpdateCommand(SelectedCompetition.Id));
+        }
+    }
+
+    private async Task CreateCompetitionAsync(CreateCompetitionCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Competition created successfully.");
+    }
+
+    private async Task DeleteCompetitionAsync(DeleteCompetitionCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Competition deleted successfully.");
+    }
+
+    private async Task UpdateCompetitionAsync(UpdateCompetitionCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Competition updated successfully.");
+    }
+
+    private async Task HandleResultAsync(Result result, string successMessage)
+    {
+        if (result.IsSuccess)
+        {
+            ToastService.ShowSuccess(successMessage);
+            await LoadCompetitionsAsync();
+            HideCompetitionForm();
+        }
+        else
+        {
+            if (result.Error is ValidationError validationError)
+            {
+                var errorDescription = string.Join(Environment.NewLine, validationError.Errors.Select(e => e.Description));
+                ToastService.ShowError(errorDescription);
+            }
+            else
+            {
+                ToastService.ShowError(result.Error.Description);
+            }
+        }
+    }
+}

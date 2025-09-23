@@ -1,0 +1,58 @@
+﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+
+    <FluentStack>
+        <FluentLabel Typo="Typography.Header">
+            Competitions
+        </FluentLabel>
+
+        <FluentSpacer />
+
+        <FluentButton Appearance="Appearance.Accent" OnClick="Add">
+            Add Competition
+        </FluentButton>
+    </FluentStack>
+
+    <FluentDataGrid Items="@Competitions" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
+        <PropertyColumn Property="@(p => p.Name)" Sortable="true" IsDefaultSortColumn="true" />
+        <PropertyColumn Property="@(p => p.CompetitionType)" Sortable="true" />
+            
+        <TemplateColumn Align="Align.End">
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
+        </TemplateColumn>
+    </FluentDataGrid>
+
+    <FluentPaginator State="@Pagination" />
+
+</FluentStack>
+
+@code {
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+
+    [Parameter]
+    public EventCallback AddCompetitionCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<CompetitionDto> DeleteCompetitionCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<CompetitionDto> EditCompetitionCallback { get; set; }
+
+    [Parameter]
+    public IQueryable<CompetitionDto>? Competitions { get; set; }
+
+    private async Task Add()
+    {
+        await AddCompetitionCallback.InvokeAsync();
+    }
+
+    private async Task Delete(CompetitionDto competition)
+    {
+        await DeleteCompetitionCallback.InvokeAsync(competition);
+    }
+
+    private async Task Edit(CompetitionDto competition)
+    {
+        await EditCompetitionCallback.InvokeAsync(competition);
+    }
+}

@@ -1,0 +1,86 @@
+﻿<FluentStack Orientation="Orientation.Vertical">
+
+    <FluentLabel Typo="Typography.Header">
+        @HeaderText
+    </FluentLabel>
+
+    <FluentSpacer />
+
+    <EditForm Model="@Input" OnValidSubmit="HandleValidSubmitAsync" FormName="competition-form" style="width: 100%">
+        <FluentValidator />
+
+        <FluentStack Orientation="Orientation.Vertical">
+            <div class="full-width">
+                <FluentTextField Name="Input.Name" @bind-Value="Input.Name" AutoComplete="competition-name" Required="true" Placeholder="Name" Label="Name" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.Name" class="text-danger" />
+            </div>
+            <div class="full-width">
+                <FluentSelect Id="CompetitionTypeSelect"
+                              Name="Input.CompetitionType"
+                              TOption=CompetitionTypeOptionDto
+                              Label="Type"
+                              Items="CompetitionTypeOptions"
+                              Width="100%"
+                              Placeholder="Select a type..."
+                              OptionText="(p => p.Name)"
+                              @bind-SelectedOption="Input.CompetitionType"
+                              Required="!IsUpdateMode" />
+                <FluentValidationMessage For="() => Input.CompetitionType" class="text-danger" />
+            </div>
+            <FluentStack Orientation="Orientation.Horizontal">
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">
+                    @SubmitButtonText
+                </FluentButton>
+                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="HandleCancelAsync">
+                    Cancel
+                </FluentButton>
+            </FluentStack>
+        </FluentStack>
+    </EditForm>
+
+</FluentStack>
+
+@code {
+    private bool IsSubmitting = false;
+    private IEnumerable<CompetitionTypeOptionDto> CompetitionTypeOptions = CompetitionType.All.Select(p => p.ToDto());
+
+    [Parameter]
+    public CompetitionDto? SelectedCompetition { get; set; }
+
+    [Parameter]
+    public EventCallback CancelCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<CompetitionFormModel> SubmitCallback { get; set; }
+
+    [SupplyParameterFromForm]
+    private CompetitionFormModel Input { get; set; } = new();
+
+    private bool IsUpdateMode => SelectedCompetition is not null;
+
+    private string HeaderText => $"{(IsUpdateMode ? "Edit" : "Add")} Competition";
+
+    private string SubmitButtonText => IsUpdateMode ? "Update" : "Create";
+
+    protected override void OnParametersSet()
+    {
+        if (!IsSubmitting && SelectedCompetition is not null)
+        {
+            Input = SelectedCompetition.ToFormModel(CompetitionTypeOptions);
+        }
+    }
+
+    private async Task HandleCancelAsync()
+    {
+        await CancelCallback.InvokeAsync();
+    }
+
+    private async Task HandleValidSubmitAsync()
+    {
+        IsSubmitting = true;
+
+        await SubmitCallback.InvokeAsync(Input);
+
+        IsSubmitting = false;
+    }
+}
