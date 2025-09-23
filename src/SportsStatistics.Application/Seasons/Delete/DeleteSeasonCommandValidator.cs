@@ -8,6 +8,7 @@ internal sealed class DeleteSeasonCommandValidator : AbstractValidator<DeleteSea
     {
         RuleFor(c => c.Id)
             .NotEmpty()
-            .Must(guid => guid.Version == 7);
+            .Must(guid => guid.Version == 7)
+            .WithMessage("'Id' is not in the correct format.");
     }
 }
