@@ -9,8 +9,8 @@ namespace SportsStatistics.Web.Admin.Seasons;
 internal static class SeasonMapper
 {
     public static CreateSeasonCommand ToCreateCommand(this SeasonFormModel season)
-    => new(DateOnly.FromDateTime(season.StartDate.GetValueOrDefault()),
-           DateOnly.FromDateTime(season.EndDate.GetValueOrDefault()));
+        => new(DateOnly.FromDateTime(season.StartDate.GetValueOrDefault()),
+               DateOnly.FromDateTime(season.EndDate.GetValueOrDefault()));
 
     public static DeleteSeasonCommand ToDeleteCommand(this SeasonDto season)
         => new(season.Id);
