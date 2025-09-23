@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SportsStatistics.Application.Competitions;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Players;
 using SportsStatistics.Application.Seasons;
 using SportsStatistics.Aspire.Constants;
 using SportsStatistics.Authorization;
 using SportsStatistics.Infrastructure.Persistence;
+using SportsStatistics.Infrastructure.Persistence.Competitions;
 using SportsStatistics.Infrastructure.Persistence.Players;
 using SportsStatistics.Infrastructure.Persistence.Schemas;
 using SportsStatistics.Infrastructure.Persistence.Seasons;
@@ -40,6 +42,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+        services.AddScoped<ICompetitionRepository, CompetitionRepository>();
         services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<ISeasonRepository, SeasonRepository>();
 
