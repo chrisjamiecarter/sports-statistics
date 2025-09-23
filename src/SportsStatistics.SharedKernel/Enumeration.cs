@@ -40,25 +40,13 @@ public abstract class Enumeration(int id, string name) : IComparable<Enumeration
     {
         return other == null ? 1 : Id.CompareTo(other.Id);
     }
-    
+
     public override bool Equals(object? obj)
     {
-        if (obj is null)
-        {
-            return false;
-        }
-
-        if (obj.GetType() != GetType())
-        {
-            return false;
-        }
-
-        if (obj is not Enumeration enumeration)
-        {
-            return false;
-        }
-
-        return enumeration.Id == Id;
+        return obj is not null
+               && obj.GetType() == GetType()
+               && obj is Enumeration enumeration
+               && enumeration.Id == Id;
     }
 
     public override int GetHashCode()
