@@ -24,7 +24,6 @@
             </div>
             <div class="full-width">
                 <FluentNumberField Name="Input.SquadNumber" @bind-Value="Input.SquadNumber" Required="true" Label="Squad Number" Min="1" />
-                <ValidationMessage For="@(() => Input.SquadNumber)" />
                 <FluentValidationMessage For="() => Input.SquadNumber" class="text-danger" />
             </div>
             <div class="full-width">
