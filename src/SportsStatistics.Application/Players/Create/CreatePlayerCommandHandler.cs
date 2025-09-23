@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using SportsStatistics.Application.Abstractions.Messaging;
+﻿using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
