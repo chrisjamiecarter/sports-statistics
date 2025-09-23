@@ -16,26 +16,31 @@ public sealed class Competition : Entity
 
     public static Competition Create(string name, CompetitionType type)
     {
-        Validate(name, type);
+        ValidateAndThrow(name, type);
 
         return new Competition(EntityId.Create().Value, name, type);
     }
 
-    public void Update(string name, CompetitionType type)
+    public void Update(string name, string competitionTypeName)
     {
-        Validate(name, type);
-
-        Name = name;
-        Type = type;
+        Update(name, CompetitionType.FromName(competitionTypeName));
     }
 
-    private static void Validate(string name, CompetitionType type)
+    public void Update(string name, CompetitionType competitionType)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
+        ValidateAndThrow(name, competitionType);
+
+        Name = name;
+        Type = competitionType;
+    }
+
+    private static void ValidateAndThrow(string name, CompetitionType type)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
         ArgumentNullException.ThrowIfNull(type);
         if (type == CompetitionType.Unknown)
         {
-            throw new ArgumentException("A competition cannot have a type of unknown.");
+            throw new ArgumentException("A competition cannot have a type of unknown.", nameof(type));
         }
     }
 }
