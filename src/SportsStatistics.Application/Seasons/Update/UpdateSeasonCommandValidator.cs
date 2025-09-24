@@ -9,7 +9,8 @@ internal sealed class UpdateSeasonCommandValidator : AbstractValidator<UpdateSea
     {
         RuleFor(c => c.Id)
             .NotEmpty()
-            .Must(guid => guid.Version == 7);
+            .Must(guid => guid.Version == 7)
+            .WithMessage("'Id' is not in the correct format.");
 
         RuleFor(c => c.StartDate)
             .NotEmpty()
@@ -20,6 +21,7 @@ internal sealed class UpdateSeasonCommandValidator : AbstractValidator<UpdateSea
                 var hasOverlap = await repository.DoesDateOverlapExistingAsync(start, entityId, cancellation);
                 return !hasOverlap;
             })
+            .When(c => EntityId.Create(c.Id).IsSuccess)
             .WithMessage("'Start Date' overlaps with an existing season.");
 
 
@@ -32,6 +34,7 @@ internal sealed class UpdateSeasonCommandValidator : AbstractValidator<UpdateSea
                 var hasOverlap = await repository.DoesDateOverlapExistingAsync(end, entityId, cancellation);
                 return !hasOverlap;
             })
+            .When(c => EntityId.Create(c.Id).IsSuccess)
             .WithMessage("'End Date' overlaps with an existing season.");
     }
 }
