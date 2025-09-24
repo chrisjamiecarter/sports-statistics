@@ -5,7 +5,7 @@ namespace SportsStatistics.Application.Competitions.Update;
 
 internal sealed class UpdateCompetitionCommandValidator : AbstractValidator<UpdateCompetitionCommand>
 {
-    public UpdateCompetitionCommandValidator(ICompetitionRepository repository)
+    public UpdateCompetitionCommandValidator()
     {
         RuleFor(c => c.Id)
             .NotEmpty()
