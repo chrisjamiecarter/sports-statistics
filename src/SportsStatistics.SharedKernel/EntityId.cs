@@ -3,8 +3,8 @@
 public readonly record struct EntityId
 {
     private static Error IncorrectVersion => Error.Failure(
-    "EntityId.IncorrectVersion",
-    "ID values must be version 7");
+        "EntityId.IncorrectVersion",
+        "ID values must be version 7");
 
     private EntityId(Guid value)
     {
@@ -20,8 +20,8 @@ public readonly record struct EntityId
 
     public static Result<EntityId> Create(Guid value)
     {
-        return TryParse(value, out var id) 
-            ? Result.Success(id) 
+        return TryParse(value, out var id)
+            ? Result.Success(id)
             : Result.Failure<EntityId>(IncorrectVersion);
     }
 
@@ -32,7 +32,7 @@ public readonly record struct EntityId
             id = default;
             return false;
         }
-        
+
         id = new EntityId(value);
         return true;
     }
