@@ -3,6 +3,7 @@ using FluentValidation.TestHelper;
 using SportsStatistics.Application.Players;
 using SportsStatistics.Application.Players.Update;
 using SportsStatistics.Domain.Players;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Players.Update;
 
@@ -107,7 +108,12 @@ public class UpdatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand;
-        SetupIsSquadNumberAvailableAsync(command.SquadNumber, command.Id, true);
+        var entityId = EntityId.Create(command.Id);
+
+        _repositoryMock.Setup(r => r.IsSquadNumberAvailableAsync(command.SquadNumber,
+                                                                 entityId,
+                                                                 It.IsAny<CancellationToken>()))
+                       .ReturnsAsync(true);
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -121,7 +127,7 @@ public class UpdatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand;
-        SetupIsSquadNumberAvailableAsync(command.SquadNumber, command.Id, false);
+        SetupIsSquadNumberAvailableAsync(false);
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -246,15 +252,7 @@ public class UpdatePlayerCommandValidatorTests
     private void SetupIsSquadNumberAvailableAsync(bool returnValue)
     {
         _repositoryMock.Setup(r => r.IsSquadNumberAvailableAsync(It.IsAny<int>(),
-                                                                 It.IsAny<Guid?>(),
-                                                                 It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(returnValue);
-    }
-
-    private void SetupIsSquadNumberAvailableAsync(int squadNumber, Guid? playerId, bool returnValue)
-    {
-        _repositoryMock.Setup(r => r.IsSquadNumberAvailableAsync(squadNumber,
-                                                                 playerId,
+                                                                 It.IsAny<EntityId?>(),
                                                                  It.IsAny<CancellationToken>()))
                        .ReturnsAsync(returnValue);
     }
