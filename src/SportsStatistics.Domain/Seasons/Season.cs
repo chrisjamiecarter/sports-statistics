@@ -18,16 +18,21 @@ public sealed class Season : Entity
 
     public static Season Create(DateOnly startDate, DateOnly endDate)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startDate, endDate, nameof(startDate));
+        ValidateAndThrow(startDate, endDate);
 
-        return new Season(EntityId.Create().Value, startDate, endDate);
+        return new Season(EntityId.Create(), startDate, endDate);
     }
 
     public void Update(DateOnly startDate, DateOnly endDate)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startDate, endDate, nameof(startDate));
+        ValidateAndThrow(startDate, endDate);
 
         StartDate = startDate;
         EndDate = endDate;
+    }
+
+    private static void ValidateAndThrow(DateOnly startDate, DateOnly endDate)
+    {
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startDate, endDate, nameof(startDate));
     }
 }
