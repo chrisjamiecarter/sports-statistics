@@ -3,6 +3,7 @@ using FluentValidation.TestHelper;
 using SportsStatistics.Application.Players;
 using SportsStatistics.Application.Players.Create;
 using SportsStatistics.Domain.Players;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Players.Create;
 
@@ -220,7 +221,7 @@ public class CreatePlayerCommandValidatorTests
     private void SetupIsSquadNumberAvailableAsync(bool returnValue)
     {
         _repositoryMock.Setup(r => r.IsSquadNumberAvailableAsync(It.IsAny<int>(),
-                                                                 It.IsAny<Guid?>(),
+                                                                 It.IsAny<EntityId?>(),
                                                                  It.IsAny<CancellationToken>()))
                        .ReturnsAsync(returnValue);
     }
