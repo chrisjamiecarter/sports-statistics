@@ -10,20 +10,15 @@ public sealed class Competition : Entity
         Type = type;
     }
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    public CompetitionType Type { get; set; } = CompetitionType.Unknown;
+    public CompetitionType Type { get; private set; } = CompetitionType.Unknown;
 
     public static Competition Create(string name, CompetitionType type)
     {
         ValidateAndThrow(name, type);
 
-        return new Competition(EntityId.Create().Value, name, type);
-    }
-
-    public void Update(string name, string competitionTypeName)
-    {
-        Update(name, CompetitionType.FromName(competitionTypeName));
+        return new Competition(EntityId.Create(), name, type);
     }
 
     public void Update(string name, CompetitionType competitionType)
@@ -37,7 +32,6 @@ public sealed class Competition : Entity
     private static void ValidateAndThrow(string name, CompetitionType type)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
-        ArgumentNullException.ThrowIfNull(type);
         if (type == CompetitionType.Unknown)
         {
             throw new ArgumentException("A competition cannot have a type of unknown.", nameof(type));
