@@ -10,13 +10,7 @@ internal sealed class UpdateSeasonCommandHandler(ISeasonRepository repository) :
 
     public async Task<Result> Handle(UpdateSeasonCommand request, CancellationToken cancellationToken)
     {
-        var idResult = EntityId.Create(request.Id);
-        if (idResult.IsFailure)
-        {
-            return idResult;
-        }
-
-        var id = idResult.Value;
+        var id = EntityId.Create(request.Id);
 
         var season = await _repository.GetByIdAsync(id, cancellationToken);
         if (season is null)

@@ -8,19 +8,15 @@ internal sealed class CreatePlayerCommandHandler(IPlayerRepository repository) :
 {
     private readonly IPlayerRepository _repository = repository;
 
-    public async Task<Result> Handle(CreatePlayerCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreatePlayerCommand request, CancellationToken cancellationToken)
     {
-        var position = Position.FromName(command.Position);
-
-        var player = new Player
+        var position = Position.FromName(request.Position);
+        if (position == Position.Unknown)
         {
-            Id = Guid.CreateVersion7(),
-            Name = command.Name,
-            SquadNumber = command.SquadNumber,
-            Nationality = command.Nationality,
-            DateOfBirth = command.DateOfBirth,
-            Position = position,
-        };
+            return Result.Failure(PlayerErrors.InvalidPosition(request.Position));
+        }
+
+        var player = Player.Create(request.Name, request.SquadNumber, request.Nationality, request.DateOfBirth, position);
 
         var created = await _repository.CreateAsync(player, cancellationToken);
 

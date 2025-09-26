@@ -10,13 +10,7 @@ internal sealed class DeleteCompetitionCommandHandler(ICompetitionRepository rep
 
     public async Task<Result> Handle(DeleteCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var idResult = EntityId.Create(request.Id);
-        if (idResult.IsFailure)
-        {
-            return idResult;
-        }
-
-        var id = idResult.Value;
+        var id = EntityId.Create(request.Id);
 
         var competition = await _repository.GetByIdAsync(id, cancellationToken);
         if (competition is null)

@@ -10,13 +10,19 @@ internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) :
 
     public async Task<Result> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
     {
-        var player = await _repository.GetByIdAsync(request.Id, cancellationToken);
+        var entityId = EntityId.Create(request.Id);
+
+        var player = await _repository.GetByIdAsync(entityId, cancellationToken);
         if (player is null)
         {
-            return Result.Failure(PlayerErrors.NotFound(request.Id));
+            return Result.Failure(PlayerErrors.NotFound(entityId));
         }
 
         var position = Position.FromName(request.Position);
+        if (position == Position.Unknown)
+        {
+            return Result.Failure(PlayerErrors.InvalidPosition(request.Position));
+        }
 
         player.Update(request.Name, request.SquadNumber, request.Nationality, request.DateOfBirth, position);
 

@@ -19,9 +19,11 @@ internal sealed class UpdatePlayerCommandValidator : AbstractValidator<UpdatePla
             .InclusiveBetween(1, 99)
             .MustAsync(async (command, squadNumber, cancellation) =>
             {
-                var available = await repository.IsSquadNumberAvailableAsync(squadNumber, command.Id, cancellation);
+                var entityId = EntityId.Create(command.Id);
+                var available = await repository.IsSquadNumberAvailableAsync(squadNumber, entityId, cancellation);
                 return available;
             })
+            .When(c => EntityId.TryParse(c.Id, out _))
             .WithMessage("Squad number is already taken by another player.");
 
         RuleFor(c => c.Nationality)

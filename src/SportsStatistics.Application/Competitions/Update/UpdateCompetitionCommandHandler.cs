@@ -10,13 +10,7 @@ internal sealed class UpdateCompetitionCommandHandler(ICompetitionRepository rep
 
     public async Task<Result> Handle(UpdateCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var idResult = EntityId.Create(request.Id);
-        if (idResult.IsFailure)
-        {
-            return idResult;
-        }
-
-        var id = idResult.Value;
+        var id = EntityId.Create(request.Id);
 
         var competition = await _repository.GetByIdAsync(id, cancellationToken);
         if (competition is null)
@@ -24,7 +18,9 @@ internal sealed class UpdateCompetitionCommandHandler(ICompetitionRepository rep
             return Result.Failure(CompetitionErrors.NotFound(id));
         }
 
-        competition.Update(request.Name, request.CompetitionType);
+        var competitionType = CompetitionType.FromName(request.CompetitionType);
+
+        competition.Update(request.Name, competitionType);
 
         var updated = await _repository.UpdateAsync(competition, cancellationToken);
 

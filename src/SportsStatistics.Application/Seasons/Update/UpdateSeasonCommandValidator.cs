@@ -17,11 +17,11 @@ internal sealed class UpdateSeasonCommandValidator : AbstractValidator<UpdateSea
             .LessThan(c => c.EndDate)
             .MustAsync(async (command, start, cancellation) =>
             {
-                var entityId = EntityId.Create(command.Id).Value;
+                var entityId = EntityId.Create(command.Id);
                 var hasOverlap = await repository.DoesDateOverlapExistingAsync(start, entityId, cancellation);
                 return !hasOverlap;
             })
-            .When(c => EntityId.Create(c.Id).IsSuccess)
+            .When(c => EntityId.TryParse(c.Id, out _))
             .WithMessage("'Start Date' overlaps with an existing season.");
 
 
@@ -30,11 +30,11 @@ internal sealed class UpdateSeasonCommandValidator : AbstractValidator<UpdateSea
             .GreaterThan(c => c.StartDate)
             .MustAsync(async (command, end, cancellation) =>
             {
-                var entityId = EntityId.Create(command.Id).Value;
+                var entityId = EntityId.Create(command.Id);
                 var hasOverlap = await repository.DoesDateOverlapExistingAsync(end, entityId, cancellation);
                 return !hasOverlap;
             })
-            .When(c => EntityId.Create(c.Id).IsSuccess)
+            .When(c => EntityId.TryParse(c.Id, out _))
             .WithMessage("'End Date' overlaps with an existing season.");
     }
 }

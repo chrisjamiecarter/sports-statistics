@@ -10,10 +10,12 @@ internal sealed class DeletePlayerCommandHandler(IPlayerRepository repository) :
 
     public async Task<Result> Handle(DeletePlayerCommand request, CancellationToken cancellationToken)
     {
-        var player = await _repository.GetByIdAsync(request.Id, cancellationToken);
+        var entityId = EntityId.Create(request.Id);
+
+        var player = await _repository.GetByIdAsync(entityId, cancellationToken);
         if (player is null)
         {
-            return Result.Failure(PlayerErrors.NotFound(request.Id));
+            return Result.Failure(PlayerErrors.NotFound(entityId));
         }
 
         var deleted = await _repository.DeleteAsync(player, cancellationToken);

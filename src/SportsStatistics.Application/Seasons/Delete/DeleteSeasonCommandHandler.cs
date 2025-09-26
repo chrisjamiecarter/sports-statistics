@@ -10,13 +10,7 @@ internal sealed class DeleteSeasonCommandHandler(ISeasonRepository repository) :
 
     public async Task<Result> Handle(DeleteSeasonCommand request, CancellationToken cancellationToken)
     {
-        var idResult = EntityId.Create(request.Id);
-        if (idResult.IsFailure)
-        {
-            return idResult;
-        }
-
-        var id = idResult.Value;
+        var id = EntityId.Create(request.Id);
 
         var season = await _repository.GetByIdAsync(id, cancellationToken);
         if (season is null)
