@@ -15,9 +15,7 @@ internal sealed class CompetitionConfiguration : IEntityTypeConfiguration<Compet
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-                .HasConversion(
-                    id => id.Value,
-                    value => EntityId.Create(value).Value)
+               .HasConversion(id => id.Value, value => EntityId.Create(value))
                .IsRequired()
                .ValueGeneratedNever();
 
