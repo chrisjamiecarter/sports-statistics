@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Players;
 using SportsStatistics.Domain.Players;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Infrastructure.Persistence.Players;
 
@@ -28,12 +29,12 @@ internal sealed class PlayerRepository(SportsStatisticsDbContext dbContext) : IP
                                         .ToListAsync(cancellationToken);
     }
 
-    public async Task<Player?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Player?> GetByIdAsync(EntityId id, CancellationToken cancellationToken)
     {
         return await _dbContext.Players.FindAsync([id], cancellationToken);
     }
 
-    public async Task<bool> IsSquadNumberAvailableAsync(int squadNumber, Guid? excludingPlayerId, CancellationToken cancellationToken)
+    public async Task<bool> IsSquadNumberAvailableAsync(int squadNumber, EntityId? excludingPlayerId, CancellationToken cancellationToken)
     {
         var taken = await _dbContext.Players.AsNoTracking()
                                             .AnyAsync(p => p.SquadNumber == squadNumber && p.Id != excludingPlayerId, cancellationToken);
