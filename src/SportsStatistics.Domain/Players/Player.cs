@@ -49,7 +49,7 @@ public sealed class Player : Entity
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentOutOfRangeException.ThrowIfLessThan(squadNumber, 1, nameof(squadNumber));
         ArgumentException.ThrowIfNullOrEmpty(nationality);
-        ArgumentOutOfRangeException.ThrowIfLessThan(dateOfBirth, DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-15)), nameof(squadNumber));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(dateOfBirth, DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-15)), nameof(dateOfBirth));
         if (position == Position.Unknown)
         {
             throw new ArgumentException("A player cannot have a position of unknown.", nameof(position));
