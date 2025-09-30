@@ -1,0 +1,42 @@
+﻿@page "/admin/fixtures"
+@using SportsStatistics.Application.Seasons.GetAll
+@using SportsStatistics.Web.Admin.Seasons
+
+<PageTitle>Fixtures</PageTitle>
+
+<FluentCard>
+
+    <FluentSelect TOption="SeasonDto"
+                  Label="Season"
+                  Items="Seasons"
+                  OptionText="@(s => s.Name)"
+                  @bind-SelectedOption="SelectedSeason" />
+
+</FluentCard>
+
+
+@code {
+    private IEnumerable<SeasonDto>? Seasons { get; set; }
+
+    private SeasonDto? SelectedSeason { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSeasonsAsync();
+    }
+
+    private async Task LoadSeasonsAsync()
+    {
+        var request = new GetSeasonsQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError("Unable to load seasons");
+        }
+
+        Seasons = result.Value.Select(x => new SeasonDto(x.Id, x.StartDate, x.EndDate, x.Name));
+
+        var now = DateOnly.FromDateTime(DateTime.Now);
+        SelectedSeason = Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
+    }
+}
