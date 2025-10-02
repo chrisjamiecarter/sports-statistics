@@ -5,7 +5,7 @@ namespace SportsStatistics.Domain.Fixtures;
 
 public sealed class Fixture : Entity
 {
-    private Fixture(EntityId id, DateTime kickoffTimeUtc, Competition competition, FixtureLocation location, FixtureScore score, FixtureStatus status) : base(id)
+    private Fixture(EntityId id, DateTime kickoffTimeUtc, Competition competition, FixtureLocation location, FixtureScore? score, FixtureStatus status) : base(id)
     {
         KickoffTimeUtc = kickoffTimeUtc;
         Competition = competition;
@@ -20,13 +20,13 @@ public sealed class Fixture : Entity
     
     public FixtureLocation Location { get; private set; } = FixtureLocation.Unknown;
 
-    public FixtureScore Score { get; private set; }
+    public FixtureScore? Score { get; private set; }
 
     public FixtureStatus Status { get; private set; } = FixtureStatus.Unknown;
 
-    public static Fixture Create(DateTime kickoffTimeUtc, Competition competition, FixtureLocation location, FixtureScore score, FixtureStatus status)
+    public static Fixture Create(DateTime kickoffTimeUtc, Competition competition, FixtureLocation location)
     {
         // TODO: Validation.
-        return new Fixture(EntityId.Create(), kickoffTimeUtc, competition, location, score, status);
+        return new Fixture(EntityId.Create(), kickoffTimeUtc, competition, location, null, FixtureStatus.Scheduled);
     }
 }
