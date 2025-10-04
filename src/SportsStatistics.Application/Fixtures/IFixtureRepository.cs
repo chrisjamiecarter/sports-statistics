@@ -2,7 +2,7 @@
 
 namespace SportsStatistics.Application.Fixtures;
 
-internal interface IFixtureRepository
+public interface IFixtureRepository
 {
     Task<bool> CreateAsync(Fixture fixture, CancellationToken cancellationToken);
 }
