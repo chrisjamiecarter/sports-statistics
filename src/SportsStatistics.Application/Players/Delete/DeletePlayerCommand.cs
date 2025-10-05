@@ -2,4 +2,4 @@
 
 namespace SportsStatistics.Application.Players.Delete;
 
-public record DeletePlayerCommand(Guid Id) : ICommand;
+public sealed record DeletePlayerCommand(Guid Id) : ICommand;
