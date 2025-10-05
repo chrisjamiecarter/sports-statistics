@@ -17,7 +17,7 @@ public sealed class Fixture : Entity
     public DateTime KickoffTimeUtc { get; private set; }
 
     public Competition Competition { get; private set; }
-    
+
     public FixtureLocation Location { get; private set; } = FixtureLocation.Unknown;
 
     public FixtureScore? Score { get; private set; }
@@ -28,5 +28,15 @@ public sealed class Fixture : Entity
     {
         // TODO: Validation.
         return new Fixture(EntityId.Create(), kickoffTimeUtc, competition, location, null, FixtureStatus.Scheduled);
+    }
+
+    public void Update(DateTime kickoffTimeUtc, Competition competition, FixtureLocation location, FixtureScore? score, FixtureStatus status)
+    {
+        // TODO: Validation.
+        KickoffTimeUtc = kickoffTimeUtc;
+        Competition = competition;
+        Location = location;
+        Score = score;
+        Status = status;
     }
 }
