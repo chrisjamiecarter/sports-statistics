@@ -20,6 +20,7 @@ internal sealed class CreateFixtureCommandHandler(IFixtureRepository repository,
             return Result.Failure(FixtureErrors.InvalidLocation(request.FixtureLocation));
         }
 
+        // TODO: Replace Competition with CompetitionId in Fixture entity.
         var competitionId = EntityId.Create(request.CompetitionId);
         var competition = await _competitionRepository.GetByIdAsync(competitionId, cancellationToken);
         if (competition is null)
