@@ -5,5 +5,5 @@ public sealed record FixtureResponse(Guid Id,
                                      Guid CompetitionId,
                                      string CompetitionName,
                                      string CompetitionType,
-                                     string FixtureLocationName,
-                                     string FixtureStatusName);
+                                     string LocationName,
+                                     string StatusName);
