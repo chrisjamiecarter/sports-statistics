@@ -12,6 +12,10 @@ public static class FixtureErrors
         "Fixture.NotCreated",
         $"The fixture with the Id = '{id}' was not created.");
 
+    public static Error NotDeleted(EntityId id) => Error.Failure(
+        "Fixture.NotDeleted",
+        $"The fixture with the Id = '{id}' was not deleted.");
+
     public static Error NotFound(EntityId id) => Error.NotFound(
         "Fixture.NotFound",
         $"The fixture with the Id = '{id}' was not found.");
