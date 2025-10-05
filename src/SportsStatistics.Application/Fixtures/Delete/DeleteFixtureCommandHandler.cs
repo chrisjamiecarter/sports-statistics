@@ -12,13 +12,13 @@ internal sealed class DeleteFixtureCommandHandler(IFixtureRepository repository)
     {
         var id = EntityId.Create(request.Id);
 
-        var competition = await _repository.GetByIdAsync(id, cancellationToken);
-        if (competition is null)
+        var fixture = await _repository.GetByIdAsync(id, cancellationToken);
+        if (fixture is null)
         {
             return Result.Failure(FixtureErrors.NotFound(id));
         }
 
-        var deleted = await _repository.DeleteAsync(competition, cancellationToken);
+        var deleted = await _repository.DeleteAsync(fixture, cancellationToken);
 
         return deleted
             ? Result.Success()
