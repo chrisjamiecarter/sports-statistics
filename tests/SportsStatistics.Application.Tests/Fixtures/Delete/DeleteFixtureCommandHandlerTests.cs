@@ -1,6 +1,5 @@
 ﻿using SportsStatistics.Application.Fixtures;
 using SportsStatistics.Application.Fixtures.Delete;
-using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
 
@@ -8,8 +7,7 @@ namespace SportsStatistics.Application.Tests.Fixtures.Delete;
 
 public class DeleteFixtureCommandHandlerTests
 {
-    private static readonly Competition BaseCompetition = Competition.Create("Test League", CompetitionType.League);
-    private static readonly Fixture BaseFixture = Fixture.Create(DateTime.UtcNow, BaseCompetition, FixtureLocation.Home);
+    private static readonly Fixture BaseFixture = Fixture.Create(EntityId.Create(), DateTime.UtcNow, FixtureLocation.Home);
     private static readonly DeleteFixtureCommand BaseCommand = new(BaseFixture.Id.Value);
 
     private readonly Mock<IFixtureRepository> _repositoryMock;

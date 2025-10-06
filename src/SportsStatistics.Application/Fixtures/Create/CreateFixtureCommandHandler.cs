@@ -14,21 +14,21 @@ internal sealed class CreateFixtureCommandHandler(IFixtureRepository repository,
 
     public async Task<Result> Handle(CreateFixtureCommand request, CancellationToken cancellationToken)
     {
-        var location = FixtureLocation.FromName(request.FixtureLocation);
-        if (location == FixtureLocation.Unknown)
-        {
-            return Result.Failure(FixtureErrors.InvalidLocation(request.FixtureLocation));
-        }
-
-        // TODO: Replace Competition with CompetitionId in Fixture entity.
         var competitionId = EntityId.Create(request.CompetitionId);
+
         var competition = await _competitionRepository.GetByIdAsync(competitionId, cancellationToken);
         if (competition is null)
         {
             return Result.Failure(CompetitionErrors.NotFound(competitionId));
         }
 
-        var fixture = Fixture.Create(request.KickoffTimeUtc, competition, location);
+        var location = FixtureLocation.FromName(request.FixtureLocation);
+        if (location == FixtureLocation.Unknown)
+        {
+            return Result.Failure(FixtureErrors.InvalidLocation(request.FixtureLocation));
+        }
+
+        var fixture = Fixture.Create(competitionId, request.KickoffTimeUtc, location);
 
         var created = await _repository.CreateAsync(fixture, cancellationToken);
 

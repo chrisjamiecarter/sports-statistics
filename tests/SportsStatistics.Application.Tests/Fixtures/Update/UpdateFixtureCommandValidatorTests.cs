@@ -7,7 +7,6 @@ namespace SportsStatistics.Application.Tests.Fixtures.Update;
 public class UpdateFixtureCommandValidatorTests
 {
     private static readonly UpdateFixtureCommand BaseCommand = new(Guid.CreateVersion7(),
-                                                                   Guid.CreateVersion7(),
                                                                    DateTime.UtcNow.AddDays(7),
                                                                    FixtureLocation.Home.Name,
                                                                    0,
@@ -61,36 +60,6 @@ public class UpdateFixtureCommandValidatorTests
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage(expectedErrorMessage);
-    }
-
-    [Fact]
-    public async Task Should_HaveValidationError_When_CompetitionIdIsEmpty()
-    {
-        // Arrange.
-        var command = BaseCommand with { CompetitionId = default };
-        var expectedErrorMessage = "'Competition Id' must not be empty.";
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.CompetitionId)
-              .WithErrorMessage(expectedErrorMessage);
-    }
-
-    [Fact]
-    public async Task Should_HaveValidationError_When_CompetitionIdIsNotVersion7()
-    {
-        // Arrange.
-        var command = BaseCommand with { CompetitionId = Guid.NewGuid() };
-        var expectedErrorMessage = "'Competition Id' is not in the correct format.";
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.CompetitionId)
               .WithErrorMessage(expectedErrorMessage);
     }
 

@@ -8,7 +8,6 @@ namespace SportsStatistics.Application.Tests.Fixtures.GetAll;
 
 public class GetFixturesQueryHandlerTests
 {
-    private static readonly Competition BaseCompetition = Competition.Create("Test League", CompetitionType.League);
     private static readonly GetFixturesQuery BaseCommand = new();
 
     private readonly Mock<IFixtureRepository> _repositoryMock;
@@ -27,8 +26,8 @@ public class GetFixturesQueryHandlerTests
         var command = BaseCommand;
         var fixtures = new List<Fixture>
         {
-            Fixture.Create(DateTime.UtcNow.AddDays(7), BaseCompetition, FixtureLocation.Home),
-            Fixture.Create(DateTime.UtcNow.AddDays(14), BaseCompetition, FixtureLocation.Away),
+            Fixture.Create(EntityId.Create(), DateTime.UtcNow.AddDays(7), FixtureLocation.Home),
+            Fixture.Create(EntityId.Create(), DateTime.UtcNow.AddDays(14), FixtureLocation.Away),
         };
         var expected = Result.Success(fixtures.ToResponse());
 
@@ -50,7 +49,7 @@ public class GetFixturesQueryHandlerTests
         var command = BaseCommand;
         var fixtures = new List<Fixture>
         {
-            Fixture.Create(DateTime.UtcNow.AddDays(7), BaseCompetition, FixtureLocation.Home),
+            Fixture.Create(EntityId.Create(), DateTime.UtcNow.AddDays(7), FixtureLocation.Home),
         };
         var expected = Result.Success(fixtures.ToResponse());
 

@@ -7,14 +7,14 @@ internal sealed class CreateFixtureCommandValidator : AbstractValidator<CreateFi
 {
     public CreateFixtureCommandValidator()
     {
-        // TODO: Only one fixture per day?
-        RuleFor(c => c.KickoffTimeUtc)
-            .NotEmpty();
-
         RuleFor(c => c.CompetitionId)
             .NotEmpty()
             .Must(guid => guid.Version == 7)
             .WithMessage("'Competition Id' is not in the correct format.");
+
+        // TODO: Only one fixture per day?
+        RuleFor(c => c.KickoffTimeUtc)
+            .NotEmpty();
 
         RuleFor(c => c.FixtureLocation)
             .NotEmpty()

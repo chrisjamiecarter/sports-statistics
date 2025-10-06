@@ -9,10 +9,8 @@ internal static class FixtureMapper
 
     public static FixtureResponse ToResponse(this Fixture fixture)
         => new(fixture.Id.Value,
+               fixture.CompetitionId.Value,
                fixture.KickoffTimeUtc,
-               fixture.Competition.Id.Value,
-               fixture.Competition.Name,
-               fixture.Competition.Type.Name,
                fixture.Location.Name,
                fixture.Status.Name);
 }

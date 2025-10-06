@@ -1,15 +1,12 @@
 ﻿using SportsStatistics.Application.Abstractions.Messaging;
-using SportsStatistics.Application.Competitions;
-using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.Update;
 
-internal sealed class UpdateFixtureCommandHandler(IFixtureRepository repository, ICompetitionRepository competitionRepository) : ICommandHandler<UpdateFixtureCommand>
+internal sealed class UpdateFixtureCommandHandler(IFixtureRepository repository) : ICommandHandler<UpdateFixtureCommand>
 {
     private readonly IFixtureRepository _repository = repository;
-    private readonly ICompetitionRepository _competitionRepository = competitionRepository;
 
     public async Task<Result> Handle(UpdateFixtureCommand request, CancellationToken cancellationToken)
     {
@@ -21,25 +18,13 @@ internal sealed class UpdateFixtureCommandHandler(IFixtureRepository repository,
             return Result.Failure(FixtureErrors.NotFound(id));
         }
 
-        // TODO: Replace Competition with CompetitionId in Fixture entity.
-        var competitionId = EntityId.Create(request.CompetitionId);
-        var competition = await _competitionRepository.GetByIdAsync(competitionId, cancellationToken);
-        if (competition is null)
-        {
-            return Result.Failure(CompetitionErrors.NotFound(competitionId));
-        }
-
         var location = FixtureLocation.FromName(request.LocationName);
+
+        var score = FixtureScore.Create(request.HomeGoals, request.AwayGoals);
 
         var status = FixtureStatus.FromName(request.StatusName);
 
-        FixtureScore? score = null;
-        if (status == FixtureStatus.Completed)
-        {
-            score = FixtureScore.Create(request.HomeGoals, request.AwayGoals);
-        }
-
-        fixture.Update(request.KickoffTimeUtc, competition, location, score, status);
+        fixture.Update(request.KickoffTimeUtc, location, score, status);
 
         var updated = await _repository.UpdateAsync(fixture, cancellationToken);
 

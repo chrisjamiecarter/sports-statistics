@@ -12,11 +12,6 @@ internal sealed class UpdateFixtureCommandValidator : AbstractValidator<UpdateFi
             .Must(guid => guid.Version == 7)
             .WithMessage("'Id' is not in the correct format.");
         
-        RuleFor(c => c.CompetitionId)
-            .NotEmpty()
-            .Must(guid => guid.Version == 7)
-            .WithMessage("'Competition Id' is not in the correct format.");
-
         // TODO: Only one fixture per day?
         RuleFor(c => c.KickoffTimeUtc)
             .NotEmpty();

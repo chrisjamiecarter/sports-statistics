@@ -9,9 +9,9 @@ namespace SportsStatistics.Application.Tests.Fixtures.Create;
 
 public class CreateFixtureCommandHandlerTests
 {
-    private static readonly CreateFixtureCommand BaseCommand = new(DateTime.UtcNow,
-                                                                  Guid.CreateVersion7(),
-                                                                  FixtureLocation.Home.Name);
+    private static readonly CreateFixtureCommand BaseCommand = new(Guid.CreateVersion7(),
+                                                                   DateTime.UtcNow,
+                                                                   FixtureLocation.Home.Name);
 
     private static readonly Competition BaseCompetition = Competition.Create("Test Competition", CompetitionType.League);
 
@@ -56,12 +56,15 @@ public class CreateFixtureCommandHandlerTests
         var command = BaseCommand with { FixtureLocation = "The Moon" };
         var expected = Result.Failure(FixtureErrors.InvalidLocation(command.FixtureLocation));
 
+        _competitionRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
+                                  .ReturnsAsync(BaseCompetition);
+
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _competitionRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Never);
+        _competitionRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
         _fixtureRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 

@@ -6,9 +6,9 @@ namespace SportsStatistics.Application.Tests.Fixtures.Create;
 
 public class CreateFixtureCommandValidatorTests
 {
-    private static readonly CreateFixtureCommand BaseCommand = new(DateTime.UtcNow,
-                                                                  Guid.CreateVersion7(),
-                                                                  FixtureLocation.Home.Name);
+    private static readonly CreateFixtureCommand BaseCommand = new(Guid.CreateVersion7(),
+                                                                   DateTime.UtcNow,
+                                                                   FixtureLocation.Home.Name);
 
     private readonly CreateFixtureCommandValidator _validator;
 
