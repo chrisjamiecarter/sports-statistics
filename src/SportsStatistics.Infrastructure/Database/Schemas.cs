@@ -1,6 +1,6 @@
-﻿namespace SportsStatistics.Infrastructure.Persistence.Schemas;
+﻿namespace SportsStatistics.Infrastructure.Database;
 
-internal static class SportsStatisticsSchema
+internal static class Schemas
 {
     internal sealed record SchemaMetadata(string Schema, string Table);
 

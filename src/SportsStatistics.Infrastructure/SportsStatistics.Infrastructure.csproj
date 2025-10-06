@@ -27,4 +27,8 @@
     <InternalsVisibleTo Include="SportsStatistics.ArchitectureTests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Fixtures\" />
+  </ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@ namespace SportsStatistics.Application.Tests.Players.Delete;
 
 public sealed class DeletePlayerCommandValidatorTests
 {
-    private static readonly DeletePlayerCommand BaseCommand = new(new("01995348-37ea-7cdc-9e06-89d6ef2933db"));
+    private static readonly DeletePlayerCommand BaseCommand = new(Guid.CreateVersion7());
 
     private readonly DeletePlayerCommandValidator _validator;
 
@@ -15,7 +15,7 @@ public sealed class DeletePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -28,16 +28,32 @@ public sealed class DeletePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_IdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenIdIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { Id = default };
+        var expectedErrorMessage = "'Id' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage("'Id' must not be empty.");
+              .WithErrorMessage(expectedErrorMessage);
+    }
+
+    [Fact]
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenIdIsNotVersion7()
+    {
+        // Arrange.
+        var command = BaseCommand with { Id = Guid.NewGuid() };
+        var expectedErrorMessage = "'Id' is not in the correct format.";
+
+        // Act.
+        var result = await _validator.TestValidateAsync(command);
+
+        // Assert.
+        result.ShouldHaveValidationErrorFor(c => c.Id)
+              .WithErrorMessage(expectedErrorMessage);
     }
 }

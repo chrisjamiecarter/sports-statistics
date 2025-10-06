@@ -1,9 +1,9 @@
-﻿using System.Text;
+﻿using System.Linq.Expressions;
 using FluentValidation.TestHelper;
-using SportsStatistics.Application.Players;
+using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Players.Create;
 using SportsStatistics.Domain.Players;
-using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Players.Create;
 
@@ -15,19 +15,15 @@ public class CreatePlayerCommandValidatorTests
                                                                   DateOnly.FromDateTime(DateTime.Today).AddYears(-15),
                                                                   Position.Goalkeeper.Name);
 
-    private readonly Mock<IPlayerRepository> _repositoryMock;
     private readonly CreatePlayerCommandValidator _validator;
 
     public CreatePlayerCommandValidatorTests()
     {
-        _repositoryMock = new Mock<IPlayerRepository>();
-        SetupIsSquadNumberAvailableAsync(true);
-
-        _validator = new CreatePlayerCommandValidator(_repositoryMock.Object);
+        _validator = new CreatePlayerCommandValidator();
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -42,148 +38,132 @@ public class CreatePlayerCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_NameIsEmpty(string name)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNameIsEmpty(string name)
     {
         // Arrange.
         var command = BaseCommand with { Name = name };
+        var expectedErrorMessage = "'Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Name)
-              .WithErrorMessage("'Name' must not be empty.");
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_NameExceedsMaximumLength()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNameExceedsMaximumLength()
     {
         // Arrange.
         int max = 100;
-        var name = new string('a', max + 1);
-        var command = BaseCommand with { Name = name };
-        var expectedMessage = $"The length of 'Name' must be {max} characters or fewer. You entered {name.Length} characters.";
+        var command = BaseCommand with { Name = new string('a', max + 1) };
+        var expectedErrorMessage = $"The length of 'Name' must be {max} characters or fewer. You entered {command.Name.Length} characters.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Name)
-              .WithErrorMessage(expectedMessage);
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Theory]
     [InlineData(-1)]
     [InlineData(0)]
     [InlineData(100)]
-    public async Task Should_HaveValidationError_When_SquadNumberIsOutsideRange(int squadNumber)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenSquadNumberIsOutsideRange(int squadNumber)
     {
         // Arrange.
         var command = BaseCommand with { SquadNumber = squadNumber };
-        var expectedMessage = $"'Squad Number' must be between 1 and 99. You entered {squadNumber}.";
+        var expectedErrorMessage = $"'Squad Number' must be between 1 and 99. You entered {squadNumber}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.SquadNumber)
-              .WithErrorMessage(expectedMessage);
-    }
-
-    [Fact]
-    public async Task Should_HaveValidationError_When_SquadNumberIsUnavailable()
-    {
-        // Arrange.
-        var command = BaseCommand;
-        SetupIsSquadNumberAvailableAsync(false);
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.SquadNumber)
-              .WithErrorMessage("Squad number is already taken by another player.");
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_NationalityIsEmpty(string nationality)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNationalityIsEmpty(string nationality)
     {
         // Arrange.
         var command = BaseCommand with { Nationality = nationality };
+        var expectedErrorMessage = "'Nationality' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Nationality)
-              .WithErrorMessage("'Nationality' must not be empty.");
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_NationalityExceedsMaximumLength()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNationalityExceedsMaximumLength()
     {
         // Arrange.
-        var sb = new StringBuilder();
-        while (sb.Length <= 100)
-        {
-            sb.Append("Test");
-        }
-        var command = BaseCommand with { Nationality = sb.ToString() };
-        var expectedMessage = $"The length of 'Nationality' must be 100 characters or fewer. You entered {sb.Length} characters.";
+        int max = 100;
+        var command = BaseCommand with { Nationality = new string('a', max + 1) };
+        var expectedErrorMessage = $"The length of 'Nationality' must be 100 characters or fewer. You entered {command.Nationality.Length} characters.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Nationality)
-              .WithErrorMessage(expectedMessage);
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_DateOfBirthIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenDateOfBirthIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { DateOfBirth = default };
+        var expectedErrorMessage = "'Date Of Birth' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.DateOfBirth)
-              .WithErrorMessage("'Date Of Birth' must not be empty.");
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_DateOfBirthIsLessThanFifteenYearsAgo()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenDateOfBirthIsLessThanFifteenYearsAgo()
     {
         // Arrange.
-        var dob = DateOnly.FromDateTime(DateTime.Today).AddYears(-10);
-        var command = BaseCommand with { DateOfBirth = dob };
+        var command = BaseCommand with { DateOfBirth = DateOnly.FromDateTime(DateTime.Today).AddYears(-10) };
+        var expectedErrorMessage = "Player must be at least 15 years old.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.DateOfBirth)
-              .WithErrorMessage("Player must be at least 15 years old.");
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_PositionIsEmpty(string position)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenPositionNameIsEmpty(string positionName)
     {
         // Arrange.
-        var command = BaseCommand with { Position = position };
+        var command = BaseCommand with { PositionName = positionName };
+        var expectedErrorMessage = "'Position Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Position)
-              .WithErrorMessage("'Position' must not be empty.");
+        result.ShouldHaveValidationErrorFor(c => c.PositionName)
+              .WithErrorMessage(expectedErrorMessage);
     }
 
     [Theory]
@@ -191,10 +171,10 @@ public class CreatePlayerCommandValidatorTests
     [InlineData("Defender")]
     [InlineData("Midfielder")]
     [InlineData("Attacker")]
-    public async Task Should_NotHaveValidationError_When_PositionIsValid(string position)
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenPositionNameIsValid(string positionName)
     {
         // Arrange.
-        var command = BaseCommand with { Position = position };
+        var command = BaseCommand with { PositionName = positionName };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -204,25 +184,17 @@ public class CreatePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_PositionIsInvalid()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenPositionNameIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { Position = "Airline Pilot" };
-        var expectedMessage = $"Invalid position. Valid positions: {string.Join(", ", Position.All)}.";
+        var command = BaseCommand with { PositionName = "Airline Pilot" };
+        var expectedErrorMessage = $"Invalid position. Valid positions: {string.Join(", ", Position.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Position)
-              .WithErrorMessage(expectedMessage);
-    }
-
-    private void SetupIsSquadNumberAvailableAsync(bool returnValue)
-    {
-        _repositoryMock.Setup(r => r.IsSquadNumberAvailableAsync(It.IsAny<int>(),
-                                                                 It.IsAny<EntityId?>(),
-                                                                 It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(returnValue);
+        result.ShouldHaveValidationErrorFor(c => c.PositionName)
+              .WithErrorMessage(expectedErrorMessage);
     }
 }

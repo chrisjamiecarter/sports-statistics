@@ -5,15 +5,16 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SportsStatistics.Infrastructure.Persistence;
+using SportsStatistics.Infrastructure.Database;
+
 
 #nullable disable
 
 namespace SportsStatistics.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(SportsStatisticsDbContext))]
-    [Migration("20250917174814_InitialCreateApplication")]
-    partial class InitialCreateApplication
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20250923144424_AddCompetitions")]
+    partial class AddCompetitions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +25,25 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SportsStatistics.Domain.Competitions.Competition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Competitions", "sports");
+                });
 
             modelBuilder.Entity("SportsStatistics.Domain.Players.Player", b =>
                 {
@@ -56,6 +76,22 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Players", "sports");
+                });
+
+            modelBuilder.Entity("SportsStatistics.Domain.Seasons.Season", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Seasons", "sports");
                 });
 #pragma warning restore 612, 618
         }

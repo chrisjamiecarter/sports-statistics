@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Competitions;
 using SportsStatistics.Domain.Competitions;
+using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Infrastructure.Persistence.Competitions;
-internal sealed class CompetitionRepository(SportsStatisticsDbContext dbContext) : ICompetitionRepository
+namespace SportsStatistics.Infrastructure.Competitions;
+internal sealed class CompetitionRepository(ApplicationDbContext dbContext) : ICompetitionRepository
 {
-    private readonly SportsStatisticsDbContext _dbContext = dbContext;
+    private readonly ApplicationDbContext _dbContext = dbContext;
 
     public async Task<bool> CreateAsync(Competition competition, CancellationToken cancellationToken)
     {

@@ -6,25 +6,19 @@ namespace SportsStatistics.Application.Players.Update;
 
 internal sealed class UpdatePlayerCommandValidator : AbstractValidator<UpdatePlayerCommand>
 {
-    public UpdatePlayerCommandValidator(IPlayerRepository repository)
+    public UpdatePlayerCommandValidator()
     {
         RuleFor(c => c.Id)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(guid => guid.Version == 7)
+            .WithMessage("'Id' is not in the correct format.");
 
         RuleFor(c => c.Name)
             .NotEmpty()
             .MaximumLength(100);
 
         RuleFor(c => c.SquadNumber)
-            .InclusiveBetween(1, 99)
-            .MustAsync(async (command, squadNumber, cancellation) =>
-            {
-                var entityId = EntityId.Create(command.Id);
-                var available = await repository.IsSquadNumberAvailableAsync(squadNumber, entityId, cancellation);
-                return available;
-            })
-            .When(c => EntityId.TryParse(c.Id, out _))
-            .WithMessage("Squad number is already taken by another player.");
+            .InclusiveBetween(1, 99);
 
         RuleFor(c => c.Nationality)
             .NotEmpty()
@@ -38,7 +32,7 @@ internal sealed class UpdatePlayerCommandValidator : AbstractValidator<UpdatePla
             })
             .WithMessage("Player must be at least 15 years old.");
 
-        RuleFor(c => c.Position)
+        RuleFor(c => c.PositionName)
             .NotEmpty()
             .Must(position =>
             {

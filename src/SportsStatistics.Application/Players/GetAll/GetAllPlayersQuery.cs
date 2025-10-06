@@ -2,4 +2,4 @@
 
 namespace SportsStatistics.Application.Players.GetAll;
 
-public sealed record GetPlayersQuery() : IQuery<List<PlayerResponse>>;
+public sealed record GetAllPlayersQuery() : IQuery<List<PlayerResponse>>;

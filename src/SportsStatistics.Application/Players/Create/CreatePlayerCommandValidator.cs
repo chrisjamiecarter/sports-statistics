@@ -6,20 +6,14 @@ namespace SportsStatistics.Application.Players.Create;
 
 internal sealed class CreatePlayerCommandValidator : AbstractValidator<CreatePlayerCommand>
 {
-    public CreatePlayerCommandValidator(IPlayerRepository repository)
+    public CreatePlayerCommandValidator()
     {
         RuleFor(c => c.Name)
             .NotEmpty()
             .MaximumLength(100);
 
         RuleFor(c => c.SquadNumber)
-            .InclusiveBetween(1, 99)
-            .MustAsync(async (squadNumber, cancellation) =>
-            {
-                var available = await repository.IsSquadNumberAvailableAsync(squadNumber, null, cancellation);
-                return available;
-            })
-            .WithMessage("Squad number is already taken by another player.");
+            .InclusiveBetween(1, 99);
 
         RuleFor(c => c.Nationality)
             .NotEmpty()
@@ -33,7 +27,7 @@ internal sealed class CreatePlayerCommandValidator : AbstractValidator<CreatePla
             })
             .WithMessage("Player must be at least 15 years old.");
 
-        RuleFor(c => c.Position)
+        RuleFor(c => c.PositionName)
             .NotEmpty()
             .Must(position =>
             {

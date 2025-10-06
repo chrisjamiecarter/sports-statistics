@@ -5,15 +5,16 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SportsStatistics.Infrastructure.Persistence;
+using SportsStatistics.Infrastructure.Database;
+
 
 #nullable disable
 
 namespace SportsStatistics.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(SportsStatisticsDbContext))]
-    [Migration("20250920145513_AddSeasons")]
-    partial class AddSeasons
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20250917174814_InitialCreateApplication")]
+    partial class InitialCreateApplication
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,22 +57,6 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Players", "sports");
-                });
-
-            modelBuilder.Entity("SportsStatistics.Domain.Seasons.Season", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Seasons", "sports");
                 });
 #pragma warning restore 612, 618
         }

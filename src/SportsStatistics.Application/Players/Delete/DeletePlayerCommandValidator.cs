@@ -7,6 +7,8 @@ internal sealed class DeletePlayerCommandValidator : AbstractValidator<DeletePla
     public DeletePlayerCommandValidator()
     {
         RuleFor(c => c.Id)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(guid => guid.Version == 7)
+            .WithMessage("'Id' is not in the correct format.");
     }
 }

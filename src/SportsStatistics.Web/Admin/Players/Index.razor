@@ -49,7 +49,7 @@
 
     private async Task LoadPlayersAsync()
     {
-        var request = new GetPlayersQuery();
+        var request = new GetAllPlayersQuery();
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {

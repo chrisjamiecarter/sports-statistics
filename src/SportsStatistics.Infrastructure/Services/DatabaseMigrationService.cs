@@ -3,15 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
+using SportsStatistics.Infrastructure.Database;
 
-namespace SportsStatistics.Infrastructure.Persistence.Services;
+namespace SportsStatistics.Infrastructure.Services;
 
 internal sealed class DatabaseMigrationService : IDatabaseMigrationService
 {
-    private readonly SportsStatisticsDbContext _dbContext;
+    private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<DatabaseMigrationService> _logger;
 
-    public DatabaseMigrationService(SportsStatisticsDbContext dbContext, ILogger<DatabaseMigrationService> logger)
+    public DatabaseMigrationService(ApplicationDbContext dbContext, ILogger<DatabaseMigrationService> logger)
     {
         _dbContext = dbContext;
         _logger = logger;

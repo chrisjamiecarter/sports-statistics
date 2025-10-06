@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Seasons;
-using SportsStatistics.Infrastructure.Persistence.Schemas;
+using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Infrastructure.Persistence.Seasons;
+namespace SportsStatistics.Infrastructure.Seasons;
 
 internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
 {
     public void Configure(EntityTypeBuilder<Season> builder)
     {
-        builder.ToTable(SportsStatisticsSchema.Seasons.Table, SportsStatisticsSchema.Seasons.Schema);
+        builder.ToTable(Schemas.Seasons.Table, Schemas.Seasons.Schema);
 
         builder.HasKey(p => p.Id);
 

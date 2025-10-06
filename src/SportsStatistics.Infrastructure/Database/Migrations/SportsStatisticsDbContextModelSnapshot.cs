@@ -3,20 +3,18 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SportsStatistics.Infrastructure.Persistence;
+using SportsStatistics.Infrastructure.Database;
+
 
 #nullable disable
 
 namespace SportsStatistics.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(SportsStatisticsDbContext))]
-    [Migration("20250923144424_AddCompetitions")]
-    partial class AddCompetitions
+    [DbContext(typeof(ApplicationDbContext))]
+    partial class SportsStatisticsDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

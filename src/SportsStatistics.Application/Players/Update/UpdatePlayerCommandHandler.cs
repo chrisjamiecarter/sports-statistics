@@ -1,32 +1,37 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
+﻿using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Update;
 
-internal sealed class UpdatePlayerCommandHandler(IPlayerRepository repository) : ICommandHandler<UpdatePlayerCommand>
+internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext,
+                                                 IPlayerService service) : ICommandHandler<UpdatePlayerCommand>
 {
-    private readonly IPlayerRepository _repository = repository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
+    private readonly IPlayerService _service = service;
 
     public async Task<Result> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
     {
         var entityId = EntityId.Create(request.Id);
 
-        var player = await _repository.GetByIdAsync(entityId, cancellationToken);
+        var player = await _dbContext.Players.FindAsync([entityId], cancellationToken);
+
         if (player is null)
         {
             return Result.Failure(PlayerErrors.NotFound(entityId));
         }
 
-        var position = Position.FromName(request.Position);
-        if (position == Position.Unknown)
+        var isSquadNumberAvailable = await _service.IsSquadNumberAvailableAsync(player.Id, player.SquadNumber, cancellationToken);
+
+        if (!isSquadNumberAvailable)
         {
-            return Result.Failure(PlayerErrors.InvalidPosition(request.Position));
+            return Result.Failure(PlayerErrors.SquadNumberNotAvailable(request.SquadNumber));
         }
 
-        player.Update(request.Name, request.SquadNumber, request.Nationality, request.DateOfBirth, position);
+        player.Update(request.Name, request.SquadNumber, request.Nationality, request.DateOfBirth, request.PositionName);
 
-        var updated = await _repository.UpdateAsync(player, cancellationToken);
+        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return updated
             ? Result.Success()

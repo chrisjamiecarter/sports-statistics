@@ -26,22 +26,26 @@ public sealed class Player : Entity
 
     public int Age => DateOfBirth.CalculateAge();
 
-    public static Player Create(string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position)
+    public static Player Create(string name, int squadNumber, string nationality, DateOnly dateOfBirth, string positionName)
     {
+        var position = Position.FromName(positionName);
+
         ValidateAndThrow(name, squadNumber, nationality, dateOfBirth, position);
 
         return new(EntityId.Create(), name, squadNumber, nationality, dateOfBirth, position);
     }
 
-    public void Update(string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position)
+    public void Update(string name, int squadNumber, string nationality, DateOnly dateOfBirth, string positionName)
     {
+        var position = Position.FromName(positionName);
+
         ValidateAndThrow(name, squadNumber, nationality, dateOfBirth, position);
 
         Name = name;
         SquadNumber = squadNumber;
         Nationality = nationality;
         DateOfBirth = dateOfBirth;
-        Position = position ?? throw new ArgumentNullException(nameof(position));
+        Position = position;
     }
 
     private static void ValidateAndThrow(string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position)

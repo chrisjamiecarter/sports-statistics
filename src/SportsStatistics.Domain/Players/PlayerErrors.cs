@@ -8,9 +8,9 @@ public static class PlayerErrors
         "Player.InvalidPosition",
         $"A player cannot have a position of '{position}'.");
 
-    public static Error NotCreated(EntityId id) => Error.Failure(
+    public static Error NotCreated(string name, DateOnly dateOfBirth) => Error.Failure(
         "Player.NotCreated",
-        $"The player with the Id = '{id}' was not created.");
+        $"The player with the Name = '{name}' and Date of Birth = '{dateOfBirth}' was not created.");
     
     public static Error NotDeleted(EntityId id) => Error.Failure(
         "Player.NotDeleted",
@@ -23,4 +23,8 @@ public static class PlayerErrors
     public static Error NotUpdated(EntityId id) => Error.Failure(
         "Player.NotUpdated",
         $"The player with the Id = '{id}' was not updated.");
+
+    public static Error SquadNumberNotAvailable(int squadNumber) => Error.Failure(
+        "Player.SquadNumberNotAvailable",
+        $"The Squad Number = '{squadNumber}' is already taken by another player.");
 }

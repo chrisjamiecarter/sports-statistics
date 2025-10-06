@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Infrastructure.Persistence.Models.Mappings;
+﻿namespace SportsStatistics.Infrastructure.Models.Mappings;
 
 //internal static class ApplicationUserMapping
 //{

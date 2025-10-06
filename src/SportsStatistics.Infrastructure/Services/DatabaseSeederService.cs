@@ -5,18 +5,19 @@ using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Authorization.Constants;
 using SportsStatistics.Authorization.Entities;
+using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Infrastructure.Persistence.Services;
+namespace SportsStatistics.Infrastructure.Services;
 
 internal sealed class DatabaseSeederService : IDatabaseSeederService
 {
-    private readonly SportsStatisticsDbContext _dbContext;
+    private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ILogger<DatabaseSeederService> _logger;
 
-    public DatabaseSeederService(SportsStatisticsDbContext dbContext,
+    public DatabaseSeederService(ApplicationDbContext dbContext,
                                  UserManager<ApplicationUser> userManager,
                                  RoleManager<IdentityRole> roleManager,
                                  ILogger<DatabaseSeederService> logger)

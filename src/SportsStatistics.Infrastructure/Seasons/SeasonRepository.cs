@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Seasons;
 using SportsStatistics.Domain.Seasons;
+using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Infrastructure.Persistence.Seasons;
+namespace SportsStatistics.Infrastructure.Seasons;
 
-internal sealed class SeasonRepository(SportsStatisticsDbContext dbContext) : ISeasonRepository
+internal sealed class SeasonRepository(ApplicationDbContext dbContext) : ISeasonRepository
 {
-    private readonly SportsStatisticsDbContext _dbContext = dbContext;
+    private readonly ApplicationDbContext _dbContext = dbContext;
 
     public async Task<bool> CreateAsync(Season season, CancellationToken cancellationToken)
     {

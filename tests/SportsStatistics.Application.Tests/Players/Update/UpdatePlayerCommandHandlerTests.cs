@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Application.Players;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Players.Update;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
@@ -7,16 +8,33 @@ namespace SportsStatistics.Application.Tests.Players.Update;
 
 public class UpdatePlayerCommandHandlerTests
 {
-    private static readonly Player BasePlayer = Player.Create("John Smith", 1, "British", new DateOnly(1991, 1, 1), Position.Goalkeeper);
+    private static readonly Player BasePlayer = Player.Create("John Smith", 1, "British", new DateOnly(1991, 1, 1), Position.Goalkeeper.Name);
     private static readonly UpdatePlayerCommand BaseCommand = new(BasePlayer.Id.Value, "Jack Black", 2, "American", new DateOnly(1992, 2, 2), Position.Defender.Name);
 
-    private readonly Mock<IPlayerRepository> _repositoryMock;
+    private readonly Mock<DbSet<Player>> _playerDbSetMock;
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
+    private readonly Mock<IPlayerService> _playerServiceMock;
     private readonly UpdatePlayerCommandHandler _handler;
 
     public UpdatePlayerCommandHandlerTests()
     {
-        _repositoryMock = new Mock<IPlayerRepository>();
-        _handler = new UpdatePlayerCommandHandler(_repositoryMock.Object);
+        _playerDbSetMock = new Mock<DbSet<Player>>();
+        _dbContextMock = new Mock<IApplicationDbContext>();
+        _playerServiceMock = new Mock<IPlayerService>();
+
+        _dbContextMock.Setup(m => m.Players)
+                      .Returns(_playerDbSetMock.Object);
+
+        _playerDbSetMock.Setup(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(BasePlayer);
+
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(1);
+
+        _playerServiceMock.Setup(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                  .ReturnsAsync(true);
+
+        _handler = new UpdatePlayerCommandHandler(_dbContextMock.Object, _playerServiceMock.Object);
     }
 
     [Fact]
@@ -26,19 +44,14 @@ public class UpdatePlayerCommandHandlerTests
         var command = BaseCommand;
         var expected = Result.Success();
 
-        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(BasePlayer);
-
-        _repositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Player>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(true);
-
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Player>(), It.IsAny<CancellationToken>()), Times.Once);
+        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -48,35 +61,58 @@ public class UpdatePlayerCommandHandlerTests
         var command = BaseCommand;
         var expected = Result.Failure(PlayerErrors.NotFound(BasePlayer.Id));
 
-        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync((Player?)null);
+        _playerDbSetMock.Setup(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync((Player?)null);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Player>(), It.IsAny<CancellationToken>()), Times.Never);
+        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenPlayerPositionIsInvalid()
+    public async Task Handle_ShouldReturnSuccess_WhenSquadNumberIsTakenByCurrentPlayer()
     {
         // Arrange.
-        var command = BaseCommand with { Position = "Manager" };
-        var expected = Result.Failure(PlayerErrors.InvalidPosition(command.Position));
+        var command = BaseCommand;
+        var expected = Result.Success();
+        var entityId = EntityId.Create(command.Id);
 
-        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(BasePlayer);
+        _playerServiceMock.Setup(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                  .ReturnsAsync(true);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Player>(), It.IsAny<CancellationToken>()), Times.Never);
+        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenSquadNumberIsTakenByAnotherPlayer()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Failure(PlayerErrors.SquadNumberNotAvailable(command.SquadNumber));
+
+        _playerServiceMock.Setup(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                          .ReturnsAsync(false);
+
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -86,18 +122,16 @@ public class UpdatePlayerCommandHandlerTests
         var command = BaseCommand;
         var expected = Result.Failure(PlayerErrors.NotUpdated(BasePlayer.Id));
 
-        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(BasePlayer);
-
-        _repositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Player>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(false);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Player>(), It.IsAny<CancellationToken>()), Times.Once);
+        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

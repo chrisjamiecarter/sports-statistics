@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Players;
-using SportsStatistics.Infrastructure.Persistence.Schemas;
+using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Infrastructure.Persistence.Players;
+namespace SportsStatistics.Infrastructure.Players;
 
 internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
 {
     public void Configure(EntityTypeBuilder<Player> builder)
     {
-        builder.ToTable(SportsStatisticsSchema.Players.Table, SportsStatisticsSchema.Players.Schema);
+        builder.ToTable(Schemas.Players.Table, Schemas.Players.Schema);
 
         builder.HasKey(p => p.Id);
 
