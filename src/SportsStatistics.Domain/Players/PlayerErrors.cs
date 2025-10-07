@@ -24,7 +24,7 @@ public static class PlayerErrors
         "Player.NotUpdated",
         $"The player with the Id = '{id}' was not updated.");
 
-    public static Error SquadNumberNotAvailable(int squadNumber) => Error.Failure(
-        "Player.SquadNumberNotAvailable",
+    public static Error SquadNumberTaken(int squadNumber) => Error.Failure(
+        "Player.SquadNumberTaken",
         $"The Squad Number = '{squadNumber}' is already taken by another player.");
 }

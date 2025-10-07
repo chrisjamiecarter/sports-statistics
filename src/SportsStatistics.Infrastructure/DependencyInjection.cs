@@ -33,7 +33,6 @@ public static class DependencyInjection
         builder.AddAuthorizationInternal();
 
         builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-        builder.Services.AddScoped<IPlayerService, PlayerService>();
         builder.Services.AddRepositories();
 
         builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();

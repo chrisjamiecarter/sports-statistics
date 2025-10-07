@@ -1,15 +1,14 @@
-﻿using SportsStatistics.Application.Abstractions.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Update;
 
-internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext,
-                                                 IPlayerService service) : ICommandHandler<UpdatePlayerCommand>
+internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<UpdatePlayerCommand>
 {
     private readonly IApplicationDbContext _dbContext = dbContext;
-    private readonly IPlayerService _service = service;
 
     public async Task<Result> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
     {
@@ -22,11 +21,12 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
             return Result.Failure(PlayerErrors.NotFound(entityId));
         }
 
-        var isSquadNumberAvailable = await _service.IsSquadNumberAvailableAsync(player.Id, player.SquadNumber, cancellationToken);
+        var squadNumberTaken = await _dbContext.Players.AsNoTracking()
+                                                       .AnyAsync(p => p.Id != player.Id && p.SquadNumber == player.SquadNumber, cancellationToken);
 
-        if (!isSquadNumberAvailable)
+        if (squadNumberTaken)
         {
-            return Result.Failure(PlayerErrors.SquadNumberNotAvailable(request.SquadNumber));
+            return Result.Failure(PlayerErrors.SquadNumberTaken(request.SquadNumber));
         }
 
         player.Update(request.Name, request.SquadNumber, request.Nationality, request.DateOfBirth, request.PositionName);

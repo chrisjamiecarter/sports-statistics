@@ -1,15 +1,14 @@
-﻿using SportsStatistics.Application.Abstractions.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Create;
 
-internal sealed class CreatePlayerCommandHandler(IApplicationDbContext dbContext,
-                                                 IPlayerService service) : ICommandHandler<CreatePlayerCommand>
+internal sealed class CreatePlayerCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<CreatePlayerCommand>
 {
     private readonly IApplicationDbContext _dbContext = dbContext;
-    private readonly IPlayerService _service = service;
 
     public async Task<Result> Handle(CreatePlayerCommand request, CancellationToken cancellationToken)
     {
@@ -19,11 +18,12 @@ internal sealed class CreatePlayerCommandHandler(IApplicationDbContext dbContext
                                    request.DateOfBirth,
                                    request.PositionName);
 
-        var isSquadNumberAvailable = await _service.IsSquadNumberAvailableAsync(player.Id, player.SquadNumber, cancellationToken);
+        var squadNumberTaken = await _dbContext.Players.AsNoTracking()
+                                                       .AnyAsync(p => p.Id != player.Id && p.SquadNumber == player.SquadNumber, cancellationToken);
 
-        if (!isSquadNumberAvailable)
+        if (squadNumberTaken)
         {
-            return Result.Failure(PlayerErrors.SquadNumberNotAvailable(request.SquadNumber));
+            return Result.Failure(PlayerErrors.SquadNumberTaken(request.SquadNumber));
         }
 
         _dbContext.Players.Add(player);

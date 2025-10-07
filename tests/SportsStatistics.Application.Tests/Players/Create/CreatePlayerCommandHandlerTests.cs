@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Players.Create;
 using SportsStatistics.Domain.Players;
@@ -16,14 +17,12 @@ public class CreatePlayerCommandHandlerTests
 
     private readonly Mock<DbSet<Player>> _playerDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
-    private readonly Mock<IPlayerService> _playerServiceMock;
     private readonly CreatePlayerCommandHandler _handler;
 
     public CreatePlayerCommandHandlerTests()
     {
-        _playerDbSetMock = new Mock<DbSet<Player>>();
+        _playerDbSetMock = new List<Player>().BuildMockDbSet();
         _dbContextMock = new Mock<IApplicationDbContext>();
-        _playerServiceMock = new Mock<IPlayerService>();
 
         _dbContextMock.Setup(m => m.Players)
                       .Returns(_playerDbSetMock.Object);
@@ -31,10 +30,7 @@ public class CreatePlayerCommandHandlerTests
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
 
-        _playerServiceMock.Setup(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                          .ReturnsAsync(true);
-
-        _handler = new CreatePlayerCommandHandler(_dbContextMock.Object, _playerServiceMock.Object);
+        _handler = new CreatePlayerCommandHandler(_dbContextMock.Object);
     }
 
     [Fact]
@@ -49,7 +45,6 @@ public class CreatePlayerCommandHandlerTests
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
         _playerDbSetMock.Verify(m => m.Add(It.IsAny<Player>()), Times.Once);
         _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -59,17 +54,22 @@ public class CreatePlayerCommandHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Failure(PlayerErrors.SquadNumberNotAvailable(command.SquadNumber));
+        var expected = Result.Failure(PlayerErrors.SquadNumberTaken(command.SquadNumber));
 
-        _playerServiceMock.Setup(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                          .ReturnsAsync(false);
+        var players = new List<Player>
+        {
+            Player.Create("Existing Player", command.SquadNumber, "Nationality", command.DateOfBirth, command.PositionName),
+        }
+        .BuildMockDbSet();
+
+        _dbContextMock.Setup(m => m.Players)
+                      .Returns(players.Object);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
         _playerDbSetMock.Verify(m => m.Add(It.IsAny<Player>()), Times.Never);
         _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -88,7 +88,6 @@ public class CreatePlayerCommandHandlerTests
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerServiceMock.Verify(m => m.IsSquadNumberAvailableAsync(It.IsAny<EntityId>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
         _playerDbSetMock.Verify(m => m.Add(It.IsAny<Player>()), Times.Once);
         _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
