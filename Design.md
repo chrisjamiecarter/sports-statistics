@@ -22,8 +22,8 @@ They also need the ability to show data charts to help their coaches visualize t
 
 ## Helpers
 
-  - `Add-Migration MigrationName -Project SportsStatistics.Infrastructure -StartupProject SportsStatistics.Web -OutputDir Persistence\Migrations -Context SportsStatisticsDbContext`
-  - `Add-Migration MigrationName -Project SportsStatistics.Authorization -StartupProject SportsStatistics.Web -OutputDir Persistence\Migrations -Context IdentityDbContext`
+  - `Add-Migration MigrationName -Project SportsStatistics.Infrastructure -StartupProject SportsStatistics.Web -OutputDir Database\Migrations -Context ApplicationDbContext`
+  - `Add-Migration MigrationName -Project SportsStatistics.Authorization -StartupProject SportsStatistics.Web -OutputDir Database\Migrations -Context IdentityDbContext`
 
 ##  High-Level Design
 

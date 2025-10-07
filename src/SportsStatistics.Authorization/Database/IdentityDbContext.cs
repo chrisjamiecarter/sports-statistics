@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Authorization.Entities;
 
-namespace SportsStatistics.Authorization.Persistence;
+namespace SportsStatistics.Authorization.Database;
 
 internal sealed class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {

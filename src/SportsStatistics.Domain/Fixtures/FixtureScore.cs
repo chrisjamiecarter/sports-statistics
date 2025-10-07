@@ -5,12 +5,12 @@ public sealed class FixtureScore
     private FixtureScore(int homeGoals, int awayGoals)
     {
         HomeGoals = homeGoals;
-        AwaysGoals = awayGoals;
+        AwayGoals = awayGoals;
     }
 
     public int HomeGoals { get; private set; }
 
-    public int AwaysGoals { get; private set; }
+    public int AwayGoals { get; private set; }
 
     public static FixtureScore Create(int homeGoals, int awayGoals)
     {

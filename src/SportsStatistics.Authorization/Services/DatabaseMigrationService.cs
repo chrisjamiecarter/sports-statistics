@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
-using SportsStatistics.Authorization.Persistence;
+using SportsStatistics.Authorization.Database;
 
 namespace SportsStatistics.Authorization.Services;
 

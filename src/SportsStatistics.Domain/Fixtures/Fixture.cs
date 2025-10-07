@@ -4,12 +4,12 @@ namespace SportsStatistics.Domain.Fixtures;
 
 public sealed class Fixture : Entity
 {
-    private Fixture(EntityId id, EntityId competitionId, DateTime kickoffTimeUtc, FixtureLocation location, FixtureScore score, FixtureStatus status) : base(id)
+    private Fixture(EntityId id, EntityId competitionId, DateTime kickoffTimeUtc, FixtureLocation location, FixtureStatus status) : base(id)
     {
         CompetitionId = competitionId;
         KickoffTimeUtc = kickoffTimeUtc;
         Location = location;
-        Score = score;
+        Score = FixtureScore.Create(0, 0);
         Status = status;
     }
 
@@ -25,17 +25,16 @@ public sealed class Fixture : Entity
 
     public static Fixture Create(EntityId competitionId, DateTime kickoffTimeUtc, FixtureLocation location)
     {
-        var score = FixtureScore.Create(0, 0);
         var status = FixtureStatus.Scheduled;
 
-        ValidateAndThrow(location, score, status);
+        ValidateAndThrow(location, status);
 
-        return new Fixture(EntityId.Create(), competitionId, kickoffTimeUtc, location, score, status);
+        return new Fixture(EntityId.Create(), competitionId, kickoffTimeUtc, location, status);
     }
 
     public void Update(DateTime kickoffTimeUtc, FixtureLocation location, FixtureScore score, FixtureStatus status)
     {
-        ValidateAndThrow(location, score, status);
+        ValidateAndThrow(location, status);
 
         KickoffTimeUtc = kickoffTimeUtc;
         Location = location;
@@ -43,10 +42,9 @@ public sealed class Fixture : Entity
         Status = status;
     }
 
-    private static void ValidateAndThrow(FixtureLocation location, FixtureScore score, FixtureStatus status)
+    private static void ValidateAndThrow(FixtureLocation location, FixtureStatus status)
     {
         ArgumentNullException.ThrowIfNull(location);
-        ArgumentNullException.ThrowIfNull(score);
         ArgumentNullException.ThrowIfNull(status);
 
         if (location == FixtureLocation.Unknown)
@@ -57,11 +55,6 @@ public sealed class Fixture : Entity
         if (status == FixtureStatus.Unknown)
         {
             throw new ArgumentException("A fixture cannot have a status of unknown.", nameof(status));
-        }
-
-        if (status != FixtureStatus.Completed && score.HomeGoals != 0 && score.AwaysGoals != 0)
-        {
-            throw new ArgumentException("A fixture cannot have a score without a status of completed.", nameof(score));
         }
     }
 }
