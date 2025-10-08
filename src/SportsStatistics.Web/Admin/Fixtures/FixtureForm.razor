@@ -1,0 +1,79 @@
+﻿<FluentStack Orientation="Orientation.Vertical">
+
+    <FluentLabel Typo="Typography.Header">
+        @HeaderText
+    </FluentLabel>
+
+    <FluentSpacer />
+
+    <EditForm Model="@Input" OnValidSubmit="@HandleValidSubmitAsync" FormName="fixture-form" style="width: 100%">
+        <FluentValidator />
+
+        <FluentStack Orientation="Orientation.Vertical">
+            <div class="full-width">
+                <FluentDatePicker Name="Input.KickoffTimeUtc" @bind-Value="Input.KickoffTimeUtc" Required="true" Label="Kickoff Time UTC" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.KickoffTimeUtc" class="text-danger" />
+            </div>
+            <div class="full-width">
+                <FluentTextField Name="Input.Location" @bind-Value="Input.Location" Required="true" Label="Location" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.Location" class="text-danger" />
+            </div>
+            <FluentStack Orientation="Orientation.Horizontal">
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">
+                    @SubmitButtonText
+                </FluentButton>
+                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="HandleCancelAsync">
+                    Cancel
+                </FluentButton>
+            </FluentStack>
+        </FluentStack>
+    </EditForm>
+
+</FluentStack>
+
+@code {
+    private bool IsSubmitting = false;
+
+    [Parameter]
+    public Guid SelectedCompetitionId { get; set; }
+
+    // [Parameter]
+    // public FixtureDto? SelectedFixture { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+     public EventCallback<FixtureFormModel> OnSubmit { get; set; }
+
+    [SupplyParameterFromForm]
+    private FixtureFormModel Input { get; set; } = new();
+
+    private bool IsUpdateMode => false;// SelectedFixture is not null;
+
+    private string HeaderText => $"{(IsUpdateMode ? "Edit" : "Add")} Fixture";
+
+    private string SubmitButtonText => IsUpdateMode ? "Update" : "Create";
+
+    protected override void OnParametersSet()
+    {
+        if (!IsSubmitting)// && SelectedPlayer is not null)
+        {
+            //Input = SelectedPlayer.ToInputModel(PositionOptions);
+            Input.CompetitionId = SelectedCompetitionId;
+        }
+    }
+    private async Task HandleCancelAsync()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    private async Task HandleValidSubmitAsync()
+    {
+        IsSubmitting = true;
+        
+        await OnSubmit.InvokeAsync(Input);
+        
+        IsSubmitting = false;
+    }
+}

@@ -12,17 +12,48 @@
                   OptionText="@(s => s.Name)"
                   @bind-SelectedOption="SelectedSeason" />
 
+    @if (@SelectedSeason is not null)
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="ShowFixtureForm">
+            Add Fixture
+        </FluentButton>
+
+        @if (IsFixtureFormVisible)
+        {
+            <FixtureForm OnCancel="@HideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedSeason.Id" />
+        }
+    }
+
 </FluentCard>
 
-
 @code {
+    private enum FixtureFormMode
+    {
+        Hide,
+        Show,
+    }
+
+    private FixtureFormMode FormMode { get; set; } = FixtureFormMode.Hide;
+
     private IEnumerable<SeasonDto>? Seasons { get; set; }
 
     private SeasonDto? SelectedSeason { get; set; }
 
+    private bool IsFixtureFormVisible => FormMode == FixtureFormMode.Show;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadSeasonsAsync();
+    }
+
+    private void HideFixtureForm()
+    {
+        FormMode = FixtureFormMode.Hide;
+    }
+
+    private void ShowFixtureForm()
+    {
+        FormMode = FixtureFormMode.Show;
     }
 
     private async Task LoadSeasonsAsync()
@@ -38,5 +69,10 @@
 
         var now = DateOnly.FromDateTime(DateTime.Now);
         SelectedSeason = Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
+    }
+
+    private async Task OnSubmitAsync(FixtureFormModel fixture)
+    {
+        await Task.CompletedTask;
     }
 }
