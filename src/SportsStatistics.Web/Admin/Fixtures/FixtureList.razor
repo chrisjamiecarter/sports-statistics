@@ -1,0 +1,49 @@
+﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+
+    <FluentStack>
+        <FluentLabel Typo="Typography.Header">
+            Fixtures
+        </FluentLabel>
+
+        <FluentSpacer />
+
+        <FluentButton Appearance="Appearance.Accent" OnClick="Add">
+            Add Fixture
+        </FluentButton>
+    </FluentStack>
+
+    <FluentDataGrid Items="@Fixtures" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
+        <PropertyColumn Property="@(p => p.KickoffTimeUtc)" Sortable="true" IsDefaultSortColumn="true" />
+        <PropertyColumn Property="@(p => p.Score)" />
+
+        <TemplateColumn Align="Align.End">
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
+        </TemplateColumn>
+    </FluentDataGrid>
+
+    <FluentPaginator State="@Pagination" />
+
+</FluentStack>
+
+@code {
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+
+    [Parameter]
+    public IQueryable<FixtureDto>? Fixtures { get; set; }
+
+    private async Task Add()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task Delete(FixtureDto fixture)
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task Edit(FixtureDto fixture)
+    {
+        await Task.CompletedTask;
+    }
+}
