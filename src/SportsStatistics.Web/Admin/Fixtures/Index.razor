@@ -1,5 +1,8 @@
 ﻿@page "/admin/fixtures"
+@using SportsStatistics.Application.Competitions.GetAll
+@using SportsStatistics.Application.Fixtures.GetAll
 @using SportsStatistics.Application.Seasons.GetAll
+@using SportsStatistics.Web.Admin.Competitions
 @using SportsStatistics.Web.Admin.Seasons
 
 <PageTitle>Fixtures</PageTitle>
@@ -8,11 +11,17 @@
 
     <FluentSelect TOption="SeasonDto"
                   Label="Season"
-                  Items="Seasons"
+                  Items="@Seasons"
                   OptionText="@(s => s.Name)"
                   @bind-SelectedOption="SelectedSeason" />
 
-    @if (@SelectedSeason is not null)
+    <FluentSelect TOption="CompetitionDto"
+                  Label="Competition"
+                  Items="@Competitions"
+                  OptionText="@(s => s.Name)"
+                  @bind-SelectedOption="SelectedCompetition" />
+
+    @if (SelectedSeason is not null && SelectedCompetition is not null)
     {
         <FluentButton Appearance="Appearance.Accent" OnClick="ShowFixtureForm">
             Add Fixture
@@ -20,7 +29,11 @@
 
         @if (IsFixtureFormVisible)
         {
-            <FixtureForm OnCancel="@HideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedSeason.Id" />
+            <FixtureForm OnCancel="@HideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedCompetition.Id" />
+        }
+        else
+        {
+            <FixtureList Fixtures="@Fixtures" />
         }
     }
 
@@ -35,7 +48,13 @@
 
     private FixtureFormMode FormMode { get; set; } = FixtureFormMode.Hide;
 
+    private IEnumerable<CompetitionDto>? Competitions { get; set; }
+
+    private IQueryable<FixtureDto>? Fixtures { get; set; }
+
     private IEnumerable<SeasonDto>? Seasons { get; set; }
+
+    private CompetitionDto? SelectedCompetition { get; set; }
 
     private SeasonDto? SelectedSeason { get; set; }
 
@@ -43,6 +62,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCompetitionsAsync();
+        await LoadsFixturesAsync();
         await LoadSeasonsAsync();
     }
 
@@ -54,6 +75,32 @@
     private void ShowFixtureForm()
     {
         FormMode = FixtureFormMode.Show;
+    }
+
+    private async Task LoadCompetitionsAsync()
+    {
+        var request = new GetCompetitionsQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError("Unable to load competitions");
+        }
+
+        Competitions = result.Value.Select(x => x.ToDto());
+
+        SelectedCompetition = Competitions.FirstOrDefault();
+    }
+
+    private async Task LoadsFixturesAsync()
+    {
+        var request = new GetFixturesQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError("Unable to load fixtures");
+        }
+
+        Fixtures = result.Value.ToQueryable();
     }
 
     private async Task LoadSeasonsAsync()
