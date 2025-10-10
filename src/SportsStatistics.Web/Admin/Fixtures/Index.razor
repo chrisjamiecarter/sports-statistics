@@ -1,6 +1,9 @@
 ﻿@page "/admin/fixtures"
 @using SportsStatistics.Application.Competitions.GetAll
+@using SportsStatistics.Application.Fixtures.Create
+@using SportsStatistics.Application.Fixtures.Delete
 @using SportsStatistics.Application.Fixtures.GetAll
+@using SportsStatistics.Application.Fixtures.Update
 @using SportsStatistics.Application.Seasons.GetAll
 @using SportsStatistics.Web.Admin.Competitions
 @using SportsStatistics.Web.Admin.Seasons
@@ -15,6 +18,7 @@
                   OptionText="@(s => s.Name)"
                   @bind-SelectedOption="SelectedSeason" />
 
+    @* TODO: The Competition Select should be on the FixtureForm *@
     <FluentSelect TOption="CompetitionDto"
                   Label="Competition"
                   Items="@Competitions"
@@ -23,17 +27,13 @@
 
     @if (SelectedSeason is not null && SelectedCompetition is not null)
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="ShowFixtureForm">
-            Add Fixture
-        </FluentButton>
-
         @if (IsFixtureFormVisible)
         {
-            <FixtureForm OnCancel="@HideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedCompetition.Id" />
+            <FixtureForm OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedCompetition.Id" />
         }
         else
         {
-            <FixtureList Fixtures="@Fixtures" />
+            <FixtureList Fixtures="@Fixtures" ShowFixtureFormCallback="@OnShowFixtureForm" DeleteFixtureCallback="@OnDeleteFixture" />
         }
     }
 
@@ -56,24 +56,71 @@
 
     private CompetitionDto? SelectedCompetition { get; set; }
 
+    private FixtureDto? SelectedFixture { get; set; }
+
     private SeasonDto? SelectedSeason { get; set; }
 
     private bool IsFixtureFormVisible => FormMode == FixtureFormMode.Show;
 
     protected override async Task OnInitializedAsync()
     {
+        await InitialisePage();
+    }
+
+    private async Task InitialisePage()
+    {
         await LoadCompetitionsAsync();
         await LoadsFixturesAsync();
         await LoadSeasonsAsync();
+        FormMode = FixtureFormMode.Hide;        
     }
 
+    private async Task CreateFixtureAsync(CreateFixtureCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Fixture created successfully.");
+    }
+
+    private async Task DeleteFixtureAsync(DeleteFixtureCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Fixture deleted successfully.");
+    }
+
+    private async Task UpdateFixtureAsync(UpdateFixtureCommand command)
+    {
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Fixture updated successfully.");
+    }
+
+    private async Task HandleResultAsync(Result result, string successMessage)
+    {
+        if (result.IsSuccess)
+        {
+            ToastService.ShowSuccess(successMessage);
+            await InitialisePage();
+        }
+        else
+        {
+            if (result.Error is ValidationError validationError)
+            {
+                var errorDescription = string.Join(Environment.NewLine, validationError.Errors.Select(e => e.Description));
+                ToastService.ShowError(errorDescription);
+            }
+            else
+            {
+                ToastService.ShowError(result.Error.Description);
+            }
+        }
+    }
     private void HideFixtureForm()
     {
         FormMode = FixtureFormMode.Hide;
     }
 
-    private void ShowFixtureForm()
+    private void ShowFixtureForm(FixtureDto? fixture)
     {
+        SelectedFixture = fixture;
         FormMode = FixtureFormMode.Show;
     }
 
@@ -118,8 +165,40 @@
         SelectedSeason = Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
     }
 
+    private async Task<bool> GetUserConfirmationAsync(string message, string primaryText, string secondaryText)
+    {
+        var dialog = await DialogService.ShowConfirmationAsync(message, primaryText, secondaryText);
+        var result = await dialog.Result;
+        return !result.Cancelled;
+    }
+
+    private async Task OnDeleteFixture(FixtureDto fixture)
+    {
+        if (await GetUserConfirmationAsync($"Are you sure you want to delete <strong>{fixture.Id}</strong>?", "Delete", "Cancel"))
+        {
+            await DeleteFixtureAsync(fixture.ToDeleteCommand());
+        }
+    }
+
+    private void OnHideFixtureForm()
+    {
+        HideFixtureForm();
+    }
+
+    private void OnShowFixtureForm(FixtureDto? fixture)
+    {
+        ShowFixtureForm(fixture);
+    }
+
     private async Task OnSubmitAsync(FixtureFormModel fixture)
     {
-        await Task.CompletedTask;
+        if (SelectedFixture is null)
+        {
+            await CreateFixtureAsync(fixture.ToCreateCommand());
+        }
+        else
+        {
+            await UpdateFixtureAsync(fixture.ToUpdateCommand(SelectedFixture.Id));
+        }
     }
 }

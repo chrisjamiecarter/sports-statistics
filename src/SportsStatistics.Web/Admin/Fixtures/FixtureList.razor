@@ -30,20 +30,26 @@
     private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
 
     [Parameter]
+    public EventCallback<FixtureDto?> ShowFixtureFormCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<FixtureDto> DeleteFixtureCallback { get; set; }
+
+    [Parameter]
     public IQueryable<FixtureDto>? Fixtures { get; set; }
 
     private async Task Add()
     {
-        await Task.CompletedTask;
+        await ShowFixtureFormCallback.InvokeAsync(null);
     }
 
     private async Task Delete(FixtureDto fixture)
     {
-        await Task.CompletedTask;
+        await DeleteFixtureCallback.InvokeAsync(fixture);
     }
 
     private async Task Edit(FixtureDto fixture)
     {
-        await Task.CompletedTask;
+        await ShowFixtureFormCallback.InvokeAsync(fixture);
     }
 }
