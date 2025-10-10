@@ -2,6 +2,7 @@
 
 namespace SportsStatistics.Domain.Fixtures;
 
+// TODO: Opponent?
 public sealed class Fixture : Entity
 {
     private Fixture(EntityId id, EntityId competitionId, DateTime kickoffTimeUtc, FixtureLocation location, FixtureStatus status) : base(id)
