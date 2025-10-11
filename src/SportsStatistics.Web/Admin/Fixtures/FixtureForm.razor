@@ -37,19 +37,19 @@
     [Parameter]
     public Guid SelectedCompetitionId { get; set; }
 
-    // [Parameter]
-    // public FixtureDto? SelectedFixture { get; set; }
+    [Parameter]
+    public FixtureDto? SelectedFixture { get; set; }
 
     [Parameter]
     public EventCallback OnCancel { get; set; }
 
     [Parameter]
-     public EventCallback<FixtureFormModel> OnSubmit { get; set; }
+    public EventCallback<FixtureFormModel> OnSubmit { get; set; }
 
     [SupplyParameterFromForm]
     private FixtureFormModel Input { get; set; } = new();
 
-    private bool IsUpdateMode => false;// SelectedFixture is not null;
+    private bool IsUpdateMode => SelectedFixture is not null;
 
     private string HeaderText => $"{(IsUpdateMode ? "Edit" : "Add")} Fixture";
 
@@ -57,12 +57,12 @@
 
     protected override void OnParametersSet()
     {
-        if (!IsSubmitting)// && SelectedPlayer is not null)
+        if (!IsSubmitting)
         {
-            //Input = SelectedPlayer.ToInputModel(PositionOptions);
-            Input.CompetitionId = SelectedCompetitionId;
+            Input = SelectedFixture.ToFormModel(SelectedCompetitionId);
         }
     }
+
     private async Task HandleCancelAsync()
     {
         await OnCancel.InvokeAsync();

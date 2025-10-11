@@ -3,6 +3,7 @@ using SportsStatistics.Application.Fixtures.Delete;
 using SportsStatistics.Application.Fixtures.GetAll;
 using SportsStatistics.Application.Fixtures.Update;
 using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.Web.Admin.Seasons;
 
 namespace SportsStatistics.Web.Admin.Fixtures;
 
@@ -21,6 +22,21 @@ internal static class FixtureMapper
                fixture.KickoffTimeUtc,
                fixture.LocationName,
                "TODO");
+
+    public static FixtureFormModel ToFormModel(this FixtureDto? fixture, Guid competitionId)
+    {
+        return fixture is null
+            ? new()
+            {
+                CompetitionId = competitionId,
+            }
+            : new()
+            {
+                CompetitionId = competitionId,
+                KickoffTimeUtc = fixture.KickoffTimeUtc,
+                Location = fixture.Location,
+            };
+    }
 
     public static IQueryable<FixtureDto> ToQueryable(this List<FixtureResponse> fixtures)
         => fixtures.Select(ToDto).AsQueryable();

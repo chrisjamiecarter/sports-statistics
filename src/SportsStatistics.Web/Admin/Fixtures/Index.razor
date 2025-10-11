@@ -29,7 +29,7 @@
     {
         @if (IsFixtureFormVisible)
         {
-            <FixtureForm OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedCompetition.Id" />
+            <FixtureForm OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedCompetition.Id" SelectedFixture="@SelectedFixture" />
         }
         else
         {
