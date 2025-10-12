@@ -35,7 +35,7 @@ public class GetFixturesQueryHandlerTests
         var command = BaseCommand;
         var competitions = new List<Competition>() { BaseCompetition };
         var fixtures = BaseFixtures;
-        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)));
+        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)).ToList());
 
         _dbContextMock.Setup(m => m.Competitions)
                       .Returns(competitions.BuildMockDbSet().Object);
@@ -57,7 +57,7 @@ public class GetFixturesQueryHandlerTests
         var command = BaseCommand;
         var competitions = new List<Competition>() { BaseCompetition };
         var fixtures = BaseFixtures.Take(1).ToList();
-        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)));
+        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)).ToList());
 
         _dbContextMock.Setup(m => m.Competitions)
                       .Returns(competitions.BuildMockDbSet().Object);
@@ -79,7 +79,7 @@ public class GetFixturesQueryHandlerTests
         var command = BaseCommand;
         var competitions = new List<Competition>() { BaseCompetition };
         var fixtures = BaseFixtures.Take(0).ToList();
-        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)));
+        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)).ToList());
 
         _dbContextMock.Setup(m => m.Competitions)
                       .Returns(competitions.BuildMockDbSet().Object);
