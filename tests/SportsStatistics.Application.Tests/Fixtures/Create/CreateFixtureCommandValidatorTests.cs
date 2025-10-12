@@ -7,6 +7,7 @@ namespace SportsStatistics.Application.Tests.Fixtures.Create;
 public class CreateFixtureCommandValidatorTests
 {
     private static readonly CreateFixtureCommand BaseCommand = new(Guid.CreateVersion7(),
+                                                                   "Test Opponent",
                                                                    DateTime.UtcNow,
                                                                    FixtureLocation.Home.Name);
 
@@ -79,14 +80,14 @@ public class CreateFixtureCommandValidatorTests
     public async Task Should_HaveValidationError_When_FixtureLocationIsEmpty(string fixtureLocation)
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocation = fixtureLocation };
+        var command = BaseCommand with { LocationName = fixtureLocation };
         var expectedErrorMessage = "'Fixture Location' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.FixtureLocation)
+        result.ShouldHaveValidationErrorFor(c => c.LocationName)
               .WithErrorMessage(expectedErrorMessage);
     }
 
@@ -97,7 +98,7 @@ public class CreateFixtureCommandValidatorTests
     public async Task Should_NotHaveValidationError_When_FixtureLocationIsValid(string fixtureLocation)
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocation = fixtureLocation };
+        var command = BaseCommand with { LocationName = fixtureLocation };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -110,14 +111,14 @@ public class CreateFixtureCommandValidatorTests
     public async Task Should_HaveValidationError_When_FixtureLocationIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocation = "The Moon" };
+        var command = BaseCommand with { LocationName = "The Moon" };
         var expectedMessage = $"Invalid fixture location. Valid fixture locations: {string.Join(", ", FixtureLocation.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.FixtureLocation)
+        result.ShouldHaveValidationErrorFor(c => c.LocationName)
               .WithErrorMessage(expectedMessage);
     }
 }

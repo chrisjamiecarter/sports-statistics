@@ -23,11 +23,16 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
                .HasConversion(id => id.Value, value => EntityId.Create(value))
                .IsRequired();
 
+        builder.Property(f => f.Opponent)
+               .HasMaxLength(100)
+               .IsRequired();
+
         builder.Property(f => f.KickoffTimeUtc)
                .IsRequired();
 
         builder.Property(f => f.Location)
                .HasConversion(v => v.Name, v => FixtureLocation.FromName(v))
+               .HasMaxLength(7)
                .IsRequired();
 
         builder.OwnsOne(f => f.Score, score =>
@@ -41,6 +46,7 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
 
         builder.Property(f => f.Status)
                .HasConversion(v => v.Name, v => FixtureStatus.FromName(v))
+               .HasMaxLength(10)
                .IsRequired();
     }
 }

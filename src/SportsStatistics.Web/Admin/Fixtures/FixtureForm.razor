@@ -15,8 +15,8 @@
                 <FluentValidationMessage For="() => Input.KickoffTimeUtc" class="text-danger" />
             </div>
             <div class="full-width">
-                <FluentTextField Name="Input.Location" @bind-Value="Input.Location" Required="true" Label="Location" Style="width: 100%" />
-                <FluentValidationMessage For="() => Input.Location" class="text-danger" />
+                <FluentTextField Name="Input.Location" @bind-Value="Input.LocationName" Required="true" Label="Location" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.LocationName" class="text-danger" />
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
                 <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">

@@ -20,11 +20,7 @@ internal sealed class UpdateFixtureCommandHandler(IFixtureRepository repository)
 
         var location = FixtureLocation.FromName(request.LocationName);
 
-        var score = FixtureScore.Create(request.HomeGoals, request.AwayGoals);
-
-        var status = FixtureStatus.FromName(request.StatusName);
-
-        fixture.Update(request.KickoffTimeUtc, location, score, status);
+        fixture.Update(request.Opponent, request.KickoffTimeUtc, location);
 
         var updated = await _repository.UpdateAsync(fixture, cancellationToken);
 

@@ -11,15 +11,12 @@ public class GetAllPlayersQueryHandlerTests
 {
     private static readonly GetAllPlayersQuery BaseCommand = new();
 
-    private readonly Mock<DbSet<Player>> _playerDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetAllPlayersQueryHandler _handler;
 
     public GetAllPlayersQueryHandlerTests()
     {
-        _playerDbSetMock = new Mock<DbSet<Player>>();
         _dbContextMock = new Mock<IApplicationDbContext>();
-
         _handler = new GetAllPlayersQueryHandler(_dbContextMock.Object);
     }
 

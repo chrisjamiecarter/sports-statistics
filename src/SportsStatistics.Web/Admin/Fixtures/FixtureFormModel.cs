@@ -4,7 +4,9 @@ public class FixtureFormModel
 {
     public Guid CompetitionId { get; set; }
 
+    public string Opponent { get; set; } = string.Empty;
+
     public DateTime? KickoffTimeUtc { get; set; } = DateTime.UtcNow;
 
-    public string Location { get; set; } = string.Empty;
+    public string LocationName { get; set; } = string.Empty;
 }

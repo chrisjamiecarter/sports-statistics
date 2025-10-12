@@ -1,15 +1,21 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.GetAll;
 
-internal sealed class GetFixturesQueryHandler(IFixtureRepository repository) : IQueryHandler<GetFixturesQuery, List<FixtureResponse>>
+internal sealed class GetFixturesQueryHandler(IApplicationDbContext dbContext) : IQueryHandler<GetFixturesQuery, List<FixtureResponse>>
 {
-    private readonly IFixtureRepository _repository = repository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result<List<FixtureResponse>>> Handle(GetFixturesQuery request, CancellationToken cancellationToken)
     {
-        var fixtures = await _repository.GetAllAsync(cancellationToken);
-        return fixtures.ToResponse();
+        return await _dbContext.Fixtures
+            .Join(_dbContext.Competitions,
+                  fixture => fixture.CompetitionId,
+                  competition => competition.Id,
+                  (fixture, competition) => fixture.ToResponse(competition))
+            .ToListAsync(cancellationToken);
     }
 }

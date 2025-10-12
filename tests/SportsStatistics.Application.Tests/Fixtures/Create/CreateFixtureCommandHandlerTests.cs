@@ -10,6 +10,7 @@ namespace SportsStatistics.Application.Tests.Fixtures.Create;
 public class CreateFixtureCommandHandlerTests
 {
     private static readonly CreateFixtureCommand BaseCommand = new(Guid.CreateVersion7(),
+                                                                   "Test Opponent",
                                                                    DateTime.UtcNow,
                                                                    FixtureLocation.Home.Name);
 
@@ -53,8 +54,8 @@ public class CreateFixtureCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenFixtureLocationIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocation = "The Moon" };
-        var expected = Result.Failure(FixtureErrors.InvalidLocation(command.FixtureLocation));
+        var command = BaseCommand with { LocationName = "The Moon" };
+        var expected = Result.Failure(FixtureErrors.InvalidLocation(command.LocationName));
 
         _competitionRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
                                   .ReturnsAsync(BaseCompetition);

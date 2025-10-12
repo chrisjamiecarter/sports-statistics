@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Application.Fixtures;
+﻿using MockQueryable.Moq;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Fixtures.GetAll;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
@@ -10,13 +11,21 @@ public class GetFixturesQueryHandlerTests
 {
     private static readonly GetFixturesQuery BaseCommand = new();
 
-    private readonly Mock<IFixtureRepository> _repositoryMock;
+    private static readonly Competition BaseCompetition = Competition.Create("Test Competition", CompetitionType.League);
+
+    private static readonly List<Fixture> BaseFixtures =
+    [
+            Fixture.Create(BaseCompetition.Id, "Test Opponent", DateTime.UtcNow.AddDays(7), FixtureLocation.Home),
+            Fixture.Create(BaseCompetition.Id, "Test Opponent", DateTime.UtcNow.AddDays(14), FixtureLocation.Away),
+    ];
+
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetFixturesQueryHandler _handler;
 
     public GetFixturesQueryHandlerTests()
     {
-        _repositoryMock = new Mock<IFixtureRepository>();
-        _handler = new GetFixturesQueryHandler(_repositoryMock.Object);
+        _dbContextMock = new Mock<IApplicationDbContext>();
+        _handler = new GetFixturesQueryHandler(_dbContextMock.Object);
     }
 
     [Fact]
@@ -24,22 +33,21 @@ public class GetFixturesQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var fixtures = new List<Fixture>
-        {
-            Fixture.Create(EntityId.Create(), DateTime.UtcNow.AddDays(7), FixtureLocation.Home),
-            Fixture.Create(EntityId.Create(), DateTime.UtcNow.AddDays(14), FixtureLocation.Away),
-        };
-        var expected = Result.Success(fixtures.ToResponse());
+        var competitions = new List<Competition>() { BaseCompetition };
+        var fixtures = BaseFixtures;
+        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)));
 
-        _repositoryMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(fixtures);
+        _dbContextMock.Setup(m => m.Competitions)
+                      .Returns(competitions.BuildMockDbSet().Object);
+
+        _dbContextMock.Setup(m => m.Fixtures)
+                      .Returns(fixtures.BuildMockDbSet().Object);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -47,21 +55,21 @@ public class GetFixturesQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var fixtures = new List<Fixture>
-        {
-            Fixture.Create(EntityId.Create(), DateTime.UtcNow.AddDays(7), FixtureLocation.Home),
-        };
-        var expected = Result.Success(fixtures.ToResponse());
+        var competitions = new List<Competition>() { BaseCompetition };
+        var fixtures = BaseFixtures.Take(1).ToList();
+        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)));
 
-        _repositoryMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(fixtures);
+        _dbContextMock.Setup(m => m.Competitions)
+                      .Returns(competitions.BuildMockDbSet().Object);
+
+        _dbContextMock.Setup(m => m.Fixtures)
+                      .Returns(fixtures.BuildMockDbSet().Object);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -69,17 +77,20 @@ public class GetFixturesQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var fixtures = new List<Fixture>();
-        var expected = Result.Success(fixtures.ToResponse());
+        var competitions = new List<Competition>() { BaseCompetition };
+        var fixtures = BaseFixtures.Take(0).ToList();
+        var expected = Result.Success(fixtures.Select(f => f.ToResponse(BaseCompetition)));
 
-        _repositoryMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(fixtures);
+        _dbContextMock.Setup(m => m.Competitions)
+                      .Returns(competitions.BuildMockDbSet().Object);
+
+        _dbContextMock.Setup(m => m.Fixtures)
+                      .Returns(fixtures.BuildMockDbSet().Object);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

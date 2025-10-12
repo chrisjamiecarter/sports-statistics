@@ -12,12 +12,17 @@ internal sealed class CreateFixtureCommandValidator : AbstractValidator<CreateFi
             .Must(guid => guid.Version == 7)
             .WithMessage("'Competition Id' is not in the correct format.");
 
+        RuleFor(c => c.Opponent)
+            .NotEmpty()
+            .MaximumLength(100);
+
         // TODO: Only one fixture per day?
         RuleFor(c => c.KickoffTimeUtc)
             .NotEmpty();
 
-        RuleFor(c => c.FixtureLocation)
+        RuleFor(c => c.LocationName)
             .NotEmpty()
+            .MaximumLength(7)
             .Must(location =>
             {
                 return FixtureLocation.All.Any(l => string.Equals(l.Name, location, StringComparison.OrdinalIgnoreCase));

@@ -13,8 +13,11 @@
     </FluentStack>
 
     <FluentDataGrid Items="@Fixtures" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
-        <PropertyColumn Property="@(p => p.KickoffTimeUtc)" Sortable="true" IsDefaultSortColumn="true" />
-        <PropertyColumn Property="@(p => p.Score)" />
+        <PropertyColumn Property="@(p => p.Date)" Sortable="true" IsDefaultSortColumn="true" />
+        <PropertyColumn Property="@(p => p.CompetitionName)" />
+        <PropertyColumn Property="@(p => p.Opponent)" />
+        <PropertyColumn Property="@(p => p.LocationName)" />
+        <PropertyColumn Property="@(p => p.DisplayStatus)" />
 
         <TemplateColumn Align="Align.End">
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />

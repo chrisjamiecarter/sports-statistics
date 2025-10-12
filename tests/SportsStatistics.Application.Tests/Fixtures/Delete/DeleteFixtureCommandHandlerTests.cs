@@ -7,7 +7,7 @@ namespace SportsStatistics.Application.Tests.Fixtures.Delete;
 
 public class DeleteFixtureCommandHandlerTests
 {
-    private static readonly Fixture BaseFixture = Fixture.Create(EntityId.Create(), DateTime.UtcNow, FixtureLocation.Home);
+    private static readonly Fixture BaseFixture = Fixture.Create(EntityId.Create(), "Test Opponent", DateTime.UtcNow, FixtureLocation.Home);
     private static readonly DeleteFixtureCommand BaseCommand = new(BaseFixture.Id.Value);
 
     private readonly Mock<IFixtureRepository> _repositoryMock;

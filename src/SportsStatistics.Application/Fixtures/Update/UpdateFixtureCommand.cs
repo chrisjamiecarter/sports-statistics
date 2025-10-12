@@ -3,8 +3,6 @@
 namespace SportsStatistics.Application.Fixtures.Update;
 
 public sealed record UpdateFixtureCommand(Guid Id,
+                                          string Opponent,
                                           DateTime KickoffTimeUtc,
-                                          string LocationName,
-                                          int HomeGoals,
-                                          int AwayGoals,
-                                          string StatusName) : ICommand;
+                                          string LocationName) : ICommand;

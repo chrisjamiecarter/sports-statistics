@@ -22,13 +22,13 @@ internal sealed class CreateFixtureCommandHandler(IFixtureRepository repository,
             return Result.Failure(CompetitionErrors.NotFound(competitionId));
         }
 
-        var location = FixtureLocation.FromName(request.FixtureLocation);
+        var location = FixtureLocation.FromName(request.LocationName);
         if (location == FixtureLocation.Unknown)
         {
-            return Result.Failure(FixtureErrors.InvalidLocation(request.FixtureLocation));
+            return Result.Failure(FixtureErrors.InvalidLocation(request.LocationName));
         }
 
-        var fixture = Fixture.Create(competitionId, request.KickoffTimeUtc, location);
+        var fixture = Fixture.Create(competitionId, request.Opponent, request.KickoffTimeUtc, location);
 
         var created = await _repository.CreateAsync(fixture, cancellationToken);
 

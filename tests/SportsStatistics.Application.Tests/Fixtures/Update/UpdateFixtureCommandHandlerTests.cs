@@ -9,8 +9,8 @@ namespace SportsStatistics.Application.Tests.Fixtures.Update;
 
 public class UpdateFixtureCommandHandlerTests
 {
-    private static readonly Fixture BaseFixture = Fixture.Create(EntityId.Create(), DateTime.UtcNow.AddDays(7), FixtureLocation.Home);
-    private static readonly UpdateFixtureCommand BaseCommand = new(BaseFixture.Id.Value, BaseFixture.KickoffTimeUtc.AddDays(1), FixtureLocation.Neutral.Name, 0, 0, FixtureStatus.Scheduled.Name);
+    private static readonly Fixture BaseFixture = Fixture.Create(EntityId.Create(), "Test Opponent", DateTime.UtcNow.AddDays(7), FixtureLocation.Home);
+    private static readonly UpdateFixtureCommand BaseCommand = new(BaseFixture.Id.Value, BaseFixture.Opponent, BaseFixture.KickoffTimeUtc.AddDays(1), FixtureLocation.Neutral.Name);
 
     private readonly Mock<IFixtureRepository> _repositoryMock;
     private readonly UpdateFixtureCommandHandler _handler;

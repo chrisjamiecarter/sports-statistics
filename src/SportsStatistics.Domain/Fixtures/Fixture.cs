@@ -2,12 +2,12 @@
 
 namespace SportsStatistics.Domain.Fixtures;
 
-// TODO: Opponent?
 public sealed class Fixture : Entity
 {
-    private Fixture(EntityId id, EntityId competitionId, DateTime kickoffTimeUtc, FixtureLocation location, FixtureStatus status) : base(id)
+    private Fixture(EntityId id, EntityId competitionId, string opponent, DateTime kickoffTimeUtc, FixtureLocation location, FixtureStatus status) : base(id)
     {
         CompetitionId = competitionId;
+        Opponent = opponent;
         KickoffTimeUtc = kickoffTimeUtc;
         Location = location;
         Score = FixtureScore.Create(0, 0);
@@ -15,6 +15,8 @@ public sealed class Fixture : Entity
     }
 
     public EntityId CompetitionId { get; private set; }
+
+    public string Opponent { get; private set; } = string.Empty;
 
     public DateTime KickoffTimeUtc { get; private set; }
 
@@ -24,38 +26,35 @@ public sealed class Fixture : Entity
 
     public FixtureStatus Status { get; private set; } = FixtureStatus.Unknown;
 
-    public static Fixture Create(EntityId competitionId, DateTime kickoffTimeUtc, FixtureLocation location)
+    public static Fixture Create(EntityId competitionId, string opponent, DateTime kickoffTimeUtc, FixtureLocation location)
     {
-        var status = FixtureStatus.Scheduled;
+        ValidateAndThrow(opponent, location);
 
-        ValidateAndThrow(location, status);
-
-        return new Fixture(EntityId.Create(), competitionId, kickoffTimeUtc, location, status);
+        return new Fixture(EntityId.Create(), competitionId, opponent, kickoffTimeUtc, location, FixtureStatus.Scheduled);
     }
 
-    public void Update(DateTime kickoffTimeUtc, FixtureLocation location, FixtureScore score, FixtureStatus status)
+    public void Update(string opponent, DateTime kickoffTimeUtc, FixtureLocation location)
     {
-        ValidateAndThrow(location, status);
+        ValidateAndThrow(opponent, location);
 
         KickoffTimeUtc = kickoffTimeUtc;
         Location = location;
-        Score = score;
-        Status = status;
     }
 
-    private static void ValidateAndThrow(FixtureLocation location, FixtureStatus status)
+    private static void ValidateAndThrow(string opponent, FixtureLocation location)
     {
-        ArgumentNullException.ThrowIfNull(location);
-        ArgumentNullException.ThrowIfNull(status);
+        ArgumentException.ThrowIfNullOrWhiteSpace(opponent, nameof(opponent));
+        ArgumentNullException.ThrowIfNull(location, nameof(location));
+        //ArgumentNullException.ThrowIfNull(status, nameof(status));
 
         if (location == FixtureLocation.Unknown)
         {
             throw new ArgumentException("A fixture cannot have a location of unknown.", nameof(location));
         }
 
-        if (status == FixtureStatus.Unknown)
-        {
-            throw new ArgumentException("A fixture cannot have a status of unknown.", nameof(status));
-        }
+        //if (status == FixtureStatus.Unknown)
+        //{
+        //    throw new ArgumentException("A fixture cannot have a status of unknown.", nameof(status));
+        //}
     }
 }
