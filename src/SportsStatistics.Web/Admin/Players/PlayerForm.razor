@@ -36,7 +36,7 @@
                               Placeholder="Select a position..."
                               OptionText="(p => p.Name)"
                               @bind-SelectedOption="Input.Position"
-                              Required="!IsUpdateMode"/>
+                              Required="!IsUpdateMode" />
                 <FluentValidationMessage For="() => Input.Position" class="text-danger" />
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
