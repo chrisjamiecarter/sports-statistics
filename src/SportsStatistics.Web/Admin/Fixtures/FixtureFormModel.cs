@@ -1,12 +1,16 @@
-﻿namespace SportsStatistics.Web.Admin.Fixtures;
+﻿using SportsStatistics.Web.Admin.Competitions;
+
+namespace SportsStatistics.Web.Admin.Fixtures;
 
 public class FixtureFormModel
 {
-    public Guid CompetitionId { get; set; }
+    public CompetitionDto? Competition { get; set; }
+    
+    public DateTime? KickoffDateUtc { get; set; }
+    
+    public DateTime? KickoffTimeUtc { get; set; }
+
+    public LocationOptionDto? Location { get; set; }
 
     public string Opponent { get; set; } = string.Empty;
-
-    public DateTime? KickoffTimeUtc { get; set; } = DateTime.UtcNow;
-
-    public string LocationName { get; set; } = string.Empty;
 }

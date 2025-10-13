@@ -1,4 +1,5 @@
-﻿<FluentStack Orientation="Orientation.Vertical">
+﻿@using SportsStatistics.Domain.Fixtures
+<FluentStack Orientation="Orientation.Vertical">
 
     <FluentLabel Typo="Typography.Header">
         @HeaderText
@@ -11,12 +12,49 @@
 
         <FluentStack Orientation="Orientation.Vertical">
             <div class="full-width">
-                <FluentDatePicker Name="Input.KickoffTimeUtc" @bind-Value="Input.KickoffTimeUtc" Required="true" Label="Kickoff Time UTC" Style="width: 100%" />
+                @if (IsUpdateMode)
+                {
+                    <FluentTextField Name="Input.Competition" Value="@Input.Competition?.Name" ReadOnly="true" Label="Competition" Style="width: 100%" />
+                }
+                else
+                {
+                    <FluentSelect Id="CompetitionSelect"
+                                  Name="Input.Competition"
+                                  TOption=CompetitionDto
+                                  Label="Competition"
+                                  Items="CompetitionOptions"
+                                  Width="100%"
+                                  Placeholder="Select a competition..."
+                                  OptionText="(c => c.Name)"
+                                  @bind-SelectedOption="Input.Competition"
+                                  Required="!IsUpdateMode" />
+                    <FluentValidationMessage For="() => Input.Competition" class="text-danger" />
+                }
+            </div>
+            <div class="full-width">
+                <FluentDatePicker Name="Input.KickoffDateUtc" @bind-Value="Input.KickoffDateUtc" Required="true" Label="Date" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.KickoffDateUtc" class="text-danger" />
+            </div>
+            <div class="full-width">
+                <FluentTimePicker Name="Input.KickoffTimeUtc" @bind-Value="Input.KickoffTimeUtc" Required="true" Label="Kickoff" Style="width: 100%" />
                 <FluentValidationMessage For="() => Input.KickoffTimeUtc" class="text-danger" />
             </div>
             <div class="full-width">
-                <FluentTextField Name="Input.Location" @bind-Value="Input.LocationName" Required="true" Label="Location" Style="width: 100%" />
-                <FluentValidationMessage For="() => Input.LocationName" class="text-danger" />
+                <FluentTextField Name="Input.Opponent" @bind-Value="Input.Opponent" Required="true" Label="Opponent" Style="width: 100%" />
+                <FluentValidationMessage For="() => Input.Opponent" class="text-danger" />
+            </div>
+            <div class="full-width">
+                <FluentSelect Id="LocationSelect"
+                              Name="Input.Location"
+                              TOption=LocationOptionDto
+                              Label="Location"
+                              Items="LocationOptions"
+                              Width="100%"
+                              Placeholder="Select a location..."
+                              OptionText="(p => p.Name)"
+                              @bind-SelectedOption="Input.Location"
+                              Required="!IsUpdateMode" />
+                <FluentValidationMessage For="() => Input.Location" class="text-danger" />
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
                 <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">
@@ -33,9 +71,10 @@
 
 @code {
     private bool IsSubmitting = false;
+    private IEnumerable<LocationOptionDto> LocationOptions = FixtureLocation.All.Select(l => l.ToDto());
 
     [Parameter]
-    public Guid SelectedCompetitionId { get; set; }
+    public IEnumerable<CompetitionDto> CompetitionOptions { get; set; } = [];
 
     [Parameter]
     public FixtureDto? SelectedFixture { get; set; }
@@ -59,7 +98,7 @@
     {
         if (!IsSubmitting)
         {
-            Input = SelectedFixture.ToFormModel(SelectedCompetitionId);
+            Input = SelectedFixture.ToFormModel(CompetitionOptions, LocationOptions);
         }
     }
 

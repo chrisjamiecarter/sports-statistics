@@ -4,28 +4,24 @@
 
 <FluentCard>
 
-    <FluentSelect TOption="SeasonDto"
-                  Label="Season"
-                  Items="@Seasons"
-                  OptionText="@(s => s.Name)"
-                  @bind-SelectedOption="SelectedSeason" />
+    @if (!IsFixtureFormVisible)
+    {
+        <FluentSelect TOption="SeasonDto"
+                      Label="Season"
+                      Items="@Seasons"
+                      OptionText="@(s => s.Name)"
+                      @bind-SelectedOption="SelectedSeason" />
+    }
 
-    @* TODO: The Competition Select should be on the FixtureForm *@
-    <FluentSelect TOption="CompetitionDto"
-                  Label="Competition"
-                  Items="@Competitions"
-                  OptionText="@(s => s.Name)"
-                  @bind-SelectedOption="SelectedCompetition" />
-
-    @if (SelectedSeason is not null && SelectedCompetition is not null)
+    @if (SelectedSeason is not null)
     {
         @if (IsFixtureFormVisible)
         {
-            <FixtureForm OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedCompetitionId="@SelectedCompetition.Id" SelectedFixture="@SelectedFixture" />
+            <FixtureForm CompetitionOptions="@Competitions" OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedFixture="@SelectedFixture" />
         }
         else
         {
-            <FixtureList Fixtures="@Fixtures" ShowFixtureFormCallback="@OnShowFixtureForm" DeleteFixtureCallback="@OnDeleteFixture" />
+            <FixtureList Fixtures="Fixtures" ShowFixtureFormCallback="@OnShowFixtureForm" DeleteFixtureCallback="@OnDeleteFixture" />
         }
     }
 
@@ -46,8 +42,6 @@
 
     private IEnumerable<SeasonDto>? Seasons { get; set; }
 
-    private CompetitionDto? SelectedCompetition { get; set; }
-
     private FixtureDto? SelectedFixture { get; set; }
 
     private SeasonDto? SelectedSeason { get; set; }
@@ -62,9 +56,9 @@
     private async Task InitialisePage()
     {
         await LoadCompetitionsAsync();
-        await LoadsFixturesAsync();
+        await LoadFixturesAsync();
         await LoadSeasonsAsync();
-        FormMode = FixtureFormMode.Hide;        
+        HideFixtureForm();
     }
 
     private async Task CreateFixtureAsync(CreateFixtureCommand command)
@@ -105,8 +99,10 @@
             }
         }
     }
+
     private void HideFixtureForm()
     {
+        SelectedFixture = null;
         FormMode = FixtureFormMode.Hide;
     }
 
@@ -126,11 +122,9 @@
         }
 
         Competitions = result.Value.Select(x => x.ToDto());
-
-        SelectedCompetition = Competitions.FirstOrDefault();
     }
 
-    private async Task LoadsFixturesAsync()
+    private async Task LoadFixturesAsync()
     {
         var request = new GetFixturesQuery();
         var result = await Messenger.SendAsync(request);

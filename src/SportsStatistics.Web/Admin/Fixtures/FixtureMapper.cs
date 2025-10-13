@@ -2,16 +2,24 @@
 using SportsStatistics.Application.Fixtures.Delete;
 using SportsStatistics.Application.Fixtures.GetAll;
 using SportsStatistics.Application.Fixtures.Update;
+using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.Web.Admin.Competitions;
 
 namespace SportsStatistics.Web.Admin.Fixtures;
 
 internal static class FixtureMapper
 {
+    private static DateTime GetKickoffTimeUtc(this FixtureFormModel fixture)
+        => fixture.KickoffDateUtc.GetValueOrDefault().Date + fixture.KickoffTimeUtc.GetValueOrDefault().TimeOfDay;
+
+    private static string GetLocationName(this FixtureFormModel fixture)
+        => fixture.Location?.Name ?? string.Empty;
+
     public static CreateFixtureCommand ToCreateCommand(this FixtureFormModel fixture)
-        => new(fixture.CompetitionId,
+        => new(fixture.Competition?.Id ?? default,
                fixture.Opponent,
-               fixture.KickoffTimeUtc.GetValueOrDefault(),
-               fixture.LocationName);
+               fixture.GetKickoffTimeUtc(),
+               fixture.GetLocationName());
 
     public static DeleteFixtureCommand ToDeleteCommand(this FixtureDto fixture)
         => new(fixture.Id);
@@ -27,29 +35,29 @@ internal static class FixtureMapper
                fixture.AwayGoals,
                fixture.StatusName);
 
-    public static FixtureFormModel ToFormModel(this FixtureDto? fixture, Guid competitionId)
+    public static LocationOptionDto ToDto(this FixtureLocation location)
+        => new(location.Id, location.Name);
+
+    public static FixtureFormModel ToFormModel(this FixtureDto? fixture, IEnumerable<CompetitionDto> competitions, IEnumerable<LocationOptionDto> locations)
     {
         return fixture is null
             ? new()
-            {
-                CompetitionId = competitionId,
-            }
             : new()
             {
-                CompetitionId = competitionId,
+                Competition = competitions.FirstOrDefault(c => c.Id == fixture.CompetitionId),
                 Opponent = fixture.Opponent,
+                KickoffDateUtc = fixture.KickoffTimeUtc,
                 KickoffTimeUtc = fixture.KickoffTimeUtc,
-                LocationName = fixture.LocationName,
+                Location = locations.SingleOrDefault(l => string.Equals(l.Name, fixture.LocationName, StringComparison.OrdinalIgnoreCase)),
             };
     }
 
     public static IQueryable<FixtureDto> ToQueryable(this List<FixtureResponse> fixtures)
         => fixtures.Select(ToDto).AsQueryable();
 
-    // TODO: Update Command Parameters.
     public static UpdateFixtureCommand ToUpdateCommand(this FixtureFormModel fixture, Guid id)
         => new(id,
                fixture.Opponent,
-               fixture.KickoffTimeUtc.GetValueOrDefault(),
-               fixture.LocationName);
+               fixture.GetKickoffTimeUtc(),
+               fixture.GetLocationName());
 }

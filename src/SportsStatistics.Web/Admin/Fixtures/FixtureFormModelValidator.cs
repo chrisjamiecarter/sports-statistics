@@ -6,18 +6,17 @@ internal sealed class FixtureFormModelValidator : AbstractValidator<FixtureFormM
 {
     public FixtureFormModelValidator()
     {
-        RuleFor(f => f.CompetitionId)
+        RuleFor(f => f.Competition)
+            .NotEmpty();
+
+        RuleFor(f => f.KickoffTimeUtc)
+            .NotEmpty();
+
+        RuleFor(f => f.Location)
             .NotEmpty();
 
         RuleFor(c => c.Opponent)
             .NotEmpty()
             .MaximumLength(100);
-
-        RuleFor(f => f.KickoffTimeUtc)
-            .NotEmpty();
-
-        RuleFor(f => f.LocationName)
-            .NotEmpty()
-            .MaximumLength(7);
     }
 }
