@@ -12,7 +12,8 @@ internal sealed class GetFixturesQueryHandler(IApplicationDbContext dbContext) :
     public async Task<Result<List<FixtureResponse>>> Handle(GetFixturesQuery request, CancellationToken cancellationToken)
     {
         return await _dbContext.Fixtures
-            .Join(_dbContext.Competitions,
+            .AsNoTracking()
+            .Join(_dbContext.Competitions.AsNoTracking(),
                   fixture => fixture.CompetitionId,
                   competition => competition.Id,
                   (fixture, competition) => fixture.ToResponse(competition))
