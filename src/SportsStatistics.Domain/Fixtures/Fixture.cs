@@ -37,6 +37,7 @@ public sealed class Fixture : Entity
     {
         ValidateAndThrow(opponent, location);
 
+        Opponent = opponent;
         KickoffTimeUtc = kickoffTimeUtc;
         Location = location;
     }
