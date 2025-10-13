@@ -41,6 +41,5 @@ internal sealed class Messenger(ISender sender) : IMessenger
             // Fallback.
             throw;
         }
-
     }
 }
