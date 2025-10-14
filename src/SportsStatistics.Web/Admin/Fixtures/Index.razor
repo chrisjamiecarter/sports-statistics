@@ -6,11 +6,16 @@
 
     @if (!IsFixtureFormVisible)
     {
-        <FluentSelect TOption="SeasonDto"
-                      Label="Season"
-                      Items="@Seasons"
-                      OptionText="@(s => s.Name)"
-                      @bind-SelectedOption="SelectedSeason" />
+            <FluentSelect TOption="SeasonDto"
+                          Label="Season"
+                          Items="@Seasons"
+                          OptionText="@(s => s.Name)"
+                          @bind-SelectedOption="SelectedSeason" />
+
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Settings())"
+                          Title="Season Settings"
+                          Appearance="Appearance.Neutral"
+                          OnClick="@(() => Navigation.NavigateTo(Routes.Admin.Seasons))" />
     }
 
     @if (SelectedSeason is not null)
