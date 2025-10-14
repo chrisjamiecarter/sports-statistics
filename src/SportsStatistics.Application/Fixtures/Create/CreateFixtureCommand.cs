@@ -5,4 +5,4 @@ namespace SportsStatistics.Application.Fixtures.Create;
 public sealed record CreateFixtureCommand(Guid CompetitionId,
                                           string Opponent,
                                           DateTime KickoffTimeUtc,                                          
-                                          string LocationName) : ICommand;
+                                          string FixtureLocationName) : ICommand;

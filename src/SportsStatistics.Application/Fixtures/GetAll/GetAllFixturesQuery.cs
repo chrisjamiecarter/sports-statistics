@@ -2,4 +2,4 @@
 
 namespace SportsStatistics.Application.Fixtures.GetAll;
 
-public sealed record GetFixturesQuery() : IQuery<List<FixtureResponse>>;
+public sealed record GetAllFixturesQuery() : IQuery<List<FixtureResponse>>;

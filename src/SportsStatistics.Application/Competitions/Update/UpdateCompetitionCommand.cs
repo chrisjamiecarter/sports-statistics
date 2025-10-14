@@ -4,4 +4,4 @@ namespace SportsStatistics.Application.Competitions.Update;
 
 public sealed record UpdateCompetitionCommand(Guid Id,
                                               string Name,
-                                              string CompetitionType) : ICommand;
+                                              string CompetitionTypeName) : ICommand;

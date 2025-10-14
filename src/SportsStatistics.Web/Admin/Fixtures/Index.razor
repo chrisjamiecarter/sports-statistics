@@ -119,7 +119,7 @@
 
     private async Task LoadCompetitionsAsync()
     {
-        var request = new GetCompetitionsQuery();
+        var request = new GetAllCompetitionsQuery();
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
@@ -131,7 +131,7 @@
 
     private async Task LoadFixturesAsync()
     {
-        var request = new GetFixturesQuery();
+        var request = new GetAllFixturesQuery();
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {

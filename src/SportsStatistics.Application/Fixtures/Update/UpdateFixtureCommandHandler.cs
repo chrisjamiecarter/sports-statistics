@@ -1,31 +1,31 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
+﻿using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.Update;
 
-internal sealed class UpdateFixtureCommandHandler(IFixtureRepository repository) : ICommandHandler<UpdateFixtureCommand>
+internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<UpdateFixtureCommand>
 {
-    private readonly IFixtureRepository _repository = repository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result> Handle(UpdateFixtureCommand request, CancellationToken cancellationToken)
     {
-        var id = EntityId.Create(request.Id);
+        var entityId = EntityId.Create(request.Id);
 
-        var fixture = await _repository.GetByIdAsync(id, cancellationToken);
+        var fixture = await _dbContext.Fixtures.FindAsync([entityId], cancellationToken);
+
         if (fixture is null)
         {
-            return Result.Failure(FixtureErrors.NotFound(id));
+            return Result.Failure(FixtureErrors.NotFound(entityId));
         }
 
-        var location = FixtureLocation.FromName(request.LocationName);
+        fixture.Update(request.Opponent, request.KickoffTimeUtc, request.FixtureLocationName);
 
-        fixture.Update(request.Opponent, request.KickoffTimeUtc, location);
-
-        var updated = await _repository.UpdateAsync(fixture, cancellationToken);
+        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return updated
             ? Result.Success()
-            : Result.Failure(FixtureErrors.NotUpdated(id));
+            : Result.Failure(FixtureErrors.NotUpdated(fixture.Id));
     }
 }

@@ -6,6 +6,9 @@ internal sealed class CompetitionFormModelValidator : AbstractValidator<Competit
 {
     public CompetitionFormModelValidator()
     {
+        RuleFor(c => c.Season)
+            .NotEmpty();
+
         RuleFor(c => c.Name)
             .NotEmpty()
             .MaximumLength(50);

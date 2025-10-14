@@ -1,4 +1,5 @@
 ﻿@page "/admin/competitions"
+@using SportsStatistics.Application.Seasons.GetAll
 
 <PageTitle>Competitions</PageTitle>
 
@@ -6,11 +7,11 @@
 
     @if (IsCompetitionFormVisible)
     {
-        <CompetitionForm CancelCallback="HideCompetitionForm" SubmitCallback="OnSubmitAsync" SelectedCompetition="SelectedCompetition" />
+        <CompetitionForm CancelCallback="HideCompetitionForm" SeasonOptions="@Seasons" SelectedCompetition="@SelectedCompetition" SubmitCallback="OnSubmitAsync" />
     }
     else
     {
-        <CompetitionList Competitions="Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" />
+        <CompetitionList Competitions="@Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" />
     }
 </FluentCard>
 
@@ -23,6 +24,8 @@
 
     private CompetitionFormMode FormMode { get; set; } = CompetitionFormMode.Hide;
 
+    private IEnumerable<SeasonDto> Seasons { get; set; } = [];
+
     private IQueryable<CompetitionDto>? Competitions { get; set; }
 
     private CompetitionDto? SelectedCompetition { get; set; }
@@ -32,6 +35,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadCompetitionsAsync();
+        await LoadSeasonsAsync();
     }
 
     private void HideCompetitionForm()
@@ -48,7 +52,7 @@
 
     private async Task LoadCompetitionsAsync()
     {
-        var request = new GetCompetitionsQuery();
+        var request = new GetAllCompetitionsQuery();
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
@@ -59,6 +63,18 @@
         }
 
         Competitions = result.Value.ToQueryable();
+    }
+
+    private async Task LoadSeasonsAsync()
+    {
+        var request = new GetSeasonsQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError("Unable to load seasons");
+        }
+
+        Seasons = result.Value.Select(s => s.ToDto());
     }
 
     private async Task<bool> GetUserConfirmationAsync(string message, string primaryText, string secondaryText)

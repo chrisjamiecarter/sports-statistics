@@ -45,8 +45,6 @@ public static class DependencyInjection
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<ICompetitionRepository, CompetitionRepository>();
-        services.AddScoped<IFixtureRepository, FixtureRepository>();
         services.AddScoped<ISeasonRepository, SeasonRepository>();
 
         return services;

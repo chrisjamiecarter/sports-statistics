@@ -6,7 +6,8 @@ namespace SportsStatistics.Application.Tests.Competitions.Create;
 
 public class CreateCompetitionCommandValidatorTests
 {
-    private static readonly CreateCompetitionCommand BaseCommand = new("Test Name",
+    private static readonly CreateCompetitionCommand BaseCommand = new(Guid.CreateVersion7(),
+                                                                       "Test Name",
                                                                        CompetitionType.League.Name);
 
     private readonly CreateCompetitionCommandValidator _validator;
@@ -68,13 +69,13 @@ public class CreateCompetitionCommandValidatorTests
     public async Task Should_HaveValidationError_When_CompetitionTypeIsEmpty(string competitionType)
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionType = competitionType };
+        var command = BaseCommand with { CompetitionTypeName = competitionType };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.CompetitionType)
+        result.ShouldHaveValidationErrorFor(c => c.CompetitionTypeName)
               .WithErrorMessage("'Competition Type' must not be empty.");
     }
 
@@ -84,7 +85,7 @@ public class CreateCompetitionCommandValidatorTests
     public async Task Should_NotHaveValidationError_When_CompetitionTypeIsValid(string competitionType)
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionType = competitionType };
+        var command = BaseCommand with { CompetitionTypeName = competitionType };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -97,14 +98,14 @@ public class CreateCompetitionCommandValidatorTests
     public async Task Should_HaveValidationError_When_CompetitionTypeIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionType = "Training" };
+        var command = BaseCommand with { CompetitionTypeName = "Training" };
         var expectedMessage = $"Invalid competition type. Valid competition types: {string.Join(", ", CompetitionType.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.CompetitionType)
+        result.ShouldHaveValidationErrorFor(c => c.CompetitionTypeName)
               .WithErrorMessage(expectedMessage);
     }
 }

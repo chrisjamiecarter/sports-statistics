@@ -1,4 +1,5 @@
-﻿using SportsStatistics.SharedKernel;
+﻿using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Fixtures;
 
@@ -26,20 +27,24 @@ public sealed class Fixture : Entity
 
     public FixtureStatus Status { get; private set; } = FixtureStatus.Unknown;
 
-    public static Fixture Create(EntityId competitionId, string opponent, DateTime kickoffTimeUtc, FixtureLocation location)
+    public static Fixture Create(EntityId competitionId, string opponent, DateTime kickoffTimeUtc, string fixtureLocationName)
     {
-        ValidateAndThrow(opponent, location);
+        var fixtureLocation = FixtureLocation.FromName(fixtureLocationName);
 
-        return new Fixture(EntityId.Create(), competitionId, opponent, kickoffTimeUtc, location, FixtureStatus.Scheduled);
+        ValidateAndThrow(opponent, fixtureLocation);
+
+        return new Fixture(EntityId.Create(), competitionId, opponent, kickoffTimeUtc, fixtureLocation, FixtureStatus.Scheduled);
     }
 
-    public void Update(string opponent, DateTime kickoffTimeUtc, FixtureLocation location)
+    public void Update(string opponent, DateTime kickoffTimeUtc, string fixtureLocationName)
     {
-        ValidateAndThrow(opponent, location);
+        var fixtureLocation = FixtureLocation.FromName(fixtureLocationName);
+
+        ValidateAndThrow(opponent, fixtureLocation);
 
         Opponent = opponent;
         KickoffTimeUtc = kickoffTimeUtc;
-        Location = location;
+        Location = fixtureLocation;
     }
 
     private static void ValidateAndThrow(string opponent, FixtureLocation location)

@@ -9,6 +9,7 @@ internal static class CompetitionMapper
 
     public static CompetitionResponse ToResponse(this Competition competition)
         => new(competition.Id.Value,
+               competition.SeasonId.Value,
                competition.Name,
                competition.Type.Name);
 }

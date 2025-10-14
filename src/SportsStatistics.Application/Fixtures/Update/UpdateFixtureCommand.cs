@@ -5,4 +5,4 @@ namespace SportsStatistics.Application.Fixtures.Update;
 public sealed record UpdateFixtureCommand(Guid Id,
                                           string Opponent,
                                           DateTime KickoffTimeUtc,
-                                          string LocationName) : ICommand;
+                                          string FixtureLocationName) : ICommand;

@@ -16,12 +16,12 @@ internal sealed class UpdateCompetitionCommandValidator : AbstractValidator<Upda
             .NotEmpty()
             .MaximumLength(50);
 
-        RuleFor(c => c.CompetitionType)
+        RuleFor(c => c.CompetitionTypeName)
             .NotEmpty()
             .Must(type =>
             {
                 return CompetitionType.All.Any(t => string.Equals(t.Name, type, StringComparison.OrdinalIgnoreCase));
             })
-            .WithMessage($"Invalid competition type. Valid competition types: {string.Join(", ", CompetitionType.All)}.");
+            .WithMessage($"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.");
     }
 }

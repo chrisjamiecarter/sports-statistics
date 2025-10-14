@@ -20,7 +20,7 @@ internal sealed class UpdateFixtureCommandValidator : AbstractValidator<UpdateFi
         RuleFor(c => c.KickoffTimeUtc)
             .NotEmpty();
 
-        RuleFor(c => c.LocationName)
+        RuleFor(c => c.FixtureLocationName)
             .NotEmpty()
             .MaximumLength(7)
             .Must(location =>

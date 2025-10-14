@@ -7,16 +7,21 @@ internal sealed class CreateCompetitionCommandValidator : AbstractValidator<Crea
 {
     public CreateCompetitionCommandValidator()
     {
+        RuleFor(c => c.SeasonId)
+            .NotEmpty()
+            .Must(guid => guid.Version == 7)
+            .WithMessage("'Season Id' is not in the correct format.");
+
         RuleFor(c => c.Name)
             .NotEmpty()
             .MaximumLength(50);
 
-        RuleFor(c => c.CompetitionType)
+        RuleFor(c => c.CompetitionTypeName)
             .NotEmpty()
             .Must(type =>
             {
                 return CompetitionType.All.Any(t => string.Equals(t.Name, type, StringComparison.OrdinalIgnoreCase));
             })
-            .WithMessage($"Invalid competition type. Valid competition types: {string.Join(", ", CompetitionType.All)}.");
+            .WithMessage($"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.");
     }
 }

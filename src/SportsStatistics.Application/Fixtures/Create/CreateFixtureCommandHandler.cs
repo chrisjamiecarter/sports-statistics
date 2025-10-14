@@ -1,36 +1,31 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
-using SportsStatistics.Application.Competitions;
+﻿using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.Create;
 
-internal sealed class CreateFixtureCommandHandler(IFixtureRepository repository,
-                                                  ICompetitionRepository competitionRepository) : ICommandHandler<CreateFixtureCommand>
+internal sealed class CreateFixtureCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<CreateFixtureCommand>
 {
-    private readonly IFixtureRepository _repository = repository;
-    private readonly ICompetitionRepository _competitionRepository = competitionRepository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result> Handle(CreateFixtureCommand request, CancellationToken cancellationToken)
     {
         var competitionId = EntityId.Create(request.CompetitionId);
 
-        var competition = await _competitionRepository.GetByIdAsync(competitionId, cancellationToken);
+        var competition = await _dbContext.Competitions.FindAsync([competitionId], cancellationToken);
+
         if (competition is null)
         {
             return Result.Failure(CompetitionErrors.NotFound(competitionId));
         }
 
-        var location = FixtureLocation.FromName(request.LocationName);
-        if (location == FixtureLocation.Unknown)
-        {
-            return Result.Failure(FixtureErrors.InvalidLocation(request.LocationName));
-        }
+        var fixture = Fixture.Create(competitionId, request.Opponent, request.KickoffTimeUtc, request.FixtureLocationName);
 
-        var fixture = Fixture.Create(competitionId, request.Opponent, request.KickoffTimeUtc, location);
+        _dbContext.Fixtures.Add(fixture);
 
-        var created = await _repository.CreateAsync(fixture, cancellationToken);
+        var created = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return created
             ? Result.Success()

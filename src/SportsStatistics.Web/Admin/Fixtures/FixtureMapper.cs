@@ -44,7 +44,7 @@ internal static class FixtureMapper
             ? new()
             : new()
             {
-                Competition = competitions.FirstOrDefault(c => c.Id == fixture.CompetitionId),
+                Competition = competitions.SingleOrDefault(c => c.Id == fixture.CompetitionId),
                 Opponent = fixture.Opponent,
                 KickoffDateUtc = fixture.KickoffTimeUtc,
                 KickoffTimeUtc = fixture.KickoffTimeUtc,

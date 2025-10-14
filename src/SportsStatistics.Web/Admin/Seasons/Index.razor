@@ -6,11 +6,11 @@
 
     @if (IsSeasonFormVisible)
     {
-        <SeasonForm OnCancel="HideSeasonForm" OnSubmit="OnSubmitAsync" SelectedSeason="SelectedSeason" />
+        <SeasonForm OnCancel="HideSeasonForm" OnSubmit="OnSubmitAsync" SelectedSeason="@SelectedSeason" />
     }
     else
     {
-        <SeasonList Seasons="Seasons" AddSeasonCallback="@(() => ShowSeasonForm())" DeleteSeasonCallback="OnDeleteSeasonAsync" EditSeasonCallback="ShowSeasonForm" />
+        <SeasonList Seasons="@Seasons" AddSeasonCallback="@(() => ShowSeasonForm())" DeleteSeasonCallback="OnDeleteSeasonAsync" EditSeasonCallback="ShowSeasonForm" />
     }
 </FluentCard>
 

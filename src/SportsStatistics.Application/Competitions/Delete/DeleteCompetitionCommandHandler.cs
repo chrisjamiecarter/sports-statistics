@@ -1,27 +1,31 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
+﻿using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Competitions.Delete;
 
-internal sealed class DeleteCompetitionCommandHandler(ICompetitionRepository repository) : ICommandHandler<DeleteCompetitionCommand>
+internal sealed class DeleteCompetitionCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<DeleteCompetitionCommand>
 {
-    private readonly ICompetitionRepository _repository = repository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result> Handle(DeleteCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var id = EntityId.Create(request.Id);
+        var entityId = EntityId.Create(request.Id);
 
-        var competition = await _repository.GetByIdAsync(id, cancellationToken);
+        var competition = await _dbContext.Competitions.FindAsync([entityId], cancellationToken);
+
         if (competition is null)
         {
-            return Result.Failure(CompetitionErrors.NotFound(id));
+            return Result.Failure(CompetitionErrors.NotFound(entityId));
         }
 
-        var deleted = await _repository.DeleteAsync(competition, cancellationToken);
+        _dbContext.Competitions.Remove(competition);
+
+        var deleted = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return deleted
             ? Result.Success()
-            : Result.Failure(CompetitionErrors.NotDeleted(id));
+            : Result.Failure(CompetitionErrors.NotDeleted(competition.Id));
     }
 }

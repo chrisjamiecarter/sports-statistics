@@ -4,25 +4,32 @@ namespace SportsStatistics.Domain.Competitions;
 
 public sealed class Competition : Entity
 {
-    private Competition(EntityId id, string name, CompetitionType type) : base(id)
+    private Competition(EntityId id, EntityId seasonId, string name, CompetitionType type) : base(id)
     {
+        SeasonId = seasonId;
         Name = name;
         Type = type;
     }
+
+    public EntityId SeasonId { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
 
     public CompetitionType Type { get; private set; } = CompetitionType.Unknown;
 
-    public static Competition Create(string name, CompetitionType type)
+    public static Competition Create(EntityId seasonId, string name, string competitionTypeName)
     {
-        ValidateAndThrow(name, type);
+        var competitionType = CompetitionType.FromName(competitionTypeName);
 
-        return new Competition(EntityId.Create(), name, type);
+        ValidateAndThrow(name, competitionType);
+
+        return new Competition(EntityId.Create(), seasonId, name, competitionType);
     }
 
-    public void Update(string name, CompetitionType competitionType)
+    public void Update(string name, string competitionTypeName)
     {
+        var competitionType = CompetitionType.FromName(competitionTypeName);
+
         ValidateAndThrow(name, competitionType);
 
         Name = name;

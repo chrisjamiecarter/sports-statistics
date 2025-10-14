@@ -80,14 +80,14 @@ public class CreateFixtureCommandValidatorTests
     public async Task Should_HaveValidationError_When_LocationNameIsEmpty(string locationName)
     {
         // Arrange.
-        var command = BaseCommand with { LocationName = locationName };
+        var command = BaseCommand with { FixtureLocationName = locationName };
         var expectedErrorMessage = "'Location Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.LocationName)
+        result.ShouldHaveValidationErrorFor(c => c.FixtureLocationName)
               .WithErrorMessage(expectedErrorMessage);
     }
 
@@ -98,7 +98,7 @@ public class CreateFixtureCommandValidatorTests
     public async Task Should_NotHaveValidationError_When_LocationNameIsValid(string locationName)
     {
         // Arrange.
-        var command = BaseCommand with { LocationName = locationName };
+        var command = BaseCommand with { FixtureLocationName = locationName };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -111,14 +111,14 @@ public class CreateFixtureCommandValidatorTests
     public async Task Should_HaveValidationError_When_LocationNameIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { LocationName = "The Moon" };
+        var command = BaseCommand with { FixtureLocationName = "The Moon" };
         var expectedMessage = $"Invalid fixture location. Valid fixture locations: {string.Join(", ", FixtureLocation.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.LocationName)
+        result.ShouldHaveValidationErrorFor(c => c.FixtureLocationName)
               .WithErrorMessage(expectedMessage);
     }
 }

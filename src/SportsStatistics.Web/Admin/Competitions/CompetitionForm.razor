@@ -11,6 +11,26 @@
 
         <FluentStack Orientation="Orientation.Vertical">
             <div class="full-width">
+                @if (IsUpdateMode)
+                {
+                    <FluentTextField Name="Input.Season" Value="@Input.Season?.Name" ReadOnly="true" Label="Season" Style="width: 100%" />
+                }
+                else
+                {
+                    <FluentSelect Id="SeasonSelect"
+                                  Name="Input.Season"
+                                  TOption=SeasonDto
+                                  Label="Season"
+                                  Items="SeasonOptions"
+                                  Width="100%"
+                                  Placeholder="Select a season..."
+                                  OptionText="(c => c.Name)"
+                                  @bind-SelectedOption="Input.Season"
+                                  Required="!IsUpdateMode" />
+                    <FluentValidationMessage For="() => Input.Season" class="text-danger" />
+                }
+            </div>
+            <div class="full-width">
                 <FluentTextField Name="Input.Name" @bind-Value="Input.Name" AutoComplete="competition-name" Required="true" Placeholder="Name" Label="Name" Style="width: 100%" />
                 <FluentValidationMessage For="() => Input.Name" class="text-danger" />
             </div>
@@ -45,6 +65,9 @@
     private IEnumerable<CompetitionTypeOptionDto> CompetitionTypeOptions = CompetitionType.All.Select(p => p.ToDto());
 
     [Parameter]
+    public IEnumerable<SeasonDto> SeasonOptions { get; set; } = [];
+
+    [Parameter]
     public CompetitionDto? SelectedCompetition { get; set; }
 
     [Parameter]
@@ -66,7 +89,7 @@
     {
         if (!IsSubmitting && SelectedCompetition is not null)
         {
-            Input = SelectedCompetition.ToFormModel(CompetitionTypeOptions);
+            Input = SelectedCompetition.ToFormModel(SeasonOptions, CompetitionTypeOptions);
         }
     }
 

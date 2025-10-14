@@ -1,31 +1,31 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
+﻿using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Competitions.Update;
 
-internal sealed class UpdateCompetitionCommandHandler(ICompetitionRepository repository) : ICommandHandler<UpdateCompetitionCommand>
+internal sealed class UpdateCompetitionCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<UpdateCompetitionCommand>
 {
-    private readonly ICompetitionRepository _repository = repository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result> Handle(UpdateCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var id = EntityId.Create(request.Id);
+        var entityId = EntityId.Create(request.Id);
 
-        var competition = await _repository.GetByIdAsync(id, cancellationToken);
+        var competition = await _dbContext.Competitions.FindAsync([entityId], cancellationToken);
+        
         if (competition is null)
         {
-            return Result.Failure(CompetitionErrors.NotFound(id));
+            return Result.Failure(CompetitionErrors.NotFound(entityId));
         }
 
-        var competitionType = CompetitionType.FromName(request.CompetitionType);
+        competition.Update(request.Name, request.CompetitionTypeName);
 
-        competition.Update(request.Name, competitionType);
-
-        var updated = await _repository.UpdateAsync(competition, cancellationToken);
+        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return updated
             ? Result.Success()
-            : Result.Failure(CompetitionErrors.NotUpdated(id));
+            : Result.Failure(CompetitionErrors.NotUpdated(competition.Id));
     }
 }

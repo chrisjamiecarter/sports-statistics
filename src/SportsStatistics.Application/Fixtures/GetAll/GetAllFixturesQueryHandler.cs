@@ -5,11 +5,11 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.GetAll;
 
-internal sealed class GetFixturesQueryHandler(IApplicationDbContext dbContext) : IQueryHandler<GetFixturesQuery, List<FixtureResponse>>
+internal sealed class GetAllFixturesQueryHandler(IApplicationDbContext dbContext) : IQueryHandler<GetAllFixturesQuery, List<FixtureResponse>>
 {
     private readonly IApplicationDbContext _dbContext = dbContext;
 
-    public async Task<Result<List<FixtureResponse>>> Handle(GetFixturesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<FixtureResponse>>> Handle(GetAllFixturesQuery request, CancellationToken cancellationToken)
     {
         return await _dbContext.Fixtures
             .AsNoTracking()
