@@ -18,6 +18,7 @@
         <PropertyColumn Property="@(p => p.EndDate)" Sortable="true" />
 
         <TemplateColumn Align="Align.End">
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Competitions" />
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
         </TemplateColumn>
