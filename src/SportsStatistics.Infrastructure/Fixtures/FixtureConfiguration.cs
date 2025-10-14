@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.SharedKernel;
@@ -32,7 +33,7 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
 
         builder.Property(f => f.Location)
                .HasConversion(v => v.Name, v => FixtureLocation.FromName(v))
-               .HasMaxLength(7)
+               .HasMaxLength(FixtureLocation.All.Max(s => s.Name.Length))
                .IsRequired();
 
         builder.OwnsOne(f => f.Score, score =>
@@ -46,7 +47,11 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
 
         builder.Property(f => f.Status)
                .HasConversion(v => v.Name, v => FixtureStatus.FromName(v))
-               .HasMaxLength(10)
+               .HasMaxLength(FixtureStatus.All.Max(s => s.Name.Length))
                .IsRequired();
+
+        builder.HasOne<Competition>()
+               .WithMany()
+               .HasForeignKey(f => f.CompetitionId);
     }
 }
