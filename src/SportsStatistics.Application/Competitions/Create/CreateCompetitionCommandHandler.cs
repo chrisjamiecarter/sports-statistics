@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Application.Abstractions.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Seasons;
@@ -14,7 +15,7 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
     {
         var seasonId = EntityId.Create(request.SeasonId);
 
-        var season = await _dbContext.Seasons.FindAsync([seasonId], cancellationToken);
+        var season = await _dbContext.Seasons.AsNoTracking().SingleOrDefaultAsync(s => s.Id == seasonId, cancellationToken);
         if (season is null)
         {
             return Result.Failure(SeasonErrors.NotFound(seasonId));
@@ -28,6 +29,6 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
 
         return created
             ? Result.Success()
-            : Result.Failure(CompetitionErrors.NotCreated(competition.Id));
+            : Result.Failure(CompetitionErrors.NotCreated(request.Name, request.CompetitionTypeName));
     }
 }

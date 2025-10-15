@@ -4,9 +4,9 @@ namespace SportsStatistics.Domain.Competitions;
 
 public static class CompetitionErrors
 {
-    public static Error NotCreated(EntityId id) => Error.Failure(
+    public static Error NotCreated(string name, string competitionTypeName) => Error.Failure(
         "Competition.NotCreated",
-        $"The competition with the Id = '{id}' was not created.");
+        $"The competition with the Name = '{name}' and Competition Type = '{competitionTypeName}' was not created.");
     
     public static Error NotDeleted(EntityId id) => Error.Failure(
         "Competition.NotDeleted",
