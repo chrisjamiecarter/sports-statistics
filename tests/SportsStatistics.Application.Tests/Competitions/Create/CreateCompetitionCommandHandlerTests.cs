@@ -1,61 +1,94 @@
-﻿//using SportsStatistics.Application.Competitions;
-//using SportsStatistics.Application.Competitions.Create;
-//using SportsStatistics.Domain.Competitions;
-//using SportsStatistics.SharedKernel;
+﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Competitions.Create;
+using SportsStatistics.Domain.Competitions;
+using SportsStatistics.Domain.Seasons;
+using SportsStatistics.SharedKernel;
 
-//namespace SportsStatistics.Application.Tests.Competitions.Create;
+namespace SportsStatistics.Application.Tests.Competitions.Create;
 
-//public class CreateCompetitionCommandHandlerTests
-//{
-//    private static readonly CreateCompetitionCommand BaseCommand = new("Premier League",
-//                                                                       CompetitionType.League.Name);
+public class CreateCompetitionCommandHandlerTests
+{
+    private static readonly List<Season> BaseSeasons =
+    [
+        Season.Create(new DateOnly(2023, 8, 1), new DateOnly(2024, 7, 31)),
+        Season.Create(new DateOnly(2024, 8, 1), new DateOnly(2025, 7, 31)),
+    ];
 
-//    private readonly Mock<ICompetitionRepository> _repositoryMock;
-//    private readonly CreateCompetitionCommandHandler _handler;
+    private static readonly CreateCompetitionCommand BaseCommand = new(BaseSeasons.First().Id.Value,
+                                                                       "Premier League",
+                                                                       CompetitionType.League.Name);
 
-//    public CreateCompetitionCommandHandlerTests()
-//    {
-//        _repositoryMock = new Mock<ICompetitionRepository>();
-//        _handler = new CreateCompetitionCommandHandler(_repositoryMock.Object);
-//    }
+    private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
+    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
+    private readonly CreateCompetitionCommandHandler _handler;
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnSuccess_WhenCompetitionIsCreated()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Success();
+    public CreateCompetitionCommandHandlerTests()
+    {
+        _competitionDbSetMock = new List<Competition>().BuildMockDbSet();
+        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
 
-//        _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(true);
+        _dbContextMock = new Mock<IApplicationDbContext>();
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        _dbContextMock.Setup(m => m.Competitions)
+                      .Returns(_competitionDbSetMock.Object);
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.CreateAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
+        _dbContextMock.Setup(m => m.Seasons)
+                      .Returns(_seasonDbSetMock.Object);
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotCreated()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        Result? expected = null; // Set in the callback below.
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(1);
 
-//        _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()))
-//                       .Callback<Competition, CancellationToken>((c, _) =>
-//                       {
-//                           expected = Result.Failure(CompetitionErrors.NotCreated(c.Id));
-//                       })
-//                       .ReturnsAsync(false);
+        _handler = new CreateCompetitionCommandHandler(_dbContextMock.Object);
+    }
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenCompetitionIsCreated()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Success();
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.CreateAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
-//}
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenSeasonIsNotfound()
+    {
+        // Arrange.
+        var command = BaseCommand with { SeasonId = Guid.CreateVersion7() };
+        var expected = Result.Failure(SeasonErrors.NotFound(EntityId.Create(command.SeasonId)));
+
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
+
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotCreated()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Failure(CompetitionErrors.NotCreated(command.Name, command.CompetitionTypeName));
+
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
+
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+}
