@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Application.Abstractions.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.SharedKernel;
@@ -13,7 +14,7 @@ internal sealed class DeleteCompetitionCommandHandler(IApplicationDbContext dbCo
     {
         var entityId = EntityId.Create(request.Id);
 
-        var competition = await _dbContext.Competitions.FindAsync([entityId], cancellationToken);
+        var competition = await _dbContext.Competitions.AsNoTracking().SingleOrDefaultAsync(c => c.Id == entityId, cancellationToken);
 
         if (competition is null)
         {
