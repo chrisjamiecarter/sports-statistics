@@ -5,7 +5,7 @@ namespace SportsStatistics.Application.Tests.Competitions.Delete;
 
 public sealed class DeleteCompetitionCommandValidatorTests
 {
-    private static readonly DeleteCompetitionCommand BaseCommand = new(new("01995348-37ea-7cdc-9e06-89d6ef2933db"));
+    private static readonly DeleteCompetitionCommand BaseCommand = new(Guid.CreateVersion7());
 
     private readonly DeleteCompetitionCommandValidator _validator;
 
