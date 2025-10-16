@@ -1,84 +1,85 @@
-﻿//using SportsStatistics.Application.Competitions;
-//using SportsStatistics.Application.Competitions.Delete;
-//using SportsStatistics.Domain.Competitions;
-//using SportsStatistics.SharedKernel;
+﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Competitions.Delete;
+using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
-//namespace SportsStatistics.Application.Tests.Competitions.Delete;
+namespace SportsStatistics.Application.Tests.Competitions.Delete;
 
-//public class DeleteCompetitionCommandHandlerTests
-//{
-//    private static readonly Competition BaseCompetition = Competition.Create("Test Competition", CompetitionType.League);
-//    private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetition.Id.Value);
+public class DeleteCompetitionCommandHandlerTests
+{
+    private static readonly Competition BaseCompetition = Competition.Create(EntityId.Create(),
+                                                                             "Test Competition",
+                                                                             CompetitionType.League.Name);
 
-//    private readonly Mock<ICompetitionRepository> _repositoryMock;
-//    private readonly DeleteCompetitionCommandHandler _handler;
+    private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetition.Id.Value);
 
-//    public DeleteCompetitionCommandHandlerTests()
-//    {
-//        _repositoryMock = new Mock<ICompetitionRepository>();
-//        _handler = new DeleteCompetitionCommandHandler(_repositoryMock.Object);
-//    }
+    private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
+    private readonly DeleteCompetitionCommandHandler _handler;
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnSuccess_WhenCompetitionIsDeleted()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Success();
+    public DeleteCompetitionCommandHandlerTests()
+    {
+        _competitionDbSetMock = new List<Competition>
+        {
+            BaseCompetition,
+        }
+        .BuildMockDbSet();
 
-//        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(BaseCompetition);
+        _dbContextMock = new Mock<IApplicationDbContext>();
 
-//        _repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(true);
+        _dbContextMock.Setup(m => m.Competitions)
+                      .Returns(_competitionDbSetMock.Object);
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(1);
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
+        _handler = new DeleteCompetitionCommandHandler(_dbContextMock.Object);
+    }
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotFound()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Failure(CompetitionErrors.NotFound(BaseCompetition.Id));
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenCompetitionIsDeleted()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Success();
 
-//        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync((Competition?)null);
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()), Times.Never);
-//    }
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotFound()
+    {
+        // Arrange.
+        var command = BaseCommand with { Id = Guid.CreateVersion7() };
+        var expected = Result.Failure(CompetitionErrors.NotFound(EntityId.Create(command.Id)));
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotDeleted()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Failure(CompetitionErrors.NotDeleted(BaseCompetition.Id));
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-//        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(BaseCompetition);
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
 
-//        _repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(false);
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotDeleted()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Failure(CompetitionErrors.NotDeleted(BaseCompetition.Id));
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Competition>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
-//}
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+}
