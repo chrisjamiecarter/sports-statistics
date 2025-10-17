@@ -65,9 +65,6 @@ public class CreateCompetitionCommandHandlerTests
         var command = BaseCommand with { SeasonId = Guid.CreateVersion7() };
         var expected = Result.Failure(SeasonErrors.NotFound(EntityId.Create(command.SeasonId)));
 
-        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(0);
-
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
