@@ -8,9 +8,9 @@ public static class FixtureErrors
         "Fixture.InvalidLocation",
         $"A fixture cannot have a location of '{location}'.");
 
-    public static Error NotCreated(EntityId id) => Error.Failure(
+    public static Error NotCreated(string opponent, DateTime kickoffTimeUtc, string fixtureLocationName) => Error.Failure(
         "Fixture.NotCreated",
-        $"The fixture with the Id = '{id}' was not created.");
+        $"The fixture with the Opponent = '{opponent}', Kickoff Time = '{kickoffTimeUtc}' and Location = '{fixtureLocationName}' was not created.");
 
     public static Error NotDeleted(EntityId id) => Error.Failure(
         "Fixture.NotDeleted",

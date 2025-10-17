@@ -31,6 +31,6 @@ internal sealed class CreateFixtureCommandHandler(IApplicationDbContext dbContex
 
         return created
             ? Result.Success()
-            : Result.Failure(FixtureErrors.NotCreated(fixture.Id));
+            : Result.Failure(FixtureErrors.NotCreated(fixture.Opponent, fixture.KickoffTimeUtc, fixture.Location.Name));
     }
 }
