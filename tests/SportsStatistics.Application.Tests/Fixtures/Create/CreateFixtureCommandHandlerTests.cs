@@ -1,116 +1,92 @@
-﻿//using SportsStatistics.Application.Competitions;
-//using SportsStatistics.Application.Fixtures;
-//using SportsStatistics.Application.Fixtures.Create;
-//using SportsStatistics.Domain.Competitions;
-//using SportsStatistics.Domain.Fixtures;
-//using SportsStatistics.SharedKernel;
+﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Fixtures.Create;
+using SportsStatistics.Domain.Competitions;
+using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.SharedKernel;
 
-//namespace SportsStatistics.Application.Tests.Fixtures.Create;
+namespace SportsStatistics.Application.Tests.Fixtures.Create;
 
-//public class CreateFixtureCommandHandlerTests
-//{
-//    private static readonly CreateFixtureCommand BaseCommand = new(Guid.CreateVersion7(),
-//                                                                   "Test Opponent",
-//                                                                   DateTime.UtcNow,
-//                                                                   FixtureLocation.Home.Name);
+public class CreateFixtureCommandHandlerTests
+{
+    private static readonly List<Competition> BaseCompetitions =
+    [
+        Competition.Create(EntityId.Create(), "Test League", CompetitionType.League.Name),
+        Competition.Create(EntityId.Create(), "Test Cup", CompetitionType.Cup.Name),
+    ];
 
-//    private static readonly Competition BaseCompetition = Competition.Create("Test Competition", CompetitionType.League);
+    private static readonly CreateFixtureCommand BaseCommand = new(BaseCompetitions.First().Id.Value,
+                                                                   "Test Opponent",
+                                                                   DateTime.UtcNow,
+                                                                   FixtureLocation.Home.Name);
 
-//    private readonly Mock<IFixtureRepository> _fixtureRepositoryMock;
-//    private readonly Mock<ICompetitionRepository> _competitionRepositoryMock;
+    private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
+    private readonly Mock<DbSet<Fixture>> _fixtureDbSetMock;
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
+    private readonly CreateFixtureCommandHandler _handler;
 
-//    private readonly CreateFixtureCommandHandler _handler;
+    public CreateFixtureCommandHandlerTests()
+    {
+        _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
+        _fixtureDbSetMock = new List<Fixture>().BuildMockDbSet();
 
-//    public CreateFixtureCommandHandlerTests()
-//    {
-//        _fixtureRepositoryMock = new Mock<IFixtureRepository>();
-//        _competitionRepositoryMock = new Mock<ICompetitionRepository>();
-//        _handler = new CreateFixtureCommandHandler(_fixtureRepositoryMock.Object, _competitionRepositoryMock.Object);
-//    }
+        _dbContextMock = new Mock<IApplicationDbContext>();
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnSuccess_WhenFixtureIsCreated()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Success();
+        _dbContextMock.Setup(m => m.Competitions)
+                      .Returns(_competitionDbSetMock.Object);
 
-//        _competitionRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//            .ReturnsAsync(BaseCompetition);
+        _dbContextMock.Setup(m => m.Fixtures)
+                      .Returns(_fixtureDbSetMock.Object);
 
-//        _fixtureRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()))
-//                              .ReturnsAsync(true);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(1);
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        _handler = new CreateFixtureCommandHandler(_dbContextMock.Object);
+    }
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _competitionRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _fixtureRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenFixtureIsCreated()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Success();
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenFixtureLocationIsInvalid()
-//    {
-//        // Arrange.
-//        var command = BaseCommand with { FixtureLocationName = "The Moon" };
-//        var expected = Result.Failure(FixtureErrors.InvalidLocation(command.FixtureLocationName));
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-//        _competitionRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                                  .ReturnsAsync(BaseCompetition);
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotFound()
+    {
+        // Arrange.
+        var command = BaseCommand with { CompetitionId = Guid.CreateVersion7() };
+        var expected = Result.Failure(CompetitionErrors.NotFound(EntityId.Create(command.CompetitionId)));
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _competitionRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _fixtureRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Never);
-//    }
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotFound()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Failure(CompetitionErrors.NotFound(EntityId.Create(command.CompetitionId)));
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
 
-//        _competitionRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                                  .ReturnsAsync((Competition?)null);
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotCreated()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Failure(FixtureErrors.NotCreated(command.Opponent, command.KickoffTimeUtc, command.FixtureLocationName));
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _competitionRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _fixtureRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Never);
-//    }
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotCreated()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        Result? expected = null; // Set in the callback below.
-
-//        _competitionRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                                  .ReturnsAsync(BaseCompetition);
-
-//        _fixtureRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()))
-//                              .Callback<Fixture, CancellationToken>((c, _) =>
-//                              {
-//                                  expected = Result.Failure(FixtureErrors.NotCreated(c.Id));
-//                              })
-//                              .ReturnsAsync(false);
-
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
-
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _competitionRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _fixtureRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
-//}
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+}
