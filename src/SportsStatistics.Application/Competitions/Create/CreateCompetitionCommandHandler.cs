@@ -16,6 +16,7 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
         var seasonId = EntityId.Create(request.SeasonId);
 
         var season = await _dbContext.Seasons.AsNoTracking().SingleOrDefaultAsync(s => s.Id == seasonId, cancellationToken);
+
         if (season is null)
         {
             return Result.Failure(SeasonErrors.NotFound(seasonId));
