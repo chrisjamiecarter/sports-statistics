@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Application.Abstractions.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
@@ -14,7 +15,8 @@ internal sealed class CreateFixtureCommandHandler(IApplicationDbContext dbContex
     {
         var competitionId = EntityId.Create(request.CompetitionId);
 
-        var competition = await _dbContext.Competitions.FindAsync([competitionId], cancellationToken);
+        var competition = await _dbContext.Competitions.AsNoTracking()
+                                                       .SingleOrDefaultAsync(c => c.Id == competitionId, cancellationToken);
 
         if (competition is null)
         {

@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Application.Abstractions.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
@@ -13,7 +14,8 @@ internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContex
     {
         var entityId = EntityId.Create(request.Id);
 
-        var fixture = await _dbContext.Fixtures.FindAsync([entityId], cancellationToken);
+        var fixture = await _dbContext.Fixtures.AsNoTracking()
+                                               .SingleOrDefaultAsync(f => f.Id == entityId, cancellationToken);
 
         if (fixture is null)
         {
