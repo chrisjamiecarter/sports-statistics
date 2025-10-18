@@ -77,11 +77,11 @@ public class CreateFixtureCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_LocationNameIsEmpty(string locationName)
+    public async Task Should_HaveValidationError_When_FixtureLocationNameIsEmpty(string fixtureLocationName)
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocationName = locationName };
-        var expectedErrorMessage = "'Location Name' must not be empty.";
+        var command = BaseCommand with { FixtureLocationName = fixtureLocationName };
+        var expectedErrorMessage = "'Fixture Location Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -95,10 +95,10 @@ public class CreateFixtureCommandValidatorTests
     [InlineData("Home")]
     [InlineData("Away")]
     [InlineData("Neutral")]
-    public async Task Should_NotHaveValidationError_When_LocationNameIsValid(string locationName)
+    public async Task Should_NotHaveValidationError_When_FixtureLocationNameIsValid(string fixtureLocationName)
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocationName = locationName };
+        var command = BaseCommand with { FixtureLocationName = fixtureLocationName };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -108,7 +108,7 @@ public class CreateFixtureCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_LocationNameIsInvalid()
+    public async Task Should_HaveValidationError_When_FixtureLocationNameIsInvalid()
     {
         // Arrange.
         var command = BaseCommand with { FixtureLocationName = "The Moon" };
