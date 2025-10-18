@@ -94,17 +94,17 @@ public class UpdateCompetitionCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_CompetitionTypeIsEmpty(string competitionType)
+    public async Task Should_HaveValidationError_When_CompetitionTypeIsEmpty(string competitionTypeName)
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionTypeName = competitionType };
+        var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.CompetitionTypeName)
-              .WithErrorMessage("'Competition Type' must not be empty.");
+              .WithErrorMessage("'Competition Type Name' must not be empty.");
     }
 
     [Theory]
@@ -127,7 +127,7 @@ public class UpdateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = "Training" };
-        var expectedMessage = $"Invalid competition type. Valid competition types: {string.Join(", ", CompetitionType.All)}.";
+        var expectedMessage = $"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
