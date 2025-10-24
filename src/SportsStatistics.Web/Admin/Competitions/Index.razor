@@ -5,6 +5,21 @@
 
 <FluentCard>
 
+    <FluentBreadcrumb>
+        <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Index">
+            Admin
+        </FluentBreadcrumbItem>
+        <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Fixtures">
+            Fixtures
+        </FluentBreadcrumbItem>
+        <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Seasons">
+            Seasons
+        </FluentBreadcrumbItem>
+        <FluentBreadcrumbItem Appearance="Appearance.Accent">
+            Competitions
+        </FluentBreadcrumbItem>
+    </FluentBreadcrumb>
+
     @if (IsCompetitionFormVisible)
     {
         <CompetitionForm CancelCallback="HideCompetitionForm" SeasonOptions="@Seasons" SelectedCompetition="@SelectedCompetition" SubmitCallback="OnSubmitAsync" />
