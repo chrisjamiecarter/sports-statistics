@@ -3,7 +3,16 @@
 <PageTitle>Players</PageTitle>
 
 <FluentCard>
-    
+
+    <FluentBreadcrumb>
+        <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Index">
+            Admin
+        </FluentBreadcrumbItem>
+        <FluentBreadcrumbItem Appearance="Appearance.Accent">
+            Players
+        </FluentBreadcrumbItem>
+    </FluentBreadcrumb>
+
     @if (IsPlayerFormVisible)
     {
         <PlayerForm OnCancel="HidePlayerForm" OnSubmit="OnSubmitAsync" SelectedPlayer="SelectedPlayer" />
