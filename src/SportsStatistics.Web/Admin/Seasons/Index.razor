@@ -4,6 +4,18 @@
 
 <FluentCard>
 
+    <FluentBreadcrumb>
+        <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Index">
+            Admin
+        </FluentBreadcrumbItem>
+        <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Fixtures">
+            Fixtures
+        </FluentBreadcrumbItem>
+        <FluentBreadcrumbItem Appearance="Appearance.Accent">
+            Seasons
+        </FluentBreadcrumbItem>
+    </FluentBreadcrumb>
+
     @if (IsSeasonFormVisible)
     {
         <SeasonForm OnCancel="HideSeasonForm" OnSubmit="OnSubmitAsync" SelectedSeason="@SelectedSeason" />
