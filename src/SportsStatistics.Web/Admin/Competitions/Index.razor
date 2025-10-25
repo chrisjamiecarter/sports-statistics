@@ -1,11 +1,11 @@
-﻿@page "/admin/competitions"
+﻿@page "/admin/competitions/{seasonId:guid}"
 @using SportsStatistics.Application.Seasons.GetAll
 
 <PageTitle>Competitions</PageTitle>
 
 <FluentCard>
 
-    <FluentBreadcrumb>
+    <FluentBreadcrumb Style="margin-bottom: 1rem;">
         <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Index">
             Admin
         </FluentBreadcrumbItem>
@@ -36,6 +36,9 @@
         Hide,
         Show,
     }
+
+    [Parameter]
+    public Guid SeasonId { get; set; }
 
     private CompetitionFormMode FormMode { get; set; } = CompetitionFormMode.Hide;
 
@@ -77,7 +80,7 @@
             ToastService.ShowError("Unable to load competitions");
         }
 
-        Competitions = result.Value.ToQueryable();
+        Competitions = result.Value.Where(c => c.SeasonId == SeasonId).ToQueryable();
     }
 
     private async Task LoadSeasonsAsync()

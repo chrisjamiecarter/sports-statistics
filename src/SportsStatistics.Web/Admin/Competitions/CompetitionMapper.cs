@@ -34,7 +34,7 @@ internal static class CompetitionMapper
             CompetitionType = competitionTypeOptions.SingleOrDefault(t => string.Equals(t.Name, competition.CompetitionType, StringComparison.OrdinalIgnoreCase)),
         };
 
-    public static IQueryable<CompetitionDto> ToQueryable(this List<CompetitionResponse> competitions)
+    public static IQueryable<CompetitionDto> ToQueryable(this IEnumerable<CompetitionResponse> competitions)
         => competitions.Select(ToDto).AsQueryable();
 
     public static UpdateCompetitionCommand ToUpdateCommand(this CompetitionFormModel competition, Guid id)
