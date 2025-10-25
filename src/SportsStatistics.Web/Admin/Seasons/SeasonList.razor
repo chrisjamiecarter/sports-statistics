@@ -18,7 +18,7 @@
         <PropertyColumn Property="@(p => p.EndDate)" Sortable="true" />
 
         <TemplateColumn Align="Align.End">
-            <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Competitions" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())" Appearance="Appearance.Accent" OnClick="@(() => NavigateToCompetitions(context))" Title="Competitions" />
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
         </TemplateColumn>
@@ -30,7 +30,7 @@
 
 @code {
     private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
-    
+
     [Parameter]
     public EventCallback AddSeasonCallback { get; set; }
 
@@ -56,5 +56,11 @@
     private async Task Edit(SeasonDto season)
     {
         await EditSeasonCallback.InvokeAsync(season);
+    }
+
+    private void NavigateToCompetitions(SeasonDto season)
+    {
+        // TODO: Change to Routes.Admin.Competitions(season.Id);
+        Navigation.NavigateTo($"{Routes.Admin.Competitions}/{season.Id}");
     }
 }
