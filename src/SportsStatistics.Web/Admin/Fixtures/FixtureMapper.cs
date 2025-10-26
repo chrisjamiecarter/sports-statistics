@@ -1,6 +1,6 @@
 ﻿using SportsStatistics.Application.Fixtures.Create;
 using SportsStatistics.Application.Fixtures.Delete;
-using SportsStatistics.Application.Fixtures.GetAll;
+using SportsStatistics.Application.Fixtures.GetBySeasonId;
 using SportsStatistics.Application.Fixtures.Update;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Web.Admin.Competitions;

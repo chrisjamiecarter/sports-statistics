@@ -1,4 +1,5 @@
 ﻿@page "/admin/fixtures"
+@using SportsStatistics.Application.Fixtures.GetBySeasonId
 
 <PageTitle>Fixtures</PageTitle>
 
@@ -21,6 +22,7 @@
                           Label="Season"
                           Items="@Seasons"
                           OptionText="@(s => s.Name)"
+                          SelectedOption="SelectedSeason"
                           SelectedOptionChanged="OnSelectedSeasonChangedAsync" />
 
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Settings())"
@@ -73,7 +75,7 @@
     private async Task InitialisePage()
     {
         //await LoadCompetitionsAsync();
-        await LoadFixturesAsync();
+        //await LoadFixturesAsync();
         await LoadSeasonsAsync();
         HideFixtureForm();
     }
@@ -129,9 +131,9 @@
         FormMode = FixtureFormMode.Show;
     }
 
-    private async Task LoadCompetitionsAsync(SeasonDto seasonDto)
+    private async Task LoadCompetitionsAsync(SeasonDto season)
     {
-        var request = new GetAllCompetitionsQuery(seasonDto.Id);
+        var request = new GetAllCompetitionsQuery(season.Id);
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
@@ -141,9 +143,9 @@
         Competitions = result.Value.Select(x => x.ToDto());
     }
 
-    private async Task LoadFixturesAsync()
+    private async Task LoadFixturesAsync(SeasonDto season)
     {
-        var request = new GetAllFixturesQuery();
+        var request = new GetFixturesBySeasonIdQuery(season.Id);
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
@@ -165,10 +167,10 @@
         Seasons = result.Value.Select(x => new SeasonDto(x.Id, x.StartDate, x.EndDate, x.Name));
 
         var now = DateOnly.FromDateTime(DateTime.Now);
-        SelectedSeason = Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
-        if (SelectedSeason is not null)
+        var defaultSeason = Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
+        if (defaultSeason is not null)
         {
-            await OnSelectedSeasonChangedAsync(SelectedSeason);
+            await OnSelectedSeasonChangedAsync(defaultSeason);
         }
     }
 
@@ -213,5 +215,6 @@
     {
         SelectedSeason = season;
         await LoadCompetitionsAsync(SelectedSeason);
+        await LoadFixturesAsync(SelectedSeason);
     }
 }
