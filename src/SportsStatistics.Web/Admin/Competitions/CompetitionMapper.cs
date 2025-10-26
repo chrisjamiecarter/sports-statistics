@@ -26,13 +26,20 @@ internal static class CompetitionMapper
     public static CompetitionTypeOptionDto ToDto(this CompetitionType competitionType)
         => new(competitionType.Id, competitionType.Name);
 
-    public static CompetitionFormModel ToFormModel(this CompetitionDto competition, IEnumerable<SeasonDto> seasons, IEnumerable<CompetitionTypeOptionDto> competitionTypeOptions)
-        => new()
-        {
-            Season = seasons.SingleOrDefault(s => s.Id == competition.SeasonId),
-            Name = competition.Name,
-            CompetitionType = competitionTypeOptions.SingleOrDefault(t => string.Equals(t.Name, competition.CompetitionType, StringComparison.OrdinalIgnoreCase)),
+    public static CompetitionFormModel ToFormModel(this CompetitionDto? competition, SeasonDto season, IEnumerable<CompetitionTypeOptionDto> competitionTypeOptions)
+    {
+        return competition is null
+            ? new()
+            {
+                Season = season,
+            }
+            : new()
+            {
+                Season = season,
+                Name = competition.Name,
+                CompetitionType = competitionTypeOptions.SingleOrDefault(t => string.Equals(t.Name, competition.CompetitionType, StringComparison.OrdinalIgnoreCase)),
         };
+    }
 
     public static IQueryable<CompetitionDto> ToQueryable(this IEnumerable<CompetitionResponse> competitions)
         => competitions.Select(ToDto).AsQueryable();

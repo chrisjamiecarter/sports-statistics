@@ -1,8 +1,9 @@
 ﻿using Microsoft.FluentUI.AspNetCore.Components.Extensions;
 using SportsStatistics.Application.Seasons.Create;
 using SportsStatistics.Application.Seasons.Delete;
-using SportsStatistics.Application.Seasons.GetAll;
 using SportsStatistics.Application.Seasons.Update;
+using GetAllSeasonResponse = SportsStatistics.Application.Seasons.GetAll.SeasonResponse;
+using GetByIdSeasonResponse = SportsStatistics.Application.Seasons.GetById.SeasonResponse;
 
 namespace SportsStatistics.Web.Admin.Seasons;
 
@@ -15,7 +16,13 @@ internal static class SeasonMapper
     public static DeleteSeasonCommand ToDeleteCommand(this SeasonDto season)
         => new(season.Id);
 
-    public static SeasonDto ToDto(this SeasonResponse season)
+    public static SeasonDto ToDto(this GetAllSeasonResponse season)
+        => new(season.Id,
+               season.StartDate,
+               season.EndDate,
+               season.Name);
+
+    public static SeasonDto ToDto(this GetByIdSeasonResponse season)
         => new(season.Id,
                season.StartDate,
                season.EndDate,
@@ -28,7 +35,10 @@ internal static class SeasonMapper
             EndDate = season.EndDate.ToDateTime(),
         };
 
-    public static IQueryable<SeasonDto> ToQueryable(this List<SeasonResponse> seasons)
+    public static IQueryable<SeasonDto> ToQueryable(this List<GetAllSeasonResponse> seasons)
+        => seasons.Select(ToDto).AsQueryable();
+
+    public static IQueryable<SeasonDto> ToQueryable(this List<GetByIdSeasonResponse> seasons)
         => seasons.Select(ToDto).AsQueryable();
 
     public static UpdateSeasonCommand ToUpdateCommand(this SeasonFormModel season, Guid id)

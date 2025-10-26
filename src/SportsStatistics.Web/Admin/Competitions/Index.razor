@@ -1,5 +1,6 @@
 ﻿@page "/admin/competitions/{seasonId:guid}"
 @using SportsStatistics.Application.Seasons.GetAll
+@using SportsStatistics.Application.Seasons.GetById
 
 <PageTitle>Competitions</PageTitle>
 
@@ -22,11 +23,11 @@
 
     @if (IsCompetitionFormVisible)
     {
-        <CompetitionForm CancelCallback="HideCompetitionForm" SeasonOptions="@Seasons" SelectedCompetition="@SelectedCompetition" SubmitCallback="OnSubmitAsync" />
+        <CompetitionForm CancelCallback="HideCompetitionForm" SelectedCompetition="@SelectedCompetition" SelectedSeason="@SelectedSeason" SubmitCallback="OnSubmitAsync" />
     }
     else
     {
-        <CompetitionList Competitions="@Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" />
+        <CompetitionList Competitions="@Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" SelectedSeason="@SelectedSeason" />
     }
 </FluentCard>
 
@@ -42,18 +43,19 @@
 
     private CompetitionFormMode FormMode { get; set; } = CompetitionFormMode.Hide;
 
-    private IEnumerable<SeasonDto> Seasons { get; set; } = [];
-
     private IQueryable<CompetitionDto>? Competitions { get; set; }
 
     private CompetitionDto? SelectedCompetition { get; set; }
+
+    private SeasonDto? SelectedSeason { get; set; }
 
     private bool IsCompetitionFormVisible => FormMode == CompetitionFormMode.Show;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadCompetitionsAsync();
-        await LoadSeasonsAsync();
+        await LoadSeasonAsync(SeasonId);
+        await LoadCompetitionsAsync(SeasonId);
+        //await LoadSeasonsAsync();
     }
 
     private void HideCompetitionForm()
@@ -68,9 +70,9 @@
         FormMode = CompetitionFormMode.Show;
     }
 
-    private async Task LoadCompetitionsAsync()
+    private async Task LoadCompetitionsAsync(Guid seasonId)
     {
-        var request = new GetAllCompetitionsQuery(SeasonId);
+        var request = new GetAllCompetitionsQuery(seasonId);
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
@@ -83,16 +85,16 @@
         Competitions = result.Value.ToQueryable();
     }
 
-    private async Task LoadSeasonsAsync()
+    private async Task LoadSeasonAsync(Guid seasonId)
     {
-        var request = new GetSeasonsQuery();
+        var request = new GetSeasonByIdQuery(seasonId);
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
             ToastService.ShowError("Unable to load seasons");
         }
 
-        Seasons = result.Value.Select(s => s.ToDto());
+        SelectedSeason = result.Value.ToDto();
     }
 
     private async Task<bool> GetUserConfirmationAsync(string message, string primaryText, string secondaryText)
@@ -145,7 +147,7 @@
         if (result.IsSuccess)
         {
             ToastService.ShowSuccess(successMessage);
-            await LoadCompetitionsAsync();
+            await LoadCompetitionsAsync(SeasonId);
             HideCompetitionForm();
         }
         else

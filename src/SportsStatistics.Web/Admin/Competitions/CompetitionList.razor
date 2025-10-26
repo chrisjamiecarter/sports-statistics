@@ -2,7 +2,7 @@
 
     <FluentStack>
         <FluentLabel Typo="Typography.Header">
-            Competitions
+            @HeaderText
         </FluentLabel>
 
         <FluentSpacer />
@@ -27,8 +27,6 @@
 </FluentStack>
 
 @code {
-    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
-
     [Parameter]
     public EventCallback AddCompetitionCallback { get; set; }
 
@@ -40,6 +38,13 @@
 
     [Parameter]
     public IQueryable<CompetitionDto>? Competitions { get; set; }
+
+    [Parameter]
+    public SeasonDto? SelectedSeason { get; set; }
+
+    private string HeaderText => SelectedSeason != null ? $"Competitions for {SelectedSeason.Name}" : "Competitions";
+
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
 
     private async Task Add()
     {
