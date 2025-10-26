@@ -2,4 +2,4 @@
 
 namespace SportsStatistics.Application.Competitions.GetAll;
 
-public sealed record GetAllCompetitionsQuery() : IQuery<List<CompetitionResponse>>;
+public sealed record GetAllCompetitionsQuery(Guid SeasonId) : IQuery<List<CompetitionResponse>>;

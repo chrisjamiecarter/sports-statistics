@@ -21,7 +21,7 @@
                           Label="Season"
                           Items="@Seasons"
                           OptionText="@(s => s.Name)"
-                          @bind-SelectedOption="SelectedSeason" />
+                          SelectedOptionChanged="OnSelectedSeasonChangedAsync" />
 
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Settings())"
                           Title="Season Settings"
@@ -72,7 +72,7 @@
 
     private async Task InitialisePage()
     {
-        await LoadCompetitionsAsync();
+        //await LoadCompetitionsAsync();
         await LoadFixturesAsync();
         await LoadSeasonsAsync();
         HideFixtureForm();
@@ -129,9 +129,9 @@
         FormMode = FixtureFormMode.Show;
     }
 
-    private async Task LoadCompetitionsAsync()
+    private async Task LoadCompetitionsAsync(SeasonDto seasonDto)
     {
-        var request = new GetAllCompetitionsQuery();
+        var request = new GetAllCompetitionsQuery(seasonDto.Id);
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
@@ -166,6 +166,10 @@
 
         var now = DateOnly.FromDateTime(DateTime.Now);
         SelectedSeason = Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
+        if (SelectedSeason is not null)
+        {
+            await OnSelectedSeasonChangedAsync(SelectedSeason);
+        }
     }
 
     private async Task<bool> GetUserConfirmationAsync(string message, string primaryText, string secondaryText)
@@ -203,5 +207,11 @@
         {
             await UpdateFixtureAsync(fixture.ToUpdateCommand(SelectedFixture.Id));
         }
+    }
+
+    private async Task OnSelectedSeasonChangedAsync(SeasonDto season)
+    {
+        SelectedSeason = season;
+        await LoadCompetitionsAsync(SelectedSeason);
     }
 }

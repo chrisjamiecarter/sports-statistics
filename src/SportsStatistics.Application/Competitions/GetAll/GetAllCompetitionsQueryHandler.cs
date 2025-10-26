@@ -12,8 +12,10 @@ internal sealed class GetAllCompetitionsQueryHandler(IApplicationDbContext dbCon
     public async Task<Result<List<CompetitionResponse>>> Handle(GetAllCompetitionsQuery request, CancellationToken cancellationToken)
     {
         var competitions = await _dbContext.Competitions.AsNoTracking()
+                                                        .Where(competition => competition.SeasonId == request.SeasonId)
+                                                        .Select(competition => competition.ToResponse())
                                                         .ToListAsync(cancellationToken);
-        
-        return competitions.ToResponse();
+
+        return competitions;
     }
 }

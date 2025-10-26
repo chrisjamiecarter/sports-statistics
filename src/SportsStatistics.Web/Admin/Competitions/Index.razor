@@ -70,7 +70,7 @@
 
     private async Task LoadCompetitionsAsync()
     {
-        var request = new GetAllCompetitionsQuery();
+        var request = new GetAllCompetitionsQuery(SeasonId);
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
@@ -80,7 +80,7 @@
             ToastService.ShowError("Unable to load competitions");
         }
 
-        Competitions = result.Value.Where(c => c.SeasonId == SeasonId).ToQueryable();
+        Competitions = result.Value.ToQueryable();
     }
 
     private async Task LoadSeasonsAsync()
