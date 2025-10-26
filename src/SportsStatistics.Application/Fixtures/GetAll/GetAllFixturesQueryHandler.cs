@@ -14,9 +14,9 @@ internal sealed class GetAllFixturesQueryHandler(IApplicationDbContext dbContext
         return await _dbContext.Fixtures
             .AsNoTracking()
             .Join(_dbContext.Competitions.AsNoTracking(),
-                  fixture => fixture.CompetitionId,
-                  competition => competition.Id,
-                  (fixture, competition) => fixture.ToResponse(competition))
+                fixture => fixture.CompetitionId,
+                competition => competition.Id,
+                (fixture, competition) => fixture.ToResponse(competition))
             .ToListAsync(cancellationToken);
     }
 }
