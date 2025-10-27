@@ -8,7 +8,9 @@ namespace SportsStatistics.Application.Tests.Competitions.GetAll;
 
 public class GetCompetitionsQueryHandlerTests
 {
-    private static readonly GetAllCompetitionsQuery BaseCommand = new();
+    private static readonly EntityId BaseSeasonId = EntityId.Create();
+
+    private static readonly GetAllCompetitionsQuery BaseCommand = new(BaseSeasonId.Value);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetAllCompetitionsQueryHandler _handler;
@@ -27,8 +29,8 @@ public class GetCompetitionsQueryHandlerTests
         var command = BaseCommand;
         var competitions = new List<Competition>
         {
-            Competition.Create(EntityId.Create(), "Test League", CompetitionType.League.Name),
-            Competition.Create(EntityId.Create(), "Test Cup", CompetitionType.Cup.Name),
+            Competition.Create(BaseSeasonId, "Test League", CompetitionType.League.Name),
+            Competition.Create(BaseSeasonId, "Test Cup", CompetitionType.Cup.Name),
         };
         var expected = Result.Success(competitions.ToResponse());
 
@@ -49,7 +51,7 @@ public class GetCompetitionsQueryHandlerTests
         var command = BaseCommand;
         var competitions = new List<Competition>
         {
-            Competition.Create(EntityId.Create(), "Test League", CompetitionType.League.Name),
+            Competition.Create(BaseSeasonId, "Test League", CompetitionType.League.Name),
         };
         var expected = Result.Success(competitions.ToResponse());
 
