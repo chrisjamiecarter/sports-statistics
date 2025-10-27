@@ -1,27 +1,31 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Seasons.Delete;
 
-internal sealed class DeleteSeasonCommandHandler(ISeasonRepository repository) : ICommandHandler<DeleteSeasonCommand>
+internal sealed class DeleteSeasonCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<DeleteSeasonCommand>
 {
-    private readonly ISeasonRepository _repository = repository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result> Handle(DeleteSeasonCommand request, CancellationToken cancellationToken)
     {
-        var id = EntityId.Create(request.Id);
-
-        var season = await _repository.GetByIdAsync(id, cancellationToken);
+        var season = await _dbContext.Seasons.Where(season => season.Id == request.SeasonId)
+                                             .SingleOrDefaultAsync(cancellationToken);
+        
         if (season is null)
         {
-            return Result.Failure(SeasonErrors.NotFound(id));
+            return Result.Failure(SeasonErrors.NotFound(request.SeasonId));
         }
 
-        var deleted = await _repository.DeleteAsync(season, cancellationToken);
+        _dbContext.Seasons.Remove(season);
+
+        var deleted = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return deleted
             ? Result.Success()
-            : Result.Failure(SeasonErrors.NotDeleted(id));
+            : Result.Failure(SeasonErrors.NotDeleted(request.SeasonId));
     }
 }

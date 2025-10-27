@@ -12,15 +12,13 @@ internal sealed class GetSeasonByIdQueryHandler(IApplicationDbContext dbContext)
 
     public async Task<Result<SeasonResponse>> Handle(GetSeasonByIdQuery request, CancellationToken cancellationToken)
     {
-        var seasonId = EntityId.Create(request.SeasonId);
-
         var season = await _dbContext.Seasons.AsNoTracking()
-                                             .Where(season => season.Id == seasonId)
+                                             .Where(season => season.Id == request.SeasonId)
                                              .Select(season => season.ToResponse())
                                              .SingleOrDefaultAsync(cancellationToken);
 
         return season is not null
             ? season
-            : Result.Failure<SeasonResponse>(SeasonErrors.NotFound(seasonId));
+            : Result.Failure<SeasonResponse>(SeasonErrors.NotFound(request.SeasonId));
     }
 }

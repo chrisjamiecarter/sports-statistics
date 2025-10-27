@@ -1,8 +1,6 @@
 ﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
-using SportsStatistics.Application.Seasons;
 using SportsStatistics.Application.Seasons.GetAll;
-using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 

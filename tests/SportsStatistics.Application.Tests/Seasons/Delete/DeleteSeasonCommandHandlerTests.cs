@@ -1,4 +1,6 @@
-﻿using SportsStatistics.Application.Seasons;
+﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Seasons.Delete;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
@@ -7,17 +9,31 @@ namespace SportsStatistics.Application.Tests.Seasons.Delete;
 
 public class DeleteSeasonCommandHandlerTests
 {
-    private static readonly Season BaseSeason = Season.Create(new DateOnly(2025, 7, 1),
-                                                              new DateOnly(2026, 6, 30));
-    private static readonly DeleteSeasonCommand BaseCommand = new(BaseSeason.Id.Value);
+    private static readonly List<Season> BaseSeasons =
+    [
+        Season.Create(new DateOnly(2023, 8, 1), new DateOnly(2024, 7, 31)),
+        Season.Create(new DateOnly(2024, 8, 1), new DateOnly(2025, 7, 31)),
+    ];
 
-    private readonly Mock<ISeasonRepository> _repositoryMock;
+    private static readonly DeleteSeasonCommand BaseCommand = new(BaseSeasons[0].Id);
+
+    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly DeleteSeasonCommandHandler _handler;
 
     public DeleteSeasonCommandHandlerTests()
     {
-        _repositoryMock = new Mock<ISeasonRepository>();
-        _handler = new DeleteSeasonCommandHandler(_repositoryMock.Object);
+        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
+
+        _dbContextMock = new Mock<IApplicationDbContext>();
+
+        _dbContextMock.Setup(m => m.Seasons)
+                      .Returns(_seasonDbSetMock.Object);
+
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(1);
+
+        _handler = new DeleteSeasonCommandHandler(_dbContextMock.Object);
     }
 
     [Fact]
@@ -27,38 +43,25 @@ public class DeleteSeasonCommandHandlerTests
         var command = BaseCommand;
         var expected = Result.Success();
 
-        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(BaseSeason);
-
-        _repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Season>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(true);
-
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Season>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenSeasonIsNotFound()
     {
         // Arrange.
-        var command = BaseCommand;
-        var expected = Result.Failure(SeasonErrors.NotFound(BaseSeason.Id));
-
-        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync((Season?)null);
+        var command = BaseCommand with { SeasonId = Guid.CreateVersion7() };
+        var expected = Result.Failure(SeasonErrors.NotFound(command.SeasonId));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Season>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -66,20 +69,15 @@ public class DeleteSeasonCommandHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Failure(SeasonErrors.NotDeleted(BaseSeason.Id));
+        var expected = Result.Failure(SeasonErrors.NotDeleted(command.SeasonId));
 
-        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(BaseSeason);
-
-        _repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Season>(), It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(false);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Season>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

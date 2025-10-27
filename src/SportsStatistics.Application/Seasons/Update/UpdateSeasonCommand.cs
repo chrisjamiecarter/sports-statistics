@@ -2,6 +2,6 @@
 
 namespace SportsStatistics.Application.Seasons.Update;
 
-public sealed record UpdateSeasonCommand(Guid Id,
+public sealed record UpdateSeasonCommand(Guid SeasonId,
                                          DateOnly StartDate,
                                          DateOnly EndDate) : ICommand;

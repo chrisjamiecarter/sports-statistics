@@ -2,18 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Abstractions.Data;
-using SportsStatistics.Application.Competitions;
-using SportsStatistics.Application.Fixtures;
 using SportsStatistics.Application.Interfaces.Infrastructure;
-using SportsStatistics.Application.Seasons;
 using SportsStatistics.Aspire.Constants;
 using SportsStatistics.Authorization;
-using SportsStatistics.Domain.Players;
-using SportsStatistics.Infrastructure.Competitions;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Fixtures;
-using SportsStatistics.Infrastructure.Players;
-using SportsStatistics.Infrastructure.Seasons;
 using SportsStatistics.Infrastructure.Services;
 
 namespace SportsStatistics.Infrastructure;
@@ -35,18 +27,10 @@ public static class DependencyInjection
         builder.AddAuthorizationInternal();
 
         builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-        builder.Services.AddRepositories();
 
         builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
         builder.Services.AddScoped<IDatabaseSeederService, DatabaseSeederService>();
 
         return builder;
-    }
-
-    private static IServiceCollection AddRepositories(this IServiceCollection services)
-    {
-        services.AddScoped<ISeasonRepository, SeasonRepository>();
-
-        return services;
     }
 }

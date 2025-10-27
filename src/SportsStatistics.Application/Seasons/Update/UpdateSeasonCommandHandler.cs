@@ -1,29 +1,31 @@
-﻿using SportsStatistics.Application.Abstractions.Messaging;
+﻿using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Seasons.Update;
 
-internal sealed class UpdateSeasonCommandHandler(ISeasonRepository repository) : ICommandHandler<UpdateSeasonCommand>
+internal sealed class UpdateSeasonCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<UpdateSeasonCommand>
 {
-    private readonly ISeasonRepository _repository = repository;
+    private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result> Handle(UpdateSeasonCommand request, CancellationToken cancellationToken)
     {
-        var id = EntityId.Create(request.Id);
+        var season = await _dbContext.Seasons.Where(season => season.Id == request.SeasonId)
+                                             .SingleOrDefaultAsync(cancellationToken);
 
-        var season = await _repository.GetByIdAsync(id, cancellationToken);
         if (season is null)
         {
-            return Result.Failure(SeasonErrors.NotFound(id));
+            return Result.Failure(SeasonErrors.NotFound(request.SeasonId));
         }
 
         season.Update(request.StartDate, request.EndDate);
 
-        var updated = await _repository.UpdateAsync(season, cancellationToken);
+        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return updated
             ? Result.Success()
-            : Result.Failure(SeasonErrors.NotUpdated(id));
+            : Result.Failure(SeasonErrors.NotUpdated(request.SeasonId));
     }
 }

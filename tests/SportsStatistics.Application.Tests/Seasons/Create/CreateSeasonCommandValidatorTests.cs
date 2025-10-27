@@ -1,24 +1,40 @@
 ﻿using FluentValidation.TestHelper;
-using SportsStatistics.Application.Seasons;
+using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Seasons.Create;
-using SportsStatistics.SharedKernel;
+using SportsStatistics.Domain.Seasons;
 
 namespace SportsStatistics.Application.Tests.Seasons.Create;
 
 public class CreateSeasonCommandValidatorTests
 {
-    private static readonly CreateSeasonCommand BaseCommand = new(new DateOnly(2025, 7, 1),
-                                                                  new DateOnly(2026, 6, 30));
+    private static readonly List<Season> BaseSeasons =
+    [
+        Season.Create(new DateOnly(2023, 8, 1), new DateOnly(2024, 7, 31)),
+        Season.Create(new DateOnly(2024, 8, 1), new DateOnly(2025, 7, 31)),
+    ];
 
-    private readonly Mock<ISeasonRepository> _repositoryMock;
+    private static readonly CreateSeasonCommand BaseCommand = new(new DateOnly(2025, 8, 1),
+                                                                  new DateOnly(2026, 7, 31));
+
+    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateSeasonCommandValidator _validator;
 
     public CreateSeasonCommandValidatorTests()
     {
-        _repositoryMock = new Mock<ISeasonRepository>();
-        SetupDoesDateOverlapExistingAsync(false);
+        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
 
-        _validator = new CreateSeasonCommandValidator(_repositoryMock.Object);
+        _dbContextMock = new Mock<IApplicationDbContext>();
+
+        _dbContextMock.Setup(m => m.Seasons)
+                      .Returns(_seasonDbSetMock.Object);
+
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+              .ReturnsAsync(1);
+
+        _validator = new CreateSeasonCommandValidator(_dbContextMock.Object);
     }
 
     [Fact]
@@ -52,14 +68,11 @@ public class CreateSeasonCommandValidatorTests
     public async Task Should_HaveValidationError_When_StartDateIsNotLessThanEndDate()
     {
         // Arrange.
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var endDate = startDate.AddDays(-1);
         var command = BaseCommand with
         {
-            StartDate = startDate,
-            EndDate = endDate
+            StartDate = BaseCommand.EndDate.AddDays(1)
         };
-        var expectedMessage = $"'Start Date' must be less than '{endDate:dd/MM/yyyy}'.";
+        var expectedMessage = $"'Start Date' must be less than '{command.EndDate:dd/MM/yyyy}'.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -73,8 +86,10 @@ public class CreateSeasonCommandValidatorTests
     public async Task Should_HaveValidationError_When_StartDateOverlapsWithExisting()
     {
         // Arrange.
-        var command = BaseCommand;
-        SetupDoesDateOverlapExistingAsync(true);
+        var command = BaseCommand with
+        {
+            StartDate = BaseSeasons[0].StartDate,
+        };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -103,14 +118,11 @@ public class CreateSeasonCommandValidatorTests
     public async Task Should_HaveValidationError_When_EndDateIsNotGreaterThanStartDate()
     {
         // Arrange.
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var endDate = startDate.AddDays(-1);
         var command = BaseCommand with
         {
-            StartDate = startDate,
-            EndDate = endDate
+            EndDate = BaseCommand.StartDate.AddDays(-1)
         };
-        var expectedMessage = $"'End Date' must be greater than '{startDate:dd/MM/yyyy}'.";
+        var expectedMessage = $"'End Date' must be greater than '{command.StartDate:dd/MM/yyyy}'.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -124,8 +136,10 @@ public class CreateSeasonCommandValidatorTests
     public async Task Should_HaveValidationError_When_EndDateOverlapsWithExisting()
     {
         // Arrange.
-        var command = BaseCommand;
-        SetupDoesDateOverlapExistingAsync(true);
+        var command = BaseCommand with
+        {
+            EndDate = BaseSeasons[0].EndDate,
+        };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -133,13 +147,5 @@ public class CreateSeasonCommandValidatorTests
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.EndDate)
               .WithErrorMessage("'End Date' overlaps with an existing season.");
-    }
-
-    private void SetupDoesDateOverlapExistingAsync(bool returnValue)
-    {
-        _repositoryMock.Setup(r => r.DoesDateOverlapExistingAsync(It.IsAny<DateOnly>(),
-                                                                  It.IsAny<EntityId?>(),
-                                                                  It.IsAny<CancellationToken>()))
-                       .ReturnsAsync(returnValue);
     }
 }
