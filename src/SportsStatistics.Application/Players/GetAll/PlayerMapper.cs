@@ -2,7 +2,7 @@
 
 namespace SportsStatistics.Application.Players.GetAll;
 
-internal static class PlayerResponseMappings
+internal static class PlayerMapper
 {
     public static List<PlayerResponse> ToResponse(this IEnumerable<Player> players)
         => [.. players.Select(ToResponse)];
