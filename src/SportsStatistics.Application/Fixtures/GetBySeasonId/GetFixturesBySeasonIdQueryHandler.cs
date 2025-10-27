@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
-using SportsStatistics.Application.Fixtures.GetAll;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.GetBySeasonId;
