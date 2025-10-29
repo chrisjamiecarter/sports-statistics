@@ -74,6 +74,9 @@
     private IEnumerable<LocationOptionDto> LocationOptions = FixtureLocation.All.Select(l => l.ToDto());
 
     [Parameter]
+    public required SeasonDto SelectedSeason { get; set; }
+
+    [Parameter]
     public IEnumerable<CompetitionDto> CompetitionOptions { get; set; } = [];
 
     [Parameter]
@@ -98,7 +101,7 @@
     {
         if (!IsSubmitting)
         {
-            Input = SelectedFixture.ToFormModel(CompetitionOptions, LocationOptions);
+            Input = SelectedFixture.ToFormModel(CompetitionOptions, LocationOptions, SelectedSeason);
         }
     }
 

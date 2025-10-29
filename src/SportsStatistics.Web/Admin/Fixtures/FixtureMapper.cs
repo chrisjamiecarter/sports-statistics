@@ -4,6 +4,7 @@ using SportsStatistics.Application.Fixtures.GetBySeasonId;
 using SportsStatistics.Application.Fixtures.Update;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Web.Admin.Competitions;
+using SportsStatistics.Web.Admin.Seasons;
 
 namespace SportsStatistics.Web.Admin.Fixtures;
 
@@ -38,12 +39,16 @@ internal static class FixtureMapper
     public static LocationOptionDto ToDto(this FixtureLocation location)
         => new(location.Id, location.Name);
 
-    public static FixtureFormModel ToFormModel(this FixtureDto? fixture, IEnumerable<CompetitionDto> competitions, IEnumerable<LocationOptionDto> locations)
+    public static FixtureFormModel ToFormModel(this FixtureDto? fixture, IEnumerable<CompetitionDto> competitions, IEnumerable<LocationOptionDto> locations, SeasonDto season)
     {
         return fixture is null
             ? new()
+            {
+                Season = season,
+            }
             : new()
             {
+                Season = season,
                 Competition = competitions.SingleOrDefault(c => c.Id == fixture.CompetitionId),
                 Opponent = fixture.Opponent,
                 KickoffDateUtc = fixture.KickoffTimeUtc,

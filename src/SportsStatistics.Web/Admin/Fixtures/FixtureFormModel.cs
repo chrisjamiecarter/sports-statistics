@@ -1,9 +1,12 @@
 ﻿using SportsStatistics.Web.Admin.Competitions;
+using SportsStatistics.Web.Admin.Seasons;
 
 namespace SportsStatistics.Web.Admin.Fixtures;
 
 public class FixtureFormModel
 {
+    public SeasonDto? Season { get; set; }
+
     public CompetitionDto? Competition { get; set; }
     
     public DateTime? KickoffDateUtc { get; set; }
