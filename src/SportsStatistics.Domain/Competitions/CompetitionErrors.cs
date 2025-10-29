@@ -12,7 +12,7 @@ public static class CompetitionErrors
         "Competition.NotDeleted",
         $"The competition with the Id = '{id}' was not deleted.");
 
-    public static Error NotFound(EntityId id) => Error.NotFound(
+    public static Error NotFound(Guid id) => Error.NotFound(
         "Competition.NotFound",
         $"The competition with the Id = '{id}' was not found.");
 
