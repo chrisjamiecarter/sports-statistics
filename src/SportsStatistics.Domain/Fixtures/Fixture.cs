@@ -36,15 +36,33 @@ public sealed class Fixture : Entity
         return new Fixture(EntityId.Create(), competitionId, opponent, kickoffTimeUtc, fixtureLocation, FixtureStatus.Scheduled);
     }
 
-    public void Update(string opponent, DateTime kickoffTimeUtc, string fixtureLocationName)
+    public bool Update(string opponent, DateTime kickoffTimeUtc, string fixtureLocationName)
     {
         var fixtureLocation = FixtureLocation.FromName(fixtureLocationName);
 
         ValidateAndThrow(opponent, fixtureLocation);
+        
+        var isDirty = false;
 
-        Opponent = opponent;
-        KickoffTimeUtc = kickoffTimeUtc;
-        Location = fixtureLocation;
+        if (Opponent != opponent)
+        {
+            Opponent = opponent;
+            isDirty = true;
+        }
+
+        if (KickoffTimeUtc != kickoffTimeUtc)
+        {
+            KickoffTimeUtc = kickoffTimeUtc;
+            isDirty = true;
+        }
+
+        if (Location != fixtureLocation)
+        {
+            Location = fixtureLocation;
+            isDirty = true;
+        }
+
+        return isDirty;
     }
 
     private static void ValidateAndThrow(string opponent, FixtureLocation location)

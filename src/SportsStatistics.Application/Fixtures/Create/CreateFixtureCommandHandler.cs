@@ -33,6 +33,7 @@ internal sealed class CreateFixtureCommandHandler(IApplicationDbContext dbContex
         }
 
         var kickoffDate = DateOnly.FromDateTime(request.KickoffTimeUtc);
+
         if (kickoffDate < season.StartDate || kickoffDate > season.EndDate)
         {
             return Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(request.KickoffTimeUtc, season.StartDate, season.EndDate));
