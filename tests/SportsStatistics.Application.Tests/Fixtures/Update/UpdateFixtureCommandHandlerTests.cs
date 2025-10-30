@@ -4,37 +4,45 @@ using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Fixtures.Update;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Fixtures.Update;
 
 public class UpdateFixtureCommandHandlerTests
 {
-    private static readonly List<Competition> BaseCompetitions =
+    private static readonly List<Season> BaseSeasons =
     [
-        Competition.Create(EntityId.Create(), "Test League", CompetitionType.League.Name),
-        Competition.Create(EntityId.Create(), "Test Cup", CompetitionType.Cup.Name),
+        Season.Create(new DateOnly(2025, 8, 1), new DateOnly(2026, 7, 31)),
     ];
 
-    private static readonly Fixture BaseFixture = Fixture.Create(BaseCompetitions.First().Id,
-                                                                 "Test Opponent",
-                                                                 DateTime.UtcNow.AddDays(7),
-                                                                 FixtureLocation.Home.Name);
+    private static readonly List<Competition> BaseCompetitions =
+    [
+        Competition.Create(BaseSeasons[0].Id, "Test League", CompetitionType.League.Name),
+        Competition.Create(BaseSeasons[0].Id, "Test Cup", CompetitionType.Cup.Name),
+    ];
 
-    private static readonly UpdateFixtureCommand BaseCommand = new(BaseFixture.Id.Value,
-                                                                   BaseFixture.Opponent,
-                                                                   BaseFixture.KickoffTimeUtc.AddDays(1),
+    private static readonly List<Fixture> BaseFixtures =
+    [
+        Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", BaseSeasons[0].StartDate.ToDateTime(TimeOnly.MinValue), FixtureLocation.Home.Name),
+    ];
+
+    private static readonly UpdateFixtureCommand BaseCommand = new(BaseFixtures[0].Id,
+                                                                   BaseFixtures[0].Opponent,
+                                                                   BaseFixtures[0].KickoffTimeUtc.AddDays(1),
                                                                    FixtureLocation.Neutral.Name);
 
     private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
     private readonly Mock<DbSet<Fixture>> _fixtureDbSetMock;
+    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly UpdateFixtureCommandHandler _handler;
 
     public UpdateFixtureCommandHandlerTests()
     {
         _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
-        _fixtureDbSetMock = new List<Fixture>([BaseFixture]).BuildMockDbSet();
+        _fixtureDbSetMock = BaseFixtures.BuildMockDbSet();
+        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
 
         _dbContextMock = new Mock<IApplicationDbContext>();
 
@@ -43,6 +51,9 @@ public class UpdateFixtureCommandHandlerTests
 
         _dbContextMock.Setup(m => m.Fixtures)
                       .Returns(_fixtureDbSetMock.Object);
+
+        _dbContextMock.Setup(m => m.Seasons)
+                      .Returns(_seasonDbSetMock.Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
