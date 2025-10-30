@@ -22,7 +22,7 @@ public class CreateFixtureCommandHandlerTests
         Competition.Create(BaseSeasons[0].Id, "Test Cup", CompetitionType.Cup.Name),
     ];
 
-    private static readonly CreateFixtureCommand BaseCommand = new(BaseCompetitions[0].Id.Value,
+    private static readonly CreateFixtureCommand BaseCommand = new(BaseCompetitions[0].Id,
                                                                    "Test Opponent",
                                                                    BaseSeasons[0].StartDate.ToDateTime(TimeOnly.MinValue),
                                                                    FixtureLocation.Home.Name);
