@@ -4,25 +4,32 @@ using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Fixtures.Create;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Fixtures.Create;
 
 public class CreateFixtureCommandHandlerTests
 {
-    private static readonly List<Competition> BaseCompetitions =
+    private static readonly List<Season> BaseSeasons =
     [
-        Competition.Create(EntityId.Create(), "Test League", CompetitionType.League.Name),
-        Competition.Create(EntityId.Create(), "Test Cup", CompetitionType.Cup.Name),
+        Season.Create(new DateOnly(2025, 8, 1), new DateOnly(2026, 7, 31)),
     ];
 
-    private static readonly CreateFixtureCommand BaseCommand = new(BaseCompetitions.First().Id.Value,
+    private static readonly List<Competition> BaseCompetitions =
+    [
+        Competition.Create(BaseSeasons[0].Id, "Test League", CompetitionType.League.Name),
+        Competition.Create(BaseSeasons[0].Id, "Test Cup", CompetitionType.Cup.Name),
+    ];
+
+    private static readonly CreateFixtureCommand BaseCommand = new(BaseCompetitions[0].Id.Value,
                                                                    "Test Opponent",
-                                                                   DateTime.UtcNow,
+                                                                   BaseSeasons[0].StartDate.ToDateTime(TimeOnly.MinValue),
                                                                    FixtureLocation.Home.Name);
 
     private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
     private readonly Mock<DbSet<Fixture>> _fixtureDbSetMock;
+    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateFixtureCommandHandler _handler;
 
@@ -30,6 +37,7 @@ public class CreateFixtureCommandHandlerTests
     {
         _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
         _fixtureDbSetMock = new List<Fixture>().BuildMockDbSet();
+        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
 
         _dbContextMock = new Mock<IApplicationDbContext>();
 
@@ -38,6 +46,9 @@ public class CreateFixtureCommandHandlerTests
 
         _dbContextMock.Setup(m => m.Fixtures)
                       .Returns(_fixtureDbSetMock.Object);
+
+        _dbContextMock.Setup(m => m.Seasons)
+                      .Returns(_seasonDbSetMock.Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
