@@ -13,16 +13,16 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
 
     public async Task<Result> Handle(CreateCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var seasonId = EntityId.Create(request.SeasonId);
-
-        var season = await _dbContext.Seasons.AsNoTracking().SingleOrDefaultAsync(s => s.Id == seasonId, cancellationToken);
+        var season = await _dbContext.Seasons.AsNoTracking()
+                                             .Where(season => season.Id == request.SeasonId)
+                                             .SingleOrDefaultAsync(cancellationToken);
 
         if (season is null)
         {
-            return Result.Failure(SeasonErrors.NotFound(seasonId));
+            return Result.Failure(SeasonErrors.NotFound(request.SeasonId));
         }
 
-        var competition = Competition.Create(seasonId, request.Name, request.CompetitionTypeName);
+        var competition = Competition.Create(EntityId.Create(request.SeasonId), request.Name, request.CompetitionTypeName);
 
         _dbContext.Competitions.Add(competition);
 
