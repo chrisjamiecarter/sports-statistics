@@ -40,7 +40,7 @@ public class CreateCompetitionCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Name)
+        result.ShouldHaveValidationErrorFor(c => c.SeasonId)
               .WithErrorMessage("'Season Id' must not be empty.");
     }
 
