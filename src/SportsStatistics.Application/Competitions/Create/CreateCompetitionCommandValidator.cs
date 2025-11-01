@@ -8,9 +8,7 @@ internal sealed class CreateCompetitionCommandValidator : AbstractValidator<Crea
     public CreateCompetitionCommandValidator()
     {
         RuleFor(c => c.SeasonId)
-            .NotEmpty()
-            .Must(guid => guid.Version == 7)
-            .WithMessage("'Season Id' is not in the correct format.");
+            .NotEmpty();
 
         RuleFor(c => c.Name)
             .NotEmpty()

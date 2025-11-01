@@ -18,7 +18,7 @@ public class CreateCompetitionCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -30,10 +30,24 @@ public class CreateCompetitionCommandValidatorTests
         result.ShouldNotHaveAnyValidationErrors();
     }
 
+    [Fact]
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenSeasonIdIsEmpty()
+    {
+        // Arrange.
+        var command = BaseCommand with { SeasonId = default };
+
+        // Act.
+        var result = await _validator.TestValidateAsync(command);
+
+        // Assert.
+        result.ShouldHaveValidationErrorFor(c => c.Name)
+              .WithErrorMessage("'Season Id' must not be empty.");
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_NameIsEmpty(string name)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNameIsEmpty(string name)
     {
         // Arrange.
         var command = BaseCommand with { Name = name };
@@ -47,7 +61,7 @@ public class CreateCompetitionCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_NameExceedsMaximumLength()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNameExceedsMaximumLength()
     {
         // Arrange.
         int max = 50;
@@ -66,7 +80,7 @@ public class CreateCompetitionCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_CompetitionTypeIsEmpty(string competitionTypeName)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenCompetitionTypeNameIsEmpty(string competitionTypeName)
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
@@ -82,10 +96,10 @@ public class CreateCompetitionCommandValidatorTests
     [Theory]
     [InlineData("League")]
     [InlineData("Cup")]
-    public async Task Should_NotHaveValidationError_When_CompetitionTypeIsValid(string competitionType)
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCompetitionTypeNameIsValid(string competitionTypeName)
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionTypeName = competitionType };
+        var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -95,7 +109,7 @@ public class CreateCompetitionCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_CompetitionTypeIsInvalid()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenCompetitionTypeNameIsInvalid()
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = "Training" };
