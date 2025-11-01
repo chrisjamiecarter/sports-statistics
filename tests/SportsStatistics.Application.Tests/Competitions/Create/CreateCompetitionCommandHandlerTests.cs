@@ -16,7 +16,7 @@ public class CreateCompetitionCommandHandlerTests
         Season.Create(new DateOnly(2024, 8, 1), new DateOnly(2025, 7, 31)),
     ];
 
-    private static readonly CreateCompetitionCommand BaseCommand = new(BaseSeasons.First().Id.Value,
+    private static readonly CreateCompetitionCommand BaseCommand = new(BaseSeasons[0].Id,
                                                                        "Premier League",
                                                                        CompetitionType.League.Name);
 
