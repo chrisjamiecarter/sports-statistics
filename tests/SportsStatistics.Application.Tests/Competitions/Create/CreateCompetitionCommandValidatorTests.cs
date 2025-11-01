@@ -35,13 +35,14 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { SeasonId = default };
+        var expected = "'Season Id' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.SeasonId)
-              .WithErrorMessage("'Season Id' must not be empty.");
+              .WithErrorMessage(expected);
     }
 
     [Theory]
@@ -51,13 +52,14 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Name = name };
+        var expected = "'Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Name)
-              .WithErrorMessage("'Name' must not be empty.");
+              .WithErrorMessage(expected);
     }
 
     [Fact]
@@ -67,14 +69,14 @@ public class CreateCompetitionCommandValidatorTests
         int max = 50;
         var name = new string('a', max + 1);
         var command = BaseCommand with { Name = name };
-        var expectedMessage = $"The length of 'Name' must be {max} characters or fewer. You entered {name.Length} characters.";
+        var expected = $"The length of 'Name' must be {max} characters or fewer. You entered {name.Length} characters.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Name)
-              .WithErrorMessage(expectedMessage);
+              .WithErrorMessage(expected);
     }
 
     [Theory]
@@ -84,13 +86,14 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
+        var expected = "'Competition Type Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.CompetitionTypeName)
-              .WithErrorMessage("'Competition Type Name' must not be empty.");
+              .WithErrorMessage(expected);
     }
 
     [Theory]
@@ -113,13 +116,13 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = "Training" };
-        var expectedMessage = $"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.";
+        var expected = $"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.CompetitionTypeName)
-              .WithErrorMessage(expectedMessage);
+              .WithErrorMessage(expected);
     }
 }

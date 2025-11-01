@@ -32,12 +32,13 @@ public sealed class DeleteCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionId = default };
+        var expected = "'Competition Id' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.CompetitionId)
-              .WithErrorMessage("'Competition Id' must not be empty.");
+              .WithErrorMessage(expected);
     }
 }
