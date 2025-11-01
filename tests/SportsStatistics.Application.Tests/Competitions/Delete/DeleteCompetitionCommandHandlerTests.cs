@@ -9,11 +9,12 @@ namespace SportsStatistics.Application.Tests.Competitions.Delete;
 
 public class DeleteCompetitionCommandHandlerTests
 {
-    private static readonly Competition BaseCompetition = Competition.Create(EntityId.Create(),
-                                                                             "Test Competition",
-                                                                             CompetitionType.League.Name);
+    private static readonly List<Competition> BaseCompetitions =
+    [
+        Competition.Create(EntityId.Create(),"Test Competition", CompetitionType.League.Name),
+    ];
 
-    private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetition.Id.Value);
+    private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetitions[0].Id);
 
     private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
@@ -21,11 +22,7 @@ public class DeleteCompetitionCommandHandlerTests
 
     public DeleteCompetitionCommandHandlerTests()
     {
-        _competitionDbSetMock = new List<Competition>
-        {
-            BaseCompetition,
-        }
-        .BuildMockDbSet();
+        _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
 
         _dbContextMock = new Mock<IApplicationDbContext>();
 
@@ -56,8 +53,8 @@ public class DeleteCompetitionCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotFound()
     {
         // Arrange.
-        var command = BaseCommand with { Id = Guid.CreateVersion7() };
-        var expected = Result.Failure(CompetitionErrors.NotFound(EntityId.Create(command.Id)));
+        var command = BaseCommand with { CompetitionId = Guid.CreateVersion7() };
+        var expected = Result.Failure(CompetitionErrors.NotFound(command.CompetitionId));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -71,7 +68,7 @@ public class DeleteCompetitionCommandHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Failure(CompetitionErrors.NotDeleted(BaseCompetition.Id));
+        var expected = Result.Failure(CompetitionErrors.NotDeleted(command.CompetitionId));
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(0);

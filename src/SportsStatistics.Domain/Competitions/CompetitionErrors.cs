@@ -8,7 +8,7 @@ public static class CompetitionErrors
         "Competition.NotCreated",
         $"The competition with the Name = '{name}' and Competition Type = '{competitionTypeName}' was not created.");
     
-    public static Error NotDeleted(EntityId id) => Error.Failure(
+    public static Error NotDeleted(Guid id) => Error.Failure(
         "Competition.NotDeleted",
         $"The competition with the Id = '{id}' was not deleted.");
 
@@ -16,7 +16,7 @@ public static class CompetitionErrors
         "Competition.NotFound",
         $"The competition with the Id = '{id}' was not found.");
 
-    public static Error NotUpdated(EntityId id) => Error.Failure(
+    public static Error NotUpdated(Guid id) => Error.Failure(
         "Competition.NotUpdated",
         $"The competition with the Id = '{id}' was not updated.");
 }

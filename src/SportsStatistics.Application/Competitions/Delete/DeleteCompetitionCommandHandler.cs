@@ -12,13 +12,13 @@ internal sealed class DeleteCompetitionCommandHandler(IApplicationDbContext dbCo
 
     public async Task<Result> Handle(DeleteCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var entityId = EntityId.Create(request.Id);
-
-        var competition = await _dbContext.Competitions.AsNoTracking().SingleOrDefaultAsync(c => c.Id == entityId, cancellationToken);
+        var competition = await _dbContext.Competitions.AsNoTracking()
+                                                       .Where(competition => competition.Id == request.CompetitionId)
+                                                       .SingleOrDefaultAsync(cancellationToken);
 
         if (competition is null)
         {
-            return Result.Failure(CompetitionErrors.NotFound(entityId));
+            return Result.Failure(CompetitionErrors.NotFound(request.CompetitionId));
         }
 
         _dbContext.Competitions.Remove(competition);
