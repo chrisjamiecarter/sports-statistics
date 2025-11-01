@@ -12,13 +12,13 @@ internal sealed class UpdateCompetitionCommandHandler(IApplicationDbContext dbCo
 
     public async Task<Result> Handle(UpdateCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var entityId = EntityId.Create(request.Id);
+        var competition = await _dbContext.Competitions.AsNoTracking()
+                                                       .Where(competition => competition.Id == request.CompetitionId)
+                                                       .SingleOrDefaultAsync(cancellationToken);
 
-        var competition = await _dbContext.Competitions.AsNoTracking().SingleOrDefaultAsync(c => c.Id == entityId, cancellationToken);
-        
         if (competition is null)
         {
-            return Result.Failure(CompetitionErrors.NotFound(entityId));
+            return Result.Failure(CompetitionErrors.NotFound(request.CompetitionId));
         }
 
         competition.Update(request.Name, request.CompetitionTypeName);

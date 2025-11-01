@@ -18,7 +18,7 @@ public class UpdateCompetitionCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -31,37 +31,23 @@ public class UpdateCompetitionCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_IdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenIdIsEmpty()
     {
         // Arrange.
-        var command = BaseCommand with { Id = default };
+        var command = BaseCommand with { CompetitionId = default };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage("'Id' must not be empty.");
-    }
-
-    [Fact]
-    public async Task Should_HaveValidationError_When_IdIsNotVersion7()
-    {
-        // Arrange.
-        var command = BaseCommand with { Id = Guid.NewGuid() };
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage("'Id' is not in the correct format.");
+        result.ShouldHaveValidationErrorFor(c => c.CompetitionId)
+              .WithErrorMessage("'Competition Id' must not be empty.");
     }
 
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_NameIsEmpty(string name)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNameIsEmpty(string name)
     {
         // Arrange.
         var command = BaseCommand with { Name = name };
@@ -75,7 +61,7 @@ public class UpdateCompetitionCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_NameExceedsMaximumLength()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNameExceedsMaximumLength()
     {
         // Arrange.
         int max = 50;
@@ -94,7 +80,7 @@ public class UpdateCompetitionCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_CompetitionTypeIsEmpty(string competitionTypeName)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenCompetitionTypeNameIsEmpty(string competitionTypeName)
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
@@ -110,10 +96,10 @@ public class UpdateCompetitionCommandValidatorTests
     [Theory]
     [InlineData("League")]
     [InlineData("Cup")]
-    public async Task Should_NotHaveValidationError_When_CompetitionTypeIsValid(string competitionType)
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCompetitionTypeNameIsValid(string competitionTypeName)
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionTypeName = competitionType };
+        var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -123,7 +109,7 @@ public class UpdateCompetitionCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_CompetitionTypeIsInvalid()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenCompetitionTypeNameIsInvalid()
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = "Training" };

@@ -16,11 +16,12 @@ public class UpdateCompetitionCommandHandlerTests
         Season.Create(new DateOnly(2024, 8, 1), new DateOnly(2025, 7, 31)),
     ];
 
-    private static readonly Competition BaseCompetition = Competition.Create(BaseSeasons.First().Id,
-                                                                             "Test Competition",
-                                                                             CompetitionType.League.Name);
+    private static readonly List<Competition> BaseCompetitions =
+    [
+        Competition.Create(BaseSeasons[0].Id, "Test Competition", CompetitionType.League.Name),
+    ];
 
-    private static readonly UpdateCompetitionCommand BaseCommand = new(BaseCompetition.Id.Value,
+    private static readonly UpdateCompetitionCommand BaseCommand = new(BaseCompetitions[0].Id,
                                                                        "Updated Name",
                                                                        CompetitionType.Cup.Name);
 
@@ -31,11 +32,7 @@ public class UpdateCompetitionCommandHandlerTests
 
     public UpdateCompetitionCommandHandlerTests()
     {
-        _competitionDbSetMock = new List<Competition>
-        {
-            BaseCompetition,
-        }
-        .BuildMockDbSet();
+        _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
         _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
 
         _dbContextMock = new Mock<IApplicationDbContext>();
@@ -70,8 +67,8 @@ public class UpdateCompetitionCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotFound()
     {
         // Arrange.
-        var command = BaseCommand with { Id = Guid.CreateVersion7() };
-        var expected = Result.Failure(CompetitionErrors.NotFound(EntityId.Create(command.Id)));
+        var command = BaseCommand with { CompetitionId = Guid.CreateVersion7() };
+        var expected = Result.Failure(CompetitionErrors.NotFound(command.CompetitionId));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -85,7 +82,7 @@ public class UpdateCompetitionCommandHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Failure(CompetitionErrors.NotUpdated(BaseCompetition.Id));
+        var expected = Result.Failure(CompetitionErrors.NotUpdated(command.CompetitionId));
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(0);

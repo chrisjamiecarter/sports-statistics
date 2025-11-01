@@ -7,10 +7,8 @@ internal sealed class UpdateCompetitionCommandValidator : AbstractValidator<Upda
 {
     public UpdateCompetitionCommandValidator()
     {
-        RuleFor(c => c.Id)
-            .NotEmpty()
-            .Must(guid => guid.Version == 7)
-            .WithMessage("'Id' is not in the correct format.");
+        RuleFor(c => c.CompetitionId)
+            .NotEmpty();
 
         RuleFor(c => c.Name)
             .NotEmpty()
