@@ -21,7 +21,7 @@ internal static class CompetitionMapper
         => new(competition.Id,
                competition.SeasonId,
                competition.Name,
-               competition.CompetitionType);
+               competition.TypeName);
 
     public static CompetitionTypeOptionDto ToDto(this CompetitionType competitionType)
         => new(competitionType.Id, competitionType.Name);

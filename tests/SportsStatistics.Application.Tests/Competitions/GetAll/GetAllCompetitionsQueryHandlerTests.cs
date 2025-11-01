@@ -2,20 +2,28 @@
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Competitions.GetAll;
 using SportsStatistics.Domain.Competitions;
+using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Competitions.GetAll;
 
-public class GetCompetitionsQueryHandlerTests
+public class GetAllCompetitionsQueryHandlerTests
 {
-    private static readonly EntityId BaseSeasonId = EntityId.Create();
+    private static readonly Season BaseSeason = Season.Create(new DateOnly(2025, 8, 1),
+                                                              new DateOnly(2026, 7, 31));
 
-    private static readonly GetAllCompetitionsQuery BaseCommand = new(BaseSeasonId.Value);
+    private static readonly List<Competition> BaseCompetitions =
+    [
+        Competition.Create(BaseSeason.Id, "Test League", CompetitionType.League.Name),
+        Competition.Create(BaseSeason.Id, "Test Cup", CompetitionType.Cup.Name),
+    ];
+
+    private static readonly GetAllCompetitionsQuery BaseCommand = new(BaseSeason.Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetAllCompetitionsQueryHandler _handler;
 
-    public GetCompetitionsQueryHandlerTests()
+    public GetAllCompetitionsQueryHandlerTests()
     {
         _dbContextMock = new Mock<IApplicationDbContext>();
 
@@ -27,11 +35,7 @@ public class GetCompetitionsQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var competitions = new List<Competition>
-        {
-            Competition.Create(BaseSeasonId, "Test League", CompetitionType.League.Name),
-            Competition.Create(BaseSeasonId, "Test Cup", CompetitionType.Cup.Name),
-        };
+        var competitions = BaseCompetitions;
         var expected = Result.Success(competitions.ToResponse());
 
         _dbContextMock.Setup(m => m.Competitions)
@@ -49,10 +53,7 @@ public class GetCompetitionsQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var competitions = new List<Competition>
-        {
-            Competition.Create(BaseSeasonId, "Test League", CompetitionType.League.Name),
-        };
+        var competitions = BaseCompetitions.Take(1).ToList();
         var expected = Result.Success(competitions.ToResponse());
 
         _dbContextMock.Setup(m => m.Competitions)
@@ -70,7 +71,7 @@ public class GetCompetitionsQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var competitions = new List<Competition>();
+        var competitions = BaseCompetitions.Take(0).ToList();
         var expected = Result.Success(competitions.ToResponse());
 
         _dbContextMock.Setup(m => m.Competitions)
