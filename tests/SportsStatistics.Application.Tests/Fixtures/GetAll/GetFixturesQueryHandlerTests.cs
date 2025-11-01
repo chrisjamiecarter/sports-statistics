@@ -27,6 +27,7 @@ public class GetFixturesQueryHandlerTests
     public GetFixturesQueryHandlerTests()
     {
         _dbContextMock = new Mock<IApplicationDbContext>();
+
         _handler = new GetAllFixturesQueryHandler(_dbContextMock.Object);
     }
 
