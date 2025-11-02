@@ -8,9 +8,7 @@ internal sealed class CreateFixtureCommandValidator : AbstractValidator<CreateFi
     public CreateFixtureCommandValidator()
     {
         RuleFor(c => c.CompetitionId)
-            .NotEmpty()
-            .Must(guid => guid.Version == 7)
-            .WithMessage("'Competition Id' is not in the correct format.");
+            .NotEmpty();
 
         RuleFor(c => c.Opponent)
             .NotEmpty()
