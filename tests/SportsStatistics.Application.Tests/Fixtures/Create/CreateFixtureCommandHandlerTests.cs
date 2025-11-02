@@ -75,7 +75,21 @@ public class CreateFixtureCommandHandlerTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionId = Guid.CreateVersion7() };
-        var expected = Result.Failure(CompetitionErrors.NotFound(EntityId.Create(command.CompetitionId)));
+        var expected = Result.Failure(CompetitionErrors.NotFound(command.CompetitionId));
+
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotCreatedKickoffTimeOutsideSeason()
+    {
+        // Arrange.
+        var command = BaseCommand with { KickoffTimeUtc = BaseSeasons[0].StartDate.AddDays(-1).ToDateTime(TimeOnly.MinValue) };
+        var expected = Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(command.KickoffTimeUtc, BaseSeasons[0].StartDate, BaseSeasons[0].EndDate));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
