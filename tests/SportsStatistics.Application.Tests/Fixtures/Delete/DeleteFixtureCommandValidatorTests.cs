@@ -28,32 +28,17 @@ public sealed class DeleteFixtureCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_IdIsEmpty()
+    public async Task Should_HaveValidationError_When_FixtureIdIsEmpty()
     {
         // Arrange.
-        var command = BaseCommand with { Id = default };
-        var expectedErrorMessage = "'Id' must not be empty.";
+        var command = BaseCommand with { FixtureId = default };
+        var expected = "'Fixture Id' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage(expectedErrorMessage);
-    }
-
-    [Fact]
-    public async Task Should_HaveValidationError_When_IdIsNotVersion7()
-    {
-        // Arrange.
-        var command = BaseCommand with { Id = Guid.NewGuid() };
-        var expectedErrorMessage = "'Id' is not in the correct format.";
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage(expectedErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.FixtureId)
+              .WithErrorMessage(expected);
     }
 }
