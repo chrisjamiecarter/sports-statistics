@@ -12,14 +12,13 @@ internal sealed class DeleteFixtureCommandHandler(IApplicationDbContext dbContex
 
     public async Task<Result> Handle(DeleteFixtureCommand request, CancellationToken cancellationToken)
     {
-        var entityId = EntityId.Create(request.Id);
-
         var fixture = await _dbContext.Fixtures.AsNoTracking()
-                                               .SingleOrDefaultAsync(f => f.Id == entityId, cancellationToken);
+                                               .Where(fixture => fixture.Id == request.FixtureId)
+                                               .SingleOrDefaultAsync(cancellationToken);
 
         if (fixture is null)
         {
-            return Result.Failure(FixtureErrors.NotFound(entityId));
+            return Result.Failure(FixtureErrors.NotFound(request.FixtureId));
         }
 
         _dbContext.Fixtures.Remove(fixture);

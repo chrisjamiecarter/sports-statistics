@@ -6,9 +6,7 @@ internal sealed class DeleteFixtureCommandValidator : AbstractValidator<DeleteFi
 {
     public DeleteFixtureCommandValidator()
     {
-        RuleFor(c => c.Id)
-            .NotEmpty()
-            .Must(guid => guid.Version == 7)
-            .WithMessage("'Id' is not in the correct format.");
+        RuleFor(c => c.FixtureId)
+            .NotEmpty();
     }
 }

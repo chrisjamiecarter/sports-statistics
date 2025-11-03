@@ -2,4 +2,4 @@
 
 namespace SportsStatistics.Application.Fixtures.Delete;
 
-public sealed record DeleteFixtureCommand(Guid Id) : ICommand;
+public sealed record DeleteFixtureCommand(Guid FixtureId) : ICommand;
