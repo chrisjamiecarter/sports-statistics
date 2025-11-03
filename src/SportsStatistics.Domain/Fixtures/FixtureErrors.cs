@@ -16,7 +16,7 @@ public static class FixtureErrors
         "Fixture.NotCreated",
         $"The fixture with the Opponent = '{opponent}', Kickoff Time = '{kickoffTimeUtc}' and Location = '{fixtureLocationName}' was not created.");
 
-    public static Error NotDeleted(EntityId id) => Error.Failure(
+    public static Error NotDeleted(Guid id) => Error.Failure(
         "Fixture.NotDeleted",
         $"The fixture with the Id = '{id}' was not deleted.");
 

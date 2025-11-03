@@ -1,84 +1,82 @@
-﻿//using SportsStatistics.Application.Fixtures;
-//using SportsStatistics.Application.Fixtures.Delete;
-//using SportsStatistics.Domain.Fixtures;
-//using SportsStatistics.SharedKernel;
+﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Application.Fixtures.Delete;
+using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.SharedKernel;
 
-//namespace SportsStatistics.Application.Tests.Fixtures.Delete;
+namespace SportsStatistics.Application.Tests.Fixtures.Delete;
 
-//public class DeleteFixtureCommandHandlerTests
-//{
-//    private static readonly Fixture BaseFixture = Fixture.Create(EntityId.Create(), "Test Opponent", DateTime.UtcNow, FixtureLocation.Home);
-//    private static readonly DeleteFixtureCommand BaseCommand = new(BaseFixture.Id.Value);
+public class DeleteFixtureCommandHandlerTests
+{
+    private static readonly List<Fixture> BaseFixtures =
+    [
+        Fixture.Create(EntityId.Create(), "Test Opponent", DateTime.UtcNow, FixtureLocation.Home.Name),
+    ];
 
-//    private readonly Mock<IFixtureRepository> _repositoryMock;
-//    private readonly DeleteFixtureCommandHandler _handler;
+    private static readonly DeleteFixtureCommand BaseCommand = new(BaseFixtures[0].Id);
 
-//    public DeleteFixtureCommandHandlerTests()
-//    {
-//        _repositoryMock = new Mock<IFixtureRepository>();
-//        _handler = new DeleteFixtureCommandHandler(_repositoryMock.Object);
-//    }
+    private readonly Mock<DbSet<Fixture>> _fixtureDbSetMock;
+    private readonly Mock<IApplicationDbContext> _dbContextMock;
+    private readonly DeleteFixtureCommandHandler _handler;
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnSuccess_WhenFixtureIsDeleted()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Success();
+    public DeleteFixtureCommandHandlerTests()
+    {
+        _fixtureDbSetMock = BaseFixtures.BuildMockDbSet();
 
-//        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(BaseFixture);
+        _dbContextMock = new Mock<IApplicationDbContext>();
 
-//        _repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(true);
+        _dbContextMock.Setup(m => m.Fixtures)
+                      .Returns(_fixtureDbSetMock.Object);
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(1);
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
+        _handler = new DeleteFixtureCommandHandler(_dbContextMock.Object);
+    }
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotFound()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Failure(FixtureErrors.NotFound(BaseFixture.Id));
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenFixtureIsDeleted()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Success();
 
-//        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync((Fixture?)null);
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Never);
-//    }
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotFound()
+    {
+        // Arrange.
+        var command = BaseCommand with { FixtureId = Guid.CreateVersion7() };
+        var expected = Result.Failure(FixtureErrors.NotFound(command.FixtureId));
 
-//    [Fact]
-//    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotDeleted()
-//    {
-//        // Arrange.
-//        var command = BaseCommand;
-//        var expected = Result.Failure(FixtureErrors.NotDeleted(BaseFixture.Id));
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-//        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(BaseFixture);
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
 
-//        _repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()))
-//                       .ReturnsAsync(false);
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotDeleted()
+    {
+        // Arrange.
+        var command = BaseCommand;
+        var expected = Result.Failure(FixtureErrors.NotDeleted(command.FixtureId));
 
-//        // Act.
-//        var result = await _handler.Handle(command, CancellationToken.None);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
 
-//        // Assert.
-//        result.ShouldBeEquivalentTo(expected);
-//        _repositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<EntityId>(), It.IsAny<CancellationToken>()), Times.Once);
-//        _repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Fixture>(), It.IsAny<CancellationToken>()), Times.Once);
-//    }
-//}
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+}

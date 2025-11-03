@@ -15,7 +15,7 @@ public sealed class DeleteFixtureCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -28,7 +28,7 @@ public sealed class DeleteFixtureCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_FixtureIdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenFixtureIdIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { FixtureId = default };
