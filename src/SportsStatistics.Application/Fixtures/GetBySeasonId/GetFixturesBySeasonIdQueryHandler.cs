@@ -11,11 +11,9 @@ internal sealed class GetFixturesBySeasonIdQueryHandler(IApplicationDbContext db
 
     public async Task<Result<List<FixtureResponse>>> Handle(GetFixturesBySeasonIdQuery request, CancellationToken cancellationToken)
     {
-        var seasonId = EntityId.Create(request.SeasonId);
-
         return await _dbContext.Fixtures
             .AsNoTracking()
-            .Join(_dbContext.Competitions.AsNoTracking().Where(competition => competition.SeasonId == seasonId),
+            .Join(_dbContext.Competitions.AsNoTracking().Where(competition => competition.SeasonId == request.SeasonId),
                   fixture => fixture.CompetitionId,
                   competition => competition.Id,
                   (fixture, competition) => fixture.ToResponse(competition))
