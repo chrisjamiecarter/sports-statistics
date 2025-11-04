@@ -7,7 +7,7 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Fixtures.GetAll;
 
-public class GetFixturesQueryHandlerTests
+public class GetAllFixturesQueryHandlerTests
 {
     private static readonly Competition BaseCompetition = Competition.Create(EntityId.Create(),
                                                                              "Test Competition",
@@ -24,7 +24,7 @@ public class GetFixturesQueryHandlerTests
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetAllFixturesQueryHandler _handler;
 
-    public GetFixturesQueryHandlerTests()
+    public GetAllFixturesQueryHandlerTests()
     {
         _dbContextMock = new Mock<IApplicationDbContext>();
 
