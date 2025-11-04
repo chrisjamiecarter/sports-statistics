@@ -15,12 +15,12 @@ internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContex
     public async Task<Result> Handle(UpdateFixtureCommand request, CancellationToken cancellationToken)
     {
         var fixture = await _dbContext.Fixtures.AsNoTracking()
-                                               .Where(fixture => fixture.Id == request.Id)
+                                               .Where(fixture => fixture.Id == request.FixtureId)
                                                .SingleOrDefaultAsync(cancellationToken);
 
         if (fixture is null)
         {
-            return Result.Failure(FixtureErrors.NotFound(request.Id));
+            return Result.Failure(FixtureErrors.NotFound(request.FixtureId));
         }
 
         var competition = await _dbContext.Competitions.AsNoTracking()

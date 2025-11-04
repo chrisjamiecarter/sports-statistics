@@ -7,10 +7,8 @@ internal sealed class UpdateFixtureCommandValidator : AbstractValidator<UpdateFi
 {
     public UpdateFixtureCommandValidator()
     {
-        RuleFor(c => c.Id)
-            .NotEmpty()
-            .Must(guid => guid.Version == 7)
-            .WithMessage("'Id' is not in the correct format.");
+        RuleFor(c => c.FixtureId)
+            .NotEmpty();
 
         RuleFor(c => c.Opponent)
             .NotEmpty()

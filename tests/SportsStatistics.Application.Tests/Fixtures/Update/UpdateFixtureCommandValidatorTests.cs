@@ -19,7 +19,7 @@ public class UpdateFixtureCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -32,72 +32,90 @@ public class UpdateFixtureCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_IdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenFixtureIdIsEmpty()
     {
         // Arrange.
-        var command = BaseCommand with { Id = default };
-        var expectedErrorMessage = "'Id' must not be empty.";
+        var command = BaseCommand with { FixtureId = default };
+        var expected = "'Fixture Id' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage(expectedErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.FixtureId)
+              .WithErrorMessage(expected);
     }
 
-    [Fact]
-    public async Task Should_HaveValidationError_When_IdIsNotVersion7()
+    [Theory]
+    [InlineData("")]
+    [InlineData("    ")]
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenOpponentIsEmpty(string opponent)
     {
         // Arrange.
-        var command = BaseCommand with { Id = Guid.NewGuid() };
-        var expectedErrorMessage = "'Id' is not in the correct format.";
+        var command = BaseCommand with { Opponent = opponent };
+        var expected = "'Opponent' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage(expectedErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.Opponent)
+              .WithErrorMessage(expected);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_KickoffTimeUtcIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenOpponentExceedsMaximumLength()
+    {
+        // Arrange.
+        int max = 100;
+        var command = BaseCommand with { Opponent = new string('a', max + 1) };
+        var expected = $"The length of 'Opponent' must be {max} characters or fewer. You entered {command.Opponent.Length} characters.";
+
+        // Act.
+        var result = await _validator.TestValidateAsync(command);
+
+        // Assert.
+        result.ShouldHaveValidationErrorFor(c => c.Opponent)
+              .WithErrorMessage(expected);
+    }
+
+    [Fact]
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenKickoffTimeUtcIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { KickoffTimeUtc = default };
-        var expectedErrorMessage = "'Kickoff Time Utc' must not be empty.";
+        var expected = "'Kickoff Time Utc' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.KickoffTimeUtc)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task Should_HaveValidationError_When_FixtureLocationNameIsEmpty(string fixtureLocationName)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenFixtureLocationNameIsEmpty(string fixtureLocationName)
     {
         // Arrange.
         var command = BaseCommand with { FixtureLocationName = fixtureLocationName };
-        var expectedErrorMessage = "'Fixture Location Name' must not be empty.";
+        var expected = "'Fixture Location Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.FixtureLocationName)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Theory]
     [InlineData("Home")]
     [InlineData("Away")]
     [InlineData("Neutral")]
-    public async Task Should_NotHaveValidationError_When_FixtureLocationNameIsValid(string fixtureLocationName)
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenFixtureLocationNameIsValid(string fixtureLocationName)
     {
         // Arrange.
         var command = BaseCommand with { FixtureLocationName = fixtureLocationName };
@@ -110,17 +128,17 @@ public class UpdateFixtureCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_FixtureLocationNameIsInvalid()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenFixtureLocationNameIsInvalid()
     {
         // Arrange.
         var command = BaseCommand with { FixtureLocationName = "The Moon" };
-        var expectedMessage = $"Invalid fixture location. Valid fixture locations: {string.Join(", ", FixtureLocation.All)}.";
+        var expected = $"Invalid fixture location. Valid fixture locations: {string.Join(", ", FixtureLocation.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.FixtureLocationName)
-              .WithErrorMessage(expectedMessage);
+              .WithErrorMessage(expected);
     }
 }

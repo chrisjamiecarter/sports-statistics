@@ -79,8 +79,8 @@ public class UpdateFixtureCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotFound()
     {
         // Arrange.
-        var command = BaseCommand with { Id = Guid.CreateVersion7() };
-        var expected = Result.Failure(FixtureErrors.NotFound(EntityId.Create(command.Id)));
+        var command = BaseCommand with { FixtureId = Guid.CreateVersion7() };
+        var expected = Result.Failure(FixtureErrors.NotFound(command.FixtureId));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -94,7 +94,7 @@ public class UpdateFixtureCommandHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Failure(FixtureErrors.NotUpdated(EntityId.Create(command.Id)));
+        var expected = Result.Failure(FixtureErrors.NotUpdated(command.FixtureId));
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(0);

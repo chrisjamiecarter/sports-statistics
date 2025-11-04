@@ -24,7 +24,7 @@ public static class FixtureErrors
         "Fixture.NotFound",
         $"The fixture with the Id = '{id}' was not found.");
 
-    public static Error NotUpdated(EntityId id) => Error.Failure(
+    public static Error NotUpdated(Guid id) => Error.Failure(
         "Fixture.NotUpdated",
         $"The fixture with the Id = '{id}' was not updated.");
 }
