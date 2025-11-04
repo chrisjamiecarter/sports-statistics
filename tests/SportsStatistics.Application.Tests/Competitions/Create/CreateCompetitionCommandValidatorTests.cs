@@ -67,9 +67,8 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         int max = 50;
-        var name = new string('a', max + 1);
-        var command = BaseCommand with { Name = name };
-        var expected = $"The length of 'Name' must be {max} characters or fewer. You entered {name.Length} characters.";
+        var command = BaseCommand with { Name = new string('a', max + 1) };
+        var expected = $"The length of 'Name' must be {max} characters or fewer. You entered {command.Name.Length} characters.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
