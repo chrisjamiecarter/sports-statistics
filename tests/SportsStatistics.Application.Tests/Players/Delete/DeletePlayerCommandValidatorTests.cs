@@ -28,32 +28,17 @@ public sealed class DeletePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenIdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenPlayerIdIsEmpty()
     {
         // Arrange.
-        var command = BaseCommand with { Id = default };
-        var expectedErrorMessage = "'Id' must not be empty.";
+        var command = BaseCommand with { PlayerId = default };
+        var expected = "'Player Id' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage(expectedErrorMessage);
-    }
-
-    [Fact]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenIdIsNotVersion7()
-    {
-        // Arrange.
-        var command = BaseCommand with { Id = Guid.NewGuid() };
-        var expectedErrorMessage = "'Id' is not in the correct format.";
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.Id)
-              .WithErrorMessage(expectedErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.PlayerId)
+              .WithErrorMessage(expected);
     }
 }

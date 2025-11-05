@@ -12,11 +12,11 @@ public static class PlayerErrors
         "Player.NotCreated",
         $"The player with the Name = '{name}' and Date of Birth = '{dateOfBirth}' was not created.");
     
-    public static Error NotDeleted(EntityId id) => Error.Failure(
+    public static Error NotDeleted(Guid id) => Error.Failure(
         "Player.NotDeleted",
         $"The player with the Id = '{id}' was not deleted.");
 
-    public static Error NotFound(EntityId id) => Error.NotFound(
+    public static Error NotFound(Guid id) => Error.NotFound(
         "Player.NotFound",
         $"The player with the Id = '{id}' was not found.");
 

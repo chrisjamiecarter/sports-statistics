@@ -12,13 +12,12 @@ internal sealed class DeletePlayerCommandHandler(IApplicationDbContext dbContext
 
     public async Task<Result> Handle(DeletePlayerCommand request, CancellationToken cancellationToken)
     {
-        var entityId = EntityId.Create(request.Id);
-
-        var player = await _dbContext.Players.FindAsync([entityId], cancellationToken);
+        var player = await _dbContext.Players.Where(player => player.Id == request.PlayerId)
+                                             .SingleOrDefaultAsync(cancellationToken);
         
         if (player is null)
         {
-            return Result.Failure(PlayerErrors.NotFound(entityId));
+            return Result.Failure(PlayerErrors.NotFound(request.PlayerId));
         }
 
         _dbContext.Players.Remove(player);
@@ -27,6 +26,6 @@ internal sealed class DeletePlayerCommandHandler(IApplicationDbContext dbContext
 
         return deleted 
             ? Result.Success()
-            : Result.Failure(PlayerErrors.NotDeleted(entityId));
+            : Result.Failure(PlayerErrors.NotDeleted(player.Id));
     }
 }

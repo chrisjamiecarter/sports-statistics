@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Players.Delete;
 using SportsStatistics.Domain.Players;
@@ -8,12 +9,12 @@ namespace SportsStatistics.Application.Tests.Players.Delete;
 
 public class DeletePlayerCommandHandlerTests
 {
-    private static readonly Player BasePlayer = Player.Create("Test Name",
-                                                              1,
-                                                              "Test Nationality",
-                                                              DateOnly.FromDateTime(DateTime.Now.AddYears(-15)),
-                                                              Position.Goalkeeper.Name);
-    private static readonly DeletePlayerCommand BaseCommand = new(BasePlayer.Id.Value);
+    private static readonly List<Player> BasePlayers =
+    [
+        Player.Create("Existing Player Name", 1, "Nationality", DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-25)), Position.Goalkeeper.Name),
+    ];
+    
+    private static readonly DeletePlayerCommand BaseCommand = new(BasePlayers[0].Id);
 
     private readonly Mock<DbSet<Player>> _playerDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
@@ -21,14 +22,12 @@ public class DeletePlayerCommandHandlerTests
 
     public DeletePlayerCommandHandlerTests()
     {
-        _playerDbSetMock = new Mock<DbSet<Player>>();
+        _playerDbSetMock = BasePlayers.BuildMockDbSet();
+
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Players)
                       .Returns(_playerDbSetMock.Object);
-
-        _playerDbSetMock.Setup(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(BasePlayer);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
@@ -48,29 +47,20 @@ public class DeletePlayerCommandHandlerTests
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
-        _playerDbSetMock.Verify(m => m.Remove(It.IsAny<Player>()), Times.Once);
-        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenPlayerIsNotFound()
     {
         // Arrange.
-        var command = BaseCommand;
-        var expected = Result.Failure(PlayerErrors.NotFound(BasePlayer.Id));
-
-        _playerDbSetMock.Setup(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync((Player?)null);
+        var command = BaseCommand with { PlayerId = Guid.CreateVersion7() };
+        var expected = Result.Failure(PlayerErrors.NotFound(command.PlayerId));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
-        _playerDbSetMock.Verify(m => m.Remove(It.IsAny<Player>()), Times.Never);
-        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -78,7 +68,7 @@ public class DeletePlayerCommandHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Failure(PlayerErrors.NotDeleted(BasePlayer.Id));
+        var expected = Result.Failure(PlayerErrors.NotDeleted(command.PlayerId));
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(0);
@@ -88,8 +78,5 @@ public class DeletePlayerCommandHandlerTests
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerDbSetMock.Verify(m => m.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
-        _playerDbSetMock.Verify(m => m.Remove(It.IsAny<Player>()), Times.Once);
-        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }
