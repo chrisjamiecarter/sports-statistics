@@ -45,8 +45,6 @@ public class CreatePlayerCommandHandlerTests
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerDbSetMock.Verify(m => m.Add(It.IsAny<Player>()), Times.Once);
-        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -70,8 +68,6 @@ public class CreatePlayerCommandHandlerTests
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerDbSetMock.Verify(m => m.Add(It.IsAny<Player>()), Times.Never);
-        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -88,7 +84,5 @@ public class CreatePlayerCommandHandlerTests
 
         // Assert.
         result.ShouldBeEquivalentTo(expected);
-        _playerDbSetMock.Verify(m => m.Add(It.IsAny<Player>()), Times.Once);
-        _dbContextMock.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

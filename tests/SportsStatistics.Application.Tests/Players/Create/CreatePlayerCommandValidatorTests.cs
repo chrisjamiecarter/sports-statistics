@@ -1,7 +1,4 @@
-﻿using System.Linq.Expressions;
-using FluentValidation.TestHelper;
-using Microsoft.EntityFrameworkCore;
-using SportsStatistics.Application.Abstractions.Data;
+﻿using FluentValidation.TestHelper;
 using SportsStatistics.Application.Players.Create;
 using SportsStatistics.Domain.Players;
 
@@ -42,14 +39,14 @@ public class CreatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Name = name };
-        var expectedErrorMessage = "'Name' must not be empty.";
+        var expected = "'Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Name)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Fact]
@@ -58,14 +55,14 @@ public class CreatePlayerCommandValidatorTests
         // Arrange.
         int max = 100;
         var command = BaseCommand with { Name = new string('a', max + 1) };
-        var expectedErrorMessage = $"The length of 'Name' must be {max} characters or fewer. You entered {command.Name.Length} characters.";
+        var expected = $"The length of 'Name' must be {max} characters or fewer. You entered {command.Name.Length} characters.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Name)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Theory]
@@ -76,14 +73,14 @@ public class CreatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { SquadNumber = squadNumber };
-        var expectedErrorMessage = $"'Squad Number' must be between 1 and 99. You entered {squadNumber}.";
+        var expected = $"'Squad Number' must be between 1 and 99. You entered {squadNumber}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.SquadNumber)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Theory]
@@ -93,14 +90,14 @@ public class CreatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Nationality = nationality };
-        var expectedErrorMessage = "'Nationality' must not be empty.";
+        var expected = "'Nationality' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Nationality)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Fact]
@@ -109,14 +106,14 @@ public class CreatePlayerCommandValidatorTests
         // Arrange.
         int max = 100;
         var command = BaseCommand with { Nationality = new string('a', max + 1) };
-        var expectedErrorMessage = $"The length of 'Nationality' must be 100 characters or fewer. You entered {command.Nationality.Length} characters.";
+        var expected = $"The length of 'Nationality' must be 100 characters or fewer. You entered {command.Nationality.Length} characters.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Nationality)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Fact]
@@ -124,14 +121,14 @@ public class CreatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { DateOfBirth = default };
-        var expectedErrorMessage = "'Date Of Birth' must not be empty.";
+        var expected = "'Date Of Birth' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.DateOfBirth)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Fact]
@@ -139,14 +136,14 @@ public class CreatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { DateOfBirth = DateOnly.FromDateTime(DateTime.Today).AddYears(-10) };
-        var expectedErrorMessage = "Player must be at least 15 years old.";
+        var expected = "Player must be at least 15 years old.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.DateOfBirth)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Theory]
@@ -156,14 +153,14 @@ public class CreatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { PositionName = positionName };
-        var expectedErrorMessage = "'Position Name' must not be empty.";
+        var expected = "'Position Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.PositionName)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 
     [Theory]
@@ -188,13 +185,13 @@ public class CreatePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { PositionName = "Airline Pilot" };
-        var expectedErrorMessage = $"Invalid position. Valid positions: {string.Join(", ", Position.All)}.";
+        var expected = $"Invalid position. Valid positions: {string.Join(", ", Position.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.PositionName)
-              .WithErrorMessage(expectedErrorMessage);
+              .WithErrorMessage(expected);
     }
 }
