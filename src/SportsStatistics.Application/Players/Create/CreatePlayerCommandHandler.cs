@@ -19,7 +19,8 @@ internal sealed class CreatePlayerCommandHandler(IApplicationDbContext dbContext
                                    request.PositionName);
 
         var squadNumberTaken = await _dbContext.Players.AsNoTracking()
-                                                       .AnyAsync(p => p.Id != player.Id && p.SquadNumber == player.SquadNumber, cancellationToken);
+                                                       .Where(player => player.SquadNumber == request.SquadNumber)
+                                                       .AnyAsync(cancellationToken);
 
         if (squadNumberTaken)
         {
