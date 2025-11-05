@@ -9,11 +9,16 @@ namespace SportsStatistics.Application.Tests.Players.Create;
 
 public class CreatePlayerCommandHandlerTests
 {
-    private static readonly CreatePlayerCommand BaseCommand = new("Test Name",
-                                                                  1,
+    private static readonly List<Player> BasePlayers =
+    [
+        Player.Create("Existing Player Name", 1, "Nationality", DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-25)), Position.Goalkeeper.Name),
+    ];
+
+    private static readonly CreatePlayerCommand BaseCommand = new("New Player Name",
+                                                                  2,
                                                                   "Test Nationality",
                                                                   DateOnly.FromDateTime(DateTime.Today).AddYears(-15),
-                                                                  Position.Goalkeeper.Name);
+                                                                  Position.Defender.Name);
 
     private readonly Mock<DbSet<Player>> _playerDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
@@ -21,7 +26,8 @@ public class CreatePlayerCommandHandlerTests
 
     public CreatePlayerCommandHandlerTests()
     {
-        _playerDbSetMock = new List<Player>().BuildMockDbSet();
+        _playerDbSetMock = BasePlayers.BuildMockDbSet();
+
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Players)
@@ -51,17 +57,8 @@ public class CreatePlayerCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenSquadNumberIsUnavailable()
     {
         // Arrange.
-        var command = BaseCommand;
+        var command = BaseCommand with { SquadNumber = BasePlayers[0].SquadNumber };
         var expected = Result.Failure(PlayerErrors.SquadNumberTaken(command.SquadNumber));
-
-        var players = new List<Player>
-        {
-            Player.Create("Existing Player", command.SquadNumber, "Nationality", command.DateOfBirth, command.PositionName),
-        }
-        .BuildMockDbSet();
-
-        _dbContextMock.Setup(m => m.Players)
-                      .Returns(players.Object);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -77,7 +74,8 @@ public class CreatePlayerCommandHandlerTests
         var command = BaseCommand;
         var expected = Result.Failure(PlayerErrors.NotCreated(command.Name, command.DateOfBirth));
 
-        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(0);
+        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(0);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
