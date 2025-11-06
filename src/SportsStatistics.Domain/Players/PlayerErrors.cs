@@ -20,7 +20,7 @@ public static class PlayerErrors
         "Player.NotFound",
         $"The player with the Id = '{id}' was not found.");
 
-    public static Error NotUpdated(EntityId id) => Error.Failure(
+    public static Error NotUpdated(Guid id) => Error.Failure(
         "Player.NotUpdated",
         $"The player with the Id = '{id}' was not updated.");
 

@@ -2,7 +2,7 @@
 
 namespace SportsStatistics.Application.Players.Update;
 
-public sealed record UpdatePlayerCommand(Guid Id,
+public sealed record UpdatePlayerCommand(Guid PlayerId,
                                          string Name,
                                          int SquadNumber,
                                          string Nationality,

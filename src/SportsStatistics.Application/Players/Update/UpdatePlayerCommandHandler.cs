@@ -12,17 +12,18 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
 
     public async Task<Result> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
     {
-        var entityId = EntityId.Create(request.Id);
-
-        var player = await _dbContext.Players.FindAsync([entityId], cancellationToken);
+        var player = await _dbContext.Players.AsNoTracking()
+                                             .Where(player => player.Id == request.PlayerId)
+                                             .SingleOrDefaultAsync(cancellationToken);
 
         if (player is null)
         {
-            return Result.Failure(PlayerErrors.NotFound(entityId));
+            return Result.Failure(PlayerErrors.NotFound(request.PlayerId));
         }
 
         var squadNumberTaken = await _dbContext.Players.AsNoTracking()
-                                                       .AnyAsync(p => p.Id != player.Id && p.SquadNumber == player.SquadNumber, cancellationToken);
+                                                       .Where(player => player.Id != request.PlayerId && player.SquadNumber == request.SquadNumber)
+                                                       .AnyAsync(cancellationToken);
 
         if (squadNumberTaken)
         {
