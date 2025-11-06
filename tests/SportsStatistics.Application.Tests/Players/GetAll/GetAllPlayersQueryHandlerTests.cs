@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
+﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Players.GetAll;
 using SportsStatistics.Domain.Players;
@@ -9,6 +8,12 @@ namespace SportsStatistics.Application.Tests.Players.GetAll;
 
 public class GetAllPlayersQueryHandlerTests
 {
+    private static readonly List<Player> BasePlayers =
+    [
+        Player.Create("John Smith", 1, "British", new DateOnly(1991, 1, 1), Position.Goalkeeper.Name),
+        Player.Create("Jack Black", 2, "American", new DateOnly(1992, 2, 2), Position.Defender.Name),
+    ];
+
     private static readonly GetAllPlayersQuery BaseCommand = new();
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
@@ -25,12 +30,8 @@ public class GetAllPlayersQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var players = new List<Player>
-        {
-            Player.Create("John Smith", 1, "British", new DateOnly(1991, 1, 1), Position.Goalkeeper.Name),
-            Player.Create("Jack Black", 2, "American", new DateOnly(1992, 2, 2), Position.Defender.Name),
-        };
-        var expected = Result.Success(players.ToResponse());
+        var players = BasePlayers;
+        var expected = Result.Success(players.ToResponse().ToList());
 
         _dbContextMock.Setup(m => m.Players)
                       .Returns(players.BuildMockDbSet().Object);
@@ -47,11 +48,8 @@ public class GetAllPlayersQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var players = new List<Player>
-        {
-            Player.Create("John Smith", 1, "British", new DateOnly(1991, 1, 1), Position.Goalkeeper.Name),
-        };
-        var expected = Result.Success(players.ToResponse());
+        var players = BasePlayers.Take(1).ToList();
+        var expected = Result.Success(players.ToResponse().ToList());
 
         _dbContextMock.Setup(m => m.Players)
                       .Returns(players.BuildMockDbSet().Object);
@@ -68,8 +66,8 @@ public class GetAllPlayersQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var players = new List<Player>();
-        var expected = Result.Success(players.ToResponse());
+        var players = BasePlayers.Take(0).ToList();
+        var expected = Result.Success(players.ToResponse().ToList());
 
         _dbContextMock.Setup(m => m.Players)
                       .Returns(players.BuildMockDbSet().Object);
