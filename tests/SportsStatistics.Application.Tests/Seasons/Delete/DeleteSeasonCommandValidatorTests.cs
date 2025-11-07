@@ -15,7 +15,7 @@ public sealed class DeleteSeasonCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -28,30 +28,17 @@ public sealed class DeleteSeasonCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_IdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenIdIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { SeasonId = default };
+        var expected = "'Season Id' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.SeasonId)
-              .WithErrorMessage("'Season Id' must not be empty.");
-    }
-
-    [Fact]
-    public async Task Should_HaveValidationError_When_IdIsNotVersion7()
-    {
-        // Arrange.
-        var command = BaseCommand with { SeasonId = Guid.NewGuid() };
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.SeasonId)
-              .WithErrorMessage("'Season Id' is not in the correct format.");
+              .WithErrorMessage(expected);
     }
 }

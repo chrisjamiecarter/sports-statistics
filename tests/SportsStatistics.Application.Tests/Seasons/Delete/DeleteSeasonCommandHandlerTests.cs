@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
+﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Seasons.Delete;
 using SportsStatistics.Domain.Seasons;
@@ -17,18 +16,15 @@ public class DeleteSeasonCommandHandlerTests
 
     private static readonly DeleteSeasonCommand BaseCommand = new(BaseSeasons[0].Id);
 
-    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly DeleteSeasonCommandHandler _handler;
 
     public DeleteSeasonCommandHandlerTests()
     {
-        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
-
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Seasons)
-                      .Returns(_seasonDbSetMock.Object);
+                      .Returns(BaseSeasons.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
