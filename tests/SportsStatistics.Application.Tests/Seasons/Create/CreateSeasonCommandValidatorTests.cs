@@ -1,5 +1,4 @@
 ﻿using FluentValidation.TestHelper;
-using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Seasons.Create;
@@ -18,18 +17,15 @@ public class CreateSeasonCommandValidatorTests
     private static readonly CreateSeasonCommand BaseCommand = new(new DateOnly(2025, 8, 1),
                                                                   new DateOnly(2026, 7, 31));
 
-    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateSeasonCommandValidator _validator;
 
     public CreateSeasonCommandValidatorTests()
     {
-        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
-
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Seasons)
-                      .Returns(_seasonDbSetMock.Object);
+                      .Returns(BaseSeasons.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
               .ReturnsAsync(1);
@@ -38,7 +34,7 @@ public class CreateSeasonCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_NotHaveValidationError_When_IsValid()
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCommandIsValid()
     {
         // Arrange.
         var command = BaseCommand;
@@ -51,101 +47,105 @@ public class CreateSeasonCommandValidatorTests
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_StartDateIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenStartDateIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { StartDate = default };
+        var expected = "'Start Date' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.StartDate)
-              .WithErrorMessage("'Start Date' must not be empty.");
+              .WithErrorMessage(expected);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_StartDateIsNotLessThanEndDate()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenStartDateIsNotLessThanEndDate()
     {
         // Arrange.
         var command = BaseCommand with
         {
             StartDate = BaseCommand.EndDate.AddDays(1)
         };
-        var expectedMessage = $"'Start Date' must be less than '{command.EndDate:dd/MM/yyyy}'.";
+        var expected = $"'Start Date' must be less than '{command.EndDate:dd/MM/yyyy}'.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.StartDate)
-              .WithErrorMessage(expectedMessage);
+              .WithErrorMessage(expected);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_StartDateOverlapsWithExisting()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenStartDateOverlapsWithExisting()
     {
         // Arrange.
         var command = BaseCommand with
         {
             StartDate = BaseSeasons[0].StartDate,
         };
+        var expected = "'Start Date' overlaps with an existing season.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.StartDate)
-              .WithErrorMessage("'Start Date' overlaps with an existing season.");
+              .WithErrorMessage(expected);
     }
 
 
     [Fact]
-    public async Task Should_HaveValidationError_When_EndDateIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenEndDateIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { EndDate = default };
+        var expected = "'End Date' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.EndDate)
-              .WithErrorMessage("'End Date' must not be empty.");
+              .WithErrorMessage(expected);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_EndDateIsNotGreaterThanStartDate()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenEndDateIsNotGreaterThanStartDate()
     {
         // Arrange.
         var command = BaseCommand with
         {
             EndDate = BaseCommand.StartDate.AddDays(-1)
         };
-        var expectedMessage = $"'End Date' must be greater than '{command.StartDate:dd/MM/yyyy}'.";
+        var expected = $"'End Date' must be greater than '{command.StartDate:dd/MM/yyyy}'.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.EndDate)
-              .WithErrorMessage(expectedMessage);
+              .WithErrorMessage(expected);
     }
 
     [Fact]
-    public async Task Should_HaveValidationError_When_EndDateOverlapsWithExisting()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenEndDateOverlapsWithExisting()
     {
         // Arrange.
         var command = BaseCommand with
         {
             EndDate = BaseSeasons[0].EndDate,
         };
+        var expected = "'End Date' overlaps with an existing season.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.EndDate)
-              .WithErrorMessage("'End Date' overlaps with an existing season.");
+              .WithErrorMessage(expected);
     }
 }
