@@ -14,11 +14,10 @@ internal sealed class GetSeasonByIdQueryHandler(IApplicationDbContext dbContext)
     {
         var season = await _dbContext.Seasons.AsNoTracking()
                                              .Where(season => season.Id == request.SeasonId)
-                                             .Select(season => season.ToResponse())
                                              .SingleOrDefaultAsync(cancellationToken);
 
         return season is not null
-            ? season
+            ? season.ToResponse()
             : Result.Failure<SeasonResponse>(SeasonErrors.NotFound(request.SeasonId));
     }
 }
