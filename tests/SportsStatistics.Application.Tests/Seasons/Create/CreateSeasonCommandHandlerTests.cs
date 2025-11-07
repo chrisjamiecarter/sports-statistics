@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
+﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Seasons.Create;
 using SportsStatistics.Domain.Seasons;
@@ -12,18 +11,15 @@ public class CreateSeasonCommandHandlerTests
     private static readonly CreateSeasonCommand BaseCommand = new(new DateOnly(2025, 8, 1),
                                                                   new DateOnly(2026, 7, 31));
 
-    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateSeasonCommandHandler _handler;
 
     public CreateSeasonCommandHandlerTests()
     {
-        _seasonDbSetMock = new List<Season>().BuildMockDbSet();
-
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Seasons)
-                      .Returns(_seasonDbSetMock.Object);
+                      .Returns(new List<Season>().BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
