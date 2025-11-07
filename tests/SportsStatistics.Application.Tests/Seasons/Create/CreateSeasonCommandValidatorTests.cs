@@ -97,7 +97,6 @@ public class CreateSeasonCommandValidatorTests
               .WithErrorMessage(expected);
     }
 
-
     [Fact]
     public async Task ValidateAsync_ShouldHaveValidationError_WhenEndDateIsEmpty()
     {
