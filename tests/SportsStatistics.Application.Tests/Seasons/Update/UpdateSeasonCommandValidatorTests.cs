@@ -49,7 +49,7 @@ public class UpdateSeasonCommandValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAsync_Should_HaveValidationError_When_SeasonIdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenSeasonIdIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { SeasonId = default };

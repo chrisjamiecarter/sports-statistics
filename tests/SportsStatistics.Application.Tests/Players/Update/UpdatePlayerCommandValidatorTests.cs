@@ -34,7 +34,7 @@ public class UpdatePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenIdIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenPlayerIdIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { PlayerId = default };
@@ -102,7 +102,7 @@ public class UpdatePlayerCommandValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData("    ")]
-    public async Task ValidateAsync_Should_HaveValidationError_When_NationalityIsEmpty(string nationality)
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNationalityIsEmpty(string nationality)
     {
         // Arrange.
         var command = BaseCommand with { Nationality = nationality };
@@ -117,7 +117,7 @@ public class UpdatePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAsync_Should_HaveValidationError_When_NationalityExceedsMaximumLength()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenNationalityExceedsMaximumLength()
     {
         // Arrange.
         int max = 100;
@@ -133,7 +133,7 @@ public class UpdatePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAsync_Should_HaveValidationError_When_DateOfBirthIsEmpty()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenDateOfBirthIsEmpty()
     {
         // Arrange.
         var command = BaseCommand with { DateOfBirth = default };
@@ -148,7 +148,7 @@ public class UpdatePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAsync_Should_HaveValidationError_When_DateOfBirthIsLessThanFifteenYearsAgo()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenDateOfBirthIsLessThanFifteenYearsAgo()
     {
         // Arrange.
         var command = BaseCommand with { DateOfBirth = DateOnly.FromDateTime(DateTime.Today).AddYears(-10) };
