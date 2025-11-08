@@ -12,8 +12,7 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
 
     public async Task<Result> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
     {
-        var player = await _dbContext.Players.AsNoTracking()
-                                             .Where(player => player.Id == request.PlayerId)
+        var player = await _dbContext.Players.Where(player => player.Id == request.PlayerId)
                                              .SingleOrDefaultAsync(cancellationToken);
 
         if (player is null)

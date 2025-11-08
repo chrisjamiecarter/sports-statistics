@@ -12,8 +12,7 @@ internal sealed class UpdateCompetitionCommandHandler(IApplicationDbContext dbCo
 
     public async Task<Result> Handle(UpdateCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var competition = await _dbContext.Competitions.AsNoTracking()
-                                                       .Where(competition => competition.Id == request.CompetitionId)
+        var competition = await _dbContext.Competitions.Where(competition => competition.Id == request.CompetitionId)
                                                        .SingleOrDefaultAsync(cancellationToken);
 
         if (competition is null)

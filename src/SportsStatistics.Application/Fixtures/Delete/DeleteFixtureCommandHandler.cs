@@ -12,8 +12,7 @@ internal sealed class DeleteFixtureCommandHandler(IApplicationDbContext dbContex
 
     public async Task<Result> Handle(DeleteFixtureCommand request, CancellationToken cancellationToken)
     {
-        var fixture = await _dbContext.Fixtures.AsNoTracking()
-                                               .Where(fixture => fixture.Id == request.FixtureId)
+        var fixture = await _dbContext.Fixtures.Where(fixture => fixture.Id == request.FixtureId)
                                                .SingleOrDefaultAsync(cancellationToken);
 
         if (fixture is null)
