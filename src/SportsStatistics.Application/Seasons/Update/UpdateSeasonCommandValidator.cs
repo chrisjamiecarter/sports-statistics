@@ -35,9 +35,7 @@ internal sealed class UpdateSeasonCommandValidator : AbstractValidator<UpdateSea
 
     private static async Task<bool> DoesDateOverlapExistingAsync(IApplicationDbContext dbContext, DateOnly date, Guid excludeSeasonId, CancellationToken cancellationToken)
     {
-        var overlappingSeasons = await dbContext.Seasons.Where(season => season.Id != excludeSeasonId && season.StartDate <= date && season.EndDate >= date)
-                                                        .ToListAsync(cancellationToken);
-
-        return overlappingSeasons.Count > 0;
+        return await dbContext.Seasons.Where(season => season.Id != excludeSeasonId && season.StartDate <= date && season.EndDate >= date)
+                                      .AnyAsync(cancellationToken);
     }
 }

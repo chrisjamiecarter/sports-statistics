@@ -102,7 +102,7 @@ public class UpdateSeasonCommandValidatorTests
         // Arrange.
         var command = BaseCommand with
         {
-            StartDate = BaseSeasons[0].StartDate,
+            StartDate = BaseSeasons[1].StartDate,
         };
         var expected = "'Start Date' overlaps with an existing season.";
 
@@ -153,7 +153,7 @@ public class UpdateSeasonCommandValidatorTests
         // Arrange.
         var command = BaseCommand with
         {
-            EndDate = BaseSeasons[0].EndDate,
+            EndDate = BaseSeasons[1].EndDate,
         };
         var expected = "'End Date' overlaps with an existing season.";
 
