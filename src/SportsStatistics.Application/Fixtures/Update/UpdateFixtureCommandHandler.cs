@@ -47,6 +47,13 @@ internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContex
             return Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(request.KickoffTimeUtc, season.StartDate, season.EndDate));
         }
 
+        if (await _dbContext.Fixtures.AsNoTracking()
+                                     .Where(fixture => fixture.Id != request.FixtureId && DateOnly.FromDateTime(fixture.KickoffTimeUtc) == kickoffDate)
+                                     .AnyAsync(cancellationToken))
+        {
+            return Result.Failure(FixtureErrors.AlreadyScheduledOnDate(kickoffDate));
+        }
+
         if (!fixture.Update(request.Opponent, request.KickoffTimeUtc, request.FixtureLocationName))
         {
             return Result.Success();

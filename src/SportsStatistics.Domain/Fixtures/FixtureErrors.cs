@@ -4,6 +4,10 @@ namespace SportsStatistics.Domain.Fixtures;
 
 public static class FixtureErrors
 {
+    public static Error AlreadyScheduledOnDate(DateOnly date) => Error.Conflict(
+        "Fixture.AlreadyScheduledOnDate",
+        $"A fixture is already scheduled on {date:yyyy-MM-dd}. Only one fixture per day is allowed.");
+
     public static Error InvalidLocation(string location) => Error.Failure(
         "Fixture.InvalidLocation",
         $"A fixture cannot have a location of '{location}'.");
