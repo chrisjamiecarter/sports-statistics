@@ -14,7 +14,6 @@ internal sealed class CreateFixtureCommandValidator : AbstractValidator<CreateFi
             .NotEmpty()
             .MaximumLength(100);
 
-        // TODO: Only one fixture per day?
         RuleFor(c => c.KickoffTimeUtc)
             .NotEmpty();
 

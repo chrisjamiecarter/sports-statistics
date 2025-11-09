@@ -14,7 +14,6 @@ internal sealed class UpdateFixtureCommandValidator : AbstractValidator<UpdateFi
             .NotEmpty()
             .MaximumLength(100);
 
-        // TODO: Only one fixture per day?
         RuleFor(c => c.KickoffTimeUtc)
             .NotEmpty();
 
