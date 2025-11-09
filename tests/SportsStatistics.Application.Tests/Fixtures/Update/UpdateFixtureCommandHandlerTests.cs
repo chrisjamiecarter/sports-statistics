@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
+﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Fixtures.Update;
 using SportsStatistics.Domain.Competitions;
@@ -11,9 +10,13 @@ namespace SportsStatistics.Application.Tests.Fixtures.Update;
 
 public class UpdateFixtureCommandHandlerTests
 {
+    private static readonly DateOnly BaseSeasonStartDate = new(2025, 8, 1);
+    private static readonly DateOnly BaseSeasonEndDate = new(2026, 7, 31);
+
+
     private static readonly List<Season> BaseSeasons =
     [
-        Season.Create(new DateOnly(2025, 8, 1), new DateOnly(2026, 7, 31)),
+        Season.Create(BaseSeasonStartDate, BaseSeasonEndDate),
     ];
 
     private static readonly List<Competition> BaseCompetitions =
@@ -24,36 +27,30 @@ public class UpdateFixtureCommandHandlerTests
 
     private static readonly List<Fixture> BaseFixtures =
     [
-        Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", BaseSeasons[0].StartDate.ToDateTime(TimeOnly.MinValue), FixtureLocation.Home.Name),
+        Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", BaseSeasonStartDate.ToDateTime(TimeOnly.MinValue), FixtureLocation.Home.Name),
+        Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", BaseSeasonStartDate.AddDays(7).ToDateTime(TimeOnly.MinValue), FixtureLocation.Away.Name),
     ];
 
     private static readonly UpdateFixtureCommand BaseCommand = new(BaseFixtures[0].Id,
-                                                                   BaseFixtures[0].Opponent,
+                                                                   $"{BaseFixtures[0].Opponent} Updated",
                                                                    BaseFixtures[0].KickoffTimeUtc.AddDays(1),
                                                                    FixtureLocation.Neutral.Name);
 
-    private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
-    private readonly Mock<DbSet<Fixture>> _fixtureDbSetMock;
-    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly UpdateFixtureCommandHandler _handler;
 
     public UpdateFixtureCommandHandlerTests()
     {
-        _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
-        _fixtureDbSetMock = BaseFixtures.BuildMockDbSet();
-        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
-
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Competitions)
-                      .Returns(_competitionDbSetMock.Object);
+                      .Returns(BaseCompetitions.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.Fixtures)
-                      .Returns(_fixtureDbSetMock.Object);
+                      .Returns(BaseFixtures.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.Seasons)
-                      .Returns(_seasonDbSetMock.Object);
+                      .Returns(BaseSeasons.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
@@ -81,6 +78,33 @@ public class UpdateFixtureCommandHandlerTests
         // Arrange.
         var command = BaseCommand with { FixtureId = Guid.CreateVersion7() };
         var expected = Result.Failure(FixtureErrors.NotFound(command.FixtureId));
+
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenCurrentFixtureIsAlreadyScheduled()
+    {
+        // Arrange.
+        var command = BaseCommand with { KickoffTimeUtc = BaseFixtures[0].KickoffTimeUtc };
+        var expected = Result.Success();
+
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenAnotherFixtureAlreadyScheduled()
+    {
+        // Arrange.
+        var command = BaseCommand with { KickoffTimeUtc = BaseFixtures[1].KickoffTimeUtc };
+        var expected = Result.Failure(FixtureErrors.AlreadyScheduledOnDate(DateOnly.FromDateTime(command.KickoffTimeUtc)));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
