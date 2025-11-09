@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
+﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Fixtures.Create;
 using SportsStatistics.Domain.Competitions;
@@ -22,33 +21,31 @@ public class CreateFixtureCommandHandlerTests
         Competition.Create(BaseSeasons[0].Id, "Test Cup", CompetitionType.Cup.Name),
     ];
 
+    private static readonly List<Fixture> BaseFixtures =
+    [
+        Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", BaseSeasons[0].StartDate.ToDateTime(TimeOnly.MinValue), FixtureLocation.Home.Name),
+    ];
+
     private static readonly CreateFixtureCommand BaseCommand = new(BaseCompetitions[0].Id,
                                                                    "Test Opponent",
-                                                                   BaseSeasons[0].StartDate.ToDateTime(TimeOnly.MinValue),
-                                                                   FixtureLocation.Home.Name);
+                                                                   BaseFixtures[0].KickoffTimeUtc.AddDays(7),
+                                                                   FixtureLocation.Away.Name);
 
-    private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
-    private readonly Mock<DbSet<Fixture>> _fixtureDbSetMock;
-    private readonly Mock<DbSet<Season>> _seasonDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateFixtureCommandHandler _handler;
 
     public CreateFixtureCommandHandlerTests()
     {
-        _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
-        _fixtureDbSetMock = new List<Fixture>().BuildMockDbSet();
-        _seasonDbSetMock = BaseSeasons.BuildMockDbSet();
-
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Competitions)
-                      .Returns(_competitionDbSetMock.Object);
+                      .Returns(BaseCompetitions.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.Fixtures)
-                      .Returns(_fixtureDbSetMock.Object);
+                      .Returns(BaseFixtures.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.Seasons)
-                      .Returns(_seasonDbSetMock.Object);
+                      .Returns(BaseSeasons.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
@@ -85,11 +82,25 @@ public class CreateFixtureCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotCreatedKickoffTimeOutsideSeason()
+    public async Task Handle_ShouldReturnFailure_WhenKickoffTimeOutsideSeason()
     {
         // Arrange.
         var command = BaseCommand with { KickoffTimeUtc = BaseSeasons[0].StartDate.AddDays(-1).ToDateTime(TimeOnly.MinValue) };
         var expected = Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(command.KickoffTimeUtc, BaseSeasons[0].StartDate, BaseSeasons[0].EndDate));
+
+        // Act.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert.
+        result.ShouldBeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenAnotherFixtureAlreadyScheduled()
+    {
+        // Arrange.
+        var command = BaseCommand with { KickoffTimeUtc = BaseFixtures[0].KickoffTimeUtc };
+        var expected = Result.Failure(FixtureErrors.AlreadyScheduledOnDate(DateOnly.FromDateTime(command.KickoffTimeUtc)));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
