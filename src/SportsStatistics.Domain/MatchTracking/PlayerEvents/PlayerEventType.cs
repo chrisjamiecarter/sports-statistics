@@ -1,6 +1,6 @@
 ﻿using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Domain.PlayerEvents;
+namespace SportsStatistics.Domain.MatchTracking.PlayerEvents;
 
 public sealed class PlayerEventType : Enumeration
 {
