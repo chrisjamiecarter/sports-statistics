@@ -19,4 +19,11 @@ public sealed class MatchEvent : Entity
     public int Minute { get; private set; }
 
     public DateTime OccurredAtUtc { get; private set; }
+
+    public static MatchEvent Create(EntityId fixtureId, string matchEventTypeName, int minute, DateTime occurredAtUtc)
+    {
+        var matchEventType = MatchEventType.FromName(matchEventTypeName);
+
+        return new(EntityId.Create(), fixtureId, matchEventType, minute, occurredAtUtc);
+    }
 }
