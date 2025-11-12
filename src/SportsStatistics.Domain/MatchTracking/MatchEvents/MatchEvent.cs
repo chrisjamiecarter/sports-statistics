@@ -4,9 +4,9 @@ namespace SportsStatistics.Domain.MatchTracking.MatchEvents;
 
 public sealed class MatchEvent : MatchEventBase
 {
-    private MatchEvent(EntityId id, EntityId fixtureId, MatchEventType matchEventType, int minute, DateTime occurredAtUtc) : base(id, fixtureId, minute, occurredAtUtc)
+    private MatchEvent(EntityId id, EntityId fixtureId, MatchEventType type, int minute, DateTime occurredAtUtc) : base(id, fixtureId, minute, occurredAtUtc)
     {
-        Type = matchEventType;
+        Type = type;
     }
 
     public MatchEventType Type { get; private set; } = MatchEventType.Unknown;

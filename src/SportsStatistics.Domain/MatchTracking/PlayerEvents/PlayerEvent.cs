@@ -5,10 +5,10 @@ namespace SportsStatistics.Domain.MatchTracking.PlayerEvents;
 
 public sealed class PlayerEvent : MatchEventBase
 {
-    private PlayerEvent(EntityId id, EntityId fixtureId, EntityId playerId, PlayerEventType playerEventType, int minute, DateTime occurredAtUtc) : base(id, fixtureId, minute, occurredAtUtc)
+    private PlayerEvent(EntityId id, EntityId fixtureId, EntityId playerId, PlayerEventType type, int minute, DateTime occurredAtUtc) : base(id, fixtureId, minute, occurredAtUtc)
     {
         PlayerId = playerId;
-        Type = playerEventType;
+        Type = type;
     }
 
     public EntityId PlayerId { get; private set; }
