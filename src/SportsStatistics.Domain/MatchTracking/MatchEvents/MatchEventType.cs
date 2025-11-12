@@ -24,9 +24,11 @@ public class MatchEventType : Enumeration
         AwayGoal
     ];
 
-    public static MatchEventType FromName(string eventType)
+    public static int MaxLength => All.Max(type => type.Name.Length);
+ 
+    public static MatchEventType FromName(string name)
     {
-        return All.SingleOrDefault(t => string.Equals(t.Name, eventType, StringComparison.OrdinalIgnoreCase))
+        return All.SingleOrDefault(type => string.Equals(type.Name, name, StringComparison.OrdinalIgnoreCase))
                ?? Unknown;
     }
 }

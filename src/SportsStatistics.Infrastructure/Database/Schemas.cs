@@ -8,6 +8,7 @@ internal static class Schemas
 
     public static readonly SchemaMetadata Competitions = new(Schema, "Competitions");
     public static readonly SchemaMetadata Fixtures = new(Schema, "Fixtures");
+    public static readonly SchemaMetadata MatchEvents = new(Schema, "MatchEvents");
     public static readonly SchemaMetadata MigrationsHistory = new(Schema, "__EFMigrationsHistory");
     public static readonly SchemaMetadata Players = new(Schema, "Players");
     public static readonly SchemaMetadata Seasons = new(Schema, "Seasons");

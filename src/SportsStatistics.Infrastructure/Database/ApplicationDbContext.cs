@@ -2,6 +2,7 @@
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.Domain.MatchTracking.MatchEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
 
@@ -12,6 +13,8 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<Competition> Competitions { get; set; }
 
     public DbSet<Fixture> Fixtures { get; set; }
+
+    public DbSet<MatchEvent> MatchEvents { get; set; }
 
     public DbSet<Player> Players { get; set; }
 
