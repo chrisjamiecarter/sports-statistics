@@ -13,4 +13,5 @@ internal static class Schemas
     public static readonly SchemaMetadata PlayerEvents = new(Schema, "PlayerEvents");
     public static readonly SchemaMetadata Players = new(Schema, "Players");
     public static readonly SchemaMetadata Seasons = new(Schema, "Seasons");
+    public static readonly SchemaMetadata SubstitutionEvents = new(Schema, "SubstitutionEvents");
 }
