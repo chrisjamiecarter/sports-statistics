@@ -38,6 +38,8 @@ public sealed class PlayerEventType : Enumeration
         RedCard
     ];
 
+    public static int MaxLength => All.Max(type => type.Name.Length);
+
     public static PlayerEventType FromName(string eventType)
     {
         return All.SingleOrDefault(t => string.Equals(t.Name, eventType, StringComparison.OrdinalIgnoreCase))
