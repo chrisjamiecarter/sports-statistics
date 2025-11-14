@@ -17,6 +17,7 @@ public sealed class Fixture : Entity
 
     public EntityId CompetitionId { get; private set; }
 
+    // TODO: Make opponent a Value Object.
     public string Opponent { get; private set; } = string.Empty;
 
     public DateTime KickoffTimeUtc { get; private set; }

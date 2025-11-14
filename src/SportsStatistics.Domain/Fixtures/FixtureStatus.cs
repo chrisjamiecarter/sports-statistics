@@ -20,6 +20,8 @@ public sealed class FixtureStatus : Enumeration
         Cancelled,
     ];
 
+    public static int MaxLength => All.Max(type => type.Name.Length);
+
     public static FixtureStatus FromName(string status)
     {
         return All.SingleOrDefault(s => string.Equals(s.Name, status, StringComparison.OrdinalIgnoreCase))
