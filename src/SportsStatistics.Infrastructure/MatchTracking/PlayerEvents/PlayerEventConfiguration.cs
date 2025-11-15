@@ -36,7 +36,7 @@ internal sealed class PlayerEventConfiguration : IEntityTypeConfiguration<Player
                .IsRequired();
 
         builder.Property(playerEvent => playerEvent.Type)
-               .HasConversion(Converters.MatchEventTypeConverter)
+               .HasConversion(Converters.PlayerEventTypeConverter)
                .HasMaxLength(PlayerEventType.MaxLength)
                .IsRequired();
 
