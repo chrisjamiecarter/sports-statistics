@@ -1,0 +1,179 @@
+{
+  "Players": [
+    {
+      "Name": "John Smith",
+      "SquadNumber": 1,
+      "Nationality": "British",
+      "DateOfBirth": "1989-09-03",
+      "Position": "Goalkeeper"
+    },
+    {
+      "Name": "Luca Moretti",
+      "SquadNumber": 2,
+      "Nationality": "Italian",
+      "DateOfBirth": "1995-04-12",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Carlos Mendes",
+      "SquadNumber": 3,
+      "Nationality": "Portuguese",
+      "DateOfBirth": "1994-06-18",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Tobias Berg",
+      "SquadNumber": 4,
+      "Nationality": "Swedish",
+      "DateOfBirth": "1992-11-30",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Nathan Okoro",
+      "SquadNumber": 5,
+      "Nationality": "Nigerian",
+      "DateOfBirth": "1993-09-21",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Felix Muller",
+      "SquadNumber": 6,
+      "Nationality": "German",
+      "DateOfBirth": "1996-02-14",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Jean Dupont",
+      "SquadNumber": 7,
+      "Nationality": "French",
+      "DateOfBirth": "1997-07-08",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Mateo Rojas",
+      "SquadNumber": 8,
+      "Nationality": "Argentinian",
+      "DateOfBirth": "1995-03-25",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Declan Hughes",
+      "SquadNumber": 9,
+      "Nationality": "Irish",
+      "DateOfBirth": "1991-12-05",
+      "Position": "Attacker"
+    },
+    {
+      "Name": "Jasper van Dijk",
+      "SquadNumber": 10,
+      "Nationality": "Dutch",
+      "DateOfBirth": "1998-01-17",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Emil Petrov",
+      "SquadNumber": 11,
+      "Nationality": "Bulgarian",
+      "DateOfBirth": "1996-10-02",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Noah Tanaka",
+      "SquadNumber": 12,
+      "Nationality": "Japanese",
+      "DateOfBirth": "1999-05-19",
+      "Position": "Goalkeeper"
+    },
+    {
+      "Name": "Omar Al-Farsi",
+      "SquadNumber": 13,
+      "Nationality": "Moroccan",
+      "DateOfBirth": "1994-08-11",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Ethan McBride",
+      "SquadNumber": 14,
+      "Nationality": "Scottish",
+      "DateOfBirth": "1993-03-03",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Rafael Costa",
+      "SquadNumber": 15,
+      "Nationality": "Brazilian",
+      "DateOfBirth": "1997-09-09",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Ivan Novak",
+      "SquadNumber": 16,
+      "Nationality": "Croatian",
+      "DateOfBirth": "1992-06-27",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Samuel Lee",
+      "SquadNumber": 17,
+      "Nationality": "South Korean",
+      "DateOfBirth": "1998-12-22",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Leo Andersson",
+      "SquadNumber": 18,
+      "Nationality": "Norwegian",
+      "DateOfBirth": "1995-07-15",
+      "Position": "Attacker"
+    },
+    {
+      "Name": "Milan Djuric",
+      "SquadNumber": 19,
+      "Nationality": "Serbian",
+      "DateOfBirth": "1990-10-10",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Tomas Herrera",
+      "SquadNumber": 20,
+      "Nationality": "Mexican",
+      "DateOfBirth": "1996-01-29",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Benjamin Carter",
+      "SquadNumber": 21,
+      "Nationality": "Australian",
+      "DateOfBirth": "1993-04-04",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Ismael Haddad",
+      "SquadNumber": 22,
+      "Nationality": "Algerian",
+      "DateOfBirth": "1997-11-11",
+      "Position": "Goalkeeper"
+    },
+    {
+      "Name": "Victor Lindholm",
+      "SquadNumber": 23,
+      "Nationality": "Finnish",
+      "DateOfBirth": "1994-02-07",
+      "Position": "Defender"
+    },
+    {
+      "Name": "Andrei Popescu",
+      "SquadNumber": 24,
+      "Nationality": "Romanian",
+      "DateOfBirth": "1995-06-06",
+      "Position": "Midfielder"
+    },
+    {
+      "Name": "Dylan Brooks",
+      "SquadNumber": 25,
+      "Nationality": "Canadian",
+      "DateOfBirth": "1992-09-14",
+      "Position": "Attacker"
+    }
+  ]
+}

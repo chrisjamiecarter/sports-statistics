@@ -39,8 +39,9 @@ body {
 
 .body-content {
     align-self: stretch;
-    height: calc(100dvh - 86px) !important;
     display: flex;
+    height: calc(100dvh - 86px) !important;
+    overflow-y: auto;
 }
 
 .content {

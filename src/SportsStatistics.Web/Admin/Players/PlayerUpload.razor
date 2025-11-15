@@ -1,0 +1,142 @@
+﻿@using System.Text.Json
+<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+
+    <FluentLabel Typo="Typography.Header">
+        Upload Players
+    </FluentLabel>
+
+    <FluentSpacer />
+
+    @if (File is null)
+    {
+        <FluentInputFile Id="player-file-uploader"
+                         Mode="InputFileMode.SaveToTemporaryFolder"
+                         Multiple="false"
+                         MaximumFileCount="1"
+                         MaximumFileSize="@(10*1024*1024)"
+                         Accept="application/json"
+                         @bind-ProgressPercent="@ProgressPercent"
+                         OnCompleted="@OnCompletedAsync"
+                         Style="height: 300px;">
+            <ChildContent>
+                <label for="player-file-uploader">
+                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+                </label>
+
+                <div>
+                    Drag the <strong>.json</strong> file here you wish to upload,
+                    or <label for="player-file-uploader">browse</label> for it.
+                </div>
+            </ChildContent>
+        </FluentInputFile>
+    }
+    else
+    {
+        <FluentDataGrid Items="@Players.AsQueryable()" RowSize="DataGridRowSize.Medium">
+            <TemplateColumn Title="Squad Number">
+                <FluentNumberField @bind-Value="@context.SquadNumber" Min="1" />
+            </TemplateColumn>
+            <TemplateColumn Title="Name">
+                <FluentTextField @bind-Value="@context.Name" />
+            </TemplateColumn>
+            <TemplateColumn Title="Position" Style="overflow: visible;">
+                @* <FluentTextField @bind-Value="@context.Position" /> *@
+                <FluentSelect TOption=PositionOptionDto
+                                Items="PositionOptions"
+                                Placeholder="Select a position..."
+                                OptionText="(p => p.Name)"
+                                @bind-SelectedOption="@context.Position" />
+            </TemplateColumn>
+
+            <TemplateColumn Title="Nationality">
+                <FluentTextField @bind-Value="@context.Nationality" />
+            </TemplateColumn>
+            <TemplateColumn Align="Align.End">
+                <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" Title="Delete" />
+            </TemplateColumn>
+        </FluentDataGrid>
+
+        <FluentSpacer />
+
+        <FluentButton OnClick="@Reset">Upload Another</FluentButton>
+    }
+</FluentStack>
+
+@code
+{
+    private sealed record BulkPlayerUploadCollectionModel(List<BulkPlayerUploadModel> Players);
+    private sealed record BulkPlayerUploadModel(string? Name, int? SquadNumber, string? Nationality, DateTime? DateOfBirth, string? Position);
+    
+    private sealed class BulkPlayerUploadInputModel
+    {
+        public string? Name { get; set; }
+        public int? SquadNumber { get; set; }
+        public string? Nationality { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public PositionOptionDto? Position { get; set; }
+    } 
+
+    int ProgressPercent = 0;
+    FluentInputFileEventArgs? File;
+
+    private List<BulkPlayerUploadInputModel> Players { get; set; } = [];
+    private IEnumerable<PositionOptionDto> PositionOptions = Position.All.Select(p => p.ToDto());
+
+    private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
+    {
+        // Ensure we only upload one file at a time.
+        File = files.FirstOrDefault();
+
+        if (File is null || File.LocalFile is null || !File.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        using var stream = File.LocalFile.OpenRead();
+        using var reader = new StreamReader(stream);
+        var json = await reader.ReadToEndAsync();
+
+        try
+        {
+            var players = JsonSerializer.Deserialize<BulkPlayerUploadCollectionModel>(json, JsonSerializerOptions.Web);
+
+            if (players is not null)
+            {
+                // Populate a table?
+                Players = players.Players.Select(player => 
+                    new BulkPlayerUploadInputModel
+                    { 
+                        DateOfBirth = player.DateOfBirth,
+                        Name = player.Name,
+                        Nationality = player.Nationality,
+                        Position = Position.FromName(player.Position ?? string.Empty).ToDto(),
+                        SquadNumber = player.SquadNumber
+                    }
+                ).ToList();
+
+                await InvokeAsync(StateHasChanged);
+
+                // Validate?
+                // Upload?
+                // Start Again?
+            }
+
+        }
+        catch (Exception exception)
+        {
+            ToastService.ShowError(exception.Message);
+        }
+
+
+        // Delete the temporary file after.
+        File.LocalFile?.Delete();
+
+        await Task.CompletedTask;
+    }
+
+    private void Reset()
+    {
+        ProgressPercent = 0;
+        File = null;
+    }
+}

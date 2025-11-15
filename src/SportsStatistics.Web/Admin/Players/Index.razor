@@ -2,7 +2,7 @@
 
 <PageTitle>Players</PageTitle>
 
-<FluentCard>
+<FluentCard Style="overflow-y: auto;">
 
     <FluentBreadcrumb Style="margin-bottom: 1rem;">
         <FluentBreadcrumbItem Appearance="Appearance.Hypertext" Href="@Routes.Admin.Index">
@@ -12,32 +12,39 @@
             Players
         </FluentBreadcrumbItem>
     </FluentBreadcrumb>
-
-    @if (IsPlayerFormVisible)
+    
+    @switch (true)
     {
-        <PlayerForm OnCancel="HidePlayerForm" OnSubmit="OnSubmitAsync" SelectedPlayer="SelectedPlayer" />
+        case true when IsPlayerFormVisible:
+            <PlayerForm OnCancel="HidePlayerForm" OnSubmit="OnSubmitAsync" SelectedPlayer="SelectedPlayer" />
+            break;
+        case true when IsPlayerUploadVisible:
+            <PlayerUpload />
+            break;
+        default:
+            <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" />
+            break;
     }
-    else
-    {
-        <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" />
-    }
-
 </FluentCard>
 
 @code {
-    private enum PlayerFormMode
+    private enum ComponentVisibilityMode
     {
         Hide,
         Show,
     }
 
-    private PlayerFormMode FormMode { get; set; } = PlayerFormMode.Hide;
+    private ComponentVisibilityMode PlayerFormMode { get; set; } = ComponentVisibilityMode.Hide;
+
+    private ComponentVisibilityMode PlayerUploadMode { get; set; } = ComponentVisibilityMode.Show;
 
     private IQueryable<PlayerDto>? Players { get; set; }
 
     private PlayerDto? SelectedPlayer { get; set; }
 
-    private bool IsPlayerFormVisible => FormMode == PlayerFormMode.Show;
+    private bool IsPlayerFormVisible => PlayerFormMode == ComponentVisibilityMode.Show;
+
+    private bool IsPlayerUploadVisible => PlayerUploadMode == ComponentVisibilityMode.Show;
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,13 +54,13 @@
     private void HidePlayerForm()
     {
         SelectedPlayer = null;
-        FormMode = PlayerFormMode.Hide;
+        PlayerFormMode = ComponentVisibilityMode.Hide;
     }
 
     private void ShowPlayerForm(PlayerDto? player = null)
     {
         SelectedPlayer = player;
-        FormMode = PlayerFormMode.Show;
+        PlayerFormMode = ComponentVisibilityMode.Show;
     }
 
     private async Task LoadPlayersAsync()
