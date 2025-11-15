@@ -23,7 +23,7 @@
     else
     {
         <FluentDataGrid Items="@Players?.AsQueryable()" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
-            <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="true" IsDefaultSortColumn="true" />
+            <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="true" IsDefaultSortColumn="true" Title="Squad Number" />
             <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Position)" Sortable="true" />
             <PropertyColumn Property="@(p => p.Age)" Sortable="true" />
