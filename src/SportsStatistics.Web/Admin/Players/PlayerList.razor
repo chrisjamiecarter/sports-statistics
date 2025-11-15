@@ -7,9 +7,12 @@
 
         <FluentSpacer />
 
-        <FluentButton Appearance="Appearance.Accent" OnClick="Add">
-            Add Player
-        </FluentButton>
+        <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonAdd())" Appearance="Appearance.Accent" Title="Add Player" OnClick="Add" />
+
+        @if (Players?.Any() is false)
+        {
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.ArrowUpload())" Appearance="Appearance.Accent" Title="Upload Players" />
+        }
     </FluentStack>
 
 
