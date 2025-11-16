@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\SportsStatistics.Infrastructure\SportsStatistics.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Moq" />
     <Using Include="Shouldly" />
     <Using Include="Xunit" />
