@@ -16,6 +16,8 @@ public sealed class CompetitionType : Enumeration
         Cup,
     ];
 
+    public static int MaxLength => All.Max(type => type.Name.Length);
+
     public static CompetitionType FromName(string competitionName)
         => All.SingleOrDefault(p => string.Equals(p.Name, competitionName, StringComparison.OrdinalIgnoreCase))
         ?? Unknown;
