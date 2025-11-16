@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.SharedKernel;
+using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Competitions;
 
@@ -16,12 +16,12 @@ internal sealed class CompetitionConfiguration : IEntityTypeConfiguration<Compet
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id)
-               .HasConversion(id => id.Value, value => EntityId.Create(value))
+               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(f => f.SeasonId)
-               .HasConversion(id => id.Value, value => EntityId.Create(value))
+               .HasConversion(Converters.EntityIdConverter)
                .IsRequired();
 
         builder.Property(p => p.Name)
@@ -29,8 +29,8 @@ internal sealed class CompetitionConfiguration : IEntityTypeConfiguration<Compet
                .IsRequired();
 
         builder.Property(p => p.Type)
-               .HasConversion(v => v.Name, v => CompetitionType.FromName(v))
-               .HasMaxLength(CompetitionType.All.Max(t => t.Name.Length))
+               .HasConversion(Converters.CompetitionTypeConverter)
+               .HasMaxLength(CompetitionType.MaxLength)
                .IsRequired();
 
         builder.HasOne<Season>()
