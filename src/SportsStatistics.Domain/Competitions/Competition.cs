@@ -13,6 +13,7 @@ public sealed class Competition : Entity
 
     public EntityId SeasonId { get; private set; }
 
+    // TODO: Make Name value object?
     public string Name { get; private set; } = string.Empty;
 
     public CompetitionType Type { get; private set; } = CompetitionType.Unknown;

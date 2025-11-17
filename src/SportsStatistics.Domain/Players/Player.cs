@@ -13,11 +13,13 @@ public sealed class Player : Entity
         Position = position;
     }
 
+    // TODO: Value object for Name?
     public string Name { get; private set; } = string.Empty;
 
     // TODO: player may not have a squad number assigned.
     public int SquadNumber { get; private set; }
 
+    // TODO: Value object for Nationality?
     public string Nationality { get; private set; } = string.Empty;
 
     public DateOnly DateOfBirth { get; private set; }
