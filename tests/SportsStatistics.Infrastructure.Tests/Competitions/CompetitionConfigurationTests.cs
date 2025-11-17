@@ -17,7 +17,7 @@ public class CompetitionConfigurationTests
         modelBuilder.ApplyConfiguration(new CompetitionConfiguration());
 
         _entity = modelBuilder.Model.FindEntityType(typeof(Competition))
-            ?? throw new InvalidOperationException("Unable to find 'Competition' entity type.");
+            ?? throw new InvalidOperationException($"Unable to find '{nameof(Competition)}' entity type.");
     }
 
     [Fact]
@@ -107,6 +107,7 @@ public class CompetitionConfigurationTests
         // Arrange.
         var expectedValueConverter = Converters.CompetitionTypeConverter;
         var expectedMaxLength = CompetitionType.MaxLength;
+        var expectedIsNullable = false;
 
         // Act.
         var property = _entity.FindProperty(nameof(Competition.Type));
@@ -115,10 +116,11 @@ public class CompetitionConfigurationTests
         property.ShouldNotBeNull();
         property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.GetMaxLength().ShouldBe(expectedMaxLength);
+        property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
     [Fact]
-    public void CompetitionConfiguration_ShouldConfigureSeasonIdForeignKey()
+    public void CompetitionConfiguration_ShouldConfigureSeasonIdAsForeignKey()
     {
         // Arrange.
         var expected = nameof(Competition.SeasonId);
