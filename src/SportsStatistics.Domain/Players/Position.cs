@@ -20,6 +20,8 @@ public sealed class Position : Enumeration
         Attacker
     ];
 
+    public static int MaxLength => All.Max(p => p.Name.Length);
+
     public static Position FromName(string position)
     {
         return All.SingleOrDefault(p => string.Equals(p.Name, position, StringComparison.OrdinalIgnoreCase))

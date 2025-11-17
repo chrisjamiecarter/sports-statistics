@@ -18,6 +18,8 @@ public sealed class FixtureLocation : Enumeration
         Neutral,
     ];
 
+    public static int MaxLength => All.Max(type => type.Name.Length);
+
     public static FixtureLocation FromName(string location)
     {
         return All.SingleOrDefault(l => string.Equals(l.Name, location, StringComparison.OrdinalIgnoreCase))
