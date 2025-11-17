@@ -1,13 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SportsStatistics.Domain.Fixtures;
-using SportsStatistics.Domain.MatchTracking.MatchEvents;
 using SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.Infrastructure.Database.Converters;
 
-namespace SportsStatistics.Infrastructure.MatchTracking.MatchEvents;
+namespace SportsStatistics.Infrastructure.MatchTracking.SubstitutionEvents;
 
 internal sealed class SubstitutionEventConfiguration : IEntityTypeConfiguration<SubstitutionEvent>
 {
@@ -30,6 +28,14 @@ internal sealed class SubstitutionEventConfiguration : IEntityTypeConfiguration<
                .IsRequired();
 
         builder.Property(substitutionEvent => substitutionEvent.OccurredAtUtc)
+               .IsRequired();
+
+        builder.Property(substitutionEvent => substitutionEvent.PlayerOutId)
+               .HasConversion(Converters.EntityIdConverter)
+               .IsRequired();
+
+        builder.Property(substitutionEvent => substitutionEvent.PlayerInId)
+               .HasConversion(Converters.EntityIdConverter)
                .IsRequired();
 
         builder.HasOne<Player>()
