@@ -32,8 +32,8 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
                .IsRequired();
 
         builder.Property(fixture => fixture.Location)
-               .HasConversion(v => v.Name, v => FixtureLocation.FromName(v))
-               .HasMaxLength(FixtureLocation.All.Max(s => s.Name.Length))
+               .HasConversion(Converters.FixtureLocationConverter)
+               .HasMaxLength(FixtureLocation.MaxLength)
                .IsRequired();
 
         builder.OwnsOne(fixture => fixture.Score, score =>
