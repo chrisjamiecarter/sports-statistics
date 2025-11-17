@@ -13,28 +13,28 @@ internal sealed class CompetitionConfiguration : IEntityTypeConfiguration<Compet
     {
         builder.ToTable(Schemas.Competitions.Table, Schemas.Competitions.Schema);
 
-        builder.HasKey(p => p.Id);
+        builder.HasKey(competition => competition.Id);
 
-        builder.Property(p => p.Id)
+        builder.Property(competition => competition.Id)
                .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
-        builder.Property(f => f.SeasonId)
+        builder.Property(competition => competition.SeasonId)
                .HasConversion(Converters.EntityIdConverter)
                .IsRequired();
 
-        builder.Property(p => p.Name)
+        builder.Property(competition => competition.Name)
                .HasMaxLength(50)
                .IsRequired();
 
-        builder.Property(p => p.Type)
+        builder.Property(competition => competition.Type)
                .HasConversion(Converters.CompetitionTypeConverter)
                .HasMaxLength(CompetitionType.MaxLength)
                .IsRequired();
 
         builder.HasOne<Season>()
                .WithMany()
-               .HasForeignKey(p => p.SeasonId);
+               .HasForeignKey(competition => competition.SeasonId);
     }
 }
