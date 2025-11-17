@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.SharedKernel;
+using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Players;
 
@@ -12,32 +12,33 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
     {
         builder.ToTable(Schemas.Players.Table, Schemas.Players.Schema);
 
-        builder.HasKey(p => p.Id);
+        builder.HasKey(player => player.Id);
 
-        builder.Property(p => p.Id)
-               .HasConversion(id => id.Value, value => EntityId.Create(value))
+        builder.Property(player => player.Id)
+               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
-        builder.Property(p => p.Name)
+        builder.Property(player => player.Name)
                .HasMaxLength(100)
                .IsRequired();
 
-        builder.Property(p => p.SquadNumber)
+        builder.Property(player => player.SquadNumber)
                .IsRequired();
 
-        builder.Property(p => p.Nationality)
+        builder.Property(player => player.Nationality)
                .HasMaxLength(100)
                .IsRequired();
 
-        builder.Property(p => p.DateOfBirth)
+        builder.Property(player => player.DateOfBirth)
                .HasColumnType("date")
                .IsRequired();
 
-        builder.Property(p => p.Position)
-               .HasConversion(v => v.Name, v => Position.FromName(v))
+        builder.Property(player => player.Position)
+               .HasConversion(Converters.PlayerPositionConverter)
+               .HasMaxLength(Position.MaxLength)
                .IsRequired();
 
-        builder.Ignore(p => p.Age);
+        builder.Ignore(player => player.Age);
     }
 }

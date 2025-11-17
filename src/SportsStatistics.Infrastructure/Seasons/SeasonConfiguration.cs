@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.SharedKernel;
+using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Seasons;
 
@@ -12,21 +12,21 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
     {
         builder.ToTable(Schemas.Seasons.Table, Schemas.Seasons.Schema);
 
-        builder.HasKey(p => p.Id);
+        builder.HasKey(season => season.Id);
 
-        builder.Property(p => p.Id)
-               .HasConversion(id => id.Value, value => EntityId.Create(value))
+        builder.Property(season => season.Id)
+               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
-        builder.Property(p => p.StartDate)
+        builder.Property(season => season.StartDate)
                .HasColumnType("date")
                .IsRequired();
 
-        builder.Property(p => p.EndDate)
+        builder.Property(season => season.EndDate)
                .HasColumnType("date")
                .IsRequired();
 
-        builder.Ignore(p => p.Name);
+        builder.Ignore(season => season.Name);
     }
 }
