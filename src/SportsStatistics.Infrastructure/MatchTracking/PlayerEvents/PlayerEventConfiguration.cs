@@ -6,7 +6,7 @@ using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.Infrastructure.Database.Converters;
 
-namespace SportsStatistics.Infrastructure.MatchTracking.MatchEvents;
+namespace SportsStatistics.Infrastructure.MatchTracking.PlayerEvents;
 
 internal sealed class PlayerEventConfiguration : IEntityTypeConfiguration<PlayerEvent>
 {
