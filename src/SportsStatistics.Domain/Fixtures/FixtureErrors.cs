@@ -31,4 +31,36 @@ public static class FixtureErrors
     public static Error NotUpdated(Guid id) => Error.Failure(
         "Fixture.NotUpdated",
         $"The fixture with the Id = '{id}' was not updated.");
+
+    public static class KickoffTimeUtc
+    {
+        public static Error NullOrEmpty => Error.Validation(
+            "Fixture.Opponent.KickoffTimeUtc",
+            "The fixture kick off time cannot be null or empty.");
+    }
+
+    public static class Location
+    {
+        public static Error Unknown => Error.Validation(
+            "Fixture.Location.Unknown",
+            "The fixture location cannot be inferred from the name.");
+    }
+
+    public static class Opponent
+    {
+        public static Error ExceedsMaxLength => Error.Validation(
+            "Fixture.Opponent.ExceedsMaxLength",
+            "The fixture opponent exceeds the maximum allowed length.");
+
+        public static Error NullOrEmpty => Error.Validation(
+            "Fixture.Opponent.NullOrEmpty",
+            "The fixture opponent cannot be null or empty.");
+    }
+
+    public static class Status
+    {
+        public static Error Unknown => Error.Validation(
+            "Fixture.Status.Unknown",
+            "The fixture status cannot be inferred from the name.");
+    }
 }

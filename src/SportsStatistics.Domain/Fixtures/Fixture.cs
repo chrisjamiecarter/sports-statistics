@@ -1,85 +1,91 @@
-﻿using SportsStatistics.Domain.Competitions;
-using SportsStatistics.SharedKernel;
+﻿using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Fixtures;
 
 public sealed class Fixture : Entity
 {
-    private Fixture(EntityId id, EntityId competitionId, string opponent, DateTime kickoffTimeUtc, FixtureLocation location, FixtureStatus status) : base(id)
+    private Fixture(Guid competitionId,
+                    Opponent opponent,
+                    KickoffTimeUtc kickoffTimeUtc,
+                    Location location,
+                    Status status)
+        : base(Guid.CreateVersion7())
     {
         CompetitionId = competitionId;
         Opponent = opponent;
         KickoffTimeUtc = kickoffTimeUtc;
         Location = location;
-        Score = FixtureScore.Create(0, 0);
+        Score = Score.Create(0, 0).Value;
         Status = status;
     }
 
-    public EntityId CompetitionId { get; private set; }
+    /// <summary>
+    /// Initialises a new instance of the <see cref="Fixture"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required for Entity Framework Core.
+    /// </remarks>
+    private Fixture() { }
 
-    // TODO: Make opponent a Value Object.
-    public string Opponent { get; private set; } = string.Empty;
+    public Guid CompetitionId { get; private set; } = default!;
 
-    public DateTime KickoffTimeUtc { get; private set; }
+    public Opponent Opponent { get; private set; } = default!;
 
-    public FixtureLocation Location { get; private set; } = FixtureLocation.Unknown;
+    public KickoffTimeUtc KickoffTimeUtc { get; private set; } = default!;
 
-    public FixtureScore Score { get; private set; }
+    public Location Location { get; private set; } = default!;
 
-    public FixtureStatus Status { get; private set; } = FixtureStatus.Unknown;
+    public Score Score { get; private set; } = default!;
 
-    public static Fixture Create(EntityId competitionId, string opponent, DateTime kickoffTimeUtc, string fixtureLocationName)
+    public Status Status { get; private set; } = default!;
+
+    public static Fixture Create(Guid competitionId, Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
     {
-        var fixtureLocation = FixtureLocation.FromName(fixtureLocationName);
-
-        ValidateAndThrow(opponent, fixtureLocation);
-
-        return new Fixture(EntityId.Create(), competitionId, opponent, kickoffTimeUtc, fixtureLocation, FixtureStatus.Scheduled);
+        return new Fixture(competitionId, opponent, kickoffTimeUtc, location, Status.Scheduled);
     }
 
-    public bool Update(string opponent, DateTime kickoffTimeUtc, string fixtureLocationName)
+    public bool ChangeOpponent(Opponent opponent)
     {
-        var fixtureLocation = FixtureLocation.FromName(fixtureLocationName);
-
-        ValidateAndThrow(opponent, fixtureLocation);
-        
-        var isDirty = false;
-
-        if (Opponent != opponent)
+        if (Opponent == opponent)
         {
-            Opponent = opponent;
-            isDirty = true;
+            return false;
         }
 
-        if (KickoffTimeUtc != kickoffTimeUtc)
-        {
-            KickoffTimeUtc = kickoffTimeUtc;
-            isDirty = true;
-        }
+        // TODO: Raise Domain Event.
+        //string previousOpponent = Opponent;
+        Opponent = opponent;
+        //Raise(new FixtureOpponentChangedDomainEvent(this, previousOpponent));
 
-        if (Location != fixtureLocation)
-        {
-            Location = fixtureLocation;
-            isDirty = true;
-        }
-
-        return isDirty;
+        return true;
     }
 
-    private static void ValidateAndThrow(string opponent, FixtureLocation location)
+    public bool ChangeKickoffTimeUtc(KickoffTimeUtc kickoffTimeUtc)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(opponent, nameof(opponent));
-        ArgumentNullException.ThrowIfNull(location, nameof(location));
-        //ArgumentNullException.ThrowIfNull(status, nameof(status));
-
-        if (location == FixtureLocation.Unknown)
+        if (KickoffTimeUtc == kickoffTimeUtc)
         {
-            throw new ArgumentException("A fixture cannot have a location of unknown.", nameof(location));
+            return false;
         }
 
-        //if (status == FixtureStatus.Unknown)
-        //{
-        //    throw new ArgumentException("A fixture cannot have a status of unknown.", nameof(status));
-        //}
+        // TODO: Raise Domain Event.
+        //string previousKickoffTimeUtc = KickoffTimeUtc;
+        KickoffTimeUtc = kickoffTimeUtc;
+        //Raise(new FixtureKickoffTimeUtcChangedDomainEvent(this, previousKickoffTimeUtc));
+
+        return true;
+    }
+
+    public bool ChangeLocation(Location location)
+    {
+        if (Location == location)
+        {
+            return false;
+        }
+
+        // TODO: Raise Domain Event.
+        //string previousLocation = Location;
+        Location = location;
+        //Raise(new FixtureLocationChangedDomainEvent(this, previousLocation));
+
+        return true;
     }
 }
