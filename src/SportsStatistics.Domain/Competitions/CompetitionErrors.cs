@@ -19,4 +19,22 @@ public static class CompetitionErrors
     public static Error NotUpdated(Guid id) => Error.Failure(
         "Competition.NotUpdated",
         $"The competition with the Id = '{id}' was not updated.");
+
+    public static class Name
+    {
+        public static Error ExceedsMaxLength => Error.Validation(
+            "Competition.Name.ExceedsMaxLength",
+            "The competition name exceeds the maximum allowed length.");
+
+        public static Error NullOrEmpty => Error.Validation(
+            "Competition.Name.NullOrEmpty",
+            "The competition name cannot be null or empty.");
+    }
+
+    public static class Format
+    {
+        public static Error Unknown => Error.Validation(
+            "Competition.Format.Unknown",
+            "The competition format cannot be inferred from the name.");
+    }
 }

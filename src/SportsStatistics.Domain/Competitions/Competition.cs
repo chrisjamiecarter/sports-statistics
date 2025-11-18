@@ -4,45 +4,39 @@ namespace SportsStatistics.Domain.Competitions;
 
 public sealed class Competition : Entity
 {
-    private Competition(EntityId id, EntityId seasonId, string name, CompetitionType type) : base(id)
+    private Competition(Guid seasonId, Name name, Format format) : base(Guid.CreateVersion7())
     {
         SeasonId = seasonId;
         Name = name;
-        Type = type;
+        Format = format;
     }
 
-    public EntityId SeasonId { get; private set; }
+    /// <summary>
+    /// Initialises a new instance of the <see cref="Competition"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required for Entity Framework Core.
+    /// </remarks>
+    private Competition() { }
 
-    // TODO: Make Name value object?
-    public string Name { get; private set; } = string.Empty;
+    public Guid SeasonId { get; private set; } = default!;
 
-    public CompetitionType Type { get; private set; } = CompetitionType.Unknown;
+    public Name Name { get; private set; } = default!;
 
-    public static Competition Create(EntityId seasonId, string name, string competitionTypeName)
+    public Format Format { get; private set; } = default!;
+
+    public static Competition Create(Guid seasonId, Name name, Format format)
     {
-        var competitionType = CompetitionType.FromName(competitionTypeName);
-
-        ValidateAndThrow(name, competitionType);
-
-        return new Competition(EntityId.Create(), seasonId, name, competitionType);
+        return new Competition(seasonId, name, format);
     }
 
-    public void Update(string name, string competitionTypeName)
+    public void ChangeName(Name name)
     {
-        var competitionType = CompetitionType.FromName(competitionTypeName);
-
-        ValidateAndThrow(name, competitionType);
-
         Name = name;
-        Type = competitionType;
     }
 
-    private static void ValidateAndThrow(string name, CompetitionType type)
+    public void ChangeFormat(Format format)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
-        if (type == CompetitionType.Unknown)
-        {
-            throw new ArgumentException("A competition cannot have a type of unknown.", nameof(type));
-        }
+        Format = format;
     }
 }
