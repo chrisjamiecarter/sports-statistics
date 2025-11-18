@@ -4,10 +4,10 @@ namespace SportsStatistics.Domain.Fixtures;
 
 public sealed class Location : Enumeration
 {
-    private static readonly Location Unknown = new(0, nameof(Unknown));
-    private static readonly Location Home = new(1, nameof(Home));
-    private static readonly Location Away = new(2, nameof(Away));
-    private static readonly Location Neutral = new(3, nameof(Neutral));
+    public static readonly Location Unknown = new(0, nameof(Unknown));
+    public static readonly Location Home = new(1, nameof(Home));
+    public static readonly Location Away = new(2, nameof(Away));
+    public static readonly Location Neutral = new(3, nameof(Neutral));
 
     private Location(int id, string name) : base(id, name) { }
 

@@ -16,18 +16,18 @@ public sealed record Name
     public static implicit operator string(Name? name) =>
         name is not null ? name.Value : throw new ArgumentNullException(nameof(name));
 
-    public static Result<Name> Create(string? name)
+    public static Result<Name> Create(string? value)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(value))
         {
             return CompetitionErrors.Name.NullOrEmpty;
         }
 
-        if (name.Length > MaxLength)
+        if (value.Length > MaxLength)
         {
             return CompetitionErrors.Name.ExceedsMaxLength;
         }
 
-        return new Name(name);
+        return new Name(value);
     }
 }

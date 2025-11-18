@@ -4,7 +4,10 @@ namespace SportsStatistics.Domain.Competitions;
 
 public sealed class Competition : Entity
 {
-    private Competition(Guid seasonId, Name name, Format format) : base(Guid.CreateVersion7())
+    private Competition(Guid seasonId,
+                        Name name,
+                        Format format)
+        : base(Guid.CreateVersion7())
     {
         SeasonId = seasonId;
         Name = name;
@@ -30,13 +33,33 @@ public sealed class Competition : Entity
         return new Competition(seasonId, name, format);
     }
 
-    public void ChangeName(Name name)
+    public bool ChangeName(Name name)
     {
+        if (Name == name)
+        {
+            return false;
+        }
+
+        // TODO: Raise Domain Event.
+        //string previousName = Name;
         Name = name;
+        //Raise(new CompetitionNameChangedDomainEvent(this, previousName));
+
+        return true;
     }
 
-    public void ChangeFormat(Format format)
+    public bool ChangeFormat(Format format)
     {
+        if (Format == format)
+        {
+            return false;
+        }
+
+        // TODO: Raise Domain Event.
+        //string previousFormat = Format;
         Format = format;
+        //Raise(new CompetitionFormatChangedDomainEvent(this, previousFormat));
+
+        return true;
     }
 }
