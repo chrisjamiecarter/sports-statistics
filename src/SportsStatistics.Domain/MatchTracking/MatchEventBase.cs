@@ -1,19 +1,30 @@
 ﻿using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Domain.MatchTracking.MatchEvents;
+namespace SportsStatistics.Domain.MatchTracking;
 
 public abstract class MatchEventBase : Entity
 {
-    protected MatchEventBase(EntityId id, EntityId fixtureId, int minute, DateTime occurredAtUtc) : base(id)
+    protected MatchEventBase(Guid fixtureId,
+                             Minute minute,
+                             DateTime occurredAtUtc)
+        : base(Guid.CreateVersion7())
     {
         FixtureId = fixtureId;
         Minute = minute;
         OccurredAtUtc = occurredAtUtc;
     }
 
-    public EntityId FixtureId { get; private set; }
+    /// <summary>
+    /// Initialises a new instance of the <see cref="MatchEventBase"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required for Entity Framework Core.
+    /// </remarks>
+    protected MatchEventBase() { }
 
-    public int Minute { get; private set; }
+    public Guid FixtureId { get; private set; } = default!;
 
-    public DateTime OccurredAtUtc { get; private set; }
+    public Minute Minute { get; private set; } = default!;
+
+    public DateTime OccurredAtUtc { get; private set; } = default!;
 }

@@ -1,24 +1,32 @@
-﻿using SportsStatistics.Domain.MatchTracking.MatchEvents;
-using SportsStatistics.SharedKernel;
-
-namespace SportsStatistics.Domain.MatchTracking.PlayerEvents;
+﻿namespace SportsStatistics.Domain.MatchTracking.PlayerEvents;
 
 public sealed class PlayerEvent : MatchEventBase
 {
-    private PlayerEvent(EntityId id, EntityId fixtureId, EntityId playerId, PlayerEventType type, int minute, DateTime occurredAtUtc) : base(id, fixtureId, minute, occurredAtUtc)
+    private PlayerEvent(Guid fixtureId,
+                        Guid playerId,
+                        PlayerEventType type,
+                        Minute minute,
+                        DateTime occurredAtUtc)
+        : base(fixtureId, minute, occurredAtUtc)
     {
         PlayerId = playerId;
         Type = type;
     }
 
-    public EntityId PlayerId { get; private set; }
+    /// <summary>
+    /// Initialises a new instance of the <see cref="PlayerEvent"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required for Entity Framework Core.
+    /// </remarks>
+    private PlayerEvent() { }
 
-    public PlayerEventType Type { get; private set; } = PlayerEventType.Unknown;
+    public Guid PlayerId { get; private set; } = default!;
 
-    public static PlayerEvent Create(EntityId fixtureId, EntityId playerId, string playerEventTypeName, int minute, DateTime occurredAtUtc)
+    public PlayerEventType Type { get; private set; } = default!;
+
+    public static PlayerEvent Create(Guid fixtureId, Guid playerId, PlayerEventType playerEventType, Minute minute, DateTime occurredAtUtc)
     {
-        var playerEventType = PlayerEventType.FromName(playerEventTypeName);
-
-        return new(EntityId.Create(), fixtureId, playerId, playerEventType, minute, occurredAtUtc);
+        return new(fixtureId, playerId, playerEventType, minute, occurredAtUtc);
     }
 }

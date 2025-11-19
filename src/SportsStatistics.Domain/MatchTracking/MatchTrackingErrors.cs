@@ -1,0 +1,52 @@
+﻿using SportsStatistics.SharedKernel;
+
+namespace SportsStatistics.Domain.MatchTracking;
+
+public static class MatchTrackingErrors
+{
+    public static class MatchEventType
+    {
+        public static Error Unknown => Error.Validation(
+            "MatchTracking.MatchEventType.Unknown",
+            "The match event type cannot be inferred from the name.");
+    }
+
+    public static class Minute
+    {
+        public static Error BelowMinValue => Error.Validation(
+            "MatchTracking.Minute.BelowMinValue",
+            "The match minute is below the minimum allowed value.");
+
+        public static Error NullOrEmpty => Error.Validation(
+            "MatchTracking.Minute.NullOrEmpty",
+            "The match minute cannot be null or empty.");
+    }
+
+    public static class PlayerEventType
+    {
+        public static Error Unknown => Error.Validation(
+            "MatchTracking.PlayerEventType.Unknown",
+            "The player event type cannot be inferred from the name.");
+    }
+
+    public static class SubstitutionEvent
+    {
+        public static Error SamePlayer => Error.Validation(
+            "MatchTracking.SubstitutionEvent.SamePlayer",
+            "The player being substituted out cannot be the same as the player being substituted in.");
+
+        public static class PlayerOutId
+        {
+            public static Error NullOrEmpty => Error.Validation(
+                "MatchTracking.SubstitutionEvent.PlayerOutId.NullOrEmpty",
+                "The id of the player being substituted out cannot be null or empty.");
+        }
+
+        public static class PlayerInId
+        {
+            public static Error NullOrEmpty => Error.Validation(
+                "MatchTracking.SubstitutionEvent.PlayerInId.NullOrEmpty",
+                "The id of the player being substituted in cannot be null or empty.");
+        }
+    }
+}

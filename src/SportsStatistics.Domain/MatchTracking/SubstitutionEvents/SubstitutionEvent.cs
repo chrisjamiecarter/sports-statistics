@@ -1,22 +1,20 @@
-﻿using SportsStatistics.Domain.MatchTracking.MatchEvents;
-using SportsStatistics.SharedKernel;
-
-namespace SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
+﻿namespace SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 
 public class SubstitutionEvent : MatchEventBase
 {
-    private SubstitutionEvent(EntityId id, EntityId fixtureId, EntityId playerOutId, EntityId playerInId, int minute, DateTime occurredAtUtc) : base(id, fixtureId, minute, occurredAtUtc)
+    private SubstitutionEvent(Guid fixtureId,
+                              Substitution substitution,
+                              Minute minute,
+                              DateTime occurredAtUtc)
+        : base(fixtureId, minute, occurredAtUtc)
     {
-        PlayerOutId = playerOutId;
-        PlayerInId = playerInId;
+        Substitution = substitution;
     }
 
-    public EntityId PlayerOutId { get; private set; }
+    public Substitution Substitution { get; private set; } = default!;
 
-    public EntityId PlayerInId { get; private set; }
-
-    public static SubstitutionEvent Create(EntityId fixtureId, EntityId playerOutId, EntityId playerInId, int minute, DateTime occurredAtUtc)
+    public static SubstitutionEvent Create(Guid fixtureId, Substitution substitution, Minute minute, DateTime occurredAtUtc)
     {
-        return new SubstitutionEvent(EntityId.Create(), fixtureId, playerOutId, playerInId, minute, occurredAtUtc);
+        return new(fixtureId, substitution, minute, occurredAtUtc);
     }
 }

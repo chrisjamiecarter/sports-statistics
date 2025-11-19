@@ -12,7 +12,7 @@ public class MatchEventType : Enumeration
     public static readonly MatchEventType HomeGoal = new(5, nameof(HomeGoal));
     public static readonly MatchEventType AwayGoal = new(6, nameof(AwayGoal));
 
-    public MatchEventType(int id, string name) : base(id, name) { }
+    private MatchEventType(int id, string name) : base(id, name) { }
 
     public static IReadOnlyCollection<MatchEventType> All =>
     [
@@ -25,10 +25,18 @@ public class MatchEventType : Enumeration
     ];
 
     public static int MaxLength => All.Max(type => type.Name.Length);
- 
-    public static MatchEventType FromName(string name)
+
+    public static Result<MatchEventType> Create(string value)
     {
-        return All.SingleOrDefault(type => string.Equals(type.Name, name, StringComparison.OrdinalIgnoreCase))
-               ?? Unknown;
+        var resolvedValue =
+            All.SingleOrDefault(type => string.Equals(type.Name, value, StringComparison.OrdinalIgnoreCase))
+            ?? Unknown;
+
+        if (resolvedValue == Unknown)
+        {
+            return MatchTrackingErrors.MatchEventType.Unknown;
+        }
+
+        return resolvedValue;
     }
 }

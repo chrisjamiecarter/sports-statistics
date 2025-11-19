@@ -40,9 +40,17 @@ public sealed class PlayerEventType : Enumeration
 
     public static int MaxLength => All.Max(type => type.Name.Length);
 
-    public static PlayerEventType FromName(string eventType)
+    public static Result<PlayerEventType> Create(string value)
     {
-        return All.SingleOrDefault(t => string.Equals(t.Name, eventType, StringComparison.OrdinalIgnoreCase))
-               ?? Unknown;
+        var resolvedValue =
+            All.SingleOrDefault(type => string.Equals(type.Name, value, StringComparison.OrdinalIgnoreCase))
+            ?? Unknown;
+
+        if (resolvedValue == Unknown)
+        {
+            return MatchTrackingErrors.PlayerEventType.Unknown;
+        }
+
+        return resolvedValue;
     }
 }

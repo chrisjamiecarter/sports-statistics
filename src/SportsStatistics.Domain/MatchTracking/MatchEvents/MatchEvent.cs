@@ -1,20 +1,28 @@
-﻿using SportsStatistics.SharedKernel;
-
-namespace SportsStatistics.Domain.MatchTracking.MatchEvents;
+﻿namespace SportsStatistics.Domain.MatchTracking.MatchEvents;
 
 public sealed class MatchEvent : MatchEventBase
 {
-    private MatchEvent(EntityId id, EntityId fixtureId, MatchEventType type, int minute, DateTime occurredAtUtc) : base(id, fixtureId, minute, occurredAtUtc)
+    private MatchEvent(Guid fixtureId,
+                       MatchEventType type,
+                       Minute minute,
+                       DateTime occurredAtUtc)
+        : base(fixtureId, minute, occurredAtUtc)
     {
         Type = type;
     }
 
-    public MatchEventType Type { get; private set; } = MatchEventType.Unknown;
+    /// <summary>
+    /// Initialises a new instance of the <see cref="MatchEvent"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required for Entity Framework Core.
+    /// </remarks>
+    private MatchEvent() { }
 
-    public static MatchEvent Create(EntityId fixtureId, string matchEventTypeName, int minute, DateTime occurredAtUtc)
+    public MatchEventType Type { get; private set; } = default!;
+
+    public static MatchEvent Create(Guid fixtureId, MatchEventType matchEventType, Minute minute, DateTime occurredAtUtc)
     {
-        var matchEventType = MatchEventType.FromName(matchEventTypeName);
-
-        return new(EntityId.Create(), fixtureId, matchEventType, minute, occurredAtUtc);
+        return new(fixtureId, matchEventType, minute, occurredAtUtc);
     }
 }
