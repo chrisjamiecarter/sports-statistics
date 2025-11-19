@@ -1,4 +1,5 @@
-﻿using SportsStatistics.SharedKernel;
+﻿using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Players;
 
@@ -22,9 +23,17 @@ public sealed class Position : Enumeration
 
     public static int MaxLength => All.Max(p => p.Name.Length);
 
-    public static Position FromName(string position)
+    public static Result<Position> Create(string value)
     {
-        return All.SingleOrDefault(p => string.Equals(p.Name, position, StringComparison.OrdinalIgnoreCase))
-               ?? Unknown;
+        var parsedPosition =
+            All.SingleOrDefault(position => string.Equals(position.Name, value, StringComparison.OrdinalIgnoreCase))
+            ?? Unknown;
+
+        if (parsedPosition == Unknown)
+        {
+            return PlayerErrors.Position.Unknown;
+        }
+
+        return parsedPosition;
     }
 }

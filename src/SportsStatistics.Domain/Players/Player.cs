@@ -4,7 +4,12 @@ namespace SportsStatistics.Domain.Players;
 
 public sealed class Player : Entity
 {
-    private Player(EntityId id, string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position) : base(id)
+    private Player(Name name,
+                   SquadNumber squadNumber,
+                   Nationality nationality,
+                   DateOfBirth dateOfBirth,
+                   Position position)
+        : base(Guid.CreateVersion7())
     {
         Name = name;
         SquadNumber = squadNumber;
@@ -13,52 +18,115 @@ public sealed class Player : Entity
         Position = position;
     }
 
-    // TODO: Value object for Name?
-    public string Name { get; private set; } = string.Empty;
+    /// <summary>
+    /// Initialises a new instance of the <see cref="Player"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required for Entity Framework Core.
+    /// </remarks>
+    private Player() { }
 
-    // TODO: player may not have a squad number assigned.
-    public int SquadNumber { get; private set; }
+    public Name Name { get; private set; } = default!;
 
-    // TODO: Value object for Nationality?
-    public string Nationality { get; private set; } = string.Empty;
+    public SquadNumber SquadNumber { get; private set; } = default!;
 
-    public DateOnly DateOfBirth { get; private set; }
+    public Nationality Nationality { get; private set; } = default!;
 
-    public Position Position { get; private set; } = Position.Unknown;
+    public DateOfBirth DateOfBirth { get; private set; } = default!;
 
-    public int Age => DateOfBirth.CalculateAge();
+    public Position Position { get; private set; } = default!;
 
-    public static Player Create(string name, int squadNumber, string nationality, DateOnly dateOfBirth, string positionName)
+    public int Age => DateOfBirth.Value.CalculateAge();
+
+    public static Player Create(Name name, SquadNumber squadNumber, Nationality nationality, DateOfBirth dateOfBirth, Position position)
     {
-        var position = Position.FromName(positionName);
-
-        ValidateAndThrow(name, squadNumber, nationality, dateOfBirth, position);
-
-        return new(EntityId.Create(), name, squadNumber, nationality, dateOfBirth, position);
+        return new Player(name, squadNumber, nationality, dateOfBirth, position);
     }
 
-    public void Update(string name, int squadNumber, string nationality, DateOnly dateOfBirth, string positionName)
+    public bool ChangeName(Name name)
     {
-        var position = Position.FromName(positionName);
-
-        ValidateAndThrow(name, squadNumber, nationality, dateOfBirth, position);
-
-        Name = name;
-        SquadNumber = squadNumber;
-        Nationality = nationality;
-        DateOfBirth = dateOfBirth;
-        Position = position;
-    }
-
-    private static void ValidateAndThrow(string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        ArgumentOutOfRangeException.ThrowIfLessThan(squadNumber, 1, nameof(squadNumber));
-        ArgumentException.ThrowIfNullOrEmpty(nationality);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(dateOfBirth, DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-15)), nameof(dateOfBirth));
-        if (position == Position.Unknown)
+        if (Name == name)
         {
-            throw new ArgumentException("A player cannot have a position of unknown.", nameof(position));
+            return false;
         }
+
+        // TODO: Raise Domain Event.
+        //string previousName = Name;
+        Name = name;
+        //Raise(new PlayerNameChangedDomainEvent(this, previousName));
+
+        return true;
     }
+
+    public bool ChangeSquadNumber(SquadNumber squadNumber)
+    {
+        if (SquadNumber == squadNumber)
+        {
+            return false;
+        }
+
+        // TODO: Raise Domain Event.
+        //string previousSquadNumber = SquadNumber;
+        SquadNumber = squadNumber;
+        //Raise(new PlayerSquadNumberChangedDomainEvent(this, previousSquadNumber));
+
+        return true;
+    }
+
+    public bool ChangeNationality(Nationality nationality)
+    {
+        if (Nationality == nationality)
+        {
+            return false;
+        }
+
+        // TODO: Raise Domain Event.
+        //string previousNationality = Nationality;
+        Nationality = nationality;
+        //Raise(new PlayerNationalityChangedDomainEvent(this, previousNationality));
+
+        return true;
+    }
+
+    public bool ChangeDateOfBirth(DateOfBirth dateOfBirth)
+    {
+        if (DateOfBirth == dateOfBirth)
+        {
+            return false;
+        }
+
+        // TODO: Raise Domain Event.
+        //string previousDateOfBirth = DateOfBirth;
+        DateOfBirth = dateOfBirth;
+        //Raise(new PlayerDateOfBirthChangedDomainEvent(this, previousDateOfBirth));
+
+        return true;
+    }
+
+    public bool ChangePosition(Position position)
+    {
+        if (Position == position)
+        {
+            return false;
+        }
+
+        // TODO: Raise Domain Event.
+        //string previousPosition = Position;
+        Position = position;
+        //Raise(new PlayerPositionChangedDomainEvent(this, previousPosition));
+
+        return true;
+    }
+
+    //private static void ValidateAndThrow(string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position)
+    //{
+    //    ArgumentException.ThrowIfNullOrEmpty(name);
+    //    ArgumentOutOfRangeException.ThrowIfLessThan(squadNumber, 1, nameof(squadNumber));
+    //    ArgumentException.ThrowIfNullOrEmpty(nationality);
+    //    ArgumentOutOfRangeException.ThrowIfGreaterThan(dateOfBirth, DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-15)), nameof(dateOfBirth));
+    //    if (position == Position.Unknown)
+    //    {
+    //        throw new ArgumentException("A player cannot have a position of unknown.", nameof(position));
+    //    }
+    //}
 }
