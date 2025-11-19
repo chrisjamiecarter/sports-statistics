@@ -19,4 +19,25 @@ public static class SeasonErrors
     public static Error NotUpdated(Guid id) => Error.Failure(
         "Season.NotUpdated",
         $"The season with the Id = '{id}' was not updated.");
+
+    public static class DateRange
+    {
+        public static Error StartDateAfterEndDate => Error.Validation(
+                "Season.DateRange.StartDateAfterEndDate",
+                "The season start date cannot be after the end date.");
+
+        public static class StartDate
+        {
+            public static Error NullOrEmpty => Error.Validation(
+                "Season.DateRange.StartDate.NullOrEmpty",
+                "The season start date cannot be null or empty.");
+        }
+
+        public static class EndDate
+        {
+            public static Error NullOrEmpty => Error.Validation(
+                "Season.DateRange.EndDate.NullOrEmpty",
+                "The season end date cannot be null or empty.");
+        }
+    }
 }

@@ -4,35 +4,33 @@ namespace SportsStatistics.Domain.Seasons;
 
 public sealed class Season : Entity
 {
-    private Season(EntityId id, DateOnly startDate, DateOnly endDate) : base(id)
+    private Season(DateRange dateRange)
+        : base(Guid.CreateVersion7())
     {
-        StartDate = startDate;
-        EndDate = endDate;
+        DateRange = dateRange;
     }
 
-    public DateOnly StartDate { get; private set; }
+    public DateRange DateRange { get; private set; }
 
-    public DateOnly EndDate { get; private set; }
+    public string Name => $"{DateRange.StartDate.Year}/{DateRange.EndDate.Year}";
 
-    public string Name => $"{StartDate.Year}/{EndDate.Year}";
-
-    public static Season Create(DateOnly startDate, DateOnly endDate)
+    public static Season Create(DateRange dateRange)
     {
-        ValidateAndThrow(startDate, endDate);
-
-        return new Season(EntityId.Create(), startDate, endDate);
+        return new Season(dateRange);
     }
 
-    public void Update(DateOnly startDate, DateOnly endDate)
+    public bool ChangeDateRange(DateRange dateRange)
     {
-        ValidateAndThrow(startDate, endDate);
+        if (DateRange == dateRange)
+        {
+            return false;
+        }
 
-        StartDate = startDate;
-        EndDate = endDate;
-    }
+        // TODO: Raise Domain Event.
+        //string previousDateRange = DateRange;
+        DateRange = dateRange;
+        //Raise(new SeasonDateRangeChangedDomainEvent(this, previousDateRange));
 
-    private static void ValidateAndThrow(DateOnly startDate, DateOnly endDate)
-    {
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startDate, endDate, nameof(startDate));
+        return true;
     }
 }
