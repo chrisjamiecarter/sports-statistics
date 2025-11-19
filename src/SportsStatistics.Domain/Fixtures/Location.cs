@@ -22,15 +22,15 @@ public sealed class Location : Enumeration
 
     public static Result<Location> Create(string value)
     {
-        var parsedLocation =
+        var resolvedValue =
             All.SingleOrDefault(location => string.Equals(location.Name, value, StringComparison.OrdinalIgnoreCase))
             ?? Unknown;
 
-        if (parsedLocation == Unknown)
+        if (resolvedValue == Unknown)
         {
             return FixtureErrors.Location.Unknown;
         }
 
-        return parsedLocation;
+        return resolvedValue;
     }
 }

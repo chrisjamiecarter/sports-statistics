@@ -25,15 +25,15 @@ public sealed class Position : Enumeration
 
     public static Result<Position> Create(string value)
     {
-        var parsedPosition =
+        var resolvedValue =
             All.SingleOrDefault(position => string.Equals(position.Name, value, StringComparison.OrdinalIgnoreCase))
             ?? Unknown;
 
-        if (parsedPosition == Unknown)
+        if (resolvedValue == Unknown)
         {
             return PlayerErrors.Position.Unknown;
         }
 
-        return parsedPosition;
+        return resolvedValue;
     }
 }

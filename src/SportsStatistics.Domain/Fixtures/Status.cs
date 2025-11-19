@@ -24,15 +24,15 @@ public sealed class Status : Enumeration
 
     public static Result<Status> Create(string value)
     {
-        var parsedStatus =
+        var resolvedValue =
             All.SingleOrDefault(status => string.Equals(status.Name, value, StringComparison.OrdinalIgnoreCase))
             ?? Unknown;
 
-        if (parsedStatus == Unknown)
+        if (resolvedValue == Unknown)
         {
             return FixtureErrors.Status.Unknown;
         }
 
-        return parsedStatus;
+        return resolvedValue;
     }
 }

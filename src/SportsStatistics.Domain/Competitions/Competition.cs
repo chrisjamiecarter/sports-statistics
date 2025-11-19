@@ -30,7 +30,7 @@ public sealed class Competition : Entity
 
     public static Competition Create(Guid seasonId, Name name, Format format)
     {
-        return new Competition(seasonId, name, format);
+        return new(seasonId, name, format);
     }
 
     public bool ChangeName(Name name)

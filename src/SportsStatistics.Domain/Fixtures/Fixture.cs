@@ -41,7 +41,7 @@ public sealed class Fixture : Entity
 
     public static Fixture Create(Guid competitionId, Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
     {
-        return new Fixture(competitionId, opponent, kickoffTimeUtc, location, Status.Scheduled);
+        return new(competitionId, opponent, kickoffTimeUtc, location, Status.Scheduled);
     }
 
     public bool ChangeOpponent(Opponent opponent)

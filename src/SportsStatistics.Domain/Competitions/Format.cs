@@ -20,15 +20,15 @@ public sealed class Format : Enumeration
 
     public static Result<Format> Create(string value)
     {
-        var parsedFormat = 
+        var resolvedValue = 
             All.SingleOrDefault(format => string.Equals(format.Name, value, StringComparison.OrdinalIgnoreCase)) 
             ?? Unknown;
 
-        if (parsedFormat == Unknown)
+        if (resolvedValue == Unknown)
         {
             return CompetitionErrors.Format.Unknown;
         }
 
-        return parsedFormat;
+        return resolvedValue;
     }
 }
