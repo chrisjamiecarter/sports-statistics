@@ -22,7 +22,13 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
             return Result.Failure(SeasonErrors.NotFound(request.SeasonId));
         }
 
-        var competition = Competition.Create(EntityId.Create(request.SeasonId), request.Name, request.CompetitionTypeName);
+        var nameResult = Name.Create(request.Name);
+        if (nameResult.IsFailure) return nameResult;
+
+        var formatResult = Format.Create(request.FormatName);
+        if (formatResult.IsFailure) return formatResult;
+
+        var competition = Competition.Create(request.SeasonId, nameResult.Value, formatResult.Value);
 
         _dbContext.Competitions.Add(competition);
 
@@ -30,6 +36,6 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
 
         return created
             ? Result.Success()
-            : Result.Failure(CompetitionErrors.NotCreated(request.Name, request.CompetitionTypeName));
+            : Result.Failure(CompetitionErrors.NotCreated(request.Name, request.FormatName));
     }
 }

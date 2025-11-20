@@ -12,14 +12,14 @@ internal sealed class CreateCompetitionCommandValidator : AbstractValidator<Crea
 
         RuleFor(c => c.Name)
             .NotEmpty()
-            .MaximumLength(50);
+            .MaximumLength(Name.MaxLength);
 
-        RuleFor(c => c.CompetitionTypeName)
+        RuleFor(c => c.FormatName)
             .NotEmpty()
-            .Must(type =>
+            .Must(formatName =>
             {
-                return CompetitionType.All.Any(t => string.Equals(t.Name, type, StringComparison.OrdinalIgnoreCase));
+                return Format.All.Any(format => string.Equals(format.Name, formatName, StringComparison.OrdinalIgnoreCase));
             })
-            .WithMessage($"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.");
+            .WithMessage($"'Format Name' is invalid. Valid options: {string.Join(", ", Format.All)}.");
     }
 }
