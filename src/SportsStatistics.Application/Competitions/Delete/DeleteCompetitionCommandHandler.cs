@@ -22,6 +22,8 @@ internal sealed class DeleteCompetitionCommandHandler(IApplicationDbContext dbCo
 
         _dbContext.Competitions.Remove(competition);
 
+        competition.Raise(new CompetitionDeletedDomainEvent(competition.Id));
+
         var deleted = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
         return deleted

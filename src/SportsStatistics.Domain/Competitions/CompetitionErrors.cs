@@ -4,6 +4,10 @@ namespace SportsStatistics.Domain.Competitions;
 
 public static class CompetitionErrors
 {
+    public static Error CompetitionIdIsRequired => Error.Validation(
+        "Competition.CompetitionIdIsRequired",
+        "The competition identifier is required.");
+
     public static Error FormatNameIsRequired => Error.Validation(
         "Competition.FormatNameIsRequired",
         "The format name is required.");
@@ -20,9 +24,13 @@ public static class CompetitionErrors
         "Competition.NameIsRequired",
         "The name is required.");
 
+    public static Error NotFound(Guid id) => Error.NotFound(
+        "Competition.NotFound",
+        $"The competition with the identifier '{id}' was not found.");
+
     public static Error SeasonIdIsRequired => Error.Validation(
         "Competition.SeasonIdIsRequired",
-        "The season id is required.");
+        "The season identifier is required.");
 
     // TODO: Refactor.
     public static Error NotCreated(string name, string competitionTypeName) => Error.Failure(
@@ -33,9 +41,6 @@ public static class CompetitionErrors
         "Competition.NotDeleted",
         $"The competition with the Id = '{id}' was not deleted.");
 
-    public static Error NotFound(Guid id) => Error.NotFound(
-        "Competition.NotFound",
-        $"The competition with the Id = '{id}' was not found.");
 
     public static Error NotUpdated(Guid id) => Error.Failure(
         "Competition.NotUpdated",

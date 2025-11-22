@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Competitions.Delete;
 
@@ -7,6 +9,6 @@ internal sealed class DeleteCompetitionCommandValidator : AbstractValidator<Dele
     public DeleteCompetitionCommandValidator()
     {
         RuleFor(c => c.CompetitionId)
-            .NotEmpty();
+            .NotEmpty().WithError(CompetitionErrors.CompetitionIdIsRequired);
     }
 }
