@@ -4,6 +4,27 @@ namespace SportsStatistics.Domain.Competitions;
 
 public static class CompetitionErrors
 {
+    public static Error FormatNameIsRequired => Error.Validation(
+        "Competition.FormatNameIsRequired",
+        "The format name is required.");
+
+    public static Error FormatNameUnknowm => Error.Validation(
+        "Competition.FormatNameUnknowm",
+        "The format name is unknown.");
+
+    public static Error NameExceedsMaxLength => Error.Validation(
+        "Competition.NameExceedsMaxLength",
+        "The name exceeds the maximum allowed length.");
+
+    public static Error NameIsRequired => Error.Validation(
+        "Competition.NameIsRequired",
+        "The name is required.");
+
+    public static Error SeasonIdIsRequired => Error.Validation(
+        "Competition.SeasonIdIsRequired",
+        "The season id is required.");
+
+    // TODO: Refactor.
     public static Error NotCreated(string name, string competitionTypeName) => Error.Failure(
         "Competition.NotCreated",
         $"The competition with the Name = '{name}' and Competition Type = '{competitionTypeName}' was not created.");

@@ -1,4 +1,5 @@
-﻿using SportsStatistics.SharedKernel;
+﻿using SportsStatistics.Domain.Seasons;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Competitions;
 
@@ -31,6 +32,11 @@ public sealed class Competition : Entity
     public static Competition Create(Guid seasonId, Name name, Format format)
     {
         return new(seasonId, name, format);
+    }
+
+    internal static Competition Create(Season season, Name name, Format format)
+    {
+        return new(season.Id, name, format);
     }
 
     public bool ChangeName(Name name)

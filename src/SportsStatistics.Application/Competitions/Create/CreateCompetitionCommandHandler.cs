@@ -23,12 +23,16 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
         }
 
         var nameResult = Name.Create(request.Name);
-        if (nameResult.IsFailure) return nameResult;
-
         var formatResult = Format.Create(request.FormatName);
-        if (formatResult.IsFailure) return formatResult;
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(nameResult, formatResult);
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return firstFailureOrSuccess;
+        }
 
-        var competition = Competition.Create(request.SeasonId, nameResult.Value, formatResult.Value);
+        var competition = season.CreateCompetition(nameResult.Value, formatResult.Value);
+
+        competition.Raise(new CompetitionCreatedDomainEvent(competition.Id));
 
         _dbContext.Competitions.Add(competition);
 

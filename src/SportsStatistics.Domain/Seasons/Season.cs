@@ -1,4 +1,5 @@
-﻿using SportsStatistics.SharedKernel;
+﻿using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Seasons;
 
@@ -18,7 +19,7 @@ public sealed class Season : Entity
     {
         return new Season(dateRange);
     }
-
+        
     public bool ChangeDateRange(DateRange dateRange)
     {
         if (DateRange == dateRange)
@@ -32,5 +33,10 @@ public sealed class Season : Entity
         //Raise(new SeasonDateRangeChangedDomainEvent(this, previousDateRange));
 
         return true;
+    }
+
+    public Competition CreateCompetition(Name name, Format format)
+    {
+        return Competition.Create(this, name, format);
     }
 }
