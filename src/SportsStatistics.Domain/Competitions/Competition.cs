@@ -3,7 +3,7 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Competitions;
 
-public sealed class Competition : Entity
+public sealed class Competition : Entity, ISoftDeletableEntity
 {
     private Competition(Guid seasonId,
                         Name name,
@@ -13,6 +13,8 @@ public sealed class Competition : Entity
         SeasonId = seasonId;
         Name = name;
         Format = format;
+
+        Raise(new CompetitionCreatedDomainEvent(Id));
     }
 
     /// <summary>
@@ -29,38 +31,48 @@ public sealed class Competition : Entity
 
     public Format Format { get; private set; } = default!;
 
+    public DateTime? DeletedOnUtc { get; private set; }
+
+    public bool Deleted { get; private set; }
+
     internal static Competition Create(Season season, Name name, Format format)
     {
         return new(season.Id, name, format);
     }
 
-    public bool ChangeName(Name name)
+    public void ChangeName(Name name)
     {
         if (Name == name)
         {
-            return false;
+            return;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousName = Name;
+        var previousName = Name;
         Name = name;
-        //Raise(new CompetitionNameChangedDomainEvent(this, previousName));
-
-        return true;
+        Raise(new CompetitionNameChangedDomainEvent(this, previousName));
     }
 
-    public bool ChangeFormat(Format format)
+    public void ChangeFormat(Format format)
     {
         if (Format == format)
         {
-            return false;
+            return;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousFormat = Format;
+        var previousFormat = Format;
         Format = format;
-        //Raise(new CompetitionFormatChangedDomainEvent(this, previousFormat));
+        Raise(new CompetitionFormatChangedDomainEvent(this, previousFormat));
+    }
 
-        return true;
+    public void Delete(DateTime utcNow)
+    {
+        if (Deleted)
+        {
+            return;
+        }
+
+        Deleted = true;
+        DeletedOnUtc = utcNow;
+        Raise(new CompetitionDeletedDomainEvent(Id));
     }
 }

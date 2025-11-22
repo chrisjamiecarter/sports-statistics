@@ -32,8 +32,10 @@ public static class CompetitionErrors
         "Competition.SeasonIdIsRequired",
         "The season identifier is required.");
 
+    public static object AlreadyDeleted { get; internal set; }
+
     // TODO: Refactor.
-    
+
     public static class Name
     {
         public static Error ExceedsMaxLength => Error.Validation(

@@ -20,9 +20,10 @@ internal sealed class DeleteCompetitionCommandHandler(IApplicationDbContext dbCo
             return Result.Failure(CompetitionErrors.NotFound(request.CompetitionId));
         }
 
+        competition.Delete(DateTime.UtcNow);
+        
+        // TODO: Soft delete?
         _dbContext.Competitions.Remove(competition);
-
-        competition.Raise(new CompetitionDeletedDomainEvent(competition.Id));
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

@@ -32,8 +32,6 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
 
         var competition = season.CreateCompetition(nameResult.Value, formatResult.Value);
 
-        competition.Raise(new CompetitionCreatedDomainEvent(competition.Id));
-
         _dbContext.Competitions.Add(competition);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
