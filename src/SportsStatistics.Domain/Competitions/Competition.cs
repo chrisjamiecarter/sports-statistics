@@ -29,11 +29,6 @@ public sealed class Competition : Entity
 
     public Format Format { get; private set; } = default!;
 
-    public static Competition Create(Guid seasonId, Name name, Format format)
-    {
-        return new(seasonId, name, format);
-    }
-
     internal static Competition Create(Season season, Name name, Format format)
     {
         return new(season.Id, name, format);

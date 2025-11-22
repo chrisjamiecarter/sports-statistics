@@ -8,8 +8,9 @@ internal static class CompetitionMapper
         => [.. competitions.Select(ToResponse)];
 
     public static CompetitionResponse ToResponse(this Competition competition)
-        => new(competition.Id.Value,
-               competition.SeasonId.Value,
+        => new(competition.Id,
+               competition.SeasonId,
                competition.Name,
-               competition.Type.Name);
+               competition.Format.Id,
+               competition.Format.Name);
 }

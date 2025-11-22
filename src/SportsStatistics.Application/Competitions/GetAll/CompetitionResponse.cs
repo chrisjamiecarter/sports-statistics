@@ -3,4 +3,5 @@
 public sealed record CompetitionResponse(Guid Id,
                                          Guid SeasonId,
                                          string Name,
-                                         string TypeName);
+                                         int FormatId,
+                                         string Format);
