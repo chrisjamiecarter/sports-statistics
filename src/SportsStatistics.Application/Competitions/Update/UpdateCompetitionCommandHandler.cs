@@ -21,22 +21,19 @@ internal sealed class UpdateCompetitionCommandHandler(IApplicationDbContext dbCo
         }
 
         var nameResult = Name.Create(request.Name);
-        if (nameResult.IsFailure) return nameResult;
-        var nameChanged = competition.ChangeName(nameResult.Value);
-
         var formatResult = Format.Create(request.FormatName);
-        if (formatResult.IsFailure) return formatResult;
-        var formatChanged = competition.ChangeFormat(formatResult.Value);
-
-        if (!nameChanged && !formatChanged)
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(nameResult, formatResult);
+        if (firstFailureOrSuccess.IsFailure)
         {
-            return Result.Success();
+            return firstFailureOrSuccess;
         }
 
-        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        competition.ChangeName(nameResult.Value);
+        
+        competition.ChangeFormat(formatResult.Value);
 
-        return updated
-            ? Result.Success()
-            : Result.Failure(CompetitionErrors.NotUpdated(competition.Id));
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }

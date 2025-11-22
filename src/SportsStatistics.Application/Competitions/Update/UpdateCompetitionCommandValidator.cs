@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Competitions.Update;
 
@@ -8,18 +9,14 @@ internal sealed class UpdateCompetitionCommandValidator : AbstractValidator<Upda
     public UpdateCompetitionCommandValidator()
     {
         RuleFor(c => c.CompetitionId)
-            .NotEmpty();
+            .NotEmpty().WithError(CompetitionErrors.CompetitionIdIsRequired);
 
         RuleFor(c => c.Name)
-            .NotEmpty()
-            .MaximumLength(Name.MaxLength);
+            .NotEmpty().WithError(CompetitionErrors.NameIsRequired)
+            .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.NameExceedsMaxLength);
 
         RuleFor(c => c.FormatName)
-            .NotEmpty()
-            .Must(formatName =>
-            {
-                return Format.All.Any(format => string.Equals(format.Name, formatName, StringComparison.OrdinalIgnoreCase));
-            })
-            .WithMessage($"'Format Name' is invalid. Valid options: {string.Join(", ", Format.All)}.");
+            .NotEmpty().WithError(CompetitionErrors.FormatNameIsRequired)
+            .Must(formatName => Format.Create(formatName).IsSuccess).WithError(CompetitionErrors.FormatNameUnknowm);
     }
 }
