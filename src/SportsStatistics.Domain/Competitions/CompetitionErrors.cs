@@ -8,13 +8,13 @@ public static class CompetitionErrors
         "Competition.CompetitionIdIsRequired",
         "The competition identifier is required.");
 
-    public static Error FormatNameIsRequired => Error.Validation(
-        "Competition.FormatNameIsRequired",
-        "The format name is required.");
+    public static Error FormatIdIsRequired => Error.Validation(
+        "Competition.FormatIdIsRequired",
+        "The format identifier is required.");
 
-    public static Error FormatNameUnknowm => Error.Validation(
-        "Competition.FormatNameUnknowm",
-        "The format name is unknown.");
+    public static Error FormatNotFound => Error.Validation(
+        "Competition.FormatNotFound",
+        "The format with the specified identifier was not found.");
 
     public static Error NameExceedsMaxLength => Error.Validation(
         "Competition.NameExceedsMaxLength",

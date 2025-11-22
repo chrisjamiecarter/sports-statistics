@@ -15,9 +15,9 @@ internal sealed class CreateCompetitionCommandValidator : AbstractValidator<Crea
             .NotEmpty().WithError(CompetitionErrors.NameIsRequired)
             .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.NameExceedsMaxLength);
 
-        RuleFor(c => c.FormatName)
-            .NotEmpty().WithError(CompetitionErrors.FormatNameIsRequired)
-            // TODO: check is this works? .IsEnumName(typeof(Format), false)
-            .Must(formatName => Format.Create(formatName).IsSuccess).WithError(CompetitionErrors.FormatNameUnknowm);
+        RuleFor(c => c.FormatId)
+            .NotEmpty().WithError(CompetitionErrors.FormatIdIsRequired)
+            // TODO: check if this works? .IsEnumName(typeof(Format), false)
+            .Must(formatId => Format.Resolve(formatId).IsSuccess).WithError(CompetitionErrors.FormatNotFound);
     }
 }

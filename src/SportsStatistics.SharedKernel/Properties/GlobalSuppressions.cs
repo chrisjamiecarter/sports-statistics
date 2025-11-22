@@ -7,3 +7,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This type will not be exposed to external consumers.", Scope = "type", Target = "~T:SportsStatistics.SharedKernel.Error")]
 [assembly: SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "This type will not be exposed to external consumers.", Scope = "type", Target = "~T:SportsStatistics.SharedKernel.IDomainEventHandler`1")]
+[assembly: SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Enumeration pattern requires per-closed-type static members.", Scope = "type", Target = "~T:SportsStatistics.SharedKernel.Enumeration`1")]

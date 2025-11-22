@@ -15,8 +15,8 @@ internal sealed class UpdateCompetitionCommandValidator : AbstractValidator<Upda
             .NotEmpty().WithError(CompetitionErrors.NameIsRequired)
             .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.NameExceedsMaxLength);
 
-        RuleFor(c => c.FormatName)
-            .NotEmpty().WithError(CompetitionErrors.FormatNameIsRequired)
-            .Must(formatName => Format.Create(formatName).IsSuccess).WithError(CompetitionErrors.FormatNameUnknowm);
+        RuleFor(c => c.FormatId)
+            .NotEmpty().WithError(CompetitionErrors.FormatIdIsRequired)
+            .Must(formatId => Format.Resolve(formatId).IsSuccess).WithError(CompetitionErrors.FormatNotFound);
     }
 }
