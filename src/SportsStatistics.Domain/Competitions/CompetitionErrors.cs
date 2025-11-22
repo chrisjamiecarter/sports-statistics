@@ -33,19 +33,7 @@ public static class CompetitionErrors
         "The season identifier is required.");
 
     // TODO: Refactor.
-    public static Error NotCreated(string name, string competitionTypeName) => Error.Failure(
-        "Competition.NotCreated",
-        $"The competition with the Name = '{name}' and Competition Type = '{competitionTypeName}' was not created.");
     
-    public static Error NotDeleted(Guid id) => Error.Failure(
-        "Competition.NotDeleted",
-        $"The competition with the Id = '{id}' was not deleted.");
-
-
-    public static Error NotUpdated(Guid id) => Error.Failure(
-        "Competition.NotUpdated",
-        $"The competition with the Id = '{id}' was not updated.");
-
     public static class Name
     {
         public static Error ExceedsMaxLength => Error.Validation(

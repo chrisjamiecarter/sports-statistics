@@ -36,10 +36,8 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
 
         _dbContext.Competitions.Add(competition);
 
-        var created = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return created
-            ? Result.Success()
-            : Result.Failure(CompetitionErrors.NotCreated(request.Name, request.FormatName));
+        return Result.Success();
     }
 }
