@@ -20,12 +20,13 @@ internal sealed class DeleteFixtureCommandHandler(IApplicationDbContext dbContex
             return Result.Failure(FixtureErrors.NotFound(request.FixtureId));
         }
 
+        fixture.Delete(DateTime.UtcNow);
+
+        // TODO: Soft delete?
         _dbContext.Fixtures.Remove(fixture);
 
-        var deleted = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return deleted
-            ? Result.Success()
-            : Result.Failure(FixtureErrors.NotDeleted(fixture.Id));
+        return Result.Success();
     }
 }

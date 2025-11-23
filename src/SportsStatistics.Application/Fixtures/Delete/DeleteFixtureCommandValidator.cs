@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.Delete;
 
@@ -7,6 +9,6 @@ internal sealed class DeleteFixtureCommandValidator : AbstractValidator<DeleteFi
     public DeleteFixtureCommandValidator()
     {
         RuleFor(c => c.FixtureId)
-            .NotEmpty();
+            .NotEmpty().WithError(FixtureErrors.FixtureIdIsRequired);
     }
 }
