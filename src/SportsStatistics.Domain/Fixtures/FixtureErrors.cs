@@ -64,6 +64,10 @@ public static class FixtureErrors
         "Fixture.OpponentIsRequired",
         "The opponent is required.");
 
+    public static Error SeasonIdIsRequired => Error.Validation(
+        "Fixture.SeasonIdIsRequired",
+        "The season identifier is required.");
+
     public static class KickoffTimeUtc
     {
         public static Error NullOrEmpty => Error.Validation(

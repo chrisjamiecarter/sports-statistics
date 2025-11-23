@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.GetBySeasonId;
 
@@ -7,6 +9,6 @@ internal sealed class GetFixturesBySeasonIdQueryValidator : AbstractValidator<Ge
     public GetFixturesBySeasonIdQueryValidator()
     {
         RuleFor(c => c.SeasonId)
-            .NotEmpty();
+            .NotEmpty().WithError(FixtureErrors.SeasonIdIsRequired);
     }
 }
