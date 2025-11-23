@@ -11,6 +11,11 @@ internal sealed class GetAllFixturesQueryHandler(IApplicationDbContext dbContext
 
     public async Task<Result<List<FixtureResponse>>> Handle(GetAllFixturesQuery request, CancellationToken cancellationToken)
     {
+        // TODO: Decide on:
+        //  var result = Table.Where().ToList();
+        //  return Query.ToResponse();
+        // vs
+        //  return Table.Where().Select(x => x.ToResponse()).ToList();.
         return await _dbContext.Fixtures
             .AsNoTracking()
             .Join(_dbContext.Competitions.AsNoTracking(),

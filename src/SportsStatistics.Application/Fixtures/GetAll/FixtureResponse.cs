@@ -5,7 +5,9 @@ public sealed record FixtureResponse(Guid Id,
                                      string CompetitionName,
                                      string Opponent,
                                      DateTime KickoffTimeUtc,
-                                     string LocationName,
+                                     int LocationId,
+                                     string Location,
                                      int HomeGoals,
                                      int AwayGoals,
-                                     string StatusName);
+                                     int StatusId,
+                                     string Status);
