@@ -4,17 +4,37 @@ namespace SportsStatistics.Domain.Fixtures;
 
 public static class FixtureErrors
 {
+    public static Error AlreadyDeleted => Error.Validation(
+        "Fixture.AlreadyDeleted",
+        "The fixture has already been deleted.");
+
     public static Error AlreadyScheduledOnDate(DateOnly date) => Error.Conflict(
         "Fixture.AlreadyScheduledOnDate",
         $"A fixture is already scheduled on {date:yyyy-MM-dd}. Only one fixture per day is allowed.");
+
+    public static Error CompetitionIdIsRequired => Error.Validation(
+        "Fixture.CompetitionIdIsRequired",
+        "The competition identifier is required.");
 
     public static Error InvalidLocation(string location) => Error.Failure(
         "Fixture.InvalidLocation",
         $"A fixture cannot have a location of '{location}'.");
 
+    public static Error KickoffDateAndTimeIsRequired => Error.Validation(
+        "Fixture.KickoffDateAndTimeIsRequired",
+        "The kickoff date and time of the fixture is required.");
+
     public static Error KickoffTimeOutsideSeason(DateTime kickoffTimeUtc, DateOnly startDate, DateOnly endDate) => Error.Failure(
         "Fixture.KickoffTimeOutsideSeason",
-        $"A fixture's kickoff time '{kickoffTimeUtc}' cannot be outside of the season start '{startDate}' or end '{endDate}'.");
+        $"The fixture's kickoff time '{kickoffTimeUtc}' must be inside of the season '{startDate}/{endDate}'.");
+
+    public static Error LocationIdIsRequired => Error.Validation(
+        "Fixture.LocationIdIsRequired",
+        "The location identifier is required.");
+
+    public static Error LocationNotFound => Error.Validation(
+        "Fixture.LocationNotFound",
+        "The location with the specified identifier was not found.");
 
     public static Error NotCreated(string opponent, DateTime kickoffTimeUtc, string fixtureLocationName) => Error.Failure(
         "Fixture.NotCreated",
@@ -31,6 +51,14 @@ public static class FixtureErrors
     public static Error NotUpdated(Guid id) => Error.Failure(
         "Fixture.NotUpdated",
         $"The fixture with the Id = '{id}' was not updated.");
+
+    public static Error OpponentExceedsMaxLength => Error.Validation(
+        "Fixture.OpponentExceedsMaxLength",
+        "The opponent exceeds the maximum allowed length.");
+
+    public static Error OpponentIsRequired => Error.Validation(
+        "Fixture.OpponentIsRequired",
+        "The opponent is required.");
 
     public static class KickoffTimeUtc
     {

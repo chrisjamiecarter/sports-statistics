@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Fixtures.Create;
 
@@ -8,22 +9,17 @@ internal sealed class CreateFixtureCommandValidator : AbstractValidator<CreateFi
     public CreateFixtureCommandValidator()
     {
         RuleFor(c => c.CompetitionId)
-            .NotEmpty();
+            .NotEmpty().WithError(FixtureErrors.CompetitionIdIsRequired);
 
         RuleFor(c => c.Opponent)
-            .NotEmpty()
-            .MaximumLength(100);
+            .NotEmpty().WithError(FixtureErrors.OpponentIsRequired)
+            .MaximumLength(Opponent.MaxLength).WithError(FixtureErrors.OpponentExceedsMaxLength);
 
         RuleFor(c => c.KickoffTimeUtc)
-            .NotEmpty();
+            .NotEmpty().WithError(FixtureErrors.KickoffDateAndTimeIsRequired);
 
-        RuleFor(c => c.FixtureLocationName)
-            .NotEmpty()
-            .MaximumLength(7)
-            .Must(location =>
-            {
-                return FixtureLocation.All.Any(l => string.Equals(l.Name, location, StringComparison.OrdinalIgnoreCase));
-            })
-            .WithMessage($"Invalid fixture location. Valid fixture locations: {string.Join(", ", FixtureLocation.All)}.");
+        RuleFor(c => c.LocationId)
+            .NotEmpty().WithError(FixtureErrors.LocationIdIsRequired)
+            .Must(locationId => Location.Resolve(locationId).IsSuccess).WithError(FixtureErrors.LocationNotFound);
     }
 }

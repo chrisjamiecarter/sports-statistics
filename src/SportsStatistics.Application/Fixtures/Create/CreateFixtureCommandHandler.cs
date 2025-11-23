@@ -32,11 +32,22 @@ internal sealed class CreateFixtureCommandHandler(IApplicationDbContext dbContex
             return Result.Failure(SeasonErrors.NotFound(competition.SeasonId));
         }
 
+        var opponentResult = Opponent.Create(request.Opponent);
+        var kickOffTimeUtcResult = KickoffTimeUtc.Create(request.KickoffTimeUtc);
+        var locationResult = Location.Resolve(request.LocationId);
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(opponentResult,
+                                                                 kickOffTimeUtcResult,
+                                                                 locationResult);
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return firstFailureOrSuccess;
+        }
+
         var kickoffDate = DateOnly.FromDateTime(request.KickoffTimeUtc);
 
-        if (kickoffDate < season.StartDate || kickoffDate > season.EndDate)
+        if (kickoffDate < season.DateRange.StartDate || kickoffDate > season.DateRange.EndDate)
         {
-            return Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(request.KickoffTimeUtc, season.StartDate, season.EndDate));
+            return Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(request.KickoffTimeUtc, season.DateRange.StartDate, season.DateRange.EndDate));
         }
 
         if (await _dbContext.Fixtures.AsNoTracking()
@@ -45,15 +56,13 @@ internal sealed class CreateFixtureCommandHandler(IApplicationDbContext dbContex
         {
             return Result.Failure(FixtureErrors.AlreadyScheduledOnDate(kickoffDate));
         }
-        
-        var fixture = Fixture.Create(EntityId.Create(request.CompetitionId), request.Opponent, request.KickoffTimeUtc, request.FixtureLocationName);
+
+        var fixture = competition.CreateFixture(opponentResult.Value, kickOffTimeUtcResult.Value, locationResult.Value);
 
         _dbContext.Fixtures.Add(fixture);
 
-        var created = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return created
-            ? Result.Success()
-            : Result.Failure(FixtureErrors.NotCreated(fixture.Opponent, fixture.KickoffTimeUtc, fixture.Location.Name));
+        return Result.Success();
     }
 }

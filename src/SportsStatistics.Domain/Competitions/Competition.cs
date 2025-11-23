@@ -1,4 +1,5 @@
-﻿using SportsStatistics.Domain.Seasons;
+﻿using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Competitions;
@@ -62,6 +63,11 @@ public sealed class Competition : Entity, ISoftDeletableEntity
         var previousFormat = Format;
         Format = format;
         Raise(new CompetitionFormatChangedDomainEvent(this, previousFormat));
+    }
+
+    public Fixture CreateFixture(Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
+    {
+        return Fixture.Create(this, opponent, kickoffTimeUtc, location);
     }
 
     public void Delete(DateTime utcNow)

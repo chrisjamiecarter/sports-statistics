@@ -2,35 +2,19 @@
 
 namespace SportsStatistics.Domain.Fixtures;
 
-public sealed class Location : Enumeration
+public sealed class Location : Enumeration<Location>
 {
-    public static readonly Location Unknown = new(0, nameof(Unknown));
-    public static readonly Location Home = new(1, nameof(Home));
-    public static readonly Location Away = new(2, nameof(Away));
-    public static readonly Location Neutral = new(3, nameof(Neutral));
+    public static readonly Location Home = new(0, nameof(Home));
+    public static readonly Location Away = new(1, nameof(Away));
+    public static readonly Location Neutral = new(2, nameof(Neutral));
 
     private Location(int id, string name) : base(id, name) { }
 
-    public static IReadOnlyCollection<Location> All =>
-    [
-        Home,
-        Away,
-        Neutral,
-    ];
-
-    public static int MaxLength => All.Max(type => type.Name.Length);
-
-    public static Result<Location> Create(string value)
-    {
-        var resolvedValue =
-            All.SingleOrDefault(location => string.Equals(location.Name, value, StringComparison.OrdinalIgnoreCase))
-            ?? Unknown;
-
-        if (resolvedValue == Unknown)
-        {
-            return FixtureErrors.Location.Unknown;
-        }
-
-        return resolvedValue;
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Location"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required by EF Core.
+    /// </remarks>
+    private Location() { }
 }

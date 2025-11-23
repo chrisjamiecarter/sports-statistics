@@ -1,8 +1,9 @@
-﻿using SportsStatistics.SharedKernel;
+﻿using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Fixtures;
 
-public sealed class Fixture : Entity
+public sealed class Fixture : Entity, ISoftDeletableEntity
 {
     private Fixture(Guid competitionId,
                     Opponent opponent,
@@ -39,9 +40,13 @@ public sealed class Fixture : Entity
 
     public Status Status { get; private set; } = default!;
 
-    public static Fixture Create(Guid competitionId, Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
+    public DateTime? DeletedOnUtc { get; private set; }
+
+    public bool Deleted { get; private set; }
+
+    internal static Fixture Create(Competition competition, Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
     {
-        return new(competitionId, opponent, kickoffTimeUtc, location, Status.Scheduled);
+        return new(competition.Id, opponent, kickoffTimeUtc, location, Status.Scheduled);
     }
 
     public bool ChangeOpponent(Opponent opponent)
@@ -51,10 +56,9 @@ public sealed class Fixture : Entity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousOpponent = Opponent;
+        var previousOpponent = Opponent;
         Opponent = opponent;
-        //Raise(new FixtureOpponentChangedDomainEvent(this, previousOpponent));
+        Raise(new FixtureOpponentChangedDomainEvent(this, previousOpponent));
 
         return true;
     }
@@ -66,10 +70,9 @@ public sealed class Fixture : Entity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousKickoffTimeUtc = KickoffTimeUtc;
+        var previousKickoffTimeUtc = KickoffTimeUtc;
         KickoffTimeUtc = kickoffTimeUtc;
-        //Raise(new FixtureKickoffTimeUtcChangedDomainEvent(this, previousKickoffTimeUtc));
+        Raise(new FixtureKickoffTimeUtcChangedDomainEvent(this, previousKickoffTimeUtc));
 
         return true;
     }
@@ -81,11 +84,22 @@ public sealed class Fixture : Entity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousLocation = Location;
+        var previousLocation = Location;
         Location = location;
-        //Raise(new FixtureLocationChangedDomainEvent(this, previousLocation));
+        Raise(new FixtureLocationChangedDomainEvent(this, previousLocation));
 
         return true;
+    }
+
+    public void Delete(DateTime utcNow)
+    {
+        if (Deleted)
+        {
+            return;
+        }
+
+        Deleted = true;
+        DeletedOnUtc = utcNow;
+        Raise(new FixtureDeletedDomainEvent(Id));
     }
 }
