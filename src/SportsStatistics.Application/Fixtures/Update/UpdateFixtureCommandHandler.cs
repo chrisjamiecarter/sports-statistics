@@ -22,6 +22,17 @@ internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContex
             return Result.Failure(FixtureErrors.NotFound(request.FixtureId));
         }
 
+        var opponentResult = Opponent.Create(request.Opponent);
+        var kickOffTimeUtcResult = KickoffTimeUtc.Create(request.KickoffTimeUtc);
+        var locationResult = Location.Resolve(request.LocationId);
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(opponentResult,
+                                                                 kickOffTimeUtcResult,
+                                                                 locationResult);
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return firstFailureOrSuccess;
+        }
+
         var competition = await _dbContext.Competitions.AsNoTracking()
                                                        .Where(competition => competition.Id == fixture.CompetitionId)
                                                        .SingleOrDefaultAsync(cancellationToken);
@@ -42,9 +53,9 @@ internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContex
 
         var kickoffDate = DateOnly.FromDateTime(request.KickoffTimeUtc);
 
-        if (kickoffDate < season.StartDate || kickoffDate > season.EndDate)
+        if (kickoffDate < season.DateRange.StartDate || kickoffDate > season.DateRange.EndDate)
         {
-            return Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(request.KickoffTimeUtc, season.StartDate, season.EndDate));
+            return Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(request.KickoffTimeUtc, season.DateRange.StartDate, season.DateRange.EndDate));
         }
 
         if (await _dbContext.Fixtures.AsNoTracking()
@@ -54,15 +65,14 @@ internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContex
             return Result.Failure(FixtureErrors.AlreadyScheduledOnDate(kickoffDate));
         }
 
-        if (!fixture.Update(request.Opponent, request.KickoffTimeUtc, request.FixtureLocationName))
-        {
-            return Result.Success();
-        }
+        fixture.ChangeOpponent(opponentResult.Value);
+        
+        fixture.ChangeKickoffTimeUtc(kickOffTimeUtcResult.Value);
+        
+        fixture.ChangeLocation(locationResult.Value);
 
-        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return updated
-            ? Result.Success()
-            : Result.Failure(FixtureErrors.NotUpdated(fixture.Id));
+        return Result.Success();
     }
 }
