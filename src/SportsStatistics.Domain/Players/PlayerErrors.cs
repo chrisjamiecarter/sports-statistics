@@ -4,9 +4,49 @@ namespace SportsStatistics.Domain.Players;
 
 public static class PlayerErrors
 {
+    public static Error DateOfBirthBelowMinAge => Error.Validation(
+        "Player.DateOfBirthBelowMinAge",
+        "The date of birth is below the minimum allowed age.");
+
+    public static Error DateOfBirthIsRequired => Error.Validation(
+        "Player.DateOfBirthIsRequired",
+        "The date of birth is required.");
+
     public static Error InvalidPosition(string position) => Error.Failure(
         "Player.InvalidPosition",
         $"A player cannot have a position of '{position}'.");
+
+    public static Error NameExceedsMaxLength => Error.Validation(
+        "Player.NameExceedsMaxLength",
+        "The name exceeds the maximum allowed length.");
+
+    public static Error NameIsRequired => Error.Validation(
+        "Player.NameIsRequired",
+        "The name is required.");
+
+    public static Error NationalityExceedsMaxLength => Error.Validation(
+        "Player.NationalityExceedsMaxLength",
+        "The nationality exceeds the maximum allowed length.");
+
+    public static Error NationalityIsRequired => Error.Validation(
+        "Player.NationalityIsRequired",
+        "The nationality is required.");
+
+    public static Error PlayerIdIsRequired => Error.Validation(
+        "Player.PlayerIdIsRequired",
+        "The player identifier is required.");
+
+    public static Error PositionIdIsRequired => Error.Validation(
+        "Player.PositionIdIsRequired",
+        "The position identifier is required.");
+
+    public static Error PositionNotFound => Error.Validation(
+        "Player.PositionNotFound",
+        "The position with the specified identifier was not found.");
+
+    public static Error SquadNumberOutsideRange => Error.Validation(
+        "Player.SquadNumberOutsideRange",
+        "The squad number is outside the allowed range of values.");
 
     public static Error NotCreated(string name, DateOnly dateOfBirth) => Error.Failure(
         "Player.NotCreated",
@@ -30,9 +70,6 @@ public static class PlayerErrors
 
     public static class DateOfBirth
     {
-        public static Error BelowMinAge => Error.Validation(
-            "Player.DateOfBirth.BelowMinAge",
-            "The player date of birth is below the minimum allowed age.");
 
         public static Error NullOrEmpty => Error.Validation(
             "Player.DateOfBirth.NullOrEmpty",
