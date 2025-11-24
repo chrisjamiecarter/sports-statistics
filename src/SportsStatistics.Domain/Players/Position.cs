@@ -1,39 +1,21 @@
-﻿using SportsStatistics.Domain.Competitions;
-using SportsStatistics.SharedKernel;
+﻿using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Players;
 
-public sealed class Position : Enumeration
+public sealed class Position : Enumeration<Position>
 {
-    public static readonly Position Unknown = new(0, nameof(Unknown));
-    public static readonly Position Goalkeeper = new(1, nameof(Goalkeeper));
-    public static readonly Position Defender = new(2, nameof(Defender));
-    public static readonly Position Midfielder = new(3, nameof(Midfielder));
-    public static readonly Position Attacker = new(4, nameof(Attacker));
+    public static readonly Position Goalkeeper = new(0, nameof(Goalkeeper));
+    public static readonly Position Defender = new(1, nameof(Defender));
+    public static readonly Position Midfielder = new(2, nameof(Midfielder));
+    public static readonly Position Attacker = new(3, nameof(Attacker));
 
     private Position(int id, string name) : base(id, name) { }
 
-    public static IReadOnlyCollection<Position> All =>
-    [
-        Goalkeeper,
-        Defender,
-        Midfielder,
-        Attacker
-    ];
-
-    public static int MaxLength => All.Max(p => p.Name.Length);
-
-    public static Result<Position> Create(string value)
-    {
-        var resolvedValue =
-            All.SingleOrDefault(position => string.Equals(position.Name, value, StringComparison.OrdinalIgnoreCase))
-            ?? Unknown;
-
-        if (resolvedValue == Unknown)
-        {
-            return PlayerErrors.Position.Unknown;
-        }
-
-        return resolvedValue;
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Position"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required by EF Core.
+    /// </remarks>
+    private Position() { }
 }
