@@ -20,8 +20,24 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
             return Result.Failure(PlayerErrors.NotFound(request.PlayerId));
         }
 
+        var nameResult = Name.Create(request.Name);
+        var squadNumberResult = SquadNumber.Create(request.SquadNumber);
+        var nationalityResult = Nationality.Create(request.Nationality);
+        var dateOfBirthResult = DateOfBirth.Create(request.DateOfBirth);
+        var positionResult = Position.Resolve(request.PositionId);
+
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(nameResult,
+                                                                 squadNumberResult,
+                                                                 nationalityResult,
+                                                                 dateOfBirthResult,
+                                                                 positionResult);
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return firstFailureOrSuccess;
+        }
+
         var squadNumberTaken = await _dbContext.Players.AsNoTracking()
-                                                       .Where(player => player.Id != request.PlayerId && player.SquadNumber == request.SquadNumber)
+                                                       .Where(existingPlayer => existingPlayer.Id != player.Id && existingPlayer.SquadNumber == player.SquadNumber)
                                                        .AnyAsync(cancellationToken);
 
         if (squadNumberTaken)
@@ -29,12 +45,18 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
             return Result.Failure(PlayerErrors.SquadNumberTaken(request.SquadNumber));
         }
 
-        player.Update(request.Name, request.SquadNumber, request.Nationality, request.DateOfBirth, request.PositionName);
+        player.ChangeName(nameResult.Value);
 
-        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        player.ChangeSquadNumber(squadNumberResult.Value);
 
-        return updated
-            ? Result.Success()
-            : Result.Failure(PlayerErrors.NotUpdated(player.Id));
+        player.ChangeNationality(nationalityResult.Value);
+
+        player.ChangeDateOfBirth(dateOfBirthResult.Value);
+
+        player.ChangePosition(positionResult.Value);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }
