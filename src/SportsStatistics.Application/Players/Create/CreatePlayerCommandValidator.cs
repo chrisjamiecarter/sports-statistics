@@ -9,30 +9,22 @@ internal sealed class CreatePlayerCommandValidator : AbstractValidator<CreatePla
     public CreatePlayerCommandValidator()
     {
         RuleFor(c => c.Name)
-            .NotEmpty()
-            .MaximumLength(100);
+            .NotEmpty().WithError(PlayerErrors.NameIsRequired)
+            .MaximumLength(Name.MaxLength).WithError(PlayerErrors.NameExceedsMaxLength);
 
         RuleFor(c => c.SquadNumber)
-            .InclusiveBetween(1, 99);
+            .InclusiveBetween(SquadNumber.MinValue, SquadNumber.MaxValue).WithError(PlayerErrors.SquadNumberOutsideRange);
 
         RuleFor(c => c.Nationality)
-            .NotEmpty()
-            .MaximumLength(100);
+            .NotEmpty().WithError(PlayerErrors.NationalityIsRequired)
+            .MaximumLength(Nationality.MaxLength).WithError(PlayerErrors.NationalityExceedsMaxLength);
 
         RuleFor(c => c.DateOfBirth)
-            .NotEmpty()
-            .Must(dob =>
-            {
-                return dob.CalculateAge() >= 15;
-            })
-            .WithMessage("Player must be at least 15 years old.");
+            .NotEmpty().WithError(PlayerErrors.DateOfBirthIsRequired)
+            .Must(dob => dob.CalculateAge() >= DateOfBirth.MinAge).WithError(PlayerErrors.DateOfBirthBelowMinAge);
 
-        RuleFor(c => c.PositionName)
-            .NotEmpty()
-            .Must(position =>
-            {
-                return Position.All.Any(p => string.Equals(p.Name, position, StringComparison.OrdinalIgnoreCase));
-            })
-            .WithMessage($"Invalid position. Valid positions: {string.Join(", ", Position.All)}.");
+        RuleFor(c => c.PositionId)
+            .NotEmpty().WithError(PlayerErrors.PositionIdIsRequired)
+            .Must(positionId => Position.Resolve(positionId).IsSuccess).WithError(PlayerErrors.PositionNotFound);
     }
 }

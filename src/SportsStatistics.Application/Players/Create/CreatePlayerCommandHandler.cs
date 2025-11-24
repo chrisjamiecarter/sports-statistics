@@ -12,14 +12,30 @@ internal sealed class CreatePlayerCommandHandler(IApplicationDbContext dbContext
 
     public async Task<Result> Handle(CreatePlayerCommand request, CancellationToken cancellationToken)
     {
-        var player = Player.Create(request.Name,
-                                   request.SquadNumber,
-                                   request.Nationality,
-                                   request.DateOfBirth,
-                                   request.PositionName);
+        var nameResult = Name.Create(request.Name);
+        var squadNumberResult = SquadNumber.Create(request.SquadNumber);
+        var nationalityResult = Nationality.Create(request.Nationality);
+        var dateOfBirthResult = DateOfBirth.Create(request.DateOfBirth);
+        var positionResult = Position.Resolve(request.PositionId);
+
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(nameResult,
+                                                                 squadNumberResult,
+                                                                 nationalityResult,
+                                                                 dateOfBirthResult,
+                                                                 positionResult);
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return firstFailureOrSuccess;
+        }
+
+        var player = Player.Create(nameResult.Value,
+                                   squadNumberResult.Value,
+                                   nationalityResult.Value,
+                                   dateOfBirthResult.Value,
+                                   positionResult.Value);
 
         var squadNumberTaken = await _dbContext.Players.AsNoTracking()
-                                                       .Where(player => player.SquadNumber == request.SquadNumber)
+                                                       .Where(existingPlayer => existingPlayer.SquadNumber == player.SquadNumber)
                                                        .AnyAsync(cancellationToken);
 
         if (squadNumberTaken)
@@ -29,10 +45,8 @@ internal sealed class CreatePlayerCommandHandler(IApplicationDbContext dbContext
 
         _dbContext.Players.Add(player);
 
-        var created = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return created 
-            ? Result.Success()
-            : Result.Failure(PlayerErrors.NotCreated(request.Name, request.DateOfBirth));
+        return Result.Success();
     }
 }

@@ -6,4 +6,4 @@ public sealed record CreatePlayerCommand(string Name,
                                          int SquadNumber,
                                          string Nationality,
                                          DateOnly DateOfBirth,
-                                         string PositionName) : ICommand;
+                                         int PositionId) : ICommand;
