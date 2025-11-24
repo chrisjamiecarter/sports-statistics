@@ -22,10 +22,8 @@ internal sealed class DeletePlayerCommandHandler(IApplicationDbContext dbContext
 
         _dbContext.Players.Remove(player);
 
-        var deleted = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return deleted 
-            ? Result.Success()
-            : Result.Failure(PlayerErrors.NotDeleted(player.Id));
+        return Result.Success();
     }
 }

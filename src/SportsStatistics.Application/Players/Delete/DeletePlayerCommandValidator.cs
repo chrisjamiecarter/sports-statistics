@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using SportsStatistics.Domain.Players;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Players.Delete;
 
@@ -7,8 +9,6 @@ internal sealed class DeletePlayerCommandValidator : AbstractValidator<DeletePla
     public DeletePlayerCommandValidator()
     {
         RuleFor(c => c.PlayerId)
-            .NotEmpty()
-            .Must(guid => guid.Version == 7)
-            .WithMessage("'Id' is not in the correct format.");
+            .NotEmpty().WithError(PlayerErrors.PlayerIdIsRequired);
     }
 }
