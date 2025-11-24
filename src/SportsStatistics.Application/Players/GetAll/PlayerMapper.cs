@@ -13,6 +13,7 @@ internal static class PlayerMapper
                player.SquadNumber,
                player.Nationality,
                player.DateOfBirth,
+               player.Position.Value,
                player.Position.Name,
                player.Age);
 }

@@ -5,5 +5,6 @@ public sealed record PlayerResponse(Guid Id,
                                     int SquadNumber,
                                     string Nationality,
                                     DateOnly DateOfBirth,
+                                    int PositionId,
                                     string Position,
                                     int Age);
