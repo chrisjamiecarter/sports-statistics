@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Fixtures;
 
@@ -16,42 +15,59 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
         builder.HasKey(fixture => fixture.Id);
 
         builder.Property(fixture => fixture.Id)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(fixture => fixture.CompetitionId)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired();
 
-        builder.Property(fixture => fixture.Opponent)
-               .HasMaxLength(100)
-               .IsRequired();
-
-        builder.Property(fixture => fixture.KickoffTimeUtc)
-               .IsRequired();
-
-        builder.Property(fixture => fixture.Location)
-               .HasConversion(Converters.FixtureLocationConverter)
-               .HasMaxLength(FixtureLocation.MaxLength)
-               .IsRequired();
-
-        builder.OwnsOne(fixture => fixture.Score, score =>
+        builder.ComplexProperty(fixture => fixture.Opponent, propertyBuilder =>
         {
-            score.Property(fixtureScore => fixtureScore.HomeGoals)
-                 .IsRequired();
-            score.Property(fixtureScore => fixtureScore.AwayGoals)
-                 .IsRequired();
-            score.WithOwner();
+            propertyBuilder.Property(opponent => opponent.Value)
+                           .HasMaxLength(Opponent.MaxLength)
+                           .IsRequired();
         });
 
-        builder.Property(fixture => fixture.Status)
-               .HasConversion(Converters.FixtureStatusConverter)
-               .HasMaxLength(FixtureStatus.MaxLength)
-               .IsRequired();
+        builder.ComplexProperty(fixture => fixture.KickoffTimeUtc, propertyBuilder =>
+        {
+            propertyBuilder.Property(kickoffTimeUtc => kickoffTimeUtc.Value)
+                           .IsRequired();
+        });
+
+        builder.ComplexProperty(fixture => fixture.Location, propertyBuilder =>
+        {
+            propertyBuilder.Property(location => location.Value)
+                           .IsRequired();
+
+            propertyBuilder.Ignore(location => location.Name);
+        });
+
+        builder.ComplexProperty(fixture => fixture.Score, propertyBuilder =>
+        {
+            propertyBuilder.Property(score => score.HomeGoals)
+                           .IsRequired();
+
+            propertyBuilder.Property(score => score.AwayGoals)
+                           .IsRequired();
+        });
+
+        builder.ComplexProperty(fixture => fixture.Status, propertyBuilder =>
+        {
+            propertyBuilder.Property(status => status.Value)
+                           .IsRequired();
+
+            propertyBuilder.Ignore(status => status.Name);
+        });
+
+        builder.Property(fixture => fixture.DeletedOnUtc);
+
+        builder.Property(fixture => fixture.Deleted)
+               .HasDefaultValue(false);
 
         builder.HasOne<Competition>()
                .WithMany()
                .HasForeignKey(fixture => fixture.CompetitionId);
+
+        builder.HasQueryFilter(fixture => !fixture.Deleted);
     }
 }
