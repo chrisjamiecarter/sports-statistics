@@ -20,12 +20,12 @@ public sealed record Minute
     {
         if (value is null)
         {
-            return MatchTrackingErrors.Minute.NullOrEmpty;
+            return MatchEventBaseErrors.Minute.NullOrEmpty;
         }
 
         if (value < MinValue)
         {
-            return MatchTrackingErrors.Minute.BelowMinValue;
+            return MatchEventBaseErrors.Minute.BelowMinValue;
         }
 
         return new Minute(value.Value);

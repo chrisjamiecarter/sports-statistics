@@ -2,8 +2,20 @@
 
 namespace SportsStatistics.Domain.MatchTracking;
 
-public static class MatchTrackingErrors
+public static class MatchEventBaseErrors
 {
+    public static Error FixtureIdIsRequired => Error.Validation(
+        "MatchEventBase.FixtureIdIsRequired",
+        "The fixture identifier is required.");
+
+    public static Error MinuteIsRequired => Error.Validation(
+        "MatchEventBase.MinuteIsRequired",
+        "The fixture identifier is required.");
+
+    public static Error OccurredAtDateAndTimeIsRequired => Error.Validation(
+        "MatchEventBase.OccurredAtDateAndTimeIsRequired",
+        "The occured at date and time of the match event is required.");
+
     public static class MatchEventType
     {
         public static Error Unknown => Error.Validation(
