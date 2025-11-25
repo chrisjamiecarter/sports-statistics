@@ -4,33 +4,33 @@ namespace SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 
 public sealed record Substitution
 {
-    private Substitution(Guid playerOutId, Guid playerInId)
+    private Substitution(Guid playerOffId, Guid playerOnId)
     {
-        PlayerOutId = playerOutId;
-        PlayerInId = playerInId;
+        PlayerOffId = playerOffId;
+        PlayerOnId = playerOnId;
     }
 
-    public Guid PlayerOutId { get; private set; } = default!;
+    public Guid PlayerOffId { get; private set; } = default!;
 
-    public Guid PlayerInId { get; private set; } = default!;
+    public Guid PlayerOnId { get; private set; } = default!;
 
-    public static Result<Substitution> Create(Guid? playerOutId, Guid? playerInId)
+    public static Result<Substitution> Create(Guid? playerOffId, Guid? playerOnId)
     {
-        if (playerOutId is null || playerOutId == Guid.Empty)
+        if (playerOffId is null || playerOffId == Guid.Empty)
         {
-            return MatchTrackingErrors.SubstitutionEvent.PlayerOutId.NullOrEmpty;
+            return SubstitutionEventErrors.Substitution.PlayerOffIdNullOrEmpty;
         }
 
-        if (playerInId is null || playerInId == Guid.Empty)
+        if (playerOnId is null || playerOnId == Guid.Empty)
         {
-            return MatchTrackingErrors.SubstitutionEvent.PlayerInId.NullOrEmpty;
+            return SubstitutionEventErrors.Substitution.PlayerOnIdNullOrEmpty;
         }
 
-        if (playerOutId == playerInId)
+        if (playerOffId == playerOnId)
         {
-            return MatchTrackingErrors.SubstitutionEvent.SamePlayer;
+            return SubstitutionEventErrors.Substitution.SamePlayer;
         }
 
-        return new Substitution(playerOutId.Value, playerInId.Value);
+        return new Substitution(playerOffId.Value, playerOnId.Value);
     }
 }
