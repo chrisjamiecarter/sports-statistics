@@ -2,9 +2,7 @@
 
 namespace SportsStatistics.Infrastructure.Database.Converters;
 
-internal sealed class PlayerPositionConverter : ValueObjectConverter<Position>
+internal sealed class PlayerPositionConverter : ValueObjectConverter<Position, int>
 {
-    public static readonly PlayerPositionConverter Instance = new();
-
-    private PlayerPositionConverter() : base(type => type.Name, value => Position.FromName(value)) { }
+    private PlayerPositionConverter() : base(type => type.Value, value => Position.Resolve(value).Value) { }
 }
