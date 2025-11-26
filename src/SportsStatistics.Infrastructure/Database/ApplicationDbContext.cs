@@ -5,6 +5,7 @@ using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Domain.MatchTracking.MatchEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
+using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Database;
 
@@ -36,5 +37,13 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
         // TODO: Dispatch domain events.
 
         return result;
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<Position>()
+                            .HaveConversion<PlayerPositionConverter>();
+
+        base.ConfigureConventions(configurationBuilder);
     }
 }
