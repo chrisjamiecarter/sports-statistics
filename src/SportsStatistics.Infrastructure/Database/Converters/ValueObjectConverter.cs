@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace SportsStatistics.Infrastructure.Database.Converters;
 
-internal abstract class ValueObjectConverter<T> : ValueConverter<T, string>
+internal abstract class ValueObjectConverter<TModel, TProvider> : ValueConverter<TModel, TProvider>
 {
     protected ValueObjectConverter(
-        Expression<Func<T, string>> toProviderExpression,
-        Expression<Func<string, T>> fromProviderExpression)
+        Expression<Func<TModel, TProvider>> toProviderExpression,
+        Expression<Func<TProvider, TModel>> fromProviderExpression)
         : base(toProviderExpression, fromProviderExpression)
     {
     }
