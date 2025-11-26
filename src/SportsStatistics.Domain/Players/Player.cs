@@ -2,7 +2,7 @@
 
 namespace SportsStatistics.Domain.Players;
 
-public sealed class Player : Entity
+public sealed class Player : Entity, ISoftDeletableEntity
 {
     private Player(Name name,
                    SquadNumber squadNumber,
@@ -37,6 +37,10 @@ public sealed class Player : Entity
     public Position Position { get; private set; } = default!;
 
     public int Age => DateOfBirth.Value.CalculateAge();
+
+    public DateTime? DeletedOnUtc { get; private set; }
+
+    public bool Deleted { get; private set; }
 
     public static Player Create(Name name, SquadNumber squadNumber, Nationality nationality, DateOfBirth dateOfBirth, Position position)
     {
