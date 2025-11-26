@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Players;
+using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.Infrastructure.Database.Converters;
 
@@ -15,30 +16,46 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.HasKey(player => player.Id);
 
         builder.Property(player => player.Id)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
-        builder.Property(player => player.Name)
-               .HasMaxLength(100)
-               .IsRequired();
+        builder.ComplexProperty(player => player.Name, propertyBuilder =>
+        {
+            propertyBuilder.Property(name => name.Value)
+                           .HasMaxLength(Name.MaxLength)
+                           .IsRequired();
+        });
 
-        builder.Property(player => player.SquadNumber)
-               .IsRequired();
+        builder.ComplexProperty(player => player.SquadNumber, propertyBuilder =>
+        {
+            propertyBuilder.Property(squadNumber => squadNumber.Value)
+                           .IsRequired();
+        });
 
-        builder.Property(player => player.Nationality)
-               .HasMaxLength(100)
-               .IsRequired();
+        builder.ComplexProperty(player => player.Nationality, propertyBuilder =>
+        {
+            propertyBuilder.Property(nationality => nationality.Value)
+                           .HasMaxLength(Nationality.MaxLength)
+                           .IsRequired();
+        });
 
-        builder.Property(player => player.DateOfBirth)
-               .HasColumnType("date")
-               .IsRequired();
+        builder.ComplexProperty(player => player.DateOfBirth, propertyBuilder =>
+        {
+            propertyBuilder.Property(dateOfBirth => dateOfBirth.Value)
+                           //.HasColumnType("date")
+                           .IsRequired();
+        });
 
         builder.Property(player => player.Position)
-               .HasConversion(Converters.PlayerPositionConverter)
-               .HasMaxLength(Position.MaxLength)
                .IsRequired();
 
         builder.Ignore(player => player.Age);
+
+        builder.Property(player => player.DeletedOnUtc);
+
+        builder.Property(player => player.Deleted)
+               .HasDefaultValue(false);
+
+        builder.HasQueryFilter(player => !player.Deleted);
     }
 }
