@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.MatchTracking.SubstitutionEvents;
 
@@ -16,12 +15,10 @@ internal sealed class SubstitutionEventConfiguration : IEntityTypeConfiguration<
         builder.HasKey(substitutionEvent => substitutionEvent.Id);
 
         builder.Property(substitutionEvent => substitutionEvent.Id)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(substitutionEvent => substitutionEvent.FixtureId)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired();
 
         builder.Property(substitutionEvent => substitutionEvent.Minute)
@@ -30,20 +27,28 @@ internal sealed class SubstitutionEventConfiguration : IEntityTypeConfiguration<
         builder.Property(substitutionEvent => substitutionEvent.OccurredAtUtc)
                .IsRequired();
 
-        builder.Property(substitutionEvent => substitutionEvent.PlayerOutId)
-               .HasConversion(Converters.EntityIdConverter)
-               .IsRequired();
+        builder.ComplexProperty(substitutionEvent => substitutionEvent.Substitution, propertyBuilder =>
+        {
+            propertyBuilder.Property(substitution => substitution.PlayerOffId)
+                           .IsRequired();
 
-        builder.Property(substitutionEvent => substitutionEvent.PlayerInId)
-               .HasConversion(Converters.EntityIdConverter)
-               .IsRequired();
+            propertyBuilder.Property(substitution => substitution.PlayerOnId)
+                           .IsRequired();
+        });
+
+        builder.Property(substitutionEvent => substitutionEvent.DeletedOnUtc);
+
+        builder.Property(substitutionEvent => substitutionEvent.Deleted)
+               .HasDefaultValue(false);
 
         builder.HasOne<Player>()
                .WithMany()
-               .HasForeignKey(substitutionEvent => substitutionEvent.PlayerOutId);
+               .HasForeignKey(substitutionEvent => substitutionEvent.Substitution.PlayerOffId);
 
         builder.HasOne<Player>()
                .WithMany()
-               .HasForeignKey(substitutionEvent => substitutionEvent.PlayerInId);
+               .HasForeignKey(substitutionEvent => substitutionEvent.Substitution.PlayerOnId);
+
+        builder.HasQueryFilter(substitutionEvent => !substitutionEvent.Deleted);
     }
 }
