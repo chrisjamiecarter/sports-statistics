@@ -4,7 +4,6 @@ using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Domain.MatchTracking.PlayerEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.MatchTracking.PlayerEvents;
 
@@ -17,28 +16,31 @@ internal sealed class PlayerEventConfiguration : IEntityTypeConfiguration<Player
         builder.HasKey(playerEvent => playerEvent.Id);
 
         builder.Property(playerEvent => playerEvent.Id)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(playerEvent => playerEvent.FixtureId)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired();
 
-        builder.Property(playerEvent => playerEvent.Minute)
-               .IsRequired();
+        builder.ComplexProperty(playerEvent => playerEvent.Minute, propertyBuilder =>
+        {
+            propertyBuilder.Property(minute => minute.Value)
+                           .IsRequired();
+        });
 
         builder.Property(playerEvent => playerEvent.OccurredAtUtc)
                .IsRequired();
 
         builder.Property(playerEvent => playerEvent.PlayerId)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired();
 
         builder.Property(playerEvent => playerEvent.Type)
-               .HasConversion(Converters.PlayerEventTypeConverter)
-               .HasMaxLength(PlayerEventType.MaxLength)
                .IsRequired();
+
+        builder.Property(playerEvent => playerEvent.DeletedOnUtc);
+
+        builder.Property(playerEvent => playerEvent.Deleted)
+               .HasDefaultValue(false);
 
         builder.HasOne<Fixture>()
                .WithMany()
@@ -47,5 +49,7 @@ internal sealed class PlayerEventConfiguration : IEntityTypeConfiguration<Player
         builder.HasOne<Player>()
                .WithMany()
                .HasForeignKey(playerEvent => playerEvent.PlayerId);
+
+        builder.HasQueryFilter(playerEvent => !playerEvent.Deleted);
     }
 }
