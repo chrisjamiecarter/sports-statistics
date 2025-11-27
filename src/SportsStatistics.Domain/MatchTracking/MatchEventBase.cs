@@ -2,7 +2,7 @@
 
 namespace SportsStatistics.Domain.MatchTracking;
 
-public abstract class MatchEventBase : Entity
+public abstract class MatchEventBase : Entity, ISoftDeletableEntity
 {
     protected MatchEventBase(Guid fixtureId,
                              Minute minute,
@@ -27,4 +27,8 @@ public abstract class MatchEventBase : Entity
     public Minute Minute { get; private set; } = default!;
 
     public DateTime OccurredAtUtc { get; private set; } = default!;
+
+    public DateTime? DeletedOnUtc { get; private set; }
+
+    public bool Deleted { get; private set; }
 }
