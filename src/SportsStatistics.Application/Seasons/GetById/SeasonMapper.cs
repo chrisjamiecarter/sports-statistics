@@ -5,8 +5,8 @@ namespace SportsStatistics.Application.Seasons.GetById;
 internal static class SeasonMapper
 {
     public static SeasonResponse ToResponse(this Season season)
-        => new(season.Id.Value,
-               season.StartDate,
-               season.EndDate,
+        => new(season.Id,
+               season.DateRange.StartDate,
+               season.DateRange.EndDate,
                season.Name);
 }
