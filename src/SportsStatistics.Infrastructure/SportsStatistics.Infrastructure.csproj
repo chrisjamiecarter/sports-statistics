@@ -28,4 +28,8 @@
     <InternalsVisibleTo Include="SportsStatistics.Infrastructure.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Database\Migrations\" />
+  </ItemGroup>
+
 </Project>

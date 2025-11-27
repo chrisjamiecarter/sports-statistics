@@ -3,6 +3,7 @@ using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Domain.MatchTracking.MatchEvents;
+using SportsStatistics.Domain.MatchTracking.PlayerEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database.Converters;
@@ -41,8 +42,23 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
+        configurationBuilder.Properties<Format>()
+                            .HaveConversion<CompetitionFormatConverter>();
+
+        configurationBuilder.Properties<Location>()
+                            .HaveConversion<FixtureLocationConverter>();
+
+        configurationBuilder.Properties<MatchEventType>()
+                            .HaveConversion<MatchEventTypeConverter>();
+
+        configurationBuilder.Properties<PlayerEventType>()
+                            .HaveConversion<PlayerEventTypeConverter>();
+
         configurationBuilder.Properties<Position>()
                             .HaveConversion<PlayerPositionConverter>();
+
+        configurationBuilder.Properties<Status>()
+                            .HaveConversion<FixtureStatusConverter>();
 
         base.ConfigureConventions(configurationBuilder);
     }
