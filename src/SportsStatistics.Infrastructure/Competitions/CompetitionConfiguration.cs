@@ -28,13 +28,8 @@ internal sealed class CompetitionConfiguration : IEntityTypeConfiguration<Compet
                            .IsRequired();
         });
 
-        builder.ComplexProperty(competition => competition.Format, propertyBuilder =>
-        {
-            propertyBuilder.Property(format => format.Value)
-                           .IsRequired();
-
-            propertyBuilder.Ignore(format => format.Name);
-        });
+        builder.Property(competition => competition.Format)
+               .IsRequired();
 
         builder.Property(competition => competition.DeletedOnUtc);
 
