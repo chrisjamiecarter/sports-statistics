@@ -26,7 +26,7 @@ public sealed record DateOfBirth
         // TODO: Should this be a Domain error or Application error?
         if (value > DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-MinAge)))
         {
-            return PlayerErrors.DateOfBirth.BelowMinAge;
+            return PlayerErrors.DateOfBirthBelowMinAge;
         }
 
         return new DateOfBirth(value.Value);
