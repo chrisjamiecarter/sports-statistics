@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Seasons;
 
@@ -15,18 +14,27 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
         builder.HasKey(season => season.Id);
 
         builder.Property(season => season.Id)
-               .HasConversion(Converters.EntityIdConverter)
                .IsRequired()
                .ValueGeneratedNever();
 
-        builder.Property(season => season.StartDate)
-               .HasColumnType("date")
-               .IsRequired();
+        builder.ComplexProperty(season => season.DateRange, propertyBuilder =>
+        {
+            propertyBuilder.Property(dateRange => dateRange.StartDate)
+                           //.HasColumnType("date")
+                           .IsRequired();
 
-        builder.Property(season => season.EndDate)
-               .HasColumnType("date")
-               .IsRequired();
+            propertyBuilder.Property(dateRange => dateRange.EndDate)
+                           //.HasColumnType("date")
+                           .IsRequired();
+        });
 
         builder.Ignore(season => season.Name);
+
+        builder.Property(season => season.DeletedOnUtc);
+
+        builder.Property(season => season.Deleted)
+               .HasDefaultValue(false);
+
+        builder.HasQueryFilter(season => !season.Deleted);
     }
 }
