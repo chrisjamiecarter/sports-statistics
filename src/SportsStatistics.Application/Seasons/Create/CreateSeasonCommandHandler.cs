@@ -11,15 +11,20 @@ internal sealed class CreateSeasonCommandHandler(IApplicationDbContext dbContext
 
     public async Task<Result> Handle(CreateSeasonCommand request, CancellationToken cancellationToken)
     {
-        var season = Season.Create(request.StartDate,
-                                   request.EndDate);
+        var dateRangeResult = DateRange.Create(request.StartDate, request.EndDate);
+
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(dateRangeResult);
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return firstFailureOrSuccess;
+        }
+
+        var season = Season.Create(dateRangeResult.Value);
 
         _dbContext.Seasons.Add(season);
 
-        var created = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return created
-            ? Result.Success()
-            : Result.Failure(SeasonErrors.NotCreated(request.StartDate, request.EndDate));
+        return Result.Success();
     }
 }
