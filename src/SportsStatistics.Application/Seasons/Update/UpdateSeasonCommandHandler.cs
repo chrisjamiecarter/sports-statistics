@@ -20,12 +20,19 @@ internal sealed class UpdateSeasonCommandHandler(IApplicationDbContext dbContext
             return Result.Failure(SeasonErrors.NotFound(request.SeasonId));
         }
 
-        season.Update(request.StartDate, request.EndDate);
 
-        var updated = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        var dateRangeResult = DateRange.Create(request.StartDate, request.EndDate);
 
-        return updated
-            ? Result.Success()
-            : Result.Failure(SeasonErrors.NotUpdated(request.SeasonId));
+        var firstFailureOrSuccess = Result.FirstFailureOrSuccess(dateRangeResult);
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return firstFailureOrSuccess;
+        }
+
+        season.ChangeDateRange(dateRangeResult.Value);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }
