@@ -2,9 +2,7 @@
 
 namespace SportsStatistics.Infrastructure.Database.Converters;
 
-internal sealed class MatchEventTypeConverter : ValueObjectConverter<MatchEventType>
+internal sealed class MatchEventTypeConverter : ValueObjectConverter<MatchEventType, int>
 {
-    public static readonly MatchEventTypeConverter Instance = new();
-
-    private MatchEventTypeConverter() : base(type => type.Name, value => MatchEventType.FromName(value)) { }
+    private MatchEventTypeConverter() : base(type => type.Value, value => MatchEventType.Resolve(value).Value) { }
 }

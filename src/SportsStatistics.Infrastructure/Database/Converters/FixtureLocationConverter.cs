@@ -2,9 +2,7 @@
 
 namespace SportsStatistics.Infrastructure.Database.Converters;
 
-internal sealed class FixtureLocationConverter : ValueObjectConverter<FixtureLocation>
+internal sealed class FixtureLocationConverter : ValueObjectConverter<Location, int>
 {
-    public static readonly FixtureLocationConverter Instance = new();
-
-    private FixtureLocationConverter() : base(type => type.Name, value => FixtureLocation.FromName(value)) { }
+    private FixtureLocationConverter() : base(type => type.Value, value => Location.Resolve(value).Value) { }
 }

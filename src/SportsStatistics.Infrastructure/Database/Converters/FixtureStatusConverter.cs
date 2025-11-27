@@ -2,9 +2,7 @@
 
 namespace SportsStatistics.Infrastructure.Database.Converters;
 
-internal sealed class FixtureStatusConverter : ValueObjectConverter<FixtureStatus>
+internal sealed class FixtureStatusConverter : ValueObjectConverter<Status, int>
 {
-    public static readonly FixtureStatusConverter Instance = new();
-
-    private FixtureStatusConverter() : base(type => type.Name, value => FixtureStatus.FromName(value)) { }
+    private FixtureStatusConverter() : base(type => type.Value, value => Status.Resolve(value).Value) { }
 }

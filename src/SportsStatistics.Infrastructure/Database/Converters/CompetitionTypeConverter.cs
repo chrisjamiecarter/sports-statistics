@@ -2,9 +2,7 @@
 
 namespace SportsStatistics.Infrastructure.Database.Converters;
 
-internal sealed class CompetitionTypeConverter : ValueObjectConverter<CompetitionType>
+internal sealed class CompetitionFormatConverter : ValueObjectConverter<Format, int>
 {
-    public static readonly CompetitionTypeConverter Instance = new();
-
-    private CompetitionTypeConverter() : base(type => type.Name, value => CompetitionType.FromName(value)) { }
+    private CompetitionFormatConverter() : base(type => type.Value, value => Format.Resolve(value).Value) { }
 }
