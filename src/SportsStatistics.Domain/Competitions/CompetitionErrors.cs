@@ -4,6 +4,10 @@ namespace SportsStatistics.Domain.Competitions;
 
 public static class CompetitionErrors
 {
+    public static Error AlreadyDeleted => Error.Validation(
+        "Competition.AlreadyDeleted",
+        "The competition has already been deleted.");
+
     public static Error CompetitionIdIsRequired => Error.Validation(
         "Competition.CompetitionIdIsRequired",
         "The competition identifier is required.");
@@ -31,8 +35,6 @@ public static class CompetitionErrors
     public static Error SeasonIdIsRequired => Error.Validation(
         "Competition.SeasonIdIsRequired",
         "The season identifier is required.");
-
-    public static object AlreadyDeleted { get; internal set; }
 
     // TODO: Refactor.
 
