@@ -34,13 +34,8 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
                            .IsRequired();
         });
 
-        builder.ComplexProperty(fixture => fixture.Location, propertyBuilder =>
-        {
-            propertyBuilder.Property(location => location.Value)
-                           .IsRequired();
-
-            propertyBuilder.Ignore(location => location.Name);
-        });
+        builder.Property(fixture => fixture.Location)
+               .IsRequired();
 
         builder.ComplexProperty(fixture => fixture.Score, propertyBuilder =>
         {
@@ -51,13 +46,8 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
                            .IsRequired();
         });
 
-        builder.ComplexProperty(fixture => fixture.Status, propertyBuilder =>
-        {
-            propertyBuilder.Property(status => status.Value)
-                           .IsRequired();
-
-            propertyBuilder.Ignore(status => status.Name);
-        });
+        builder.Property(fixture => fixture.Status)
+               .IsRequired();
 
         builder.Property(fixture => fixture.DeletedOnUtc);
 
