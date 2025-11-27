@@ -12,8 +12,8 @@ internal sealed class GetSeasonsQueryHandler(IApplicationDbContext dbContext) : 
     public async Task<Result<List<SeasonResponse>>> Handle(GetSeasonsQuery request, CancellationToken cancellationToken)
     {
         var seasons = await _dbContext.Seasons.AsNoTracking()
-                                              .OrderBy(season => season.StartDate)
-                                              .ThenBy(season => season.EndDate)
+                                              .OrderBy(season => season.DateRange.StartDate)
+                                              .ThenBy(season => season.DateRange.EndDate)
                                               .ToListAsync(cancellationToken);
         return seasons.ToResponse();
     }
