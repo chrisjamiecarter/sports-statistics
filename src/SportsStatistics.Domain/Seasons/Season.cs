@@ -1,9 +1,10 @@
 ﻿using SportsStatistics.Domain.Competitions;
+using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Seasons;
 
-public sealed class Season : Entity
+public sealed class Season : Entity, ISoftDeletableEntity
 {
     private Season(DateRange dateRange)
         : base(Guid.CreateVersion7())
@@ -14,6 +15,10 @@ public sealed class Season : Entity
     public DateRange DateRange { get; private set; }
 
     public string Name => $"{DateRange.StartDate.Year}/{DateRange.EndDate.Year}";
+
+    public DateTime? DeletedOnUtc { get; private set; }
+
+    public bool Deleted { get; private set; }
 
     public static Season Create(DateRange dateRange)
     {
