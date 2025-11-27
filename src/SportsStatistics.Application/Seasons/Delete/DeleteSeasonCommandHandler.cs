@@ -22,10 +22,8 @@ internal sealed class DeleteSeasonCommandHandler(IApplicationDbContext dbContext
 
         _dbContext.Seasons.Remove(season);
 
-        var deleted = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return deleted
-            ? Result.Success()
-            : Result.Failure(SeasonErrors.NotDeleted(request.SeasonId));
+        return Result.Success();
     }
 }
