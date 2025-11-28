@@ -8,7 +8,7 @@ public class UpdateCompetitionCommandValidatorTests
 {
     private static readonly UpdateCompetitionCommand BaseCommand = new(Guid.CreateVersion7(),
                                                                        "Test Name",
-                                                                       CompetitionType.League.Name);
+                                                                       Format.League.Value);
 
     private readonly UpdateCompetitionCommandValidator _validator;
 
@@ -116,7 +116,7 @@ public class UpdateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionTypeName = "Training" };
-        var expected = $"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.";
+        var expected = $"'Competition Type Name' is invalid. Valid options: {string.Join(", ", Domain.Competitions.Format.All)}.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
