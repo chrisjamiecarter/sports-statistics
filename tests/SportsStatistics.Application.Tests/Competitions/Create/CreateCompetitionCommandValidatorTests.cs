@@ -8,7 +8,7 @@ public class CreateCompetitionCommandValidatorTests
 {
     private static readonly CreateCompetitionCommand BaseCommand = new(Guid.CreateVersion7(),
                                                                        "Test Name",
-                                                                       CompetitionType.League.Name);
+                                                                       Format.League.Value);
 
     private readonly CreateCompetitionCommandValidator _validator;
 
@@ -78,50 +78,49 @@ public class CreateCompetitionCommandValidatorTests
               .WithErrorMessage(expected);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData("    ")]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenCompetitionTypeNameIsEmpty(string competitionTypeName)
+    [Fact]
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenFormatIdIsEmpty()
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
+        var command = BaseCommand with { FormatId = default };
         var expected = "'Competition Type Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.CompetitionTypeName)
+        result.ShouldHaveValidationErrorFor(c => c.FormatId)
               .WithErrorMessage(expected);
     }
 
-    [Theory]
-    [InlineData("League")]
-    [InlineData("Cup")]
-    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenCompetitionTypeNameIsValid(string competitionTypeName)
+    [Fact]
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenFormatIdIsValid()
     {
-        // Arrange.
-        var command = BaseCommand with { CompetitionTypeName = competitionTypeName };
+        foreach (var format in Format.List)
+        {
+            // Arrange.
+            var command = BaseCommand with { FormatId = format.Value };
 
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
+            // Act.
+            var result = await _validator.TestValidateAsync(command);
 
-        // Assert.
-        result.ShouldNotHaveAnyValidationErrors();
+            // Assert.
+            result.ShouldNotHaveAnyValidationErrors();
+        }
     }
 
     [Fact]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenCompetitionTypeNameIsInvalid()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenFormatIdIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { CompetitionTypeName = "Training" };
-        var expected = $"'Competition Type Name' is invalid. Valid options: {string.Join(", ", CompetitionType.All)}.";
+        var command = BaseCommand with { FormatId = -1 };
+        var expected = "'Competition Type Name' is invalid.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.CompetitionTypeName)
+        result.ShouldHaveValidationErrorFor(c => c.FormatId)
               .WithErrorMessage(expected);
     }
 }
