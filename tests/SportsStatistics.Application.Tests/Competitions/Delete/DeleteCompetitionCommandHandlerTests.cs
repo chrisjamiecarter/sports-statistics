@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
+﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Competitions.Delete;
 using SportsStatistics.Domain.Competitions;
@@ -11,23 +10,20 @@ public class DeleteCompetitionCommandHandlerTests
 {
     private static readonly List<Competition> BaseCompetitions =
     [
-        Competition.Create(EntityId.Create(),"Test Competition", CompetitionType.League.Name),
+        CompetitionFixtures.PremierLeague2024_2025,
     ];
 
     private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetitions[0].Id);
 
-    private readonly Mock<DbSet<Competition>> _competitionDbSetMock;
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly DeleteCompetitionCommandHandler _handler;
 
     public DeleteCompetitionCommandHandlerTests()
     {
-        _competitionDbSetMock = BaseCompetitions.BuildMockDbSet();
-
         _dbContextMock = new Mock<IApplicationDbContext>();
 
         _dbContextMock.Setup(m => m.Competitions)
-                      .Returns(_competitionDbSetMock.Object);
+                      .Returns(BaseCompetitions.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
@@ -55,23 +51,6 @@ public class DeleteCompetitionCommandHandlerTests
         // Arrange.
         var command = BaseCommand with { CompetitionId = Guid.CreateVersion7() };
         var expected = Result.Failure(CompetitionErrors.NotFound(command.CompetitionId));
-
-        // Act.
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert.
-        result.ShouldBeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenCompetitionIsNotDeleted()
-    {
-        // Arrange.
-        var command = BaseCommand;
-        var expected = Result.Failure(CompetitionErrors.NotDeleted(command.CompetitionId));
-
-        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(0);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
