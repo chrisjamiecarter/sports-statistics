@@ -2,23 +2,19 @@
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Competitions.GetAll;
 using SportsStatistics.Domain.Competitions;
-using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Competitions.GetAll;
 
 public class GetAllCompetitionsQueryHandlerTests
 {
-    private static readonly Season BaseSeason = Season.Create(new DateOnly(2025, 8, 1),
-                                                              new DateOnly(2026, 7, 31));
-
     private static readonly List<Competition> BaseCompetitions =
     [
-        Competition.Create(BaseSeason.Id, "Test League", CompetitionType.League.Name),
-        Competition.Create(BaseSeason.Id, "Test Cup", CompetitionType.Cup.Name),
+        CompetitionFixtures.CompetitionLeague2024_2025,
+        CompetitionFixtures.CompetitionCup2024_2025,
     ];
 
-    private static readonly GetAllCompetitionsQuery BaseCommand = new(BaseSeason.Id);
+    private static readonly GetAllCompetitionsQuery BaseCommand = new(CompetitionFixtures.Season2024_2025.Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetAllCompetitionsQueryHandler _handler;
