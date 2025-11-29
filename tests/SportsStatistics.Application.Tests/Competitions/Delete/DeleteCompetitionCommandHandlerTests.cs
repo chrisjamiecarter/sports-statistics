@@ -10,7 +10,7 @@ public class DeleteCompetitionCommandHandlerTests
 {
     private static readonly List<Competition> BaseCompetitions =
     [
-        CompetitionFixtures.PremierLeague2024_2025,
+        CompetitionFixtures.CompetitionLeague2024_2025,
     ];
 
     private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetitions[0].Id);
