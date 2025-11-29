@@ -9,7 +9,7 @@ public class CreateFixtureCommandValidatorTests
     private static readonly CreateFixtureCommand BaseCommand = new(Guid.CreateVersion7(),
                                                                    "Test Opponent",
                                                                    DateTime.UtcNow,
-                                                                   FixtureLocation.Home.Name);
+                                                                   Location.Home.Value);
 
     private readonly CreateFixtureCommandValidator _validator;
 
@@ -94,51 +94,49 @@ public class CreateFixtureCommandValidatorTests
               .WithErrorMessage(expected);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData("    ")]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenFixtureLocationNameIsEmpty(string fixtureLocationName)
+    [Fact]
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenLocationIdIsEmpty()
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocationName = fixtureLocationName };
+        var command = BaseCommand with { LocationId = default};
         var expected = "'Fixture Location Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.FixtureLocationName)
+        result.ShouldHaveValidationErrorFor(c => c.LocationId)
               .WithErrorMessage(expected);
     }
 
-    [Theory]
-    [InlineData("Home")]
-    [InlineData("Away")]
-    [InlineData("Neutral")]
-    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenFixtureLocationNameIsValid(string fixtureLocationName)
+    [Fact]
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenLocationIdIsValid()
     {
-        // Arrange.
-        var command = BaseCommand with { FixtureLocationName = fixtureLocationName };
+        foreach (var location in Location.List)
+        {
+            // Arrange.
+            var command = BaseCommand with { LocationId = location.Value };
 
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
+            // Act.
+            var result = await _validator.TestValidateAsync(command);
 
-        // Assert.
-        result.ShouldNotHaveAnyValidationErrors();
+            // Assert.
+            result.ShouldNotHaveAnyValidationErrors();
+        }
     }
 
     [Fact]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenFixtureLocationNameIsInvalid()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenLocationIdIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { FixtureLocationName = "The Moon" };
-        var expected = $"Invalid fixture location. Valid fixture locations: {string.Join(", ", FixtureLocation.All)}.";
+        var command = BaseCommand with { LocationId = -1 };
+        var expected = $"Invalid fixture location.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.FixtureLocationName)
+        result.ShouldHaveValidationErrorFor(c => c.LocationId)
               .WithErrorMessage(expected);
     }
 }

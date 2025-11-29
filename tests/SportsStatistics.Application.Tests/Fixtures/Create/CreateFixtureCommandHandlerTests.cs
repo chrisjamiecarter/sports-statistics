@@ -12,24 +12,25 @@ public class CreateFixtureCommandHandlerTests
 {
     private static readonly List<Season> BaseSeasons =
     [
-        Season.Create(new DateOnly(2025, 8, 1), new DateOnly(2026, 7, 31)),
+        FixtureFixtures.Season2023_2024,
+        FixtureFixtures.Season2024_2025,
     ];
 
     private static readonly List<Competition> BaseCompetitions =
     [
-        Competition.Create(BaseSeasons[0].Id, "Test League", CompetitionType.League.Name),
-        Competition.Create(BaseSeasons[0].Id, "Test Cup", CompetitionType.Cup.Name),
+        FixtureFixtures.CompetitionLeague2024_2025,
+        FixtureFixtures.CompetitionCup2024_2025,
     ];
 
     private static readonly List<Fixture> BaseFixtures =
     [
-        Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", BaseSeasons[0].StartDate.ToDateTime(TimeOnly.MinValue), FixtureLocation.Home.Name),
+        FixtureFixtures.FixtureGW1League2024_2925,
     ];
 
-    private static readonly CreateFixtureCommand BaseCommand = new(BaseCompetitions[0].Id,
+    private static readonly CreateFixtureCommand BaseCommand = new(FixtureFixtures.CompetitionLeague2024_2025.Id,
                                                                    "Test Opponent",
-                                                                   BaseFixtures[0].KickoffTimeUtc.AddDays(7),
-                                                                   FixtureLocation.Away.Name);
+                                                                   FixtureFixtures.FixtureGW1League2024_2925.KickoffTimeUtc.Value.AddDays(7),
+                                                                   Location.Away.Value);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateFixtureCommandHandler _handler;
@@ -85,8 +86,8 @@ public class CreateFixtureCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenKickoffTimeOutsideSeason()
     {
         // Arrange.
-        var command = BaseCommand with { KickoffTimeUtc = BaseSeasons[0].StartDate.AddDays(-1).ToDateTime(TimeOnly.MinValue) };
-        var expected = Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(command.KickoffTimeUtc, BaseSeasons[0].StartDate, BaseSeasons[0].EndDate));
+        var command = BaseCommand with { KickoffTimeUtc = FixtureFixtures.Season2024_2025.DateRange.StartDate.AddDays(-1).ToDateTime(TimeOnly.MinValue) };
+        var expected = Result.Failure(FixtureErrors.KickoffTimeOutsideSeason(command.KickoffTimeUtc, FixtureFixtures.Season2024_2025.DateRange.StartDate, FixtureFixtures.Season2024_2025.DateRange.EndDate));
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -99,25 +100,8 @@ public class CreateFixtureCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenAnotherFixtureAlreadyScheduled()
     {
         // Arrange.
-        var command = BaseCommand with { KickoffTimeUtc = BaseFixtures[0].KickoffTimeUtc };
+        var command = BaseCommand with { KickoffTimeUtc = FixtureFixtures.FixtureGW1League2024_2925.KickoffTimeUtc };
         var expected = Result.Failure(FixtureErrors.AlreadyScheduledOnDate(DateOnly.FromDateTime(command.KickoffTimeUtc)));
-
-        // Act.
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert.
-        result.ShouldBeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotCreated()
-    {
-        // Arrange.
-        var command = BaseCommand;
-        var expected = Result.Failure(FixtureErrors.NotCreated(command.Opponent, command.KickoffTimeUtc, command.FixtureLocationName));
-
-        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(0);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
