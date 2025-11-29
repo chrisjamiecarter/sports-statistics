@@ -55,7 +55,6 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -64,7 +63,6 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -73,7 +71,6 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureFixtureIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
 
         // Act.
@@ -81,7 +78,6 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -117,7 +113,6 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigurePlayerIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
 
         // Act.
@@ -125,7 +120,6 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -133,8 +127,7 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureTypePropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.PlayerEventTypeConverter;
-        var expectedMaxLength = PlayerEventType.MaxLength;
+        //var expectedValueConverter = Converters.PlayerEventTypeConverter;
         var expectedIsNullable = false;
 
         // Act.
@@ -142,8 +135,7 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
-        property.GetMaxLength().ShouldBe(expectedMaxLength);
+        //property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 

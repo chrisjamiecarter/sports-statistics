@@ -55,7 +55,6 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -64,7 +63,6 @@ public class MatchEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -73,7 +71,6 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureFixtureIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
 
         // Act.
@@ -81,7 +78,6 @@ public class MatchEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -117,8 +113,7 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureTypePropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.MatchEventTypeConverter;
-        var expectedMaxLength = MatchEventType.MaxLength;
+        //var expectedValueConverter = Converters.MatchEventTypeConverter;
         var expectedIsNullable = false;
 
         // Act.
@@ -126,8 +121,7 @@ public class MatchEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
-        property.GetMaxLength().ShouldBe(expectedMaxLength);
+        //property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 

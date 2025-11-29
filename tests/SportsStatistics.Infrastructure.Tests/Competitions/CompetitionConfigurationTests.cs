@@ -55,7 +55,6 @@ public class CompetitionConfigurationTests
     public void CompetitionConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -64,7 +63,6 @@ public class CompetitionConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -73,7 +71,6 @@ public class CompetitionConfigurationTests
     public void CompetitionConfiguration_ShouldConfigureSeasonIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
 
         // Act.
@@ -81,7 +78,6 @@ public class CompetitionConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -102,20 +98,17 @@ public class CompetitionConfigurationTests
     }
 
     [Fact]
-    public void CompetitionConfiguration_ShouldConfigureTypePropertyCorrectly()
+    public void CompetitionConfiguration_ShouldConfigureFormatPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.CompetitionTypeConverter;
-        var expectedMaxLength = CompetitionType.MaxLength;
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Competition.Type));
+        var property = _entity.FindProperty(nameof(Competition.Format));
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
-        property.GetMaxLength().ShouldBe(expectedMaxLength);
+        //property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 

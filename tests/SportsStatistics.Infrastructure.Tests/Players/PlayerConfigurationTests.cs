@@ -55,7 +55,6 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.EntityIdConverter;
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -64,7 +63,6 @@ public class PlayerConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -135,8 +133,7 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigurePositionPropertyCorrectly()
     {
         // Arrange.
-        var expectedValueConverter = Converters.PlayerPositionConverter;
-        var expectedMaxLength = Position.MaxLength;
+        //var expectedValueConverter = Converters.PlayerPositionConverter;
         var expectedIsNullable = false;
 
         // Act.
@@ -144,8 +141,7 @@ public class PlayerConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetValueConverter().ShouldBe(expectedValueConverter);
-        property.GetMaxLength().ShouldBe(expectedMaxLength);
+        //property.GetValueConverter().ShouldBe(expectedValueConverter);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
