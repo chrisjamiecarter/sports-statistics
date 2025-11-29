@@ -10,8 +10,10 @@ public class GetAllPlayersQueryHandlerTests
 {
     private static readonly List<Player> BasePlayers =
     [
-        Player.Create("John Smith", 1, "British", new DateOnly(1991, 1, 1), Position.Goalkeeper.Name),
-        Player.Create("Jack Black", 2, "American", new DateOnly(1992, 2, 2), Position.Defender.Name),
+        PlayerFixtures.Goalkeeper,
+        PlayerFixtures.Defender,
+        PlayerFixtures.Midfielder,
+        PlayerFixtures.Attacker
     ];
 
     private static readonly GetAllPlayersQuery BaseCommand = new();
