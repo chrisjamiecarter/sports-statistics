@@ -10,12 +10,12 @@ public class CreateSeasonCommandValidatorTests
 {
     private static readonly List<Season> BaseSeasons =
     [
-        Season.Create(new DateOnly(2023, 8, 1), new DateOnly(2024, 7, 31)),
-        Season.Create(new DateOnly(2024, 8, 1), new DateOnly(2025, 7, 31)),
+        SeasonFixtures.Season2023_2024,
+        SeasonFixtures.Season2024_2025
     ];
 
-    private static readonly CreateSeasonCommand BaseCommand = new(new DateOnly(2025, 8, 1),
-                                                                  new DateOnly(2026, 7, 31));
+    private static readonly CreateSeasonCommand BaseCommand = new(SeasonFixtures.Season2024_2025.DateRange.StartDate.AddYears(1),
+                                                                  SeasonFixtures.Season2024_2025.DateRange.EndDate.AddYears(1));
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateSeasonCommandValidator _validator;
@@ -85,7 +85,7 @@ public class CreateSeasonCommandValidatorTests
         // Arrange.
         var command = BaseCommand with
         {
-            StartDate = BaseSeasons[0].StartDate,
+            StartDate = SeasonFixtures.Season2023_2024.DateRange.StartDate,
         };
         var expected = "'Start Date' overlaps with an existing season.";
 
@@ -136,7 +136,7 @@ public class CreateSeasonCommandValidatorTests
         // Arrange.
         var command = BaseCommand with
         {
-            EndDate = BaseSeasons[0].EndDate,
+            EndDate = SeasonFixtures.Season2023_2024.DateRange.EndDate,
         };
         var expected = "'End Date' overlaps with an existing season.";
 
