@@ -11,7 +11,7 @@ public class UpdatePlayerCommandValidatorTests
                                                                   1,
                                                                   "Test Nationality",
                                                                   DateOnly.FromDateTime(DateTime.Today).AddYears(-15),
-                                                                  Position.Goalkeeper.Name);
+                                                                  Position.Goalkeeper.Value);
 
     private readonly UpdatePlayerCommandValidator _validator;
 
@@ -162,32 +162,26 @@ public class UpdatePlayerCommandValidatorTests
               .WithErrorMessage(expected);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData("    ")]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenPositionNameIsEmpty(string positionName)
+    [Fact]
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenPositionIdIsEmpty()
     {
         // Arrange.
-        var command = BaseCommand with { PositionName = positionName };
+        var command = BaseCommand with { PositionId = default };
         var expected = "'Position Name' must not be empty.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.PositionName)
+        result.ShouldHaveValidationErrorFor(c => c.PositionId)
               .WithErrorMessage(expected);
     }
 
-    [Theory]
-    [InlineData("Goalkeeper")]
-    [InlineData("Defender")]
-    [InlineData("Midfielder")]
-    [InlineData("Attacker")]
-    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenPositionNameIsValid(string positionName)
+    [Fact]
+    public async Task ValidateAsync_ShouldNotHaveAnyValidationErrors_WhenPositionIdIsValid()
     {
         // Arrange.
-        var command = BaseCommand with { PositionName = positionName };
+        var command = BaseCommand with { PositionId = Position.Goalkeeper.Value };
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -197,17 +191,17 @@ public class UpdatePlayerCommandValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenPositionNameIsInvalid()
+    public async Task ValidateAsync_ShouldHaveValidationError_WhenPositionIdIsInvalid()
     {
         // Arrange.
-        var command = BaseCommand with { PositionName = "Airline Pilot" };
-        var expected = $"Invalid position. Valid positions: {string.Join(", ", Position.All)}.";
+        var command = BaseCommand with { PositionId = -1 };
+        var expected = $"Invalid position.";
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.PositionName)
+        result.ShouldHaveValidationErrorFor(c => c.PositionId)
               .WithErrorMessage(expected);
     }
 }

@@ -10,16 +10,18 @@ public class UpdatePlayerCommandHandlerTests
 {
     private static readonly List<Player> BasePlayers =
     [
-        Player.Create("John Smith", 1, "British", new DateOnly(1991, 1, 1), Position.Goalkeeper.Name),
-        Player.Create("Jack Black", 2, "American", new DateOnly(1992, 2, 2), Position.Defender.Name),
+        PlayerFixtures.Goalkeeper,
+        PlayerFixtures.Defender,
+        PlayerFixtures.Midfielder,
+        PlayerFixtures.Attacker
     ];
 
-    private static readonly UpdatePlayerCommand BaseCommand = new(BasePlayers[0].Id,
-                                                                  $"{BasePlayers[0].Name} Updated",
+    private static readonly UpdatePlayerCommand BaseCommand = new(PlayerFixtures.Goalkeeper.Id,
+                                                                  $"{PlayerFixtures.Goalkeeper.Name} Updated",
                                                                   11,
-                                                                  $"{BasePlayers[0].Nationality} Updated",
-                                                                  BasePlayers[0].DateOfBirth.AddDays(-1),
-                                                                  Position.Midfielder.Name);
+                                                                  $"{PlayerFixtures.Goalkeeper.Nationality} Updated",
+                                                                  PlayerFixtures.Goalkeeper.DateOfBirth.Value.AddDays(-1),
+                                                                  Position.Midfielder.Value);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly UpdatePlayerCommandHandler _handler;
@@ -69,7 +71,7 @@ public class UpdatePlayerCommandHandlerTests
     public async Task Handle_ShouldReturnSuccess_WhenSquadNumberIsTakenByCurrentPlayer()
     {
         // Arrange.
-        var command = BaseCommand with { SquadNumber = BasePlayers[0].SquadNumber };
+        var command = BaseCommand with { SquadNumber = PlayerFixtures.Goalkeeper.SquadNumber };
         var expected = Result.Success();
 
         // Act.
@@ -83,25 +85,8 @@ public class UpdatePlayerCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenSquadNumberIsTakenByAnotherPlayer()
     {
         // Arrange.
-        var command = BaseCommand with { SquadNumber = BasePlayers[1].SquadNumber };
+        var command = BaseCommand with { SquadNumber = PlayerFixtures.Defender.SquadNumber };
         var expected = Result.Failure(PlayerErrors.SquadNumberTaken(command.SquadNumber));
-
-        // Act.
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert.
-        result.ShouldBeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenPlayerIsNotUpdated()
-    {
-        // Arrange.
-        var command = BaseCommand;
-        var expected = Result.Failure(PlayerErrors.NotUpdated(command.PlayerId));
-
-        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(0);
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
