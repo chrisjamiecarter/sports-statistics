@@ -10,8 +10,8 @@ public class GetSeasonsQueryHandlerTests
 {
     private static readonly List<Season> BaseSeasons =
     [
-        Season.Create(new DateOnly(1990, 07, 01), new DateOnly(1991, 06, 30)),
-        Season.Create(new DateOnly(1991, 07, 01), new DateOnly(1992, 06, 30)),
+        SeasonFixtures.Season2023_2024,
+        SeasonFixtures.Season2024_2025
     ];
 
     private static readonly GetSeasonsQuery BaseCommand = new();
