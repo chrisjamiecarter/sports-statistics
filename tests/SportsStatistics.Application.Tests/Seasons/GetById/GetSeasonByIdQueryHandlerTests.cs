@@ -10,11 +10,11 @@ public class GetSeasonByIdQueryHandlerTests
 {
     private static readonly List<Season> BaseSeasons =
     [
-        Season.Create(new DateOnly(1990, 07, 01), new DateOnly(1991, 06, 30)),
-        Season.Create(new DateOnly(1991, 07, 01), new DateOnly(1992, 06, 30)),
+        SeasonFixtures.Season2023_2024,
+        SeasonFixtures.Season2024_2025
     ];
 
-    private static readonly GetSeasonByIdQuery BaseCommand = new(BaseSeasons[0].Id);
+    private static readonly GetSeasonByIdQuery BaseCommand = new(SeasonFixtures.Season2023_2024.Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetSeasonByIdQueryHandler _handler;
@@ -34,7 +34,7 @@ public class GetSeasonByIdQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Success(BaseSeasons[0].ToResponse());
+        var expected = Result.Success(SeasonFixtures.Season2023_2024.ToResponse());
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
