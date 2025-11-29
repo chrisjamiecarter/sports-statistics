@@ -11,16 +11,17 @@ public class GetFixturesBySeasonIdQueryHandlerTests
 {
     private static readonly List<Competition> BaseCompetitions =
     [
-        Competition.Create(EntityId.Create(), "Test Competition", CompetitionType.League.Name),
+        FixtureFixtures.CompetitionLeague2024_2025,
+        FixtureFixtures.CompetitionCup2024_2025,
     ];
 
     private static readonly List<Fixture> BaseFixtures =
     [
-            Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", DateTime.UtcNow.AddDays(7), FixtureLocation.Home.Name),
-            Fixture.Create(BaseCompetitions[0].Id, "Test Opponent", DateTime.UtcNow.AddDays(14), FixtureLocation.Away.Name),
+        FixtureFixtures.FixtureGW1League2024_2925,
+        FixtureFixtures.FixtureR1Cup2024_2925,
     ];
 
-    private static readonly GetFixturesBySeasonIdQuery BaseCommand = new(BaseCompetitions[0].SeasonId);
+    private static readonly GetFixturesBySeasonIdQuery BaseCommand = new(FixtureFixtures.Season2024_2025.Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetFixturesBySeasonIdQueryHandler _handler;
@@ -39,7 +40,7 @@ public class GetFixturesBySeasonIdQueryHandlerTests
         var command = BaseCommand;
         var competitions = BaseCompetitions;
         var fixtures = BaseFixtures;
-        var expected = Result.Success(fixtures.Select(fixture => fixture.ToResponse(BaseCompetitions[0])).ToList());
+        var expected = Result.Success(fixtures.Select(fixture => fixture.ToResponse(BaseCompetitions.First(competition => fixture.CompetitionId == competition.Id))).ToList());
 
         _dbContextMock.Setup(m => m.Competitions)
                       .Returns(competitions.BuildMockDbSet().Object);
@@ -61,7 +62,7 @@ public class GetFixturesBySeasonIdQueryHandlerTests
         var command = BaseCommand;
         var competitions = BaseCompetitions;
         var fixtures = BaseFixtures.Take(1).ToList();
-        var expected = Result.Success(fixtures.Select(fixture => fixture.ToResponse(BaseCompetitions[0])).ToList());
+        var expected = Result.Success(fixtures.Select(fixture => fixture.ToResponse(BaseCompetitions.First(competition => fixture.CompetitionId == competition.Id))).ToList());
 
         _dbContextMock.Setup(m => m.Competitions)
                       .Returns(competitions.BuildMockDbSet().Object);
@@ -83,7 +84,7 @@ public class GetFixturesBySeasonIdQueryHandlerTests
         var command = BaseCommand;
         var competitions = BaseCompetitions;
         var fixtures = BaseFixtures.Take(0).ToList();
-        var expected = Result.Success(fixtures.Select(fixture => fixture.ToResponse(BaseCompetitions[0])).ToList());
+        var expected = Result.Success(fixtures.Select(fixture => fixture.ToResponse(BaseCompetitions.First(competition => fixture.CompetitionId == competition.Id))).ToList());
 
         _dbContextMock.Setup(m => m.Competitions)
                       .Returns(competitions.BuildMockDbSet().Object);
