@@ -24,6 +24,7 @@ internal sealed class CreateCompetitionCommandHandler(IApplicationDbContext dbCo
 
         var nameResult = Name.Create(request.Name);
         var formatResult = Format.Resolve(request.FormatId);
+
         var firstFailureOrSuccess = Result.FirstFailureOrSuccess(nameResult, formatResult);
         if (firstFailureOrSuccess.IsFailure)
         {
