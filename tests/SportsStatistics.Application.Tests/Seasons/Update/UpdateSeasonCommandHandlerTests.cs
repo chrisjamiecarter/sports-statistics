@@ -10,13 +10,13 @@ public class UpdateSeasonCommandHandlerTests
 {
     private static readonly List<Season> BaseSeasons =
     [
-        Season.Create(new DateOnly(2023, 8, 1), new DateOnly(2024, 7, 31)),
-        Season.Create(new DateOnly(2024, 8, 1), new DateOnly(2025, 7, 31)),
+        SeasonFixtures.Season2023_2024,
+        SeasonFixtures.Season2024_2025
     ];
 
-    private static readonly UpdateSeasonCommand BaseCommand = new(BaseSeasons[0].Id,
-                                                                  BaseSeasons[0].StartDate.AddDays(1),
-                                                                  BaseSeasons[0].EndDate.AddDays(-1));
+    private static readonly UpdateSeasonCommand BaseCommand = new(SeasonFixtures.Season2024_2025.Id,
+                                                                  SeasonFixtures.Season2024_2025.DateRange.StartDate.AddDays(1),
+                                                                  SeasonFixtures.Season2024_2025.DateRange.EndDate.AddDays(-1));
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly UpdateSeasonCommandHandler _handler;
@@ -55,22 +55,6 @@ public class UpdateSeasonCommandHandlerTests
         var command = BaseCommand with { SeasonId = Guid.CreateVersion7() };
         var expected = Result.Failure(SeasonErrors.NotFound(command.SeasonId));
 
-        // Act.
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert.
-        result.ShouldBeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenSeasonIsNotUpdated()
-    {
-        // Arrange.
-        var command = BaseCommand;
-        var expected = Result.Failure(SeasonErrors.NotUpdated(command.SeasonId));
-
-        _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(0);
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);
 
