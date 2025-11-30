@@ -11,7 +11,7 @@ internal static class PlayerFormModelMapping
                    player.SquadNumber,
                    player.Nationality,
                    DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()),
-                   player.Position?.Name ?? string.Empty);
+                   player.Position?.Value ?? -1);
     }
 
     public static UpdatePlayerCommand ToCommand(this PlayerFormModel player, Guid playerId)
@@ -21,6 +21,6 @@ internal static class PlayerFormModelMapping
                    player.SquadNumber,
                    player.Nationality,
                    DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()),
-                   player.Position?.Name ?? string.Empty);
+                   player.Position?.Value ?? -1);
     }
 }

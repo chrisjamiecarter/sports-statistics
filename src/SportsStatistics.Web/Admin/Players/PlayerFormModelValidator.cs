@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Web.Admin.Players;
@@ -9,20 +10,20 @@ internal sealed class PlayerFormModelValidator : AbstractValidator<PlayerFormMod
     {
         RuleFor(c => c.Name)
             .NotEmpty()
-            .MaximumLength(100);
+            .MaximumLength(Name.MaxLength);
 
         RuleFor(c => c.SquadNumber)
-            .InclusiveBetween(1, 99);
+            .InclusiveBetween(SquadNumber.MinValue, SquadNumber.MaxValue);
 
         RuleFor(c => c.Nationality)
             .NotEmpty()
-            .MaximumLength(100);
+            .MaximumLength(Nationality.MaxLength);
 
         RuleFor(c => c.DateOfBirth)
             .NotEmpty()
             .Must(dob =>
             {
-                return dob?.CalculateAge() >= 15;
+                return dob?.CalculateAge() >= DateOfBirth.MinAge;
             })
             .WithMessage("Player must be at least 15 years old.");
 

@@ -80,7 +80,7 @@
     FluentInputFileEventArgs? File;
 
     private List<BulkPlayerUploadInputModel> Players { get; set; } = [];
-    private IEnumerable<PositionOptionDto> PositionOptions = Position.All.Select(p => p.ToDto());
+    private IEnumerable<PositionOptionDto> PositionOptions = Position.List.Select(p => p.ToDto());
 
     private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
     {
@@ -109,7 +109,7 @@
                         DateOfBirth = player.DateOfBirth,
                         Name = player.Name,
                         Nationality = player.Nationality,
-                        Position = Position.FromName(player.Position ?? string.Empty).ToDto(),
+                        Position = Position.List.FirstOrDefault(position => position.Name.Equals(player.Position))?.ToDto(),
                         SquadNumber = player.SquadNumber
                     }
                 ).ToList();

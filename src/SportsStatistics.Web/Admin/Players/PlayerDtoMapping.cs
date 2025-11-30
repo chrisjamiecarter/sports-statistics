@@ -11,6 +11,7 @@ internal static class PlayerDtoMapping
                player.SquadNumber,
                player.Nationality,
                player.DateOfBirth,
+               player.PositionId,
                player.Position,
                player.Age);
 
@@ -21,7 +22,7 @@ internal static class PlayerDtoMapping
             SquadNumber = player.SquadNumber,
             Nationality = player.Nationality,
             DateOfBirth = player.DateOfBirth.ToDateTime(),
-            Position = positionOptions.SingleOrDefault(p => string.Equals(p.Name, player.Position, StringComparison.OrdinalIgnoreCase)),
+            Position = positionOptions.SingleOrDefault(option => option.Value == player.PostionId),
         };
 
     public static IQueryable<PlayerDto> ToQueryable(this List<PlayerResponse> players)

@@ -54,7 +54,7 @@
 
 @code {
     private bool IsSubmitting = false;
-    private IEnumerable<PositionOptionDto> PositionOptions = Position.All.Select(p => p.ToDto());
+    private IEnumerable<PositionOptionDto> PositionOptions = Position.List.Select(p => p.ToDto());
 
     [Parameter]
     public PlayerDto? SelectedPlayer { get; set; }
