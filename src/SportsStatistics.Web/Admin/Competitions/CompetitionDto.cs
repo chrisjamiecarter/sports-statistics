@@ -3,4 +3,5 @@
 public sealed record CompetitionDto(Guid Id,
                                     Guid SeasonId,
                                     string Name,
-                                    string CompetitionType);
+                                    int FormatId,
+                                    string Format);

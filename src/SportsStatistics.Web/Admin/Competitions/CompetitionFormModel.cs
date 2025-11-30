@@ -8,5 +8,5 @@ public class CompetitionFormModel
 
     public string Name { get; set; } = string.Empty;
 
-    public CompetitionTypeOptionDto? CompetitionType { get; set; }
+    public FormatOptionDto? Format { get; set; }
 }

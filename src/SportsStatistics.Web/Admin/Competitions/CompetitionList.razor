@@ -14,7 +14,7 @@
 
     <FluentDataGrid Items="@Competitions" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
         <PropertyColumn Property="@(p => p.Name)" Sortable="true" IsDefaultSortColumn="true" />
-        <PropertyColumn Property="@(p => p.CompetitionType)" Sortable="true" />
+        <PropertyColumn Property="@(p => p.Format)" Sortable="true" />
             
         <TemplateColumn Align="Align.End">
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />

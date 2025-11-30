@@ -12,7 +12,7 @@ internal static class CompetitionMapper
     public static CreateCompetitionCommand ToCreateCommand(this CompetitionFormModel competition)
         => new(competition.Season?.Id ?? default,
                competition.Name,
-               competition.CompetitionType?.Name ?? string.Empty);
+               competition.Format?.Value ?? 0);
 
     public static DeleteCompetitionCommand ToDeleteCommand(this CompetitionDto competition)
         => new(competition.Id);
@@ -21,12 +21,13 @@ internal static class CompetitionMapper
         => new(competition.Id,
                competition.SeasonId,
                competition.Name,
-               competition.TypeName);
+               competition.FormatId,
+               competition.Format);
 
-    public static CompetitionTypeOptionDto ToDto(this CompetitionType competitionType)
-        => new(competitionType.Id, competitionType.Name);
+    public static FormatOptionDto ToDto(this Format format)
+        => new(format.Value, format.Name);
 
-    public static CompetitionFormModel ToFormModel(this CompetitionDto? competition, SeasonDto season, IEnumerable<CompetitionTypeOptionDto> competitionTypeOptions)
+    public static CompetitionFormModel ToFormModel(this CompetitionDto? competition, SeasonDto season, IEnumerable<FormatOptionDto> formatOptions)
     {
         return competition is null
             ? new()
@@ -37,7 +38,7 @@ internal static class CompetitionMapper
             {
                 Season = season,
                 Name = competition.Name,
-                CompetitionType = competitionTypeOptions.SingleOrDefault(t => string.Equals(t.Name, competition.CompetitionType, StringComparison.OrdinalIgnoreCase)),
+                Format = formatOptions.SingleOrDefault(option => option.Value == competition.FormatId),
         };
     }
 
@@ -47,5 +48,5 @@ internal static class CompetitionMapper
     public static UpdateCompetitionCommand ToUpdateCommand(this CompetitionFormModel competition, Guid id)
         => new(id,
                competition.Name,
-               competition.CompetitionType?.Name ?? string.Empty);
+               competition.Format?.Value ?? 0);
 }

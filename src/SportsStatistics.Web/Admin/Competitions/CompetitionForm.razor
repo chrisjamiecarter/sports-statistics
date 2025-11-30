@@ -18,17 +18,17 @@
                 <FluentValidationMessage For="() => Input.Name" class="text-danger" />
             </div>
             <div class="full-width">
-                <FluentSelect Id="CompetitionTypeSelect"
-                              Name="Input.CompetitionType"
-                              TOption=CompetitionTypeOptionDto
-                              Label="Type"
-                              Items="CompetitionTypeOptions"
+                <FluentSelect Id="FormatSelect"
+                              Name="Input.Format"
+                              TOption=FormatOptionDto
+                              Label="Format"
+                              Items="FormatOptions"
                               Width="100%"
-                              Placeholder="Select a type..."
+                              Placeholder="Select a format..."
                               OptionText="(p => p.Name)"
-                              @bind-SelectedOption="Input.CompetitionType"
+                              @bind-SelectedOption="Input.Format"
                               Required="!IsUpdateMode" />
-                <FluentValidationMessage For="() => Input.CompetitionType" class="text-danger" />
+                <FluentValidationMessage For="() => Input.Format" class="text-danger" />
             </div>
             <FluentStack Orientation="Orientation.Horizontal">
                 <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">
@@ -45,7 +45,7 @@
 
 @code {
     private bool IsSubmitting = false;
-    private IEnumerable<CompetitionTypeOptionDto> CompetitionTypeOptions = CompetitionType.All.Select(p => p.ToDto());
+    private IEnumerable<FormatOptionDto> FormatOptions = Format.List.Select(format => format.ToDto());
 
     [Parameter]
     public EventCallback CancelCallback { get; set; }
@@ -77,7 +77,7 @@
 
         if (SelectedSeason is not null)
         {
-            Input = SelectedCompetition.ToFormModel(SelectedSeason, CompetitionTypeOptions);
+            Input = SelectedCompetition.ToFormModel(SelectedSeason, FormatOptions);
         }
     }
 

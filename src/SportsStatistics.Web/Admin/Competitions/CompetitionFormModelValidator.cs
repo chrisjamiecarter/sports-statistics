@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SportsStatistics.Domain.Competitions;
 
 namespace SportsStatistics.Web.Admin.Competitions;
 
@@ -11,9 +12,9 @@ internal sealed class CompetitionFormModelValidator : AbstractValidator<Competit
 
         RuleFor(c => c.Name)
             .NotEmpty()
-            .MaximumLength(50);
+            .MaximumLength(Name.MaxLength);
 
-        RuleFor(c => c.CompetitionType)
+        RuleFor(c => c.Format)
             .NotEmpty();
     }
 }
