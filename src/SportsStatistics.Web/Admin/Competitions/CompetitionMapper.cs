@@ -12,7 +12,7 @@ internal static class CompetitionMapper
     public static CreateCompetitionCommand ToCreateCommand(this CompetitionFormModel competition)
         => new(competition.Season?.Id ?? default,
                competition.Name,
-               competition.Format?.Value ?? 0);
+               competition.Format?.Value ?? -1);
 
     public static DeleteCompetitionCommand ToDeleteCommand(this CompetitionDto competition)
         => new(competition.Id);
@@ -48,5 +48,5 @@ internal static class CompetitionMapper
     public static UpdateCompetitionCommand ToUpdateCommand(this CompetitionFormModel competition, Guid id)
         => new(id,
                competition.Name,
-               competition.Format?.Value ?? 0);
+               competition.Format?.Value ?? -1);
 }
