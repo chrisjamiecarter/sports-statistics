@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.FluentUI.AspNetCore.Components.Extensions;
+using SportsStatistics.Domain.Fixtures;
 
 namespace SportsStatistics.Web.Admin.Fixtures;
 
@@ -29,6 +30,6 @@ internal sealed class FixtureFormModelValidator : AbstractValidator<FixtureFormM
 
         RuleFor(c => c.Opponent)
             .NotEmpty()
-            .MaximumLength(100);
+            .MaximumLength(Opponent.MaxLength);
     }
 }

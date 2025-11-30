@@ -13,14 +13,14 @@ internal static class FixtureMapper
     private static DateTime GetKickoffTimeUtc(this FixtureFormModel fixture)
         => fixture.KickoffDateUtc.GetValueOrDefault().Date + fixture.KickoffTimeUtc.GetValueOrDefault().TimeOfDay;
 
-    private static string GetLocationName(this FixtureFormModel fixture)
-        => fixture.Location?.Name ?? string.Empty;
+    private static int GetLocationValue(this FixtureFormModel fixture)
+        => fixture.Location?.Value ?? -1;
 
     public static CreateFixtureCommand ToCreateCommand(this FixtureFormModel fixture)
         => new(fixture.Competition?.Id ?? default,
                fixture.Opponent,
                fixture.GetKickoffTimeUtc(),
-               fixture.GetLocationName());
+               fixture.GetLocationValue());
 
     public static DeleteFixtureCommand ToDeleteCommand(this FixtureDto fixture)
         => new(fixture.Id);
@@ -31,13 +31,15 @@ internal static class FixtureMapper
                fixture.CompetitionName,
                fixture.Opponent,
                fixture.KickoffTimeUtc,
-               fixture.LocationName,
+               fixture.LocationId,
+               fixture.Location,
                fixture.HomeGoals,
                fixture.AwayGoals,
-               fixture.StatusName);
+               fixture.StatusId,
+               fixture.Status);
 
-    public static LocationOptionDto ToDto(this FixtureLocation location)
-        => new(location.Id, location.Name);
+    public static LocationOptionDto ToDto(this Location location)
+        => new(location.Value, location.Name);
 
     public static FixtureFormModel ToFormModel(this FixtureDto? fixture, IEnumerable<CompetitionDto> competitions, IEnumerable<LocationOptionDto> locations, SeasonDto season)
     {
@@ -53,7 +55,7 @@ internal static class FixtureMapper
                 Opponent = fixture.Opponent,
                 KickoffDateUtc = fixture.KickoffTimeUtc,
                 KickoffTimeUtc = fixture.KickoffTimeUtc,
-                Location = locations.SingleOrDefault(l => string.Equals(l.Name, fixture.LocationName, StringComparison.OrdinalIgnoreCase)),
+                Location = locations.SingleOrDefault(option => option.Value == fixture.LocationId),
             };
     }
 
@@ -64,5 +66,5 @@ internal static class FixtureMapper
         => new(id,
                fixture.Opponent,
                fixture.GetKickoffTimeUtc(),
-               fixture.GetLocationName());
+               fixture.GetLocationValue());
 }

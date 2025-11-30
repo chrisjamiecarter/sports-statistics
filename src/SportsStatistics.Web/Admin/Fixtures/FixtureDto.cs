@@ -5,18 +5,20 @@ public sealed record FixtureDto(Guid Id,
                                 string CompetitionName,
                                 string Opponent,
                                 DateTime KickoffTimeUtc,
-                                string LocationName,
+                                int LocationId,
+                                string Location,
                                 int HomeGoals,
                                 int AwayGoals,
-                                string StatusName)
+                                int StatusId,
+                                string Status)
 {
-    public string DisplayStatus => StatusName switch
+    public string DisplayStatus => Status switch
     {
         "Scheduled" => $"{KickoffTimeUtc:HH:mm}",
         "Completed" => $"{HomeGoals} - {AwayGoals}",
         "Postponed" => "P - P",
         "Cancelled" => "X - X",
-        _ => StatusName
+        _ => Status
     };
 
     public DateOnly Date => DateOnly.FromDateTime(KickoffTimeUtc);
