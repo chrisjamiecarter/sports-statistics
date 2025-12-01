@@ -12,7 +12,15 @@ public sealed class Season : Entity, ISoftDeletableEntity
         DateRange = dateRange;
     }
 
-    public DateRange DateRange { get; private set; }
+    /// <summary>
+    /// Initialises a new instance of the <see cref="Season"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Required for Entity Framework Core.
+    /// </remarks>
+    private Season() { }
+
+    public DateRange DateRange { get; private set; } = default!;
 
     public string Name => $"{DateRange.StartDate.Year}/{DateRange.EndDate.Year}";
 
