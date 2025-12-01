@@ -2,7 +2,7 @@
 
 namespace SportsStatistics.Domain.Fixtures;
 
-public sealed class Score
+public sealed record Score
 {
     private Score(int homeGoals, int awayGoals)
     {
