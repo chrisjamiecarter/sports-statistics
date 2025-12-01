@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database;
 
@@ -14,25 +15,28 @@ internal sealed class SeasonConfiguration : IEntityTypeConfiguration<Season>
         builder.HasKey(season => season.Id);
 
         builder.Property(season => season.Id)
+               .HasColumnName(nameof(Season.Id))
                .IsRequired()
                .ValueGeneratedNever();
 
-        builder.ComplexProperty(season => season.DateRange, propertyBuilder =>
+        builder.ComplexProperty(season => season.DateRange, complexBuilder =>
         {
-            propertyBuilder.Property(dateRange => dateRange.StartDate)
-                           //.HasColumnType("date")
-                           .IsRequired();
+            complexBuilder.Property(dateRange => dateRange.StartDate)
+                          .HasColumnName(nameof(DateRange.StartDate))
+                          .IsRequired();
 
-            propertyBuilder.Property(dateRange => dateRange.EndDate)
-                           //.HasColumnType("date")
-                           .IsRequired();
+            complexBuilder.Property(dateRange => dateRange.EndDate)
+                          .HasColumnName(nameof(DateRange.EndDate))
+                          .IsRequired();
         });
 
         builder.Ignore(season => season.Name);
 
-        builder.Property(season => season.DeletedOnUtc);
+        builder.Property(season => season.DeletedOnUtc)
+               .HasColumnName(nameof(Season.DeletedOnUtc));
 
         builder.Property(season => season.Deleted)
+               .HasColumnName(nameof(Season.Deleted))
                .HasDefaultValue(false);
 
         builder.HasQueryFilter(season => !season.Deleted);
