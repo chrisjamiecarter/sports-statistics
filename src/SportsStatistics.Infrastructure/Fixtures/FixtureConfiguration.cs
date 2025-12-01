@@ -15,43 +15,55 @@ internal sealed class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
         builder.HasKey(fixture => fixture.Id);
 
         builder.Property(fixture => fixture.Id)
+               .HasColumnName(nameof(Fixture.Id))
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(fixture => fixture.CompetitionId)
+               .HasColumnName(nameof(Fixture.CompetitionId))
                .IsRequired();
 
-        builder.ComplexProperty(fixture => fixture.Opponent, propertyBuilder =>
+        builder.ComplexProperty(fixture => fixture.Opponent, complexBuilder =>
         {
-            propertyBuilder.Property(opponent => opponent.Value)
-                           .HasMaxLength(Opponent.MaxLength)
-                           .IsRequired();
+            complexBuilder.Property(opponent => opponent.Value)
+                          .HasColumnName(nameof(Fixture.Opponent))
+                          .HasMaxLength(Opponent.MaxLength)
+                          .IsRequired();
         });
 
-        builder.ComplexProperty(fixture => fixture.KickoffTimeUtc, propertyBuilder =>
+        builder.ComplexProperty(fixture => fixture.KickoffTimeUtc, complexBuilder =>
         {
-            propertyBuilder.Property(kickoffTimeUtc => kickoffTimeUtc.Value)
-                           .IsRequired();
+            complexBuilder.Property(kickoffTimeUtc => kickoffTimeUtc.Value)
+                          .HasColumnName(nameof(Fixture.KickoffTimeUtc))
+                          .IsRequired();
         });
 
         builder.Property(fixture => fixture.Location)
+               .HasColumnName(nameof(Fixture.Location))
                .IsRequired();
 
-        builder.ComplexProperty(fixture => fixture.Score, propertyBuilder =>
+        builder.OwnsOne(fixture => fixture.Score, ownedBuilder =>
         {
-            propertyBuilder.Property(score => score.HomeGoals)
-                           .IsRequired();
+            ownedBuilder.Property(score => score.HomeGoals)
+                        .HasColumnName(nameof(Score.HomeGoals))
+                        .IsRequired();
 
-            propertyBuilder.Property(score => score.AwayGoals)
-                           .IsRequired();
+            ownedBuilder.Property(score => score.AwayGoals)
+                        .HasColumnName(nameof(Score.AwayGoals))
+                        .IsRequired();
+
+            ownedBuilder.WithOwner();
         });
 
         builder.Property(fixture => fixture.Status)
+               .HasColumnName(nameof(Fixture.Status))
                .IsRequired();
 
-        builder.Property(fixture => fixture.DeletedOnUtc);
+        builder.Property(fixture => fixture.DeletedOnUtc)
+               .HasColumnName(nameof(Fixture.DeletedOnUtc));
 
         builder.Property(fixture => fixture.Deleted)
+               .HasColumnName(nameof(Fixture.Deleted))
                .HasDefaultValue(false);
 
         builder.HasOne<Competition>()
