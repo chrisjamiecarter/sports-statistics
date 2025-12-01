@@ -15,39 +15,54 @@ internal sealed class SubstitutionEventConfiguration : IEntityTypeConfiguration<
         builder.HasKey(substitutionEvent => substitutionEvent.Id);
 
         builder.Property(substitutionEvent => substitutionEvent.Id)
+               .HasColumnName(nameof(SubstitutionEvent.Id))
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(substitutionEvent => substitutionEvent.FixtureId)
+               .HasColumnName(nameof(SubstitutionEvent.FixtureId))
                .IsRequired();
 
-        builder.Property(substitutionEvent => substitutionEvent.Minute)
-               .IsRequired();
-
-        builder.Property(substitutionEvent => substitutionEvent.OccurredAtUtc)
-               .IsRequired();
-
-        builder.ComplexProperty(substitutionEvent => substitutionEvent.Substitution, propertyBuilder =>
+        builder.ComplexProperty(matchEvent => matchEvent.Minute, complexBuilder =>
         {
-            propertyBuilder.Property(substitution => substitution.PlayerOffId)
-                           .IsRequired();
-
-            propertyBuilder.Property(substitution => substitution.PlayerOnId)
-                           .IsRequired();
+            complexBuilder.Property(minute => minute.Value)
+                          .HasColumnName(nameof(SubstitutionEvent.Minute))
+                          .IsRequired();
         });
 
-        builder.Property(substitutionEvent => substitutionEvent.DeletedOnUtc);
+        builder.Property(substitutionEvent => substitutionEvent.OccurredAtUtc)
+               .HasColumnName(nameof(SubstitutionEvent.OccurredAtUtc))
+               .IsRequired();
+
+        builder.OwnsOne(substitutionEvent => substitutionEvent.Substitution, ownedBuilder =>
+        {
+            ownedBuilder.Property(substitution => substitution.PlayerOffId)
+                        .HasColumnName(nameof(Substitution.PlayerOffId))
+                        .IsRequired();
+
+            ownedBuilder.HasOne<Player>()
+                        .WithMany()
+                        .HasForeignKey(substitution => substitution.PlayerOffId)
+                        .OnDelete(DeleteBehavior.NoAction);
+
+            ownedBuilder.Property(substitution => substitution.PlayerOnId)
+                        .HasColumnName(nameof(Substitution.PlayerOnId))
+                        .IsRequired();
+
+            ownedBuilder.HasOne<Player>()
+                        .WithMany()
+                        .HasForeignKey(substitution => substitution.PlayerOnId)
+                        .OnDelete(DeleteBehavior.NoAction);
+
+            ownedBuilder.WithOwner();
+        });
+
+        builder.Property(substitutionEvent => substitutionEvent.DeletedOnUtc)
+               .HasColumnName(nameof(SubstitutionEvent.DeletedOnUtc));
 
         builder.Property(substitutionEvent => substitutionEvent.Deleted)
+               .HasColumnName(nameof(SubstitutionEvent.Deleted))
                .HasDefaultValue(false);
-
-        builder.HasOne<Player>()
-               .WithMany()
-               .HasForeignKey(substitutionEvent => substitutionEvent.Substitution.PlayerOffId);
-
-        builder.HasOne<Player>()
-               .WithMany()
-               .HasForeignKey(substitutionEvent => substitutionEvent.Substitution.PlayerOnId);
 
         builder.HasQueryFilter(substitutionEvent => !substitutionEvent.Deleted);
     }
