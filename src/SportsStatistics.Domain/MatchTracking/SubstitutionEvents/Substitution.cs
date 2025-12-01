@@ -10,9 +10,9 @@ public sealed record Substitution
         PlayerOnId = playerOnId;
     }
 
-    public Guid PlayerOffId { get; private set; } = default!;
+    public Guid PlayerOffId { get; private set; }
 
-    public Guid PlayerOnId { get; private set; } = default!;
+    public Guid PlayerOnId { get; private set; }
 
     public static Result<Substitution> Create(Guid? playerOffId, Guid? playerOnId)
     {
