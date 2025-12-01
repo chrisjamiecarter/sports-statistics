@@ -15,25 +15,31 @@ internal sealed class CompetitionConfiguration : IEntityTypeConfiguration<Compet
         builder.HasKey(competition => competition.Id);
 
         builder.Property(competition => competition.Id)
+               .HasColumnName(nameof(Competition.Id))
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(competition => competition.SeasonId)
+               .HasColumnName(nameof(Competition.SeasonId))
                .IsRequired();
 
-        builder.ComplexProperty(competition => competition.Name, propertyBuilder =>
+        builder.ComplexProperty(competition => competition.Name, complexBuilder =>
         {
-            propertyBuilder.Property(name => name.Value)
-                           .HasMaxLength(Name.MaxLength)
-                           .IsRequired();
+            complexBuilder.Property(name => name.Value)
+                          .HasColumnName(nameof(Competition.Name))
+                          .HasMaxLength(Name.MaxLength)
+                          .IsRequired();
         });
 
         builder.Property(competition => competition.Format)
+               .HasColumnName(nameof(Competition.Format))
                .IsRequired();
 
-        builder.Property(competition => competition.DeletedOnUtc);
+        builder.Property(competition => competition.DeletedOnUtc)
+               .HasColumnName(nameof(Competition.DeletedOnUtc));
 
         builder.Property(competition => competition.Deleted)
+               .HasColumnName(nameof(Competition.Deleted))
                .HasDefaultValue(false);
 
         builder.HasOne<Season>()
