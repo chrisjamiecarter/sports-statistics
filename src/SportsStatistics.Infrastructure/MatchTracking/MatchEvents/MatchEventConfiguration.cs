@@ -15,27 +15,34 @@ internal sealed class MatchEventConfiguration : IEntityTypeConfiguration<MatchEv
         builder.HasKey(matchEvent => matchEvent.Id);
 
         builder.Property(matchEvent => matchEvent.Id)
+               .HasColumnName(nameof(MatchEvent.Id))
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(matchEvent => matchEvent.FixtureId)
+               .HasColumnName(nameof(MatchEvent.FixtureId))
                .IsRequired();
 
-        builder.ComplexProperty(matchEvent => matchEvent.Minute, propertyBuilder =>
+        builder.ComplexProperty(matchEvent => matchEvent.Minute, complexBuilder =>
         {
-            propertyBuilder.Property(minute => minute.Value)
-                           .IsRequired();
+            complexBuilder.Property(minute => minute.Value)
+                          .HasColumnName(nameof(MatchEvent.Minute))
+                          .IsRequired();
         });
 
         builder.Property(matchEvent => matchEvent.OccurredAtUtc)
+               .HasColumnName(nameof(MatchEvent.OccurredAtUtc))
                .IsRequired();
 
         builder.Property(matchEvent => matchEvent.Type)
+               .HasColumnName(nameof(MatchEvent.Type))
                .IsRequired();
 
-        builder.Property(matchEvent => matchEvent.DeletedOnUtc);
+        builder.Property(matchEvent => matchEvent.DeletedOnUtc)
+               .HasColumnName(nameof(MatchEvent.DeletedOnUtc));
 
         builder.Property(matchEvent => matchEvent.Deleted)
+               .HasColumnName(nameof(MatchEvent.Deleted))
                .HasDefaultValue(false);
 
         builder.HasOne<Fixture>()
