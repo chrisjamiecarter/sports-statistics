@@ -16,30 +16,38 @@ internal sealed class PlayerEventConfiguration : IEntityTypeConfiguration<Player
         builder.HasKey(playerEvent => playerEvent.Id);
 
         builder.Property(playerEvent => playerEvent.Id)
+               .HasColumnName(nameof(PlayerEvent.Id))
                .IsRequired()
                .ValueGeneratedNever();
 
         builder.Property(playerEvent => playerEvent.FixtureId)
+               .HasColumnName(nameof(PlayerEvent.FixtureId))
                .IsRequired();
 
-        builder.ComplexProperty(playerEvent => playerEvent.Minute, propertyBuilder =>
+        builder.ComplexProperty(playerEvent => playerEvent.Minute, complexBuilder =>
         {
-            propertyBuilder.Property(minute => minute.Value)
-                           .IsRequired();
+            complexBuilder.Property(minute => minute.Value)
+                          .HasColumnName(nameof(PlayerEvent.Minute))
+                          .IsRequired();
         });
 
         builder.Property(playerEvent => playerEvent.OccurredAtUtc)
+               .HasColumnName(nameof(PlayerEvent.OccurredAtUtc))
                .IsRequired();
 
         builder.Property(playerEvent => playerEvent.PlayerId)
+               .HasColumnName(nameof(PlayerEvent.PlayerId))
                .IsRequired();
 
         builder.Property(playerEvent => playerEvent.Type)
+               .HasColumnName(nameof(PlayerEvent.Type))
                .IsRequired();
 
-        builder.Property(playerEvent => playerEvent.DeletedOnUtc);
+        builder.Property(playerEvent => playerEvent.DeletedOnUtc)
+               .HasColumnName(nameof(PlayerEvent.DeletedOnUtc));
 
         builder.Property(playerEvent => playerEvent.Deleted)
+               .HasColumnName(nameof(PlayerEvent.Deleted))
                .HasDefaultValue(false);
 
         builder.HasOne<Fixture>()
