@@ -4,5 +4,5 @@ namespace SportsStatistics.Infrastructure.Database.Converters;
 
 internal sealed class CompetitionFormatConverter : ValueObjectConverter<Format, int>
 {
-    private CompetitionFormatConverter() : base(type => type.Value, value => Format.Resolve(value).Value) { }
+    public CompetitionFormatConverter() : base(type => type.Value, value => Format.Resolve(value).Value) { }
 }

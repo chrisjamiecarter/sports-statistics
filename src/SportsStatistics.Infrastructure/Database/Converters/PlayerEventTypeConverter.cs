@@ -4,5 +4,5 @@ namespace SportsStatistics.Infrastructure.Database.Converters;
 
 internal sealed class PlayerEventTypeConverter : ValueObjectConverter<PlayerEventType, int>
 {
-    private PlayerEventTypeConverter() : base(type => type.Value, value => PlayerEventType.Resolve(value).Value) { }
+    public PlayerEventTypeConverter() : base(type => type.Value, value => PlayerEventType.Resolve(value).Value) { }
 }

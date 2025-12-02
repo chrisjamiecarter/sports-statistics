@@ -4,5 +4,5 @@ namespace SportsStatistics.Infrastructure.Database.Converters;
 
 internal sealed class PlayerPositionConverter : ValueObjectConverter<Position, int>
 {
-    private PlayerPositionConverter() : base(type => type.Value, value => Position.Resolve(value).Value) { }
+    public PlayerPositionConverter() : base(type => type.Value, value => Position.Resolve(value).Value) { }
 }
