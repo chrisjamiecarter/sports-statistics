@@ -33,7 +33,7 @@ public class Result
         new(default, false, error);
 
     public static Result FirstFailureOrSuccess(params Result[] results)
-        => results.First(result => result.IsFailure) ?? Success();
+        => results.FirstOrDefault(result => result.IsFailure) ?? Success();
 }
 
 public class Result<TValue>(TValue? value, bool isSuccess, Error error) : Result(isSuccess, error)
