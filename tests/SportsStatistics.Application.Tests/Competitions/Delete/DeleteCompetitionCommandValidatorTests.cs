@@ -1,5 +1,6 @@
 ﻿using FluentValidation.TestHelper;
 using SportsStatistics.Application.Competitions.Delete;
+using SportsStatistics.Domain.Competitions;
 
 namespace SportsStatistics.Application.Tests.Competitions.Delete;
 
@@ -32,13 +33,14 @@ public sealed class DeleteCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionId = default };
-        var expected = "'Competition Id' must not be empty.";
+        var expected = CompetitionErrors.CompetitionIdIsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.CompetitionId)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 }
