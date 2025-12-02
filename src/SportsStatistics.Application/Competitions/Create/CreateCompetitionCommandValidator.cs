@@ -16,8 +16,6 @@ internal sealed class CreateCompetitionCommandValidator : AbstractValidator<Crea
             .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.NameExceedsMaxLength);
 
         RuleFor(c => c.FormatId)
-            .NotEmpty().WithError(CompetitionErrors.FormatIdIsRequired)
-            // TODO: check if this works? .IsEnumName(typeof(Format), false)
-            .Must(formatId => Format.Resolve(formatId).IsSuccess).WithError(CompetitionErrors.FormatNotFound);
+            .Must(Format.ContainsValue).WithError(CompetitionErrors.FormatNotFound);
     }
 }
