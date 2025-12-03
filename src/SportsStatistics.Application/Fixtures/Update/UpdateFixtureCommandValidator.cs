@@ -19,7 +19,6 @@ internal sealed class UpdateFixtureCommandValidator : AbstractValidator<UpdateFi
             .NotEmpty().WithError(FixtureErrors.KickoffDateAndTimeIsRequired);
 
         RuleFor(c => c.LocationId)
-            .NotEmpty().WithError(FixtureErrors.LocationIdIsRequired)
-            .Must(locationId => Location.Resolve(locationId).IsSuccess).WithError(FixtureErrors.LocationNotFound);
+            .Must(Location.ContainsValue).WithError(FixtureErrors.LocationNotFound);
     }
 }
