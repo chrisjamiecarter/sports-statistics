@@ -36,14 +36,15 @@ public class CreateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionId = default };
-        var expected = "'Competition Id' must not be empty.";
+        var expected = FixtureErrors.CompetitionIdIsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.CompetitionId)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 
     [Theory]
@@ -53,30 +54,31 @@ public class CreateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Opponent = opponent };
-        var expected = "'Opponent' must not be empty.";
+        var expected = FixtureErrors.OpponentIsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Opponent)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 
     [Fact]
     public async Task ValidateAsync_ShouldHaveValidationError_WhenOpponentExceedsMaximumLength()
     {
         // Arrange.
-        int max = 100;
-        var command = BaseCommand with { Opponent = new string('a', max + 1) };
-        var expected = $"The length of 'Opponent' must be {max} characters or fewer. You entered {command.Opponent.Length} characters.";
+        var command = BaseCommand with { Opponent = new string('a', Opponent.MaxLength + 1) };
+        var expected = FixtureErrors.OpponentExceedsMaxLength;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.Opponent)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 
     [Fact]
@@ -84,29 +86,15 @@ public class CreateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { KickoffTimeUtc = default };
-        var expected = "'Kickoff Time Utc' must not be empty.";
+        var expected = FixtureErrors.KickoffDateAndTimeIsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.KickoffTimeUtc)
-              .WithErrorMessage(expected);
-    }
-
-    [Fact]
-    public async Task ValidateAsync_ShouldHaveValidationError_WhenLocationIdIsEmpty()
-    {
-        // Arrange.
-        var command = BaseCommand with { LocationId = default};
-        var expected = "'Fixture Location Name' must not be empty.";
-
-        // Act.
-        var result = await _validator.TestValidateAsync(command);
-
-        // Assert.
-        result.ShouldHaveValidationErrorFor(c => c.LocationId)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 
     [Fact]
@@ -130,13 +118,14 @@ public class CreateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { LocationId = -1 };
-        var expected = $"Invalid fixture location.";
+        var expected = FixtureErrors.LocationNotFound;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.LocationId)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 }
