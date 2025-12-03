@@ -1,5 +1,6 @@
 ﻿using FluentValidation.TestHelper;
 using SportsStatistics.Application.Fixtures.Delete;
+using SportsStatistics.Domain.Fixtures;
 
 namespace SportsStatistics.Application.Tests.Fixtures.Delete;
 
@@ -32,13 +33,14 @@ public sealed class DeleteFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { FixtureId = default };
-        var expected = "'Fixture Id' must not be empty.";
+        var expected = FixtureErrors.FixtureIdIsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.FixtureId)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 }
