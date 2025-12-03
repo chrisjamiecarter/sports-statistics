@@ -31,7 +31,7 @@ public class GetAllCompetitionsQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var competitions = BaseCompetitions;
+        var competitions = BaseCompetitions.ToList();
         var expected = Result.Success(competitions.ToResponse());
 
         _dbContextMock.Setup(m => m.Competitions)
