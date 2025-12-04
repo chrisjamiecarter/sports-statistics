@@ -28,20 +28,20 @@ internal sealed class CreatePlayerCommandHandler(IApplicationDbContext dbContext
             return firstFailureOrSuccess;
         }
 
-        var player = Player.Create(nameResult.Value,
-                                   squadNumberResult.Value,
-                                   nationalityResult.Value,
-                                   dateOfBirthResult.Value,
-                                   positionResult.Value);
-
         var squadNumberTaken = await _dbContext.Players.AsNoTracking()
-                                                       .Where(existingPlayer => existingPlayer.SquadNumber == player.SquadNumber)
+                                                       .Where(existingPlayer => existingPlayer.SquadNumber == squadNumberResult.Value)
                                                        .AnyAsync(cancellationToken);
 
         if (squadNumberTaken)
         {
             return Result.Failure(PlayerErrors.SquadNumberTaken(request.SquadNumber));
         }
+
+        var player = Player.Create(nameResult.Value,
+                                   squadNumberResult.Value,
+                                   nationalityResult.Value,
+                                   dateOfBirthResult.Value,
+                                   positionResult.Value);
 
         _dbContext.Players.Add(player);
 
