@@ -1,6 +1,8 @@
 ﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Fixtures.Update;
+using SportsStatistics.Application.Tests.Competitions;
+using SportsStatistics.Application.Tests.Seasons;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Domain.Seasons;
@@ -10,44 +12,41 @@ namespace SportsStatistics.Application.Tests.Fixtures.Update;
 
 public class UpdateFixtureCommandHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        FixtureFixtures.Season2023_2024,
-        FixtureFixtures.Season2024_2025,
-    ];
-
-    private static readonly List<Competition> BaseCompetitions =
-    [
-        FixtureFixtures.CompetitionLeague2024_2025,
-        FixtureFixtures.CompetitionCup2024_2025,
-    ];
-
-    private static readonly List<Fixture> BaseFixtures =
-    [
-        FixtureFixtures.FixtureGW1League2024_2925,
-        FixtureFixtures.FixtureR1Cup2024_2925,
-    ];
-
-    private static readonly UpdateFixtureCommand BaseCommand = new(FixtureFixtures.FixtureGW1League2024_2925.Id,
-                                                                   $"{FixtureFixtures.FixtureGW1League2024_2925.Opponent.Value} Updated",
-                                                                   FixtureFixtures.FixtureGW1League2024_2925.KickoffTimeUtc.Value.AddDays(1),
-                                                                   Location.Neutral.Value);
+    private readonly Competition _competition;
+    private readonly Fixture _existingFixture;
+    private readonly Fixture _targetFixture;
+    private readonly Season _season;
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
+
+    private readonly UpdateFixtureCommand _command;
     private readonly UpdateFixtureCommandHandler _handler;
 
     public UpdateFixtureCommandHandlerTests()
     {
         _dbContextMock = new Mock<IApplicationDbContext>();
 
+        _season = new SeasonBuilder().Build();
+        _competition = new CompetitionBuilder().WithSeason(_season).Build();
+
+        var builder = new FixtureBuilder().WithCompetition(_competition);
+        _existingFixture = builder.WithKickoffTimeUtc(new(_season.DateRange.StartDate.AddDays(7), TimeOnly.MinValue)).Build();
+        _targetFixture = builder.WithKickoffTimeUtc(new(_season.DateRange.StartDate.AddDays(14), TimeOnly.MinValue)).Build();
+
+        _command = new(_targetFixture.Id,
+                       "Updated Opponent",
+                       _targetFixture.KickoffTimeUtc.Value.AddDays(1),
+                       Location.Neutral.Value);
+
+
         _dbContextMock.Setup(m => m.Competitions)
-                      .Returns(BaseCompetitions.BuildMockDbSet().Object);
+                      .Returns(new List<Competition>() { _competition }.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.Fixtures)
-                      .Returns(BaseFixtures.BuildMockDbSet().Object);
+                      .Returns(new List<Fixture>() { _existingFixture, _targetFixture }.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.Seasons)
-                      .Returns(BaseSeasons.BuildMockDbSet().Object);
+                      .Returns(new List<Season>() { _season }.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);
@@ -59,7 +58,7 @@ public class UpdateFixtureCommandHandlerTests
     public async Task Handle_ShouldReturnSuccess_WhenFixtureIsUpdated()
     {
         // Arrange.
-        var command = BaseCommand;
+        var command = _command;
         var expected = Result.Success();
 
         // Act.
@@ -73,7 +72,7 @@ public class UpdateFixtureCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenFixtureIsNotFound()
     {
         // Arrange.
-        var command = BaseCommand with { FixtureId = Guid.CreateVersion7() };
+        var command = _command with { FixtureId = Guid.CreateVersion7() };
         var expected = Result.Failure(FixtureErrors.NotFound(command.FixtureId));
 
         // Act.
@@ -87,7 +86,7 @@ public class UpdateFixtureCommandHandlerTests
     public async Task Handle_ShouldReturnSuccess_WhenCurrentFixtureIsAlreadyScheduled()
     {
         // Arrange.
-        var command = BaseCommand with { KickoffTimeUtc = FixtureFixtures.FixtureGW1League2024_2925.KickoffTimeUtc };
+        var command = _command with { KickoffTimeUtc = _targetFixture.KickoffTimeUtc };
         var expected = Result.Success();
 
         // Act.
@@ -96,11 +95,12 @@ public class UpdateFixtureCommandHandlerTests
         // Assert.
         result.ShouldBeEquivalentTo(expected);
     }
+
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenAnotherFixtureAlreadyScheduled()
     {
         // Arrange.
-        var command = BaseCommand with { KickoffTimeUtc = FixtureFixtures.FixtureR1Cup2024_2925.KickoffTimeUtc };
+        var command = _command with { KickoffTimeUtc = _existingFixture.KickoffTimeUtc };
         var expected = Result.Failure(FixtureErrors.AlreadyScheduledOnDate(DateOnly.FromDateTime(command.KickoffTimeUtc)));
 
         // Act.

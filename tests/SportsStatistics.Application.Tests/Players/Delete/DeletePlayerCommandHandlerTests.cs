@@ -9,15 +9,9 @@ namespace SportsStatistics.Application.Tests.Players.Delete;
 
 public class DeletePlayerCommandHandlerTests
 {
-    private static readonly List<Player> BasePlayers =
-    [
-        PlayerFixtures.Goalkeeper,
-        PlayerFixtures.Defender,
-        PlayerFixtures.Midfielder,
-        PlayerFixtures.Attacker
-    ];
-    
-    private static readonly DeletePlayerCommand BaseCommand = new(PlayerFixtures.Goalkeeper.Id);
+    private static readonly List<Player> BasePlayers = PlayerBuilder.GetDefaults();
+
+    private static readonly DeletePlayerCommand BaseCommand = new(BasePlayers.First().Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly DeletePlayerCommandHandler _handler;

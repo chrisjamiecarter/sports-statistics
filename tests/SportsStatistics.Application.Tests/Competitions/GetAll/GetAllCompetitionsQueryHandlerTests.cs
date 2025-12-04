@@ -8,13 +8,9 @@ namespace SportsStatistics.Application.Tests.Competitions.GetAll;
 
 public class GetAllCompetitionsQueryHandlerTests
 {
-    private static readonly List<Competition> BaseCompetitions =
-    [
-        CompetitionFixtures.CompetitionLeague2024_2025,
-        CompetitionFixtures.CompetitionCup2024_2025,
-    ];
+    private static readonly List<Competition> BaseCompetitions = CompetitionBuilder.GetDefaults();
 
-    private static readonly GetAllCompetitionsQuery BaseCommand = new(CompetitionFixtures.Season2024_2025.Id);
+    private static readonly GetAllCompetitionsQuery BaseCommand = new(BaseCompetitions.First().SeasonId);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetAllCompetitionsQueryHandler _handler;

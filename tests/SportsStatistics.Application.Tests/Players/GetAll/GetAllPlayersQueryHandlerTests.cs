@@ -8,14 +8,8 @@ namespace SportsStatistics.Application.Tests.Players.GetAll;
 
 public class GetAllPlayersQueryHandlerTests
 {
-    private static readonly List<Player> BasePlayers =
-    [
-        PlayerFixtures.Goalkeeper,
-        PlayerFixtures.Defender,
-        PlayerFixtures.Midfielder,
-        PlayerFixtures.Attacker
-    ];
-
+    private static readonly List<Player> BasePlayers = PlayerBuilder.GetDefaults();
+    
     private static readonly GetAllPlayersQuery BaseCommand = new();
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;

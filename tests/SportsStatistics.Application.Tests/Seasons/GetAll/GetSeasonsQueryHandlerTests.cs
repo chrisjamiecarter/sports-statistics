@@ -8,11 +8,7 @@ namespace SportsStatistics.Application.Tests.Seasons.GetAll;
 
 public class GetSeasonsQueryHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        SeasonFixtures.Season2023_2024,
-        SeasonFixtures.Season2024_2025
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
     private static readonly GetSeasonsQuery BaseCommand = new();
 
@@ -30,7 +26,7 @@ public class GetSeasonsQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var seasons = BaseSeasons;
+        var seasons = BaseSeasons.ToList();
         var expected = Result.Success(seasons.ToResponse());
 
         _dbContextMock.Setup(m => m.Seasons)

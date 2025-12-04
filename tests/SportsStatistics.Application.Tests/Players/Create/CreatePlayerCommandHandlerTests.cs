@@ -8,13 +8,7 @@ namespace SportsStatistics.Application.Tests.Players.Create;
 
 public class CreatePlayerCommandHandlerTests
 {
-    private static readonly List<Player> BasePlayers =
-    [
-        PlayerFixtures.Goalkeeper,
-        PlayerFixtures.Defender,
-        PlayerFixtures.Midfielder,
-        PlayerFixtures.Attacker
-    ];
+    private static readonly List<Player> BasePlayers = PlayerBuilder.GetDefaults();
 
     private static readonly CreatePlayerCommand BaseCommand = new("New Player Name",
                                                                   2,
@@ -56,7 +50,7 @@ public class CreatePlayerCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenSquadNumberIsUnavailable()
     {
         // Arrange.
-        var command = BaseCommand with { SquadNumber = PlayerFixtures.Defender.SquadNumber };
+        var command = BaseCommand with { SquadNumber = BasePlayers.Last().SquadNumber };
         var expected = Result.Failure(PlayerErrors.SquadNumberTaken(command.SquadNumber));
 
         // Act.

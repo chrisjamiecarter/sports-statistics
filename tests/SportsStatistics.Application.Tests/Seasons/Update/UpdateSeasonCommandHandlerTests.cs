@@ -8,15 +8,11 @@ namespace SportsStatistics.Application.Tests.Seasons.Update;
 
 public class UpdateSeasonCommandHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        SeasonFixtures.Season2023_2024,
-        SeasonFixtures.Season2024_2025
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
-    private static readonly UpdateSeasonCommand BaseCommand = new(SeasonFixtures.Season2024_2025.Id,
-                                                                  SeasonFixtures.Season2024_2025.DateRange.StartDate.AddDays(1),
-                                                                  SeasonFixtures.Season2024_2025.DateRange.EndDate.AddDays(-1));
+    private static readonly UpdateSeasonCommand BaseCommand = new(BaseSeasons.First().Id,
+                                                                  BaseSeasons.First().DateRange.StartDate.AddDays(1),
+                                                                  BaseSeasons.First().DateRange.EndDate.AddDays(-1));
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly UpdateSeasonCommandHandler _handler;

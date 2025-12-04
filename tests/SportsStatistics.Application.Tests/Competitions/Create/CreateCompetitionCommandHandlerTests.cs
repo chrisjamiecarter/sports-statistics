@@ -1,6 +1,7 @@
 ﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Competitions.Create;
+using SportsStatistics.Application.Tests.Seasons;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
@@ -9,15 +10,11 @@ namespace SportsStatistics.Application.Tests.Competitions.Create;
 
 public class CreateCompetitionCommandHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        CompetitionFixtures.Season2023_2024,
-        CompetitionFixtures.Season2024_2025,
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
-    private static readonly List<Competition> BaseCompetitions = [];
+    private static readonly List<Competition> BaseCompetitions = CompetitionBuilder.GetDefaults();
 
-    private static readonly CreateCompetitionCommand BaseCommand = new(CompetitionFixtures.Season2023_2024.Id,
+    private static readonly CreateCompetitionCommand BaseCommand = new(BaseSeasons.First().Id,
                                                                        "Premier League",
                                                                        Format.League.Value);
 

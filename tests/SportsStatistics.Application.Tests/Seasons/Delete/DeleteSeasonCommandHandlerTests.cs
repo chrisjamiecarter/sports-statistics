@@ -8,13 +8,9 @@ namespace SportsStatistics.Application.Tests.Seasons.Delete;
 
 public class DeleteSeasonCommandHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        SeasonFixtures.Season2023_2024,
-        SeasonFixtures.Season2024_2025
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
-    private static readonly DeleteSeasonCommand BaseCommand = new(SeasonFixtures.Season2023_2024.Id);
+    private static readonly DeleteSeasonCommand BaseCommand = new(BaseSeasons.First().Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly DeleteSeasonCommandHandler _handler;

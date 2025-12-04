@@ -8,14 +8,10 @@ namespace SportsStatistics.Application.Tests.Seasons.Create;
 
 public class CreateSeasonCommandHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        SeasonFixtures.Season2023_2024,
-        SeasonFixtures.Season2024_2025
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
-    private static readonly CreateSeasonCommand BaseCommand = new(SeasonFixtures.Season2024_2025.DateRange.StartDate.AddYears(1),
-                                                                  SeasonFixtures.Season2024_2025.DateRange.EndDate.AddYears(1));
+    private static readonly CreateSeasonCommand BaseCommand = new(BaseSeasons.Last().DateRange.StartDate.AddYears(1),
+                                                                  BaseSeasons.Last().DateRange.EndDate.AddYears(1));
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly CreateSeasonCommandHandler _handler;

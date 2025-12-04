@@ -8,19 +8,13 @@ namespace SportsStatistics.Application.Tests.Players.Update;
 
 public class UpdatePlayerCommandHandlerTests
 {
-    private static readonly List<Player> BasePlayers =
-    [
-        PlayerFixtures.Goalkeeper,
-        PlayerFixtures.Defender,
-        PlayerFixtures.Midfielder,
-        PlayerFixtures.Attacker
-    ];
+    private static readonly List<Player> BasePlayers = PlayerBuilder.GetDefaults();
 
-    private static readonly UpdatePlayerCommand BaseCommand = new(PlayerFixtures.Goalkeeper.Id,
-                                                                  $"{PlayerFixtures.Goalkeeper.Name} Updated",
+    private static readonly UpdatePlayerCommand BaseCommand = new(BasePlayers.First().Id,
+                                                                  $"{BasePlayers.First().Name} Updated",
                                                                   11,
-                                                                  $"{PlayerFixtures.Goalkeeper.Nationality} Updated",
-                                                                  PlayerFixtures.Goalkeeper.DateOfBirth.Value.AddDays(-1),
+                                                                  $"{BasePlayers.First().Nationality} Updated",
+                                                                  BasePlayers.First().DateOfBirth.Value.AddDays(-1),
                                                                   Position.Midfielder.Value);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
@@ -71,7 +65,7 @@ public class UpdatePlayerCommandHandlerTests
     public async Task Handle_ShouldReturnSuccess_WhenSquadNumberIsTakenByCurrentPlayer()
     {
         // Arrange.
-        var command = BaseCommand with { SquadNumber = PlayerFixtures.Goalkeeper.SquadNumber };
+        var command = BaseCommand with { SquadNumber = BasePlayers.First().SquadNumber };
         var expected = Result.Success();
 
         // Act.
@@ -85,7 +79,7 @@ public class UpdatePlayerCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenSquadNumberIsTakenByAnotherPlayer()
     {
         // Arrange.
-        var command = BaseCommand with { SquadNumber = PlayerFixtures.Defender.SquadNumber };
+        var command = BaseCommand with { SquadNumber = BasePlayers.Last().SquadNumber };
         var expected = Result.Failure(PlayerErrors.SquadNumberTaken(command.SquadNumber));
 
         // Act.

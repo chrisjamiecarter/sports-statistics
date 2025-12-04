@@ -9,12 +9,9 @@ namespace SportsStatistics.Application.Tests.Fixtures.Delete;
 
 public class DeleteFixtureCommandHandlerTests
 {
-    private static readonly List<Fixture> BaseFixtures =
-    [
-        FixtureFixtures.FixtureGW1League2024_2925,
-    ];
+    private static readonly List<Fixture> BaseFixtures = FixtureBuilder.GetDefaults();
 
-    private static readonly DeleteFixtureCommand BaseCommand = new(FixtureFixtures.FixtureGW1League2024_2925.Id);
+    private static readonly DeleteFixtureCommand BaseCommand = new(BaseFixtures.First().Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly DeleteFixtureCommandHandler _handler;

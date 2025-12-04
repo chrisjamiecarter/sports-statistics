@@ -8,12 +8,9 @@ namespace SportsStatistics.Application.Tests.Competitions.Delete;
 
 public class DeleteCompetitionCommandHandlerTests
 {
-    private static readonly List<Competition> BaseCompetitions =
-    [
-        CompetitionFixtures.CompetitionLeague2024_2025,
-    ];
+    private static readonly List<Competition> BaseCompetitions = CompetitionBuilder.GetDefaults();
 
-    private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetitions[0].Id);
+    private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetitions.First().Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly DeleteCompetitionCommandHandler _handler;

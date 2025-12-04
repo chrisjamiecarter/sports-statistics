@@ -1,6 +1,7 @@
 ﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Competitions.Update;
+using SportsStatistics.Application.Tests.Seasons;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.SharedKernel;
@@ -9,19 +10,11 @@ namespace SportsStatistics.Application.Tests.Competitions.Update;
 
 public class UpdateCompetitionCommandHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        CompetitionFixtures.Season2023_2024,
-        CompetitionFixtures.Season2024_2025,
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
-    private static readonly List<Competition> BaseCompetitions =
-    [
-        CompetitionFixtures.CompetitionLeague2024_2025,
-        CompetitionFixtures.CompetitionCup2024_2025,
-    ];
+    private static readonly List<Competition> BaseCompetitions = CompetitionBuilder.GetDefaults();
 
-    private static readonly UpdateCompetitionCommand BaseCommand = new(CompetitionFixtures.CompetitionLeague2024_2025.Id,
+    private static readonly UpdateCompetitionCommand BaseCommand = new(BaseCompetitions.First().Id,
                                                                        "Updated Name",
                                                                        Format.Cup.Value);
 

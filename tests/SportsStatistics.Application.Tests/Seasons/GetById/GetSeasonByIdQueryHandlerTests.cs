@@ -8,13 +8,9 @@ namespace SportsStatistics.Application.Tests.Seasons.GetById;
 
 public class GetSeasonByIdQueryHandlerTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        SeasonFixtures.Season2023_2024,
-        SeasonFixtures.Season2024_2025
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
-    private static readonly GetSeasonByIdQuery BaseCommand = new(SeasonFixtures.Season2023_2024.Id);
+    private static readonly GetSeasonByIdQuery BaseCommand = new(BaseSeasons.First().Id);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly GetSeasonByIdQueryHandler _handler;
@@ -34,7 +30,8 @@ public class GetSeasonByIdQueryHandlerTests
     {
         // Arrange.
         var command = BaseCommand;
-        var expected = Result.Success(SeasonFixtures.Season2023_2024.ToResponse());
+        var season = BaseSeasons.First(season => season.Id == command.SeasonId);
+        var expected = Result.Success(season.ToResponse());
 
         // Act.
         var result = await _handler.Handle(command, CancellationToken.None);

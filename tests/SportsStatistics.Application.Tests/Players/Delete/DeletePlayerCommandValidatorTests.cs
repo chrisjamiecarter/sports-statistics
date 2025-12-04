@@ -1,5 +1,6 @@
 ﻿using FluentValidation.TestHelper;
 using SportsStatistics.Application.Players.Delete;
+using SportsStatistics.Domain.Players;
 
 namespace SportsStatistics.Application.Tests.Players.Delete;
 
@@ -32,13 +33,14 @@ public sealed class DeletePlayerCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { PlayerId = default };
-        var expected = "'Player Id' must not be empty.";
+        var expected = PlayerErrors.PlayerIdIsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
 
         // Assert.
         result.ShouldHaveValidationErrorFor(c => c.PlayerId)
-              .WithErrorMessage(expected);
+              .WithErrorCode(expected.Code)
+              .WithErrorMessage(expected.Description);
     }
 }

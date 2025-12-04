@@ -8,15 +8,11 @@ namespace SportsStatistics.Application.Tests.Seasons.Update;
 
 public class UpdateSeasonCommandValidatorTests
 {
-    private static readonly List<Season> BaseSeasons =
-    [
-        SeasonFixtures.Season2023_2024,
-        SeasonFixtures.Season2024_2025
-    ];
+    private static readonly List<Season> BaseSeasons = SeasonBuilder.GetDefaults();
 
-    private static readonly UpdateSeasonCommand BaseCommand = new(SeasonFixtures.Season2024_2025.Id,
-                                                                  SeasonFixtures.Season2024_2025.DateRange.StartDate.AddDays(1),
-                                                                  SeasonFixtures.Season2024_2025.DateRange.EndDate.AddDays(-1));
+    private static readonly UpdateSeasonCommand BaseCommand = new(BaseSeasons.Last().Id,
+                                                                  BaseSeasons.Last().DateRange.StartDate.AddYears(1),
+                                                                  BaseSeasons.Last().DateRange.EndDate.AddYears(1));
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly UpdateSeasonCommandValidator _validator;
@@ -101,7 +97,7 @@ public class UpdateSeasonCommandValidatorTests
         // Arrange.
         var command = BaseCommand with
         {
-            StartDate = SeasonFixtures.Season2023_2024.DateRange.StartDate,
+            StartDate = BaseSeasons.First().DateRange.StartDate,
         };
         var expected = "'Start Date' overlaps with an existing season.";
 
@@ -152,7 +148,7 @@ public class UpdateSeasonCommandValidatorTests
         // Arrange.
         var command = BaseCommand with
         {
-            EndDate = SeasonFixtures.Season2023_2024.DateRange.EndDate,
+            EndDate = BaseSeasons.First().DateRange.EndDate,
         };
         var expected = "'End Date' overlaps with an existing season.";
 
