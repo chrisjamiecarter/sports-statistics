@@ -37,7 +37,7 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
         }
 
         var squadNumberTaken = await _dbContext.Players.AsNoTracking()
-                                                       .Where(existingPlayer => existingPlayer.Id != player.Id && existingPlayer.SquadNumber == player.SquadNumber)
+                                                       .Where(existing => existing.Id != player.Id && existing.SquadNumber == squadNumberResult.Value)
                                                        .AnyAsync(cancellationToken);
 
         if (squadNumberTaken)
