@@ -27,7 +27,6 @@ internal sealed class UpdatePlayerCommandValidator : AbstractValidator<UpdatePla
             .Must(dob => dob.CalculateAge() >= DateOfBirth.MinAge).WithError(PlayerErrors.DateOfBirthBelowMinAge);
 
         RuleFor(c => c.PositionId)
-            .NotEmpty().WithError(PlayerErrors.PositionIdIsRequired)
-            .Must(positionId => Position.Resolve(positionId).IsSuccess).WithError(PlayerErrors.PositionNotFound);
+            .Must(Position.ContainsValue).WithError(PlayerErrors.PositionNotFound);
     }
 }
