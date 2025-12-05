@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Infrastructure.Competitions;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Tests.Competitions;
 
@@ -55,6 +54,7 @@ public class CompetitionConfigurationTests
     public void CompetitionConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Competition.Id);
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -63,6 +63,7 @@ public class CompetitionConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -71,6 +72,7 @@ public class CompetitionConfigurationTests
     public void CompetitionConfiguration_ShouldConfigureSeasonIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Competition.SeasonId);
         var expectedIsNullable = false;
 
         // Act.
@@ -78,6 +80,7 @@ public class CompetitionConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -85,14 +88,19 @@ public class CompetitionConfigurationTests
     public void CompetitionConfiguration_ShouldConfigureNamePropertyCorrectly()
     {
         // Arrange.
-        var expectedMaxLength = 50;
+        var expectedColumnName = nameof(Competition.Name);
+        var expectedMaxLength = Name.MaxLength;
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Competition.Name));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(Competition.Name));
+
+        var property = complex.ComplexType.FindProperty(nameof(Name.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.GetMaxLength().ShouldBe(expectedMaxLength);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
@@ -101,6 +109,7 @@ public class CompetitionConfigurationTests
     public void CompetitionConfiguration_ShouldConfigureFormatPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Competition.Format);
         var expectedIsNullable = false;
 
         // Act.
@@ -108,8 +117,42 @@ public class CompetitionConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        //property.GetValueConverter().ShouldBe(expectedValueConverter);
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void CompetitionConfiguration_ShouldConfigureDeleteOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Competition.DeletedOnUtc);
+        var expectedIsNullable = true;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Competition.DeletedOnUtc));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void CompetitionConfiguration_ShouldConfigureDeletedPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Competition.Deleted);
+        var expectedDefaultValue = false;
+        var expectedIsNullable = false;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Competition.Deleted));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+        property.GetDefaultValue().ShouldBe(expectedDefaultValue);
     }
 
     [Fact]
