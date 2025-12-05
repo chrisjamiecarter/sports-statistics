@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 using SportsStatistics.Infrastructure.Seasons;
 
 namespace SportsStatistics.Infrastructure.Tests.Seasons;
@@ -55,6 +54,7 @@ public class SeasonConfigurationTests
     public void SeasonConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Season.Id);
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -63,41 +63,68 @@ public class SeasonConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
 
-    //[Fact]
-    //public void SeasonConfiguration_ShouldConfigureStartDatePropertyCorrectly()
-    //{
-    //    // Arrange.
-    //    var expectedColumnType = "date";
-    //    var expectedIsNullable = false;
+    [Fact]
+    public void SeasonConfiguration_ShouldConfigureDateRangePropertyCorrectly()
+    {
+        // Arrange.
+        var expectedStartDateColumnName = nameof(Season.DateRange.StartDate);
+        var expectedEndDateColumnName = nameof(Season.DateRange.EndDate);
+        var expectedIsNullable = false;
 
-    //    // Act.
-    //    var property = _entity.FindProperty(nameof(Season.StartDate));
+        // Act.
+        var complex = _entity.GetComplexProperties()
+                    .Single(p => p.Name == nameof(Season.DateRange));
 
-    //    // Assert.
-    //    property.ShouldNotBeNull();
-    //    property.GetColumnType().ShouldBe(expectedColumnType);
-    //    property.IsNullable.ShouldBe(expectedIsNullable);
-    //}
+        var startDateProperty = complex.ComplexType.FindProperty(nameof(Season.DateRange.StartDate));
+        var endDateProperty = complex.ComplexType.FindProperty(nameof(Season.DateRange.EndDate));
 
-    //[Fact]
-    //public void SeasonConfiguration_ShouldConfigureEndDatePropertyCorrectly()
-    //{
-    //    // Arrange.
-    //    var expectedColumnType = "date";
-    //    var expectedIsNullable = false;
+        // Assert.
+        startDateProperty.ShouldNotBeNull();
+        startDateProperty.GetColumnName().ShouldBeEquivalentTo(expectedStartDateColumnName);
+        startDateProperty.IsNullable.ShouldBe(expectedIsNullable);
+        endDateProperty.ShouldNotBeNull();
+        endDateProperty.GetColumnName().ShouldBeEquivalentTo(expectedEndDateColumnName);
+        endDateProperty.IsNullable.ShouldBe(expectedIsNullable);
+    }
 
-    //    // Act.
-    //    var property = _entity.FindProperty(nameof(Season.EndDate));
+    [Fact]
+    public void SeasonConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Season.DeletedOnUtc);
+        var expectedIsNullable = true;
 
-    //    // Assert.
-    //    property.ShouldNotBeNull();
-    //    property.GetColumnType().ShouldBe(expectedColumnType);
-    //    property.IsNullable.ShouldBe(expectedIsNullable);
-    //}
+        // Act.
+        var property = _entity.FindProperty(nameof(Season.DeletedOnUtc));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void SeasonConfiguration_ShouldConfigureDeletedPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Season.Deleted);
+        var expectedDefaultValue = false;
+        var expectedIsNullable = false;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Season.Deleted));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+        property.GetDefaultValue().ShouldBe(expectedDefaultValue);
+    }
 
     [Fact]
     public void SeasonConfiguration_ShouldIgnoreName()
