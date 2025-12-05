@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 using SportsStatistics.Infrastructure.Fixtures;
 
 namespace SportsStatistics.Infrastructure.Tests.Fixtures;
@@ -55,6 +54,7 @@ public class FixtureConfigurationTests
     public void FixtureConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Fixture.Id);
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -63,6 +63,7 @@ public class FixtureConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -71,6 +72,7 @@ public class FixtureConfigurationTests
     public void FixtureConfiguration_ShouldConfigureCompetitionIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Fixture.CompetitionId);
         var expectedIsNullable = false;
 
         // Act.
@@ -78,6 +80,7 @@ public class FixtureConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -85,14 +88,19 @@ public class FixtureConfigurationTests
     public void FixtureConfiguration_ShouldConfigureOpponentPropertyCorrectly()
     {
         // Arrange.
-        var expectedMaxLength = 100;
+        var expectedColumnName = nameof(Fixture.Opponent);
+        var expectedMaxLength = Opponent.MaxLength;
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Fixture.Opponent));
+        var complex = _entity.GetComplexProperties()
+                            .Single(p => p.Name == nameof(Fixture.Opponent));
+
+        var property = complex.ComplexType.FindProperty(nameof(Opponent.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.GetMaxLength().ShouldBe(expectedMaxLength);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
@@ -101,13 +109,18 @@ public class FixtureConfigurationTests
     public void FixtureConfiguration_ShouldConfigureKickoffTimeUtcPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Fixture.KickoffTimeUtc);
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Fixture.KickoffTimeUtc));
+        var complex = _entity.GetComplexProperties()
+                            .Single(p => p.Name == nameof(Fixture.KickoffTimeUtc));
+
+        var property = complex.ComplexType.FindProperty(nameof(KickoffTimeUtc.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -115,7 +128,7 @@ public class FixtureConfigurationTests
     public void FixtureConfiguration_ShouldConfigureLocationPropertyCorrectly()
     {
         // Arrange.
-        //var expectedValueConverter = Converters.FixtureLocationConverter;
+        var expectedColumnName = nameof(Fixture.Location);
         var expectedIsNullable = false;
 
         // Act.
@@ -123,7 +136,7 @@ public class FixtureConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        //property.GetValueConverter().ShouldBe(expectedValueConverter);
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -131,6 +144,8 @@ public class FixtureConfigurationTests
     public void FixtureConfiguration_ShouldConfigureScorePropertyCorrectly()
     {
         // Arrange.
+        var expectedHomeGoalsColumnName = nameof(Fixture.Score.HomeGoals);
+        var expectedAwayGoalsColumnName = nameof(Fixture.Score.AwayGoals);
         var expectedIsOwned = true;
         var expectedIsNullable = false;
 
@@ -144,8 +159,10 @@ public class FixtureConfigurationTests
         ownedEntityType.ShouldNotBeNull();
         ownedEntityType.IsOwned().ShouldBe(expectedIsOwned);
         homeGoalsProperty.ShouldNotBeNull();
+        homeGoalsProperty.GetColumnName().ShouldBeEquivalentTo(expectedHomeGoalsColumnName);
         homeGoalsProperty.IsNullable.ShouldBe(expectedIsNullable);
         awayGoalsProperty.ShouldNotBeNull();
+        awayGoalsProperty.GetColumnName().ShouldBeEquivalentTo(expectedAwayGoalsColumnName);
         awayGoalsProperty.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -153,7 +170,7 @@ public class FixtureConfigurationTests
     public void FixtureConfiguration_ShouldConfigureStatusPropertyCorrectly()
     {
         // Arrange.
-        //var expectedValueConverter = Converters.FixtureStatusConverter;
+        var expectedColumnName = nameof(Fixture.Status);
         var expectedIsNullable = false;
 
         // Act.
@@ -161,8 +178,42 @@ public class FixtureConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        //property.GetValueConverter().ShouldBe(expectedValueConverter);
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void FixtureConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Fixture.DeletedOnUtc);
+        var expectedIsNullable = true;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Fixture.DeletedOnUtc));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void FixtureConfiguration_ShouldConfigureDeletedPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Fixture.Deleted);
+        var expectedDefaultValue = false;
+        var expectedIsNullable = false;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Fixture.Deleted));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+        property.GetDefaultValue().ShouldBe(expectedDefaultValue);
     }
 
     [Fact]
