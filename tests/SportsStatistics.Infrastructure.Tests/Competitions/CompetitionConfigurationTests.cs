@@ -122,7 +122,7 @@ public class CompetitionConfigurationTests
     }
 
     [Fact]
-    public void CompetitionConfiguration_ShouldConfigureDeleteOnUtcPropertyCorrectly()
+    public void CompetitionConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
     {
         // Arrange.
         var expectedColumnName = nameof(Competition.DeletedOnUtc);
