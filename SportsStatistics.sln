@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Authorizat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Infrastructure.Tests", "tests\SportsStatistics.Infrastructure.Tests\SportsStatistics.Infrastructure.Tests.csproj", "{0B617305-C5C8-4B8E-85D8-2AA078AAE2B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsStatistics.Domain.Tests", "tests\SportsStatistics.Domain.Tests\SportsStatistics.Domain.Tests.csproj", "{558A4852-16AE-4247-BE8B-887E0110FD90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{0B617305-C5C8-4B8E-85D8-2AA078AAE2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B617305-C5C8-4B8E-85D8-2AA078AAE2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B617305-C5C8-4B8E-85D8-2AA078AAE2B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{558A4852-16AE-4247-BE8B-887E0110FD90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{558A4852-16AE-4247-BE8B-887E0110FD90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{558A4852-16AE-4247-BE8B-887E0110FD90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{558A4852-16AE-4247-BE8B-887E0110FD90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,6 +133,7 @@ Global
 		{428967C8-A737-433F-8C8B-41DD7A6F22DD} = {C73F358D-DF79-4FB2-A513-6C8C79D37ACA}
 		{084EB54B-1D1D-4EF6-AD46-B8E4C23147EC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{0B617305-C5C8-4B8E-85D8-2AA078AAE2B2} = {C73F358D-DF79-4FB2-A513-6C8C79D37ACA}
+		{558A4852-16AE-4247-BE8B-887E0110FD90} = {C73F358D-DF79-4FB2-A513-6C8C79D37ACA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19099E31-A7B7-4282-87B7-128596FE65FD}
