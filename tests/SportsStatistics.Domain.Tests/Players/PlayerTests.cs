@@ -29,4 +29,31 @@ public class PlayerTests
         player.Deleted.ShouldBeFalse();
         player.DeletedOnUtc.ShouldBeNull();
     }
+
+    [Theory]
+    [ClassData(typeof(ChangeNameData))]
+    public void ChangeName_ShouldChangeName_WhenNameIsDifferent(Name oldName, Name newName)
+    {
+        // Arrange.
+        var player = PlayerTestData.ValidPlayerWithName(oldName);
+
+        // Act.
+        var result = player.ChangeName(newName);
+
+        // Assert.
+        result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ChangeName_ShouldNotChangeName_WhenNameIsIdentical()
+    {
+        // Arrange.
+        var player = PlayerTestData.ValidPlayer;
+
+        // Act.
+        var result = player.ChangeName(player.Name);
+
+        // Assert.
+        result.ShouldBeFalse();
+    }
 }
