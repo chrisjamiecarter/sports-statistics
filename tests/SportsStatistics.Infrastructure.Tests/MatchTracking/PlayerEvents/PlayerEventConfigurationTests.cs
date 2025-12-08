@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using SportsStatistics.Domain.MatchTracking;
+using SportsStatistics.Domain.MatchTracking.MatchEvents;
 using SportsStatistics.Domain.MatchTracking.PlayerEvents;
 using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.Infrastructure.Database.Converters;
@@ -55,6 +57,7 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(PlayerEvent.Id);
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -63,6 +66,7 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -71,6 +75,7 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureFixtureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(PlayerEvent.FixtureId);
         var expectedIsNullable = false;
 
         // Act.
@@ -78,6 +83,7 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -85,13 +91,18 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureMinutePropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(PlayerEvent.Minute);
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(PlayerEvent.Minute));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(PlayerEvent.Minute));
+
+        var property = complex.ComplexType.FindProperty(nameof(Minute.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -99,6 +110,7 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureOccurredAtUtcPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(PlayerEvent.OccurredAtUtc);
         var expectedIsNullable = false;
 
         // Act.
@@ -106,6 +118,7 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -113,6 +126,7 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigurePlayerIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(PlayerEvent.PlayerId);
         var expectedIsNullable = false;
 
         // Act.
@@ -120,6 +134,7 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -127,7 +142,7 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureTypePropertyCorrectly()
     {
         // Arrange.
-        //var expectedValueConverter = Converters.PlayerEventTypeConverter;
+        var expectedColumnName = nameof(PlayerEvent.Type);
         var expectedIsNullable = false;
 
         // Act.
@@ -135,8 +150,42 @@ public class PlayerEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        //property.GetValueConverter().ShouldBe(expectedValueConverter);
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void PlayerEventConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(PlayerEvent.DeletedOnUtc);
+        var expectedIsNullable = true;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(PlayerEvent.DeletedOnUtc));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void PlayerEventConfiguration_ShouldConfigureDeletedPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(PlayerEvent.Deleted);
+        var expectedDefaultValue = false;
+        var expectedIsNullable = false;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(PlayerEvent.Deleted));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+        property.GetDefaultValue().ShouldBe(expectedDefaultValue);
     }
 
     [Fact]
