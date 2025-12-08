@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.MatchTracking;
 using SportsStatistics.Domain.MatchTracking.MatchEvents;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 using SportsStatistics.Infrastructure.MatchTracking.MatchEvents;
 
 namespace SportsStatistics.Infrastructure.Tests.MatchTracking.MatchEvents;
