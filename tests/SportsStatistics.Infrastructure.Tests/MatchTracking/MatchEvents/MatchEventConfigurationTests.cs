@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using SportsStatistics.Domain.Competitions;
+using SportsStatistics.Domain.MatchTracking;
 using SportsStatistics.Domain.MatchTracking.MatchEvents;
 using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.Infrastructure.Database.Converters;
@@ -55,6 +57,7 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(MatchEvent.Id);
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -63,6 +66,7 @@ public class MatchEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -71,6 +75,7 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureFixtureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(MatchEvent.FixtureId);
         var expectedIsNullable = false;
 
         // Act.
@@ -78,6 +83,7 @@ public class MatchEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -85,13 +91,18 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureMinutePropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(MatchEvent.Minute);
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(MatchEvent.Minute));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(MatchEvent.Minute));
+
+        var property = complex.ComplexType.FindProperty(nameof(Minute.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -113,7 +124,7 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureTypePropertyCorrectly()
     {
         // Arrange.
-        //var expectedValueConverter = Converters.MatchEventTypeConverter;
+        var expectedColumnName = nameof(MatchEvent.Type);
         var expectedIsNullable = false;
 
         // Act.
@@ -121,8 +132,42 @@ public class MatchEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        //property.GetValueConverter().ShouldBe(expectedValueConverter);
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void MatchEventConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(MatchEvent.DeletedOnUtc);
+        var expectedIsNullable = true;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(MatchEvent.DeletedOnUtc));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void MatchEventConfiguration_ShouldConfigureDeletedPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(MatchEvent.Deleted);
+        var expectedDefaultValue = false;
+        var expectedIsNullable = false;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(MatchEvent.Deleted));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+        property.GetDefaultValue().ShouldBe(expectedDefaultValue);
     }
 
     [Fact]
