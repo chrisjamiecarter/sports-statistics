@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using SportsStatistics.Domain.MatchTracking;
 using SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 using SportsStatistics.Infrastructure.MatchTracking.SubstitutionEvents;
 
 namespace SportsStatistics.Infrastructure.Tests.MatchTracking.SubstitutionEvents;
@@ -55,6 +55,7 @@ public class SubstitutionEventConfigurationTests
     public void SubstitutionEventConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.Id);
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -63,6 +64,7 @@ public class SubstitutionEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBe(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -71,6 +73,7 @@ public class SubstitutionEventConfigurationTests
     public void SubstitutionEventConfiguration_ShouldConfigureFixtureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.FixtureId);
         var expectedIsNullable = false;
 
         // Act.
@@ -78,6 +81,7 @@ public class SubstitutionEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBe(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -85,13 +89,18 @@ public class SubstitutionEventConfigurationTests
     public void SubstitutionEventConfiguration_ShouldConfigureMinutePropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.Minute);
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(SubstitutionEvent.Minute));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(SubstitutionEvent.Minute));
+
+        var property = complex.ComplexType.FindProperty(nameof(Minute.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBe(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -99,6 +108,7 @@ public class SubstitutionEventConfigurationTests
     public void SubstitutionEventConfiguration_ShouldConfigureOccurredAtUtcPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.OccurredAtUtc);
         var expectedIsNullable = false;
 
         // Act.
@@ -106,68 +116,117 @@ public class SubstitutionEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBe(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
-    //[Fact]
-    //public void SubstitutionEventConfiguration_ShouldConfigurePlayerOutIdPropertyCorrectly()
-    //{
-    //    // Arrange.
-    //    var expectedIsNullable = false;
+    [Fact]
+    public void SubstitutionEventConfiguration_ShouldConfigurePlayerOffIdPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.Substitution.PlayerOffId);
+        var expectedIsNullable = false;
 
-    //    // Act.
-    //    var property = _entity.FindProperty(nameof(SubstitutionEvent.PlayerOutId));
+        // Act.
+        var ownedNavigation = _entity.FindNavigation(nameof(SubstitutionEvent.Substitution));
+        var ownedEntityType = ownedNavigation?.TargetEntityType;
+        var property = ownedEntityType?.FindProperty(nameof(Substitution.PlayerOffId));
 
-    //    // Assert.
-    //    property.ShouldNotBeNull();
-    //    property.IsNullable.ShouldBe(expectedIsNullable);
-    //}
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBe(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
 
-    //[Fact]
-    //public void SubstitutionEventConfiguration_ShouldConfigurePlayerInIdPropertyCorrectly()
-    //{
-    //    // Arrange.
-    //    var expectedValueConverter = Converters.EntityIdConverter;
-    //    var expectedIsNullable = false;
+    [Fact]
+    public void SubstitutionEventConfiguration_ShouldConfigurePlayerOnIdPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.Substitution.PlayerOnId);
+        var expectedIsNullable = false;
 
-    //    // Act.
-    //    var property = _entity.FindProperty(nameof(SubstitutionEvent.PlayerInId));
+        // Act.
+        var ownedNavigation = _entity.FindNavigation(nameof(SubstitutionEvent.Substitution));
+        var ownedEntityType = ownedNavigation?.TargetEntityType;
+        var property = ownedEntityType?.FindProperty(nameof(Substitution.PlayerOnId));
 
-    //    // Assert.
-    //    property.ShouldNotBeNull();
-    //    property.GetValueConverter().ShouldBe(expectedValueConverter);
-    //    property.IsNullable.ShouldBe(expectedIsNullable);
-    //}
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBe(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
 
-    //[Fact]
-    //public void SubstitutionEventConfiguration_ShouldConfigurePlayerOutIdAsForeignKey()
-    //{
-    //    // Arrange.
-    //    var expected = nameof(SubstitutionEvent.PlayerOutId);
+    [Fact]
+    public void SubstitutionEventConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.DeletedOnUtc);
+        var expectedIsNullable = true;
 
-    //    // Act.
-    //    var foreignKey = _entity.GetForeignKeys()
-    //                            .SingleOrDefault(fk => fk.Properties.Any(p => p.Name == expected));
+        // Act.
+        var property = _entity.FindProperty(nameof(SubstitutionEvent.DeletedOnUtc));
 
-    //    // Assert.
-    //    foreignKey.ShouldNotBeNull();
-    //    foreignKey.Properties.ShouldHaveSingleItem();
-    //    foreignKey.Properties[0].Name.ShouldBeEquivalentTo(expected);
-    //}
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
 
-    //[Fact]
-    //public void SubstitutionEventConfiguration_ShouldConfigurePlayerInIdAsForeignKey()
-    //{
-    //    // Arrange.
-    //    var expected = nameof(SubstitutionEvent.PlayerInId);
+    [Fact]
+    public void SubstitutionEventConfiguration_ShouldConfigureDeletedPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(SubstitutionEvent.Deleted);
+        var expectedDefaultValue = false;
+        var expectedIsNullable = false;
 
-    //    // Act.
-    //    var foreignKey = _entity.GetForeignKeys()
-    //                            .SingleOrDefault(fk => fk.Properties.Any(p => p.Name == expected));
+        // Act.
+        var property = _entity.FindProperty(nameof(SubstitutionEvent.Deleted));
 
-    //    // Assert.
-    //    foreignKey.ShouldNotBeNull();
-    //    foreignKey.Properties.ShouldHaveSingleItem();
-    //    foreignKey.Properties[0].Name.ShouldBeEquivalentTo(expected);
-    //}
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+        property.GetDefaultValue().ShouldBe(expectedDefaultValue);
+    }
+
+    [Fact]
+    public void SubstitutionEventConfiguration_ShouldConfigurePlayerOffIdAsForeignKey()
+    {
+        // Arrange.
+        var expected = nameof(SubstitutionEvent.Substitution.PlayerOffId);
+        var expectedDeleteBehavior = DeleteBehavior.NoAction;
+
+        // Act.
+        var ownedNavigation = _entity.FindNavigation(nameof(SubstitutionEvent.Substitution));
+        var ownedEntityType = ownedNavigation?.TargetEntityType;
+        var foreignKey = ownedEntityType?.GetForeignKeys()
+                                         .SingleOrDefault(fk => fk.Properties.Any(p => p.Name == expected));
+
+        // Assert.
+        foreignKey.ShouldNotBeNull();
+        foreignKey.Properties.ShouldHaveSingleItem();
+        foreignKey.Properties[0].Name.ShouldBeEquivalentTo(expected);
+        foreignKey.DeleteBehavior.ShouldBeEquivalentTo(expectedDeleteBehavior);
+    }
+
+    [Fact]
+    public void SubstitutionEventConfiguration_ShouldConfigurePlayerOnIdAsForeignKey()
+    {
+        // Arrange.
+        var expected = nameof(SubstitutionEvent.Substitution.PlayerOffId);
+        var expectedDeleteBehavior = DeleteBehavior.NoAction;
+
+        // Act.
+        var ownedNavigation = _entity.FindNavigation(nameof(SubstitutionEvent.Substitution));
+        var ownedEntityType = ownedNavigation?.TargetEntityType;
+        var foreignKey = ownedEntityType?.GetForeignKeys()
+                                         .SingleOrDefault(fk => fk.Properties.Any(p => p.Name == expected));
+
+        // Assert.
+        foreignKey.ShouldNotBeNull();
+        foreignKey.Properties.ShouldHaveSingleItem();
+        foreignKey.Properties[0].Name.ShouldBeEquivalentTo(expected);
+        foreignKey.DeleteBehavior.ShouldBeEquivalentTo(expectedDeleteBehavior);
+    }
 }
