@@ -108,6 +108,7 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureOccurredAtUtcPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(MatchEvent.OccurredAtUtc);
         var expectedIsNullable = false;
 
         // Act.
@@ -115,6 +116,7 @@ public class MatchEventConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
