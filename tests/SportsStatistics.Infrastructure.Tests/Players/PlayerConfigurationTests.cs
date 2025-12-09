@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Database.Converters;
 using SportsStatistics.Infrastructure.Players;
 
 namespace SportsStatistics.Infrastructure.Tests.Players;
@@ -55,6 +54,7 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigureIdPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Player.Id);
         var expectedIsNullable = false;
         var expectedValueGenerated = ValueGenerated.Never;
 
@@ -63,6 +63,7 @@ public class PlayerConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.ValueGenerated.ShouldBe(expectedValueGenerated);
     }
@@ -71,14 +72,19 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigureNamePropertyCorrectly()
     {
         // Arrange.
-        var expectedMaxLength = 100;
+        var expectedColumnName = nameof(Player.Name);
         var expectedIsNullable = false;
+        var expectedMaxLength = Name.MaxLength;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Player.Name));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(Player.Name));
+
+        var property = complex.ComplexType.FindProperty(nameof(Name.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.GetMaxLength().ShouldBe(expectedMaxLength);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
@@ -87,13 +93,19 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigureSquadNumberPropertyCorrectly()
     {
         // Arrange.
+        var expectedColumnName = nameof(Player.SquadNumber);
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Player.SquadNumber));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(Player.SquadNumber));
+
+        var property = complex.ComplexType.FindProperty(nameof(SquadNumber.Value));
+
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -101,14 +113,19 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigureNationalityPropertyCorrectly()
     {
         // Arrange.
-        var expectedMaxLength = 100;
+        var expectedColumnName = nameof(Player.Nationality);
         var expectedIsNullable = false;
+        var expectedMaxLength = Nationality.MaxLength;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Player.Nationality));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(Player.Nationality));
+
+        var property = complex.ComplexType.FindProperty(nameof(Nationality.Value));
 
         // Assert.
         property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.GetMaxLength().ShouldBe(expectedMaxLength);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
@@ -117,15 +134,18 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigureDateOfBirthPropertyCorrectly()
     {
         // Arrange.
-        var expectedColumnType = "date";
+        var expectedColumnName = nameof(Player.DateOfBirth);
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Player.DateOfBirth));
+        var complex = _entity.GetComplexProperties()
+                             .Single(p => p.Name == nameof(Player.DateOfBirth));
+
+        var property = complex.ComplexType.FindProperty(nameof(DateOfBirth.Value));
 
         // Assert.
         property.ShouldNotBeNull();
-        property.GetColumnType().ShouldBe(expectedColumnType);
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
@@ -133,7 +153,7 @@ public class PlayerConfigurationTests
     public void PlayerConfiguration_ShouldConfigurePositionPropertyCorrectly()
     {
         // Arrange.
-        //var expectedValueConverter = Converters.PlayerPositionConverter;
+        var expectedColumnName = nameof(Player.Position);
         var expectedIsNullable = false;
 
         // Act.
@@ -141,8 +161,42 @@ public class PlayerConfigurationTests
 
         // Assert.
         property.ShouldNotBeNull();
-        //property.GetValueConverter().ShouldBe(expectedValueConverter);
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void PlayerConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Player.DeletedOnUtc);
+        var expectedIsNullable = true;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Player.DeletedOnUtc));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+    }
+
+    [Fact]
+    public void PlayerConfiguration_ShouldConfigureDeletedPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Player.Deleted);
+        var expectedDefaultValue = false;
+        var expectedIsNullable = false;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Player.Deleted));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
+        property.GetDefaultValue().ShouldBe(expectedDefaultValue);
     }
 
     [Fact]
