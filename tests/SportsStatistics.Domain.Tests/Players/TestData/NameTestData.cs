@@ -1,6 +1,6 @@
 ﻿using SportsStatistics.Domain.Players;
 
-namespace SportsStatistics.Domain.Tests.Players;
+namespace SportsStatistics.Domain.Tests.Players.TestData;
 
 public class NameTestData
 {
