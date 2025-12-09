@@ -13,11 +13,3 @@ public class InvalidSquadNumberTestCase : TheoryData<int?, Error>
         Add(SquadNumberTestData.AboveMaxValueSquadNumber, PlayerErrors.SquadNumber.AboveMaxValue);
     }
 }
-
-public class ValidSquadNumberTestCase : TheoryData<int, SquadNumber>
-{
-    public ValidSquadNumberTestCase()
-    {
-        Add(SquadNumberTestData.ValidSquadNumber.Value, SquadNumberTestData.ValidSquadNumber);
-    }
-}
