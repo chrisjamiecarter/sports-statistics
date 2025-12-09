@@ -8,16 +8,14 @@ public class SquadNumberTests
 {
     [Theory]
     [ClassData(typeof(InvalidSquadNumberTestCase))]
-    public void Create_ShouldReturnFailureResult_WhenSquadNumberIsInvalid(int? squadNumber, Error error)
+    public void Create_ShouldReturnFailureResult_WhenSquadNumberIsInvalid(int? squadNumber, Error expected)
     {
         // Arrange.
-        var expected = Result.Failure<SquadNumber>(error);
-
         // Act.
         var result = SquadNumber.Create(squadNumber);
 
         // Assert.
-        result.Error.ShouldBeEquivalentTo(expected.Error);
+        result.Error.ShouldBeEquivalentTo(expected);
     }
 
     [Theory]
