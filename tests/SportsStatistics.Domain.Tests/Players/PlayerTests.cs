@@ -1,47 +1,48 @@
 ﻿using SportsStatistics.Domain.Players;
-using SportsStatistics.SharedKernel;
+using SportsStatistics.Domain.Tests.Players.TestCases;
+using SportsStatistics.Domain.Tests.Players.TestData;
 
 namespace SportsStatistics.Domain.Tests.Players;
 
 public class PlayerTests
 {
-    [Fact]
-    public void Create_ShouldCreatePlayer_WhenParametersAreValid()
+    [Theory]
+    [ClassData(typeof(ValidPlayerTestCase))]
+    public void Create_ShouldCreatePlayer_WhenParametersAreValid(Name name, SquadNumber squadNumber, Nationality nationality, DateOfBirth dateOfBirth, Position position, int age)
     {
         // Arrange.
         // Act.
-        var player = Player.Create(PlayerTestData.Name,
-                                   PlayerTestData.SquadNumber,
-                                   PlayerTestData.Nationality,
-                                   PlayerTestData.DateOfBirth,
-                                   PlayerTestData.Position);
+        var player = Player.Create(name,
+                                   squadNumber,
+                                   nationality,
+                                   dateOfBirth,
+                                   position);
 
         // Assert.
         player.ShouldNotBeNull();
         player.Id.ShouldNotBe(default);
         player.Id.Version.ShouldBe(7);
-        player.Name.ShouldBe(PlayerTestData.Name);
-        player.SquadNumber.ShouldBe(PlayerTestData.SquadNumber);
-        player.Nationality.ShouldBe(PlayerTestData.Nationality);
-        player.DateOfBirth.ShouldBe(PlayerTestData.DateOfBirth);
-        player.Position.ShouldBe(PlayerTestData.Position);
-        player.Age.ShouldBe(PlayerTestData.DateOfBirth.Value.CalculateAge());
+        player.Name.ShouldBe(name);
+        player.SquadNumber.ShouldBe(squadNumber);
+        player.Nationality.ShouldBe(nationality);
+        player.DateOfBirth.ShouldBe(dateOfBirth);
+        player.Position.ShouldBe(position);
+        player.Age.ShouldBe(age);
         player.Deleted.ShouldBeFalse();
         player.DeletedOnUtc.ShouldBeNull();
     }
 
     [Theory]
-    [ClassData(typeof(ChangeNameData))]
-    public void ChangeName_ShouldChangeName_WhenNameIsDifferent(Name oldName, Name newName)
+    [ClassData(typeof(ChangePlayerNameTestCase))]
+    public void ChangeName_ShouldChangeName_WhenNameIsDifferent(Player player, Name name)
     {
         // Arrange.
-        var player = PlayerTestData.ValidPlayerWithName(oldName);
-
         // Act.
-        var result = player.ChangeName(newName);
+        var result = player.ChangeName(name);
 
         // Assert.
         result.ShouldBeTrue();
+        player.Name.ShouldBe(name);
     }
 
     [Fact]
