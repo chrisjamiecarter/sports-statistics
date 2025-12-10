@@ -3,9 +3,9 @@ using SportsStatistics.Domain.Tests.Players.TestData;
 
 namespace SportsStatistics.Domain.Tests.Players.TestCases;
 
-public class ValidSquadNumberTestCase : TheoryData<int, SquadNumber>
+public class SquadNumberValidTestCase : TheoryData<int, SquadNumber>
 {
-    public ValidSquadNumberTestCase()
+    public SquadNumberValidTestCase()
     {
         Add(SquadNumberTestData.ValidSquadNumber.Value, SquadNumberTestData.ValidSquadNumber);
     }

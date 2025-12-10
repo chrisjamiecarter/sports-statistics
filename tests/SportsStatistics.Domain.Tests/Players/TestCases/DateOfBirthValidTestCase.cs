@@ -3,9 +3,9 @@ using SportsStatistics.Domain.Tests.Players.TestData;
 
 namespace SportsStatistics.Domain.Tests.Players.TestCases;
 
-public class ValidDateOfBirthTestCase : TheoryData<DateOnly, DateOfBirth>
+public class DateOfBirthValidTestCase : TheoryData<DateOnly, DateOfBirth>
 {
-    public ValidDateOfBirthTestCase()
+    public DateOfBirthValidTestCase()
     {
         Add(DateOfBirthTestData.ValidDateOfBirth.Value, DateOfBirthTestData.ValidDateOfBirth);
     }

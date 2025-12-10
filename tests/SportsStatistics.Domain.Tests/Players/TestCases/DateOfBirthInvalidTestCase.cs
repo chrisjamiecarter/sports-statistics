@@ -4,9 +4,9 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Tests.Players.TestCases;
 
-public class InvalidDateOfBirthTestCase : TheoryData<DateOnly?, Error>
+public class DateOfBirthInvalidTestCase : TheoryData<DateOnly?, Error>
 {
-    public InvalidDateOfBirthTestCase()
+    public DateOfBirthInvalidTestCase()
     {
         Add(DateOfBirthTestData.NullDateOfBirth, PlayerErrors.DateOfBirth.NullOrEmpty);
         Add(DateOfBirthTestData.EmptyDateOfBirth, PlayerErrors.DateOfBirth.NullOrEmpty);

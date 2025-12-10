@@ -4,9 +4,9 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Tests.Players.TestCases;
 
-public class InvalidSquadNumberTestCase : TheoryData<int?, Error>
+public class SquadNumberInvalidTestCase : TheoryData<int?, Error>
 {
-    public InvalidSquadNumberTestCase()
+    public SquadNumberInvalidTestCase()
     {
         Add(SquadNumberTestData.NullSquadNumber, PlayerErrors.SquadNumber.NullOrEmpty);
         Add(SquadNumberTestData.BelowMinValueSquadNumber, PlayerErrors.SquadNumber.BelowMinValue);
