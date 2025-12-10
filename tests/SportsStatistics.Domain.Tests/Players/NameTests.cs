@@ -1,5 +1,5 @@
 ﻿using SportsStatistics.Domain.Players;
-using SportsStatistics.Domain.Tests.Players.TestData;
+using SportsStatistics.Domain.Tests.Players.TestCases;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Tests.Players;
@@ -7,32 +7,26 @@ namespace SportsStatistics.Domain.Tests.Players;
 public class NameTests
 {
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void Create_ShouldReturnFailureResult_WhenNameIsNullOrEmpty(string? name)
+    [ClassData(typeof(NameInvalidTestCase))]
+    public void Create_ShouldReturnFailureResult_WhenNameIsInvalid(string? name, Error expected)
     {
         // Arrange.
-        var expected = Result.Failure<Name>(PlayerErrors.Name.NullOrEmpty);
-
         // Act.
         var result = Name.Create(name);
 
         // Assert.
-        result.Error.ShouldBeEquivalentTo(expected.Error);
+        result.Error.ShouldBeEquivalentTo(expected);
     }
 
-    [Fact]
-    public void Create_ShouldReturnFailureResult_WhenNameIsTooLong()
+    [Theory]
+    [ClassData(typeof(NameValidTestCase))]
+    public void Create_ShouldReturnSuccessResult_WhenNameIsValid(string name, Name expected)
     {
         // Arrange.
-        var name = NameTestData.LongerThanAllowedName;
-        var expected = Result.Failure<Name>(PlayerErrors.Name.ExceedsMaxLength);
-
         // Act.
         var result = Name.Create(name);
 
         // Assert.
-        result.Error.ShouldBeEquivalentTo(expected.Error);
+        result.Value.ShouldBeEquivalentTo(expected);
     }
 }

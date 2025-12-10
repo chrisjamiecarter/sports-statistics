@@ -7,7 +7,7 @@ namespace SportsStatistics.Domain.Tests.Players;
 public class DateOfBirthTests
 {
     [Theory]
-    [ClassData(typeof(InvalidDateOfBirthTestCase))]
+    [ClassData(typeof(DateOfBirthInvalidTestCase))]
     public void Create_ShouldReturnFailureResult_WhenDateOfBirthIsInvalid(DateOnly? dateOfBirth, Error expected)
     {
         // Arrange.
@@ -19,7 +19,7 @@ public class DateOfBirthTests
     }
 
     [Theory]
-    [ClassData(typeof(ValidDateOfBirthTestCase))]
+    [ClassData(typeof(DateOfBirthValidTestCase))]
     public void Create_ShouldReturnSuccessResult_WhenDateOfBirthIsValid(DateOnly dateOfBirth, DateOfBirth expected)
     {
         // Arrange.
