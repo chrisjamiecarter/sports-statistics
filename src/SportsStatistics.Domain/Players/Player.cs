@@ -44,7 +44,11 @@ public sealed class Player : Entity, ISoftDeletableEntity
 
     public static Player Create(Name name, SquadNumber squadNumber, Nationality nationality, DateOfBirth dateOfBirth, Position position)
     {
-        return new Player(name, squadNumber, nationality, dateOfBirth, position);
+        var player = new Player(name, squadNumber, nationality, dateOfBirth, position);
+
+        player.Raise(new PlayerCreatedDomainEvent(player.Id));
+
+        return player;
     }
 
     public bool ChangeName(Name name)
@@ -54,10 +58,9 @@ public sealed class Player : Entity, ISoftDeletableEntity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousName = Name;
+        var previousName = Name;
         Name = name;
-        //Raise(new PlayerNameChangedDomainEvent(this, previousName));
+        Raise(new PlayerNameChangedDomainEvent(this, previousName));
 
         return true;
     }
@@ -69,10 +72,9 @@ public sealed class Player : Entity, ISoftDeletableEntity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousSquadNumber = SquadNumber;
+        var previousSquadNumber = SquadNumber;
         SquadNumber = squadNumber;
-        //Raise(new PlayerSquadNumberChangedDomainEvent(this, previousSquadNumber));
+        Raise(new PlayerSquadNumberChangedDomainEvent(this, previousSquadNumber));
 
         return true;
     }
@@ -84,10 +86,9 @@ public sealed class Player : Entity, ISoftDeletableEntity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousNationality = Nationality;
+        var previousNationality = Nationality;
         Nationality = nationality;
-        //Raise(new PlayerNationalityChangedDomainEvent(this, previousNationality));
+        Raise(new PlayerNationalityChangedDomainEvent(this, previousNationality));
 
         return true;
     }
@@ -99,10 +100,9 @@ public sealed class Player : Entity, ISoftDeletableEntity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousDateOfBirth = DateOfBirth;
+        var previousDateOfBirth = DateOfBirth;
         DateOfBirth = dateOfBirth;
-        //Raise(new PlayerDateOfBirthChangedDomainEvent(this, previousDateOfBirth));
+        Raise(new PlayerDateOfBirthChangedDomainEvent(this, previousDateOfBirth));
 
         return true;
     }
@@ -114,23 +114,22 @@ public sealed class Player : Entity, ISoftDeletableEntity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousPosition = Position;
+        var previousPosition = Position;
         Position = position;
-        //Raise(new PlayerPositionChangedDomainEvent(this, previousPosition));
+        Raise(new PlayerPositionChangedDomainEvent(this, previousPosition));
 
         return true;
     }
 
-    //private static void ValidateAndThrow(string name, int squadNumber, string nationality, DateOnly dateOfBirth, Position position)
-    //{
-    //    ArgumentException.ThrowIfNullOrEmpty(name);
-    //    ArgumentOutOfRangeException.ThrowIfLessThan(squadNumber, 1, nameof(squadNumber));
-    //    ArgumentException.ThrowIfNullOrEmpty(nationality);
-    //    ArgumentOutOfRangeException.ThrowIfGreaterThan(dateOfBirth, DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-15)), nameof(dateOfBirth));
-    //    if (position == Position.Unknown)
-    //    {
-    //        throw new ArgumentException("A player cannot have a position of unknown.", nameof(position));
-    //    }
-    //}
+    public void Delete(DateTime utcNow)
+    {
+        if (Deleted)
+        {
+            return;
+        }
+
+        Deleted = true;
+        DeletedOnUtc = utcNow;
+        Raise(new PlayerDeletedDomainEvent(Id));
+    }
 }
