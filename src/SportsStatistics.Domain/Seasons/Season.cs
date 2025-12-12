@@ -1,5 +1,4 @@
 ﻿using SportsStatistics.Domain.Competitions;
-using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.Seasons;
@@ -30,9 +29,13 @@ public sealed class Season : Entity, ISoftDeletableEntity
 
     public static Season Create(DateRange dateRange)
     {
-        return new Season(dateRange);
+        var season = new Season(dateRange);
+
+        season.Raise(new SeasonCreatedDomainEvent(season.Id));
+
+        return season;
     }
-        
+
     public bool ChangeDateRange(DateRange dateRange)
     {
         if (DateRange == dateRange)
@@ -40,10 +43,9 @@ public sealed class Season : Entity, ISoftDeletableEntity
             return false;
         }
 
-        // TODO: Raise Domain Event.
-        //string previousDateRange = DateRange;
+        var previousDateRange = DateRange;
         DateRange = dateRange;
-        //Raise(new SeasonDateRangeChangedDomainEvent(this, previousDateRange));
+        Raise(new SeasonDateRangeChangedDomainEvent(this, previousDateRange));
 
         return true;
     }
@@ -51,5 +53,17 @@ public sealed class Season : Entity, ISoftDeletableEntity
     public Competition CreateCompetition(Name name, Format format)
     {
         return Competition.Create(this, name, format);
+    }
+
+    public void Delete(DateTime utcNow)
+    {
+        if (Deleted)
+        {
+            return;
+        }
+
+        Deleted = true;
+        DeletedOnUtc = utcNow;
+        Raise(new SeasonDeletedDomainEvent(Id));
     }
 }
