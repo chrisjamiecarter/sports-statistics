@@ -1,6 +1,5 @@
 ﻿using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Tests.Players.TestCases;
-using SportsStatistics.Domain.Tests.Players.TestData;
 
 namespace SportsStatistics.Domain.Tests.Players;
 
@@ -58,7 +57,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeTrue();
-        player.Name.ShouldBe(name);
+        player.Name.ShouldBeEquivalentTo(name);
     }
 
     [Theory]
@@ -86,7 +85,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeFalse();
-        player.Name.ShouldBe(name);
+        player.Name.ShouldBeEquivalentTo(name);
     }
 
     [Theory]
@@ -127,7 +126,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeFalse();
-        player.SquadNumber.ShouldBe(squadNumber);
+        player.SquadNumber.ShouldBeEquivalentTo(squadNumber);
     }
 
     [Theory]
@@ -140,7 +139,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeTrue();
-        player.Nationality.ShouldBe(nationality);
+        player.Nationality.ShouldBeEquivalentTo(nationality);
     }
 
     [Theory]
@@ -168,7 +167,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeFalse();
-        player.Nationality.ShouldBe(nationality);
+        player.Nationality.ShouldBeEquivalentTo(nationality);
     }
 
     [Theory]
@@ -181,7 +180,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeTrue();
-        player.DateOfBirth.ShouldBe(dateOfBirth);
+        player.DateOfBirth.ShouldBeEquivalentTo(dateOfBirth);
     }
 
     [Theory]
@@ -209,7 +208,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeFalse();
-        player.DateOfBirth.ShouldBe(dateOfBirth);
+        player.DateOfBirth.ShouldBeEquivalentTo(dateOfBirth);
     }
 
     [Theory]
@@ -222,7 +221,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeTrue();
-        player.Position.ShouldBe(position);
+        player.Position.ShouldBeEquivalentTo(position);
     }
 
     [Theory]
@@ -250,7 +249,7 @@ public class PlayerTests
 
         // Assert.
         result.ShouldBeFalse();
-        player.Position.ShouldBe(position);
+        player.Position.ShouldBeEquivalentTo(position);
     }
 
     [Theory]
@@ -263,7 +262,7 @@ public class PlayerTests
 
         // Assert.
         player.Deleted.ShouldBeTrue();
-        player.DeletedOnUtc.ShouldBe(utcNow);
+        player.DeletedOnUtc.ShouldBeEquivalentTo(utcNow);
     }
 
     [Theory]
