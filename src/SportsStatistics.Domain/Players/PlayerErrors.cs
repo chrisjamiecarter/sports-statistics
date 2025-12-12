@@ -70,7 +70,6 @@ public static class PlayerErrors
 
     public static class DateOfBirth
     {
-
         public static Error NullOrEmpty => Error.Validation(
             "Player.DateOfBirth.NullOrEmpty",
             "The player date of birth cannot be null or empty.");
