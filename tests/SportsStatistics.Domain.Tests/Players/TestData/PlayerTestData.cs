@@ -15,6 +15,4 @@ public static class PlayerTestData
     public static readonly Position Position = PositionTestData.ValidPosition;
 
     public static Player ValidPlayer => Player.Create(Name, SquadNumber, Nationality, DateOfBirth, Position);
-
-    public static Player ValidPlayerWithName(Name name) => Player.Create(name, SquadNumber, Nationality, DateOfBirth, Position);
 }
