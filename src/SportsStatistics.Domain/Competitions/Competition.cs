@@ -14,8 +14,6 @@ public sealed class Competition : Entity, ISoftDeletableEntity
         SeasonId = seasonId;
         Name = name;
         Format = format;
-
-        Raise(new CompetitionCreatedDomainEvent(Id));
     }
 
     /// <summary>
@@ -38,31 +36,39 @@ public sealed class Competition : Entity, ISoftDeletableEntity
 
     internal static Competition Create(Season season, Name name, Format format)
     {
-        return new(season.Id, name, format);
+        var competition = new Competition(season.Id, name, format);
+
+        competition.Raise(new CompetitionCreatedDomainEvent(competition.Id));
+
+        return competition;
     }
 
-    public void ChangeName(Name name)
+    public bool ChangeName(Name name)
     {
         if (Name == name)
         {
-            return;
+            return false;
         }
 
         var previousName = Name;
         Name = name;
         Raise(new CompetitionNameChangedDomainEvent(this, previousName));
+
+        return true;
     }
 
-    public void ChangeFormat(Format format)
+    public bool ChangeFormat(Format format)
     {
         if (Format == format)
         {
-            return;
+            return false;
         }
 
         var previousFormat = Format;
         Format = format;
         Raise(new CompetitionFormatChangedDomainEvent(this, previousFormat));
+
+        return true;
     }
 
     public Fixture CreateFixture(Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
