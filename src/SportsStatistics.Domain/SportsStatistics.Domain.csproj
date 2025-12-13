@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="SportsStatistics.Application.Tests" />
+    <InternalsVisibleTo Include="SportsStatistics.Domain.Tests" />
     <InternalsVisibleTo Include="SportsStatistics.ArchitectureTests" />
   </ItemGroup>
   
