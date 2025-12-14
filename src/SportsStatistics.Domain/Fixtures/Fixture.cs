@@ -46,7 +46,11 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
 
     internal static Fixture Create(Competition competition, Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
     {
-        return new(competition.Id, opponent, kickoffTimeUtc, location, Status.Scheduled);
+        var fixture = new Fixture(competition.Id, opponent, kickoffTimeUtc, location, Status.Scheduled);
+
+        fixture.Raise(new FixtureCreatedDomainEvent(fixture.Id));
+
+        return fixture;
     }
 
     public bool ChangeOpponent(Opponent opponent)
