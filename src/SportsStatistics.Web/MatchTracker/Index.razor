@@ -1,0 +1,23 @@
+﻿@page "/match-tracker"
+@using SportsStatistics.Application.Abstractions.Messaging
+@using SportsStatistics.Web.Abstractions.Messaging
+
+<h3>Match Tracker - Index</h3>
+
+<FixtureSelector Fixtures="fixtures" OnFixtureSelected="OnFixtureSelected" />
+
+@code {
+    List<FixtureDto> fixtures = new()
+    {
+        new FixtureDto(Guid.CreateVersion7(), Guid.CreateVersion7(), "Premier League", "Team A", DateTime.UtcNow.AddHours(1), 1, "Home", 0, 0, 1, "Scheduled"),
+        new FixtureDto(Guid.CreateVersion7(), Guid.CreateVersion7(), "Premier League", "Team B", DateTime.UtcNow.AddDays(7), 2, "Away", 0, 0, 1, "Scheduled"),
+        new FixtureDto(Guid.CreateVersion7(), Guid.CreateVersion7(), "FA Cup", "Team C", DateTime.UtcNow.AddDays(14), 1, "Home", 0, 0, 1, "Scheduled")
+    };
+
+    private async Task OnFixtureSelected(Guid fixtureId)
+    {
+        // Handle fixture selection (e.g., navigate to match tracking page)
+        Console.WriteLine($"Selected Fixture ID: {fixtureId}");
+        await Task.CompletedTask;
+    }
+}

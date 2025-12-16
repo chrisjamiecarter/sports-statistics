@@ -1,0 +1,63 @@
+﻿<FluentCard Class="fixture-selector-card">
+    <FluentStack Orientation="Orientation.Vertical">
+
+        <!-- Header -->
+        <h3>
+            Select Fixture
+        </h3>
+
+        <!-- Filter (optional: limit to today’s fixtures) -->
+        <FluentCheckbox @bind-Checked="LimitToToday">
+            Show only today’s fixtures
+        </FluentCheckbox>
+
+        <!-- Fixture Dropdown -->
+        <FluentSelect TOption="FixtureDto"
+                      Label="Select a fixture"
+                      Items="FilteredFixtures"
+                      id="fixtures-select"
+                      Width="100%"
+                      OptionText="@(fixture => fixture.ToString())"
+                      @bind-SelectedOption="@SelectedFixture" />
+
+        <!-- Action Buttons -->
+        <FluentStack Orientation="Orientation.Horizontal">
+            <FluentButton Appearance="Appearance.Accent" OnClick="StartMatchTracking" Disabled="@(!CanStart)">
+                Start Match
+            </FluentButton>
+            <FluentButton Appearance="Appearance.Outline" OnClick="CancelSelection">
+                Cancel
+            </FluentButton>
+        </FluentStack>
+
+    </FluentStack>
+</FluentCard>
+
+@code {
+    [Parameter] public IEnumerable<FixtureDto> Fixtures { get; set; } = Enumerable.Empty<FixtureDto>();
+    
+    [Parameter] public EventCallback<Guid> OnFixtureSelected { get; set; }
+
+    private FixtureDto? SelectedFixture { get; set; }
+    private bool LimitToToday { get; set; } = true;
+
+    private IEnumerable<FixtureDto> FilteredFixtures =>
+        LimitToToday
+            ? Fixtures.Where(f => f.KickoffTimeUtc.Date == DateTime.UtcNow.Date)
+            : Fixtures;
+
+    private bool CanStart => SelectedFixture != null;
+
+    private async Task StartMatchTracking()
+    {
+        if (SelectedFixture != null)
+        {
+            await OnFixtureSelected.InvokeAsync(SelectedFixture.Id);
+        }
+    }
+
+    private void CancelSelection()
+    {
+        SelectedFixture = null;
+    }
+}
