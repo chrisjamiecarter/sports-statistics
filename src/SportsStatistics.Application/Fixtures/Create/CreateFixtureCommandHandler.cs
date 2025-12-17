@@ -51,7 +51,8 @@ internal sealed class CreateFixtureCommandHandler(IApplicationDbContext dbContex
         }
 
         if (await _dbContext.Fixtures.AsNoTracking()
-                                     .Where(fixture => DateOnly.FromDateTime(fixture.KickoffTimeUtc) == kickoffDate)
+                                     .Where(fixture => fixture.KickoffTimeUtc.Value >= kickoffDate.ToDateTime(TimeOnly.MinValue)
+                                                       && fixture.KickoffTimeUtc.Value <= kickoffDate.ToDateTime(TimeOnly.MaxValue))
                                      .AnyAsync(cancellationToken))
         {
             return Result.Failure(FixtureErrors.AlreadyScheduledOnDate(kickoffDate));
