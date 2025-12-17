@@ -1,18 +1,32 @@
 ﻿@page "/match-tracker"
 @using SportsStatistics.Application.Abstractions.Messaging
+@using SportsStatistics.Application.Fixtures.GetByDate
 @using SportsStatistics.Web.Abstractions.Messaging
 
 <h3>Match Tracker - Index</h3>
 
-<FixtureSelector Fixtures="fixtures" OnFixtureSelected="OnFixtureSelected" />
+<FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="OnFixtureSelected" />
 
 @code {
-    List<FixtureDto> fixtures = new()
+
+    public FixtureDto? Fixture { get; set; }
+
+    protected override async Task OnInitializedAsync()
     {
-        new FixtureDto(Guid.CreateVersion7(), Guid.CreateVersion7(), "Premier League", "Team A", DateTime.UtcNow.AddHours(1), 1, "Home", 0, 0, 1, "Scheduled"),
-        new FixtureDto(Guid.CreateVersion7(), Guid.CreateVersion7(), "Premier League", "Team B", DateTime.UtcNow.AddDays(7), 2, "Away", 0, 0, 1, "Scheduled"),
-        new FixtureDto(Guid.CreateVersion7(), Guid.CreateVersion7(), "FA Cup", "Team C", DateTime.UtcNow.AddDays(14), 1, "Home", 0, 0, 1, "Scheduled")
-    };
+        await LoadFixtureAsync(DateOnly.FromDateTime(DateTime.UtcNow));
+    }
+
+    private async Task LoadFixtureAsync(DateOnly fixtureDate)
+    {
+        var request = new GetFixturesByDateQuery(fixtureDate);
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+        }
+
+        Fixture = result.Value.FirstOrDefault()?.ToDto();
+    }
 
     private async Task OnFixtureSelected(Guid fixtureId)
     {
