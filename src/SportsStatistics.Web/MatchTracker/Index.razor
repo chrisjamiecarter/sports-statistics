@@ -1,19 +1,25 @@
 ﻿@page "/match-tracker"
 @using SportsStatistics.Application.Abstractions.Messaging
 @using SportsStatistics.Application.Fixtures.GetByDate
+@using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Web.Abstractions.Messaging
 
 <h3>Match Tracker - Index</h3>
 
-<FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="OnFixtureSelected" />
+<FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="FixtureSelected" />
+@if (Players is not null)
+{
+    <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
+}
 
 @code {
-
     public FixtureDto? Fixture { get; set; }
+    public List<PlayerDto>? Players { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadFixtureAsync(DateOnly.FromDateTime(DateTime.UtcNow));
+        await LoadPlayersAsync();
     }
 
     private async Task LoadFixtureAsync(DateOnly fixtureDate)
@@ -28,10 +34,35 @@
         Fixture = result.Value.FirstOrDefault()?.ToDto();
     }
 
-    private async Task OnFixtureSelected(Guid fixtureId)
+    private async Task LoadPlayersAsync()
     {
-        // Handle fixture selection (e.g., navigate to match tracking page)
+        var request = new GetAllPlayersQuery();
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+        }
+
+        Players = result.Value.Select(player => player.ToDto()).ToList();
+    }
+
+    private async Task FixtureSelected(Guid fixtureId)
+    {
+        // TODO: Handle fixture selection (e.g., navigate to match tracking page)
         Console.WriteLine($"Selected Fixture ID: {fixtureId}");
+        await Task.CompletedTask;
+    }
+    
+    private async Task TeamsheetConfirmed(IReadOnlyList<PlayerDto> players)
+    {
+        // TODO:
+        Console.WriteLine($"Selected Players: {string.Join(',', players.Select(player => player.Name))}");
+        await Task.CompletedTask;
+    }
+    
+    private async Task TeamsheetCancelled()
+    {
+        Console.WriteLine("Teamsheet Cancelled");
         await Task.CompletedTask;
     }
 }

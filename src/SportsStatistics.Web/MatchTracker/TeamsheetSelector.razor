@@ -1,0 +1,61 @@
+﻿<FluentCard>
+    <FluentStack Orientation="Orientation.Vertical">
+
+        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+            Select Starting XI
+        </FluentLabel>
+
+        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
+            Choose 11 players for today's fixture.
+        </FluentLabel>
+
+        <FluentDataGrid Items="@Players.AsQueryable()" ShowHover="@true">
+            <SelectColumn TGridItem="PlayerDto" SelectMode="DataGridSelectMode.Multiple" SelectFromEntireRow="@true" @bind-SelectedItems="@SelectedPlayers" />
+            <PropertyColumn Property="@(player => player.SquadNumber)" />
+            <PropertyColumn Property="@(player => player.Name)" />
+            <PropertyColumn Property="@(player => player.Position)" />
+        </FluentDataGrid>
+
+        <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmTeamsheet">
+            Confirm Teamsheet
+        </FluentButton>
+
+        <FluentButton Appearance="Appearance.Outline" OnClick="Cancel">
+            Cancel
+        </FluentButton>
+
+    </FluentStack>
+</FluentCard>
+
+
+@code {
+    [Parameter] public List<PlayerDto> Players { get; set; } = [];
+
+    [Parameter] public EventCallback<IReadOnlyList<PlayerDto>> OnTeamsheetConfirmed { get; set; }
+
+    [Parameter] public EventCallback OnCancelled { get; set; }
+
+    private const int PlayersRequired = 11;
+
+    private IEnumerable<PlayerDto> SelectedPlayers { get; set; } = [];
+
+    private bool IsValid => SelectedPlayers.Count() == PlayersRequired;
+
+    private async Task ConfirmTeamsheet()
+    {
+        if (IsValid)
+        {
+            await OnTeamsheetConfirmed.InvokeAsync(SelectedPlayers.ToList());
+        }
+        else
+        {
+            ToastService.ShowError("Teamsheet must be exactly 11 players");
+        }
+    }
+
+    private async Task Cancel()
+    {
+        // SelectedPlayers = [];
+        await OnCancelled.InvokeAsync();
+    }
+}
