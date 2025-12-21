@@ -11,7 +11,7 @@
 
         @if (Players?.Any() is false)
         {
-            <FluentButton IconEnd="@(new Icons.Regular.Size20.ArrowUpload())" Appearance="Appearance.Accent" Title="Upload Players" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.ArrowUpload())" Appearance="Appearance.Accent" Title="Upload Players" OnClick="Upload" />
         }
     </FluentStack>
 
@@ -53,6 +53,9 @@
     public EventCallback<PlayerDto> OnEditPlayer { get; set; }
 
     [Parameter]
+    public EventCallback OnUploadPlayers { get; set; }
+
+    [Parameter]
     public IQueryable<PlayerDto>? Players { get; set; }
 
     private async Task Add()
@@ -68,5 +71,10 @@
     private async Task Edit(PlayerDto player)
     {
         await OnEditPlayer.InvokeAsync(player);
+    }
+
+    private async Task Upload()
+    {
+        await OnUploadPlayers.InvokeAsync();
     }
 }

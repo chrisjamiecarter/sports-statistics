@@ -1,4 +1,5 @@
 ﻿@page "/admin/players"
+@using static SportsStatistics.Web.Admin.Players.PlayerUpload
 
 <PageTitle>Players</PageTitle>
 
@@ -19,10 +20,10 @@
             <PlayerForm OnCancel="HidePlayerForm" OnSubmit="OnSubmitAsync" SelectedPlayer="SelectedPlayer" />
             break;
         case true when IsPlayerUploadVisible:
-            <PlayerUpload />
+            <PlayerUpload OnCancel="HidePlayerUpload" OnUploadPlayers="UploadPlayers" />
             break;
         default:
-            <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" />
+            <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" OnUploadPlayers="ShowPlayerUpload" />
             break;
     }
 </FluentCard>
@@ -36,7 +37,7 @@
 
     private ComponentVisibilityMode PlayerFormMode { get; set; } = ComponentVisibilityMode.Hide;
 
-    private ComponentVisibilityMode PlayerUploadMode { get; set; } = ComponentVisibilityMode.Show;
+    private ComponentVisibilityMode PlayerUploadMode { get; set; } = ComponentVisibilityMode.Hide;
 
     private IQueryable<PlayerDto>? Players { get; set; }
 
@@ -57,10 +58,20 @@
         PlayerFormMode = ComponentVisibilityMode.Hide;
     }
 
+    private void HidePlayerUpload()
+    {
+        PlayerUploadMode = ComponentVisibilityMode.Hide;
+    }
+
     private void ShowPlayerForm(PlayerDto? player = null)
     {
         SelectedPlayer = player;
         PlayerFormMode = ComponentVisibilityMode.Show;
+    }
+
+    private void ShowPlayerUpload()
+    {
+        PlayerUploadMode = ComponentVisibilityMode.Show;
     }
 
     private async Task LoadPlayersAsync()
@@ -140,5 +151,19 @@
                 ToastService.ShowError(result.Error.Description);
             }
         }
+    }
+
+    private async Task UploadPlayers(List<BulkPlayerUploadInputModel> players)
+    {
+        foreach (var player in players)
+        {
+            var command = new CreatePlayerCommand(player.Name!, player.SquadNumber!.Value, player.Nationality!, DateOnly.FromDateTime(player.DateOfBirth!.Value), player.Position!.Value);
+
+            // TODO: Error handling.
+            var result = await Messenger.SendAsync(command);
+        }
+
+        await LoadPlayersAsync();
+        HidePlayerUpload();
     }
 }

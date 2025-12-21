@@ -58,16 +58,22 @@
 
         <FluentSpacer />
 
-        <FluentButton OnClick="@Reset">Upload Another</FluentButton>
+        <FluentButton OnClick="@BulkUploadPlayers">Upload</FluentButton>
+        <FluentButton OnClick="@Cancel">Cancel</FluentButton>
+        <FluentButton OnClick="@Reset">Reset</FluentButton>
     }
 </FluentStack>
 
 @code
 {
-    private sealed record BulkPlayerUploadCollectionModel(List<BulkPlayerUploadModel> Players);
-    private sealed record BulkPlayerUploadModel(string? Name, int? SquadNumber, string? Nationality, DateTime? DateOfBirth, string? Position);
-    
-    private sealed class BulkPlayerUploadInputModel
+    [Parameter] public EventCallback<List<BulkPlayerUploadInputModel>> OnUploadPlayers { get; set; }
+
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    public sealed record BulkPlayerUploadCollectionModel(List<BulkPlayerUploadModel> Players);
+    public sealed record BulkPlayerUploadModel(string? Name, int? SquadNumber, string? Nationality, DateTime? DateOfBirth, string? Position);
+
+    public sealed class BulkPlayerUploadInputModel
     {
         public string? Name { get; set; }
         public int? SquadNumber { get; set; }
@@ -134,9 +140,19 @@
         await Task.CompletedTask;
     }
 
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
     private void Reset()
     {
         ProgressPercent = 0;
         File = null;
+    }
+
+    private async Task BulkUploadPlayers()
+    {
+        await OnUploadPlayers.InvokeAsync(Players);
     }
 }
