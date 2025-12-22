@@ -4,17 +4,33 @@
 @using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Web.Abstractions.Messaging
 
-<h3>Match Tracker - Index</h3>
-
-<FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="FixtureSelected" />
-@if (Players is not null)
+@switch (CurrentPageState)
 {
-    <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
+    case PageState.FixtureSelect:
+        <FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="FixtureSelected" />
+        break;
+    case PageState.TeamsheetSelect:
+        <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
+        break;
+    case PageState.MatchTracking:
+        <h3>Match Tracking</h3>
+        break;
+    default:
+        break;
 }
 
 @code {
+    private enum PageState
+    {
+        FixtureSelect = 0,
+        TeamsheetSelect = 1,
+        MatchTracking = 2,
+    }
+
     public FixtureDto? Fixture { get; set; }
     public List<PlayerDto>? Players { get; set; }
+
+    private PageState CurrentPageState = PageState.FixtureSelect;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,6 +44,7 @@
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
+            Fixture = null;
             ToastService.ShowError(result.Error.Description);
         }
 
@@ -40,6 +57,7 @@
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
+            Players = [];
             ToastService.ShowError(result.Error.Description);
         }
 
@@ -48,21 +66,22 @@
 
     private async Task FixtureSelected(Guid fixtureId)
     {
-        // TODO: Handle fixture selection (e.g., navigate to match tracking page)
         Console.WriteLine($"Selected Fixture ID: {fixtureId}");
+        CurrentPageState++;
         await Task.CompletedTask;
     }
     
     private async Task TeamsheetConfirmed(IReadOnlyList<PlayerDto> players)
     {
-        // TODO:
         Console.WriteLine($"Selected Players: {string.Join(',', players.Select(player => player.Name))}");
+        CurrentPageState++;
         await Task.CompletedTask;
     }
     
     private async Task TeamsheetCancelled()
     {
         Console.WriteLine("Teamsheet Cancelled");
+        CurrentPageState--;
         await Task.CompletedTask;
     }
 }
