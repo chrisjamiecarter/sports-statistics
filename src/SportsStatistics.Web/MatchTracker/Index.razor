@@ -4,20 +4,24 @@
 @using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Web.Abstractions.Messaging
 
-@switch (CurrentPageState)
-{
-    case PageState.FixtureSelect:
-        <FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="FixtureSelected" />
-        break;
-    case PageState.TeamsheetSelect:
-        <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
-        break;
-    case PageState.MatchTracking:
-        <h3>Match Tracking</h3>
-        break;
-    default:
-        break;
-}
+<FluentCard Style="overflow-y: auto;">
+
+    @switch (CurrentPageState)
+    {
+        case PageState.FixtureSelect:
+            <FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="FixtureSelected" />
+            break;
+        case PageState.TeamsheetSelect:
+            <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
+            break;
+        case PageState.MatchTracking:
+            <h3>Match Tracking</h3>
+            break;
+        default:
+            break;
+    }
+
+</FluentCard>
 
 @code {
     private enum PageState
@@ -46,6 +50,7 @@
         {
             Fixture = null;
             ToastService.ShowError(result.Error.Description);
+            return;
         }
 
         Fixture = result.Value.FirstOrDefault()?.ToDto();
@@ -59,6 +64,7 @@
         {
             Players = [];
             ToastService.ShowError(result.Error.Description);
+            return;
         }
 
         Players = result.Value.Select(player => player.ToDto()).ToList();
