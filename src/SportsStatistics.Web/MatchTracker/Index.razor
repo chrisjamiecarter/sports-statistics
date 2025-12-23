@@ -4,7 +4,15 @@
 @using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Web.Abstractions.Messaging
 
+<PageTitle>Match Tracker</PageTitle>
+
 <FluentCard Style="overflow-y: auto;">
+
+    <FluentBreadcrumb Style="margin-bottom: 1rem;">
+        <FluentBreadcrumbItem Appearance="Appearance.Accent">
+            Match Tracker
+        </FluentBreadcrumbItem>
+    </FluentBreadcrumb>
 
     @switch (CurrentPageState)
     {
