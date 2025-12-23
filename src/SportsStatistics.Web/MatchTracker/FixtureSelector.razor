@@ -1,10 +1,11 @@
 ﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
 
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+        Today's Fixture
+    </FluentLabel>
+
     @if (TodaysFixture is not null)
     {
-        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-            Today's Fixture
-        </FluentLabel>
 
         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
             @TodaysFixture.CompetitionName
@@ -24,12 +25,8 @@
     }
     else
     {
-        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-            No Fixture Scheduled Today
-        </FluentLabel>
-
         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
-            Please check back later.
+            No fixture scheduled today. Please check back later.
         </FluentLabel>
     }
 
