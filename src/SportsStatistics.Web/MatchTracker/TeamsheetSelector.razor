@@ -1,4 +1,5 @@
-﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+﻿@using FluentValidation
+<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
 
     <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
         Select Starting XI
@@ -8,19 +9,34 @@
         Choose 11 players for today's fixture.
     </FluentLabel>
 
-    <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true">
-        <SelectColumn TGridItem="PlayerDto" SelectMode="DataGridSelectMode.Multiple" SelectFromEntireRow="@true" @bind-SelectedItems="@SelectedPlayers" />
-        <PropertyColumn Property="@(player => player.Position)" />
-        <PropertyColumn Property="@(player => player.Name)" />
-    </FluentDataGrid>
 
-    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmTeamsheet">
-        Confirm Teamsheet
-    </FluentButton>
+    <EditForm Model="@Input" OnValidSubmit="ConfirmTeamsheet" FormName="teamsheet-form" style="width: 100%">
+        <FluentValidator />
+        <div class ="full-width">
+            <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true">
+                <SelectColumn TGridItem="PlayerDto" SelectMode="DataGridSelectMode.Multiple" SelectFromEntireRow="@true" @bind-SelectedItems="Input.Players" />
+                <PropertyColumn Property="@(player => player.Position)" />
+                <PropertyColumn Property="@(player => player.Name)" />
+            </FluentDataGrid>
 
-    <FluentButton Appearance="Appearance.Outline" OnClick="Cancel">
-        Cancel
-    </FluentButton>
+            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal" Style="margin-top: 0.5rem;">
+                <b>Selected:</b> @SelectedPlayersCount/@PlayersRequired players.
+            </FluentLabel>
+
+            <FluentValidationMessage For="() => Input.Players" />
+        </div>
+
+        <FluentStack Orientation="Orientation.Horizontal" Style="margin-top: 0.5rem;">
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">
+                Confirm Teamsheet
+            </FluentButton>
+
+            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Outline" OnClick="Cancel">
+                Cancel
+            </FluentButton>
+        </FluentStack>
+    </EditForm>
+
 
 </FluentStack>
 
@@ -32,19 +48,24 @@
 
     [Parameter] public EventCallback OnCancelled { get; set; }
 
+    [SupplyParameterFromForm]
+    private TeamsheetFormModel Input { get; set; } = new();
+
     private const int PlayersRequired = 11;
 
     private IQueryable<PlayerDto> OrderedPlayers => Players.OrderBy(player => player.PostionId).ThenBy(player => player.Name).AsQueryable();
 
-    private IEnumerable<PlayerDto> SelectedPlayers { get; set; } = [];
+    // private IEnumerable<PlayerDto> SelectedPlayers { get; set; } = [];
 
-    private bool IsValid => SelectedPlayers.Count() == PlayersRequired;
+    private int SelectedPlayersCount => Input.Players.Count();
+
+    private bool IsValid => SelectedPlayersCount == PlayersRequired;
 
     private async Task ConfirmTeamsheet()
     {
         if (IsValid)
         {
-            await OnTeamsheetConfirmed.InvokeAsync(SelectedPlayers.ToList());
+            await OnTeamsheetConfirmed.InvokeAsync(Input.Players.ToList());
         }
         else
         {
@@ -56,5 +77,20 @@
     {
         // SelectedPlayers = [];
         await OnCancelled.InvokeAsync();
+    }
+
+    public class TeamsheetFormModel
+    {
+        public IEnumerable<PlayerDto> Players { get; set; } = [];
+    }
+
+    internal sealed class TeamsheetFormModelValidator : AbstractValidator<TeamsheetFormModel>
+    {
+        public TeamsheetFormModelValidator()
+        {
+            RuleFor(c => c.Players)
+                .Must(players => players.Count() == PlayersRequired)
+                .WithMessage("Teamsheet must be exactly 11 players.");
+        }
     }
 }
