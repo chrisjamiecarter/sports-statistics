@@ -14,8 +14,8 @@
 
     <FluentDataGrid Items="@Seasons" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
         <PropertyColumn Property="@(p => p.Name)" Sortable="true" IsDefaultSortColumn="true" />
-        <PropertyColumn Property="@(p => p.StartDate)" Sortable="true" />
-        <PropertyColumn Property="@(p => p.EndDate)" Sortable="true" />
+        <PropertyColumn Property="@(p => p.StartDate)" Sortable="true" Title="Start Date" />
+        <PropertyColumn Property="@(p => p.EndDate)" Sortable="true" Title="End Date"/>
 
         <TemplateColumn Align="Align.End">
             <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())" Appearance="Appearance.Accent" OnClick="@(() => NavigateToCompetitions(context))" Title="Competitions" />
