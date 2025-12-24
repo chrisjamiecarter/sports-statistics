@@ -23,7 +23,8 @@
             <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
             break;
         case PageState.MatchTracking:
-            <h3>Match Tracking</h3>
+            <Overview MatchEvents="@MatchEvents" />
+            <MatchTracker Players="@SelectedPlayers" />
             break;
         default:
             break;
@@ -40,7 +41,12 @@
     }
 
     public FixtureDto? Fixture { get; set; }
+
+    public List<MatchEventDto> MatchEvents { get; set; } = [];
+
     public List<PlayerDto>? Players { get; set; }
+
+    public List<PlayerDto> SelectedPlayers { get; set; } = [];
 
     private PageState CurrentPageState = PageState.FixtureSelect;
 
@@ -84,10 +90,11 @@
         CurrentPageState++;
         await Task.CompletedTask;
     }
-    
+
     private async Task TeamsheetConfirmed(IReadOnlyList<PlayerDto> players)
     {
         Console.WriteLine($"Selected Players: {string.Join(',', players.Select(player => player.Name))}");
+        SelectedPlayers = players.ToList();
         CurrentPageState++;
         await Task.CompletedTask;
     }

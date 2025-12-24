@@ -1,0 +1,27 @@
+﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+        Match Tracker
+    </FluentLabel>
+
+    <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true">
+        <PropertyColumn Property="@(player => player.Position)" />
+        <PropertyColumn Property="@(player => player.Name)" />
+
+        <TemplateColumn>
+            @* <FluentButton IconEnd="@(new Icons.Regular.Size20.EditPerson())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" /> *@
+            <FluentButton Appearance="Appearance.Accent">Pass</FluentButton>
+            <FluentButton Appearance="Appearance.Accent">Shot</FluentButton>
+            <FluentButton Appearance="Appearance.Accent">Tackle</FluentButton>
+        </TemplateColumn>
+
+    </FluentDataGrid>
+
+</FluentStack>
+
+@code {
+    [Parameter] public List<PlayerDto> Players { get; set; } = [];
+    
+    private IQueryable<PlayerDto> OrderedPlayers => Players.OrderBy(player => player.PostionId).ThenBy(player => player.Name).AsQueryable();
+
+}
