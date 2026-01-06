@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <UserSecretsId>aba9c509-5633-4232-8031-d91e1a0945fc</UserSecretsId>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Admin\Players\Models\**" />
     <Content Remove="Admin\Players\Models\**" />

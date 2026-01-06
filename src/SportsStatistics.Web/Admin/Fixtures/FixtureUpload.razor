@@ -1,0 +1,89 @@
+﻿@using System.Text.Json
+<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+
+    <FluentLabel Typo="Typography.Header">
+        Upload Fixtures
+    </FluentLabel>
+
+    <FluentSpacer />
+
+    @if (File is null)
+    {
+        <FluentInputFile Id="fixture-file-uploader"
+                         Mode="InputFileMode.SaveToTemporaryFolder"
+                         Multiple="false"
+                         MaximumFileCount="1"
+                         MaximumFileSize="@(10*1024*1024)"
+                         Accept="application/json"
+                         @bind-ProgressPercent="@ProgressPercent"
+                         OnCompleted="@OnCompletedAsync"
+                         Style="height: 300px;">
+            <ChildContent>
+                <label for="fixture-file-uploader">
+                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+                </label>
+
+                <div>
+                    Drag the <strong>.json</strong> file here you wish to upload,
+                    or <label for="fixture-file-uploader">browse</label> for it.
+                </div>
+            </ChildContent>
+        </FluentInputFile>
+    }
+
+</FluentStack>
+
+@code {
+    int ProgressPercent = 0;
+    FluentInputFileEventArgs? File;
+
+    private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
+    {
+        // Ensure we only upload one file at a time.
+        File = files.FirstOrDefault();
+
+        if (File is null || File.LocalFile is null || !File.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        using var stream = File.LocalFile.OpenRead();
+        using var reader = new StreamReader(stream);
+        var json = await reader.ReadToEndAsync();
+
+        try
+        {
+            // var seasons = JsonSerializer.Deserialize<BulkFixtureUploadCollectionModel>(json, JsonSerializerOptions.Web);
+
+            // if (seasons is not null)
+            // {
+                // Populate a table?
+                // Players = players.Players.Select(player =>
+                //     new BulkPlayerUploadInputModel
+                //     {
+                //         DateOfBirth = player.DateOfBirth,
+                //         Name = player.Name,
+                //         Nationality = player.Nationality,
+                //         Position = Position.List.FirstOrDefault(position => position.Name.Equals(player.Position))?.ToDto(),
+                //         SquadNumber = player.SquadNumber
+                //     }
+                // ).ToList();
+
+                await InvokeAsync(StateHasChanged);
+
+                // Validate?
+                // Upload?
+                // Start Again?
+            //}
+        }
+        catch (Exception exception)
+        {
+            ToastService.ShowError(exception.Message);
+        }
+
+        // Delete the temporary file after.
+        File.LocalFile?.Delete();
+
+        await Task.CompletedTask;
+    }
+}

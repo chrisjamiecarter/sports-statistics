@@ -30,31 +30,35 @@
                           Title="Season Settings"
                           Appearance="Appearance.Neutral"
                           OnClick="@(() => Navigation.NavigateTo(Routes.Admin.Seasons))" />
+
+            @if (Fixtures is null)
+            {
+                <FluentButton IconEnd="@(new Icons.Regular.Size20.ArrowUpload())" Appearance="Appearance.Neutral" Title="Upload Fixtures" OnClick="ToggleFixtureUpload" />
+            }
         </div>
     }
 
-    @if (SelectedSeason is not null)
+    @switch (true)
     {
-        @if (IsFixtureFormVisible)
-        {
+        case true when IsFixtureUploadVisible:
+            <FixtureUpload />
+            break;
+        case true when IsFixtureFormVisible:
             <FixtureForm CompetitionOptions="@Competitions" OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedFixture="@SelectedFixture" SelectedSeason="@SelectedSeason" />
-        }
-        else
-        {
+            break;
+        case true when SelectedSeason is not null:
             <FixtureList Fixtures="Fixtures" ShowFixtureFormCallback="@OnShowFixtureForm" DeleteFixtureCallback="@OnDeleteFixture" />
-        }
+            break;
+        default:
+            break;
     }
 
 </FluentCard>
 
 @code {
-    private enum FixtureFormMode
-    {
-        Hide,
-        Show,
-    }
-
-    private FixtureFormMode FormMode { get; set; } = FixtureFormMode.Hide;
+    private ComponentVisibilityMode FixtureFormMode { get; set; } = ComponentVisibilityMode.Hide;
+    
+    private ComponentVisibilityMode FixtureUploadMode { get; set; } = ComponentVisibilityMode.Hide;
 
     private IEnumerable<CompetitionDto>? Competitions { get; set; }
 
@@ -66,7 +70,9 @@
 
     private SeasonDto? SelectedSeason { get; set; }
 
-    private bool IsFixtureFormVisible => FormMode == FixtureFormMode.Show;
+    private bool IsFixtureFormVisible => FixtureFormMode == ComponentVisibilityMode.Show;
+
+    private bool IsFixtureUploadVisible => FixtureUploadMode == ComponentVisibilityMode.Show;
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,13 +129,35 @@
     private void HideFixtureForm()
     {
         SelectedFixture = null;
-        FormMode = FixtureFormMode.Hide;
+        FixtureFormMode = ComponentVisibilityMode.Hide;
     }
 
+    private void HideFixtureUpload()
+    {
+        FixtureUploadMode = ComponentVisibilityMode.Hide;
+    }
+    
     private void ShowFixtureForm(FixtureDto? fixture)
     {
         SelectedFixture = fixture;
-        FormMode = FixtureFormMode.Show;
+        FixtureFormMode = ComponentVisibilityMode.Show;
+    }
+
+    private void ShowFixtureUpload()
+    {
+        FixtureUploadMode = ComponentVisibilityMode.Show;
+    }
+
+    private void ToggleFixtureUpload()
+    {
+        if (IsFixtureUploadVisible)
+        {
+            HideFixtureUpload();
+        }
+        else
+        {
+            ShowFixtureUpload();
+        }
     }
 
     private async Task LoadCompetitionsAsync(SeasonDto season)
