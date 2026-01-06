@@ -1,0 +1,132 @@
+{
+  "Seasons": [
+    {
+      "StartDate": "2025-08-01",
+      "EndDate": "2026-07-31",
+      "Competitions": [
+        {
+          "Name": "First Division",
+          "Format": "League",
+          "Fixtures": [
+            {
+              "Opponent": "Riverside Rangers",
+              "KickoffTimeUtc": "2025-08-09T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Oakwood United",
+              "KickoffTimeUtc": "2025-08-16T19:45:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Steel City FC",
+              "KickoffTimeUtc": "2025-08-23T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Harborview Athletic",
+              "KickoffTimeUtc": "2025-08-30T16:30:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Parkland Wanderers",
+              "KickoffTimeUtc": "2025-09-13T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Meadowbrook City",
+              "KickoffTimeUtc": "2025-09-20T11:30:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Ironbridge Town",
+              "KickoffTimeUtc": "2025-09-27T19:45:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Crestview Albion",
+              "KickoffTimeUtc": "2025-10-04T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Bayshore United",
+              "KickoffTimeUtc": "2025-10-18T16:30:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Valley Rovers",
+              "KickoffTimeUtc": "2025-10-25T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Riverside Rangers",
+              "KickoffTimeUtc": "2025-11-01T19:45:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Oakwood United",
+              "KickoffTimeUtc": "2025-11-08T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Harborview Athletic",
+              "KickoffTimeUtc": "2025-11-22T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Steel City FC",
+              "KickoffTimeUtc": "2025-11-29T16:30:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Meadowbrook City",
+              "KickoffTimeUtc": "2025-12-06T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Parkland Wanderers",
+              "KickoffTimeUtc": "2025-12-13T11:30:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Bayshore United",
+              "KickoffTimeUtc": "2025-12-20T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Ironbridge Town",
+              "KickoffTimeUtc": "2025-12-27T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Crestview Albion",
+              "KickoffTimeUtc": "2026-01-03T19:45:00Z",
+              "Location": "Away"
+            },
+            {
+              "Opponent": "Valley Rovers",
+              "KickoffTimeUtc": "2026-01-10T16:30:00Z",
+              "Location": "Away"
+            }
+          ]
+        },
+        {
+          "Name": "Divisional Cup",
+          "Format": "Cup",
+          "Fixtures": [
+            {
+              "Opponent": "Meadowbrook City",
+              "KickoffTimeUtc": "2025-09-07T14:00:00Z",
+              "Location": "Home"
+            },
+            {
+              "Opponent": "Steel City FC",
+              "KickoffTimeUtc": "2025-10-11T19:45:00Z",
+              "Location": "Away"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
