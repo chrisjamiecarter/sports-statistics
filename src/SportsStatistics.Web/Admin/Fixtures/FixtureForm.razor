@@ -71,7 +71,7 @@
 
 @code {
     private bool IsSubmitting = false;
-    private IEnumerable<LocationOptionDto> LocationOptions = Location.List.Select(l => l.ToDto());
+    private IEnumerable<LocationOptionDto> LocationOptions = Location.List.Select(location => location.ToDto());
 
     [Parameter]
     public required SeasonDto SelectedSeason { get; set; }

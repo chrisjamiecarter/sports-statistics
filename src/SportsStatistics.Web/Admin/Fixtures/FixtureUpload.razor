@@ -1,4 +1,6 @@
 ﻿@using System.Text.Json
+@using SportsStatistics.Domain.Competitions
+@using SportsStatistics.Domain.Fixtures
 <FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
 
     <FluentLabel Typo="Typography.Header">
@@ -30,12 +32,31 @@
             </ChildContent>
         </FluentInputFile>
     }
+    else
+    {
+        @foreach (var season in Seasons)
+        {
+            <FluentLabel>@season.StartDate - @season.EndDate</FluentLabel>
+
+            @foreach (var competition in season.Competitions)
+            {
+                <FluentLabel>@($"\t {competition.Name} - {competition.Format?.Name ?? "Unknown"}")</FluentLabel>
+
+                @foreach (var fixture in competition.Fixtures)
+                {
+                    <FluentLabel>@($"\t\t {fixture.Opponent} - {fixture.KickoffTimeUtc:yyyy-MM-dd HH:mm} - {fixture.Location?.Name ?? "Unknown"}")</FluentLabel>
+                }
+            }
+        }
+    }
 
 </FluentStack>
 
 @code {
     int ProgressPercent = 0;
     FluentInputFileEventArgs? File;
+
+    private List<SeasonUploadInputModel> Seasons { get; set; } = [new()];
 
     private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
     {
@@ -53,28 +74,39 @@
 
         try
         {
-            // var seasons = JsonSerializer.Deserialize<BulkFixtureUploadCollectionModel>(json, JsonSerializerOptions.Web);
+            var fixtureUploadContainer = JsonSerializer.Deserialize<FixtureUploadContainer>(json, JsonSerializerOptions.Web);
 
-            // if (seasons is not null)
-            // {
-                // Populate a table?
-                // Players = players.Players.Select(player =>
-                //     new BulkPlayerUploadInputModel
-                //     {
-                //         DateOfBirth = player.DateOfBirth,
-                //         Name = player.Name,
-                //         Nationality = player.Nationality,
-                //         Position = Position.List.FirstOrDefault(position => position.Name.Equals(player.Position))?.ToDto(),
-                //         SquadNumber = player.SquadNumber
-                //     }
-                // ).ToList();
+            if (fixtureUploadContainer is not null)
+            {
+                Seasons = fixtureUploadContainer.Seasons.Select(season => 
+                    new SeasonUploadInputModel
+                    {
+                        StartDate = season.StartDate,
+                        EndDate = season.EndDate,
+                        Competitions = season.Competitions.Select(competition =>
+                            new CompetitionUploadInputModel
+                            {
+                                Name = competition.Name,
+                                Format = Format.List.FirstOrDefault(format => format.Name.Equals(format.Name))?.ToDto(),
+                                Fixtures = competition.Fixtures.Select(fixture =>
+                                    new FixtureUploadInputModel
+                                    {
+                                        Opponent = fixture.Opponent,
+                                        KickoffTimeUtc = fixture.KickoffTimeUtc,
+                                        Location = Location.List.FirstOrDefault(location => location.Name.Equals(fixture.Location))?.ToDto(),
+                                    }
+                                ).ToList()
+                            }
+                        ).ToList()
+                    }
+                ).ToList();
 
                 await InvokeAsync(StateHasChanged);
-
+                
                 // Validate?
                 // Upload?
                 // Start Again?
-            //}
+            }
         }
         catch (Exception exception)
         {
