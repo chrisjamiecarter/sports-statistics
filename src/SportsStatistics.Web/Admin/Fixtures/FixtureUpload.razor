@@ -36,16 +36,19 @@
     {
         @foreach (var season in Seasons)
         {
-            <FluentLabel>@season.StartDate - @season.EndDate</FluentLabel>
+            <FluentDataGrid Items="@(new[] { season }.AsQueryable())">
+                <PropertyColumn Property="@(season => $"{season.StartDate:yyyy-MM-dd} - {season.EndDate:yyyy-MM-dd}")" Title="Season" />
+            </FluentDataGrid>
 
             @foreach (var competition in season.Competitions)
             {
-                <FluentLabel>@($"\t {competition.Name} - {competition.Format?.Name ?? "Unknown"}")</FluentLabel>
+                <FluentDataGrid Items="@(new[] { competition }.AsQueryable())">
+                    <PropertyColumn Property="@(competition => $"{competition.Name} - {(competition.Format == null ? "Unknown" : competition.Format.Name)}")" Title="Competition" />
+                </FluentDataGrid>
 
-                @foreach (var fixture in competition.Fixtures)
-                {
-                    <FluentLabel>@($"\t\t {fixture.Opponent} - {fixture.KickoffTimeUtc:yyyy-MM-dd HH:mm} - {fixture.Location?.Name ?? "Unknown"}")</FluentLabel>
-                }
+                <FluentDataGrid Items="@competition.Fixtures.AsQueryable()">
+                    <PropertyColumn Property="@(fixture => $"{fixture.Opponent} - {fixture.KickoffTimeUtc:yyyy-MM-dd HH:mm} - {(fixture.Location == null ? "Unknown" : fixture.Location.Name)}")" Title="Fixture" />
+                </FluentDataGrid>
             }
         }
     }
