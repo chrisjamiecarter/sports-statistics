@@ -34,23 +34,33 @@
     }
     else
     {
-        @foreach (var season in Seasons)
-        {
-            <FluentDataGrid Items="@(new[] { season }.AsQueryable())">
-                <PropertyColumn Property="@(season => $"{season.StartDate:yyyy-MM-dd} - {season.EndDate:yyyy-MM-dd}")" Title="Season" />
-            </FluentDataGrid>
+        <FluentDataGrid Items="@Fixtures" RowSize="DataGridRowSize.Medium">
+            <PropertyColumn Title="Season" Property="@(fixture => fixture.Season)" />
+            <PropertyColumn Title="Competition" Property="@(fixture => fixture.Competition)" />
+            <TemplateColumn Title="Opponent">
+                <FluentTextField @bind-Value="@context.Opponent" />
+            </TemplateColumn>
+            <TemplateColumn Title="Kickoff Time">
+                <FluentDatePicker @bind-Value="@context.KickoffDateUtc" />
+                <FluentTimePicker @bind-Value="@context.KickoffTimeUtc" />
+            </TemplateColumn>
+            <TemplateColumn Title="Location" Style="overflow: visible;">
+                <FluentSelect TOption=LocationOptionDto
+                              Items="LocationOptions"
+                              Placeholder="Select a location..."
+                              OptionText="(p => p.Name)"
+                              @bind-SelectedOption="@context.Location" />
+            </TemplateColumn>
+            <TemplateColumn Align="Align.End">
+                <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" Title="Delete" />
+            </TemplateColumn>
+        </FluentDataGrid>
 
-            @foreach (var competition in season.Competitions)
-            {
-                <FluentDataGrid Items="@(new[] { competition }.AsQueryable())">
-                    <PropertyColumn Property="@(competition => $"{competition.Name} - {(competition.Format == null ? "Unknown" : competition.Format.Name)}")" Title="Competition" />
-                </FluentDataGrid>
+        <FluentSpacer />
 
-                <FluentDataGrid Items="@competition.Fixtures.AsQueryable()">
-                    <PropertyColumn Property="@(fixture => $"{fixture.Opponent} - {fixture.KickoffTimeUtc:yyyy-MM-dd HH:mm} - {(fixture.Location == null ? "Unknown" : fixture.Location.Name)}")" Title="Fixture" />
-                </FluentDataGrid>
-            }
-        }
+        <FluentButton>Upload</FluentButton>
+        <FluentButton>Cancel</FluentButton>
+        <FluentButton>Reset</FluentButton>
     }
 
 </FluentStack>
@@ -59,7 +69,10 @@
     int ProgressPercent = 0;
     FluentInputFileEventArgs? File;
 
-    private List<SeasonUploadInputModel> Seasons { get; set; } = [new()];
+    private List<SeasonUploadInputModel> Seasons { get; set; } = [];
+    private IEnumerable<LocationOptionDto> LocationOptions = Location.List.Select(p => p.ToDto());
+
+    private IQueryable<FixtureUploadInputModel> Fixtures => Seasons.SelectMany(season => season.Competitions).SelectMany(competition => competition.Fixtures).OrderBy(fixture => fixture.KickoffDateUtc).AsQueryable();
 
     private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
     {
@@ -87,20 +100,25 @@
                         StartDate = season.StartDate,
                         EndDate = season.EndDate,
                         Competitions = season.Competitions.Select(competition =>
-                            new CompetitionUploadInputModel
+                        {
+                            var competitionFormat = Format.List.FirstOrDefault(format => format.Name.Equals(competition.Format));
+                            return new CompetitionUploadInputModel
                             {
                                 Name = competition.Name,
-                                Format = Format.List.FirstOrDefault(format => format.Name.Equals(format.Name))?.ToDto(),
+                                FormatId = competitionFormat?.Value,
                                 Fixtures = competition.Fixtures.Select(fixture =>
                                     new FixtureUploadInputModel
                                     {
+                                        Season = $"{season.StartDate.Year}/{season.EndDate.Year}",
+                                        Competition = $"{competition.Name} ({competitionFormat})",
                                         Opponent = fixture.Opponent,
+                                        KickoffDateUtc = fixture.KickoffTimeUtc,
                                         KickoffTimeUtc = fixture.KickoffTimeUtc,
                                         Location = Location.List.FirstOrDefault(location => location.Name.Equals(fixture.Location))?.ToDto(),
                                     }
                                 ).ToList()
-                            }
-                        ).ToList()
+                            };
+                        }).ToList()
                     }
                 ).ToList();
 
