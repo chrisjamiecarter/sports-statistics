@@ -291,3 +291,5 @@ dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
 dotnet_diagnostic.CA1822.severity = silent
 dotnet_diagnostic.CA1848.severity = silent
 dotnet_diagnostic.CA1062.severity = suggestion
+
+dotnet_code_quality.CA1852.ignore_internalsvisibleto = true

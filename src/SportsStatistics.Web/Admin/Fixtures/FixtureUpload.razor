@@ -34,14 +34,19 @@
     }
     else
     {
-        <FluentDataGrid Items="@Fixtures" RowSize="DataGridRowSize.Medium">
-            <PropertyColumn Title="Season" Property="@(fixture => fixture.Season)" />
-            <PropertyColumn Title="Competition" Property="@(fixture => fixture.Competition)" />
+        <FluentDataGrid Items="@Fixtures"
+                        ResizableColumns=true
+                        ResizeType="DataGridResizeType.Discrete"
+                        RowSize="DataGridRowSize.Medium">
+            <PropertyColumn Title="Season" Property="@(fixture => fixture.SeasonDisplay)" />
+            <PropertyColumn Title="Competition" Property="@(fixture => fixture.CompetitionDisplay)" />
             <TemplateColumn Title="Opponent">
                 <FluentTextField @bind-Value="@context.Opponent" />
             </TemplateColumn>
-            <TemplateColumn Title="Kickoff Time">
+            <TemplateColumn Title="Date">
                 <FluentDatePicker @bind-Value="@context.KickoffDateUtc" />
+            </TemplateColumn>
+            <TemplateColumn Title="Time">
                 <FluentTimePicker @bind-Value="@context.KickoffTimeUtc" />
             </TemplateColumn>
             <TemplateColumn Title="Location" Style="overflow: visible;">
@@ -49,7 +54,8 @@
                               Items="LocationOptions"
                               Placeholder="Select a location..."
                               OptionText="(p => p.Name)"
-                              @bind-SelectedOption="@context.Location" />
+                              @bind-SelectedOption="@context.Location"
+                              Width="10rem"/>
             </TemplateColumn>
             <TemplateColumn Align="Align.End">
                 <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" Title="Delete" />
@@ -58,21 +64,28 @@
 
         <FluentSpacer />
 
-        <FluentButton>Upload</FluentButton>
-        <FluentButton>Cancel</FluentButton>
-        <FluentButton>Reset</FluentButton>
+        <FluentButton OnClick="@UploadFixtures">Upload</FluentButton>
+        <FluentButton OnClick="@Cancel">Cancel</FluentButton>
+        <FluentButton OnClick="@Reset">Reset</FluentButton>
     }
 
 </FluentStack>
 
 @code {
+    [Parameter] public EventCallback<List<FixtureUploadInputModel>> OnUploadFixtures { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
     int ProgressPercent = 0;
     FluentInputFileEventArgs? File;
 
     private List<SeasonUploadInputModel> Seasons { get; set; } = [];
     private IEnumerable<LocationOptionDto> LocationOptions = Location.List.Select(p => p.ToDto());
 
-    private IQueryable<FixtureUploadInputModel> Fixtures => Seasons.SelectMany(season => season.Competitions).SelectMany(competition => competition.Fixtures).OrderBy(fixture => fixture.KickoffDateUtc).AsQueryable();
+    private IQueryable<FixtureUploadInputModel> Fixtures => Seasons.SelectMany(season => season.Competitions)
+                                                                   .SelectMany(competition => competition.Fixtures)
+                                                                   .OrderBy(fixture => fixture.KickoffDateUtc)
+                                                                   .ThenBy(fixture => fixture.KickoffTimeUtc)
+                                                                   .AsQueryable();
 
     private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
     {
@@ -109,8 +122,8 @@
                                 Fixtures = competition.Fixtures.Select(fixture =>
                                     new FixtureUploadInputModel
                                     {
-                                        Season = $"{season.StartDate.Year}/{season.EndDate.Year}",
-                                        Competition = $"{competition.Name} ({competitionFormat})",
+                                        Season = season,
+                                        Competition = competition,
                                         Opponent = fixture.Opponent,
                                         KickoffDateUtc = fixture.KickoffTimeUtc,
                                         KickoffTimeUtc = fixture.KickoffTimeUtc,
@@ -138,5 +151,21 @@
         File.LocalFile?.Delete();
 
         await Task.CompletedTask;
+    }
+
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    private void Reset()
+    {
+        ProgressPercent = 0;
+        File = null;
+    }
+
+    private async Task UploadFixtures()
+    {
+        await OnUploadFixtures.InvokeAsync(Fixtures.ToList());
     }
 }
