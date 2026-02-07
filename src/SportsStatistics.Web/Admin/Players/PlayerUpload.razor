@@ -47,7 +47,9 @@
                                 OptionText="(p => p.Name)"
                                 @bind-SelectedOption="@context.Position" />
             </TemplateColumn>
-
+            <TemplateColumn Title="Date of Birth">
+                <FluentDatePicker @bind-Value="@context.DateOfBirth" />
+            </TemplateColumn>
             <TemplateColumn Title="Nationality">
                 <FluentTextField @bind-Value="@context.Nationality" />
             </TemplateColumn>
