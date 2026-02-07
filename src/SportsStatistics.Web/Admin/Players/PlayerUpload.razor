@@ -60,7 +60,7 @@
 
         <FluentSpacer />
 
-        <FluentButton OnClick="@BulkUploadPlayers">Upload</FluentButton>
+        <FluentButton OnClick="@BulkUploadPlayers" Disabled="@(Players.Count == 0)">Upload</FluentButton>
         <FluentButton OnClick="@Cancel">Cancel</FluentButton>
         <FluentButton OnClick="@Reset">Reset</FluentButton>
     }
@@ -132,7 +132,7 @@
         }
         catch (Exception exception)
         {
-            ToastService.ShowError(exception.Message);
+            ToastService.ShowError($"Invalid player upload file: {exception.Message}");
         }
 
         // Delete the temporary file after.
@@ -150,6 +150,7 @@
     {
         ProgressPercent = 0;
         File = null;
+        Players = [];
     }
 
     private async Task BulkUploadPlayers()

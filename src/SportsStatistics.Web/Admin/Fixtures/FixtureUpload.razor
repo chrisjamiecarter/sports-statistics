@@ -64,7 +64,7 @@
 
         <FluentSpacer />
 
-        <FluentButton OnClick="@UploadFixtures">Upload</FluentButton>
+        <FluentButton OnClick="@UploadFixtures" Disabled="@(Fixtures.Count == 0)">Upload</FluentButton>
         <FluentButton OnClick="@Cancel">Cancel</FluentButton>
         <FluentButton OnClick="@Reset">Reset</FluentButton>
     }
@@ -132,7 +132,7 @@
         }
         catch (Exception exception)
         {
-            ToastService.ShowError(exception.Message);
+            ToastService.ShowError($"Invalid fixture upload file: {exception.Message}");
         }
 
         // Delete the temporary file after.
@@ -150,6 +150,7 @@
     {
         ProgressPercent = 0;
         File = null;
+        Fixtures = [];
     }
 
     private async Task UploadFixtures()
