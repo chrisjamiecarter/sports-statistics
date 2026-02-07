@@ -34,7 +34,7 @@
     }
     else
     {
-        <FluentDataGrid Items="@Fixtures"
+        <FluentDataGrid Items="@Fixtures.AsQueryable()"
                         ResizableColumns=true
                         ResizeType="DataGridResizeType.Discrete"
                         RowSize="DataGridRowSize.Medium">
@@ -58,7 +58,7 @@
                               Width="10rem"/>
             </TemplateColumn>
             <TemplateColumn Align="Align.End">
-                <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" Title="Delete" />
+                <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" Title="Delete" OnClick="@(() => DeleteFixture(context))" />
             </TemplateColumn>
         </FluentDataGrid>
 
@@ -78,14 +78,15 @@
     int ProgressPercent = 0;
     FluentInputFileEventArgs? File;
 
-    private List<SeasonUploadInputModel> Seasons { get; set; } = [];
+    // private List<SeasonUploadInputModel> Seasons { get; set; } = [];
+    private List<FixtureUploadInputModel> Fixtures { get; set; } = [];
     private IEnumerable<LocationOptionDto> LocationOptions = Location.List.Select(p => p.ToDto());
 
-    private IQueryable<FixtureUploadInputModel> Fixtures => Seasons.SelectMany(season => season.Competitions)
-                                                                   .SelectMany(competition => competition.Fixtures)
-                                                                   .OrderBy(fixture => fixture.KickoffDateUtc)
-                                                                   .ThenBy(fixture => fixture.KickoffTimeUtc)
-                                                                   .AsQueryable();
+    // private IQueryable<FixtureUploadInputModel> Fixtures => Seasons.SelectMany(season => season.Competitions)
+    //                                                                .SelectMany(competition => competition.Fixtures)
+    //                                                                .OrderBy(fixture => fixture.KickoffDateUtc)
+    //                                                                .ThenBy(fixture => fixture.KickoffTimeUtc)
+    //                                                                .AsQueryable();
 
     private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
     {
@@ -107,36 +108,23 @@
 
             if (fixtureUploadContainer is not null)
             {
-                Seasons = fixtureUploadContainer.Seasons.Select(season => 
-                    new SeasonUploadInputModel
-                    {
-                        StartDate = season.StartDate,
-                        EndDate = season.EndDate,
-                        Competitions = season.Competitions.Select(competition =>
+                Fixtures = fixtureUploadContainer.Seasons.SelectMany(season => 
+                    season.Competitions.SelectMany(competition => 
+                        competition.Fixtures.Select(fixture => new FixtureUploadInputModel
                         {
-                            var competitionFormat = Format.List.FirstOrDefault(format => format.Name.Equals(competition.Format));
-                            return new CompetitionUploadInputModel
-                            {
-                                Name = competition.Name,
-                                FormatId = competitionFormat?.Value,
-                                Fixtures = competition.Fixtures.Select(fixture =>
-                                    new FixtureUploadInputModel
-                                    {
-                                        Season = season,
-                                        Competition = competition,
-                                        Opponent = fixture.Opponent,
-                                        KickoffDateUtc = fixture.KickoffTimeUtc,
-                                        KickoffTimeUtc = fixture.KickoffTimeUtc,
-                                        Location = Location.List.FirstOrDefault(location => location.Name.Equals(fixture.Location))?.ToDto(),
-                                    }
-                                ).ToList()
-                            };
-                        }).ToList()
-                    }
-                ).ToList();
+                            Season = season,
+                            Competition = competition,
+                            Opponent = fixture.Opponent,
+                            KickoffDateUtc = fixture.KickoffTimeUtc,
+                            KickoffTimeUtc = fixture.KickoffTimeUtc,
+                            Location = Location.List.FirstOrDefault(location => location.Name.Equals(fixture.Location))?.ToDto(),
+                        })))
+                        .OrderBy(fixture => fixture.KickoffDateUtc)
+                        .ThenBy(fixture => fixture.KickoffTimeUtc)
+                        .ToList();
 
                 await InvokeAsync(StateHasChanged);
-                
+
                 // Validate?
                 // Upload?
                 // Start Again?
@@ -167,5 +155,10 @@
     private async Task UploadFixtures()
     {
         await OnUploadFixtures.InvokeAsync(Fixtures.ToList());
+    }
+
+    private void DeleteFixture(FixtureUploadInputModel fixture)
+    {
+        Fixtures.Remove(fixture);
     }
 }
