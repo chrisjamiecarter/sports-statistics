@@ -52,7 +52,7 @@
                 <FluentTextField @bind-Value="@context.Nationality" />
             </TemplateColumn>
             <TemplateColumn Align="Align.End">
-                <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" Title="Delete" />
+                <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" Title="Delete" OnClick="@(() => DeletePlayer(context))" />
             </TemplateColumn>
         </FluentDataGrid>
 
@@ -153,5 +153,10 @@
     private async Task BulkUploadPlayers()
     {
         await OnUploadPlayers.InvokeAsync(Players);
+    }
+
+    private void DeletePlayer(BulkPlayerUploadInputModel player)
+    {
+        Players.Remove(player);
     }
 }
