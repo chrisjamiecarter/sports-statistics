@@ -49,10 +49,8 @@
         case true when IsFixtureFormVisible:
             <FixtureForm CompetitionOptions="@Competitions" OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedFixture="@SelectedFixture" SelectedSeason="@SelectedSeason" />
             break;
-        case true when SelectedSeason is not null:
-            <FixtureList Fixtures="Fixtures" ShowFixtureFormCallback="@OnShowFixtureForm" DeleteFixtureCallback="@OnDeleteFixture" />
-            break;
         default:
+            <FixtureList Fixtures="Fixtures" ShowFixtureFormCallback="@OnShowFixtureForm" DeleteFixtureCallback="@OnDeleteFixture" />
             break;
     }
 
