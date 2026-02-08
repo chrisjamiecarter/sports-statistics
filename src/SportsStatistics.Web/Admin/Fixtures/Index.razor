@@ -292,7 +292,7 @@
                         fixture.Location is null ||
                         dbCompetition is null) continue;
 
-                    var kickoffTimeUtc = fixture.KickoffDateUtc.Value.Add(fixture.KickoffTimeUtc.Value.TimeOfDay);
+                    var kickoffTimeUtc = fixture.KickoffDateUtc.Value.Date.Add(fixture.KickoffTimeUtc.Value.TimeOfDay);
 
                     var fixtureCommand = new CreateFixtureCommand(dbCompetition.Id, fixture.Opponent, kickoffTimeUtc, fixture.Location.Value);
                     
