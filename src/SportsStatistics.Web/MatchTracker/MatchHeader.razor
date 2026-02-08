@@ -1,0 +1,58 @@
+﻿<FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+
+    <FluentStack Orientation="Orientation.Vertical">
+
+        <FluentLabel Typo="Typography.Header" Weight="FontWeight.Bold">
+            Match Status
+        </FluentLabel>
+
+        <FluentLabel Typo="Typography.Header" Weight="FontWeight.Bold">
+            Half: @CurrentHalfDisplay
+        </FluentLabel>
+
+        <FluentLabel Typo="Typography.Header" Weight="FontWeight.Bold">
+            Time: @FormattedGameClock
+        </FluentLabel>
+
+    </FluentStack>
+        
+    <FluentStack Orientation="Orientation.Horizontal">
+
+        @if (!MatchStarted)
+        {
+            <FluentButton Appearance="Appearance.Neutral" OnClick="StartMatch">Start Match</FluentButton>
+        }
+
+    </FluentStack>
+
+    <FluentStack Orientation="Orientation.Vertical">
+
+        <FluentButton Appearance="Appearance.Stealth">Opposition Goal</FluentButton>
+
+    </FluentStack>
+
+</FluentStack>
+
+@code {
+    [Parameter] public EventCallback OnStartMatch { get; set; }
+    
+    [Parameter] public bool MatchStarted { get; set; }
+
+    [Parameter] public TimeSpan GameClock { get; set; }
+    [Parameter] public int CurrentHalf { get; set; }
+
+    private string CurrentHalfDisplay => CurrentHalf switch
+    {
+        0 => "Not Started",
+        1 => "First Half",
+        2 => "Second Half",
+        3 => "Extra Time",
+        4 => "Penalty Shootout",
+        5 => "Full Time",
+        _ => "Unknown"
+    };
+
+    private string FormattedGameClock => $"{GameClock.Minutes:00}:{GameClock.Seconds:00}";
+
+    private async Task StartMatch() => await OnStartMatch.InvokeAsync();
+}

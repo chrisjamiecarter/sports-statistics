@@ -3,6 +3,7 @@
 @using SportsStatistics.Application.Fixtures.GetByDate
 @using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Web.Abstractions.Messaging
+@implements IDisposable
 
 <PageTitle>Match Tracker</PageTitle>
 
@@ -23,6 +24,7 @@
             <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
             break;
         case PageState.MatchTracking:
+            <MatchHeader CurrentHalf="@currentHalf" GameClock="@gameClock" MatchStarted="@matchStarted" OnStartMatch="StartMatch" />
         <FluentStack>
             <Overview MatchEvents="@MatchEvents" />
             <MatchTracker Players="@SelectedPlayers" OnAddMatchEvent="AddMatchEvent" />
@@ -112,5 +114,28 @@
     {
         MatchEvents.Add(matchEvent);
         await Task.CompletedTask;
+    }
+
+    // TODO:
+    private int currentHalf = 0;
+    private System.Timers.Timer? _timer;
+    private DateTime? matchStartedAtUtc;
+    private TimeSpan gameClock => matchStartedAtUtc.HasValue ? DateTime.UtcNow - matchStartedAtUtc.Value : TimeSpan.Zero;
+    private bool matchStarted = false;
+    private async Task StartMatch()
+    {
+        matchStartedAtUtc = DateTime.UtcNow;
+        matchStarted = true;
+        currentHalf = 1;
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
+        _timer.Start();
+        await Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Stop();
+        _timer?.Dispose();
     }
 }
