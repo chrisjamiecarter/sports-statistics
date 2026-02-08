@@ -1,4 +1,6 @@
-﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+﻿@using SportsStatistics.Domain.MatchTracking.MatchEvents
+@using SportsStatistics.Domain.MatchTracking.PlayerEvents
+<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
 
     <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
         Match Tracker
@@ -10,9 +12,9 @@
 
         <TemplateColumn>
             @* <FluentButton IconEnd="@(new Icons.Regular.Size20.EditPerson())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" /> *@
-            <FluentButton Appearance="Appearance.Accent">Pass</FluentButton>
-            <FluentButton Appearance="Appearance.Accent">Shot</FluentButton>
-            <FluentButton Appearance="Appearance.Accent">Tackle</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => AddPlayerMatchEvent(context, PlayerEventType.PassSuccess))">Pass</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => AddPlayerMatchEvent(context, PlayerEventType.ShotOnTarget))">Shot</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => AddPlayerMatchEvent(context, PlayerEventType.Tackle))">Tackle</FluentButton>
         </TemplateColumn>
 
     </FluentDataGrid>
@@ -21,7 +23,16 @@
 
 @code {
     [Parameter] public List<PlayerDto> Players { get; set; } = [];
-    
+
+    [Parameter] public EventCallback<MatchEventDto> OnAddMatchEvent { get; set; }
+
     private IQueryable<PlayerDto> OrderedPlayers => Players.OrderBy(player => player.PostionId).ThenBy(player => player.Name).AsQueryable();
 
+    private async Task AddPlayerMatchEvent(PlayerDto player, PlayerEventType type)
+    {
+        var occuredAtUtc = DateTime.UtcNow;
+        var matchEvent = new MatchEventDto($"{player.Name} - {type}", occuredAtUtc);
+
+        await OnAddMatchEvent.InvokeAsync(matchEvent);
+    }
 }

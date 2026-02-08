@@ -23,8 +23,10 @@
             <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
             break;
         case PageState.MatchTracking:
+        <FluentStack>
             <Overview MatchEvents="@MatchEvents" />
-            <MatchTracker Players="@SelectedPlayers" />
+            <MatchTracker Players="@SelectedPlayers" OnAddMatchEvent="AddMatchEvent" />
+        </FluentStack>
             break;
         default:
             break;
@@ -98,11 +100,17 @@
         CurrentPageState++;
         await Task.CompletedTask;
     }
-    
+
     private async Task TeamsheetCancelled()
     {
         Console.WriteLine("Teamsheet Cancelled");
         CurrentPageState--;
+        await Task.CompletedTask;
+    }
+
+    private async Task AddMatchEvent(MatchEventDto matchEvent)
+    {
+        MatchEvents.Add(matchEvent);
         await Task.CompletedTask;
     }
 }
