@@ -12,6 +12,7 @@ public sealed record FixtureDto(Guid Id,
                                 int StatusId,
                                 string Status)
 {
+    public string DisplayKickoffDate => $"{KickoffTimeUtc.ToLocalTime():ddd d MMM, HH:mm}";
     public string DisplayKickoffTime => $"{KickoffTimeUtc.ToLocalTime():HH:mm}";
     //public override string ToString() => $"{KickoffTimeUtc:yyyy-MM-dd HH:mm} - {Opponent} - {CompetitionName}";
 }

@@ -24,7 +24,7 @@
             <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
             break;
         case PageState.MatchTracking:
-            <MatchHeader CurrentHalf="@currentHalf" GameClock="@gameClock" MatchStarted="@matchStarted" OnStartMatch="StartMatch" />
+            <MatchHeader CurrentHalf="@currentHalf" Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted" OnStartMatch="StartMatch" />
         <FluentStack>
             <Overview MatchEvents="@MatchEvents" />
             <MatchTracker Players="@SelectedPlayers" OnAddMatchEvent="AddMatchEvent" />
