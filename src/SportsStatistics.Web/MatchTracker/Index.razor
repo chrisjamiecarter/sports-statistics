@@ -24,10 +24,11 @@
             <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
             break;
         case PageState.MatchTracking:
-            <MatchHeader CurrentHalf="@currentHalf" Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted" OnStartMatch="StartMatch" />
-        <FluentStack>
-            <Overview MatchEvents="@MatchEvents" />
+        <FluentStack Orientation="Orientation.Vertical">
+            <MatchHeader Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted"/>
+            <MatchEvents CurrentHalf="@currentHalf" OnStartFirstHalf="StartMatch" OnHomeGoal="HomeGoal" OnAwayGoal="AwayGoal" />
             <MatchTracker Players="@SelectedPlayers" OnAddMatchEvent="AddMatchEvent" />
+            <Overview MatchEvents="@MatchEvents" />
         </FluentStack>
             break;
         default:
@@ -130,7 +131,20 @@
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
         _timer.Start();
-        await Task.CompletedTask;
+
+        await AddMatchEvent(new MatchEventDto("First Half Started", matchStartedAtUtc.Value));
+    }
+
+    private async Task HomeGoal()
+    {
+        Fixture = Fixture! with { HomeGoals = Fixture.HomeGoals + 1 };
+        await AddMatchEvent(new MatchEventDto("Home Goal", DateTime.UtcNow));
+    }
+
+    private async Task AwayGoal()
+    {
+        Fixture = Fixture! with { AwayGoals = Fixture.AwayGoals + 1 };
+        await AddMatchEvent(new MatchEventDto("Away Goal", DateTime.UtcNow));
     }
 
     public void Dispose()

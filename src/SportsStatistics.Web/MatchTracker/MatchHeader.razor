@@ -3,10 +3,12 @@
     return;
 }
 
-<FluentStack Orientation="Orientation.Vertical">
-    
-    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+<FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
 
+    <FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
+
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+    
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
             <FluentIcon Value="@(new Icons.Regular.Size20.Calendar())"/>
             <FluentLabel>@Fixture.DisplayKickoffDate</FluentLabel>
@@ -24,18 +26,26 @@
 
     </FluentStack>
 
-    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+    <FluentDivider Style="width: 100%;" Role="DividerRole.Presentation"></FluentDivider>
+
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="margin:2rem;">
 
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-            <FluentLabel>@HomeTeamName</FluentLabel>
+            <FluentLabel Typo="Typography.H3">@HomeTeamName</FluentLabel>
         </FluentStack>
 
         @if (MatchStarted)
         {
-            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-                <FluentLabel>@Fixture.HomeGoals</FluentLabel>
-                <FluentLabel> - </FluentLabel>
-                <FluentLabel>@Fixture.AwayGoals</FluentLabel>
+            <FluentStack Orientation="Orientation.Vertical">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentLabel Typo="Typography.H3">@Fixture.HomeGoals</FluentLabel>
+                    <FluentLabel Typo="Typography.H3"> - </FluentLabel>
+                    <FluentLabel Typo="Typography.H3">@Fixture.AwayGoals</FluentLabel>
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentLabel Color="Color.Accent" Weight="FontWeight.Bold">@FormattedGameClock</FluentLabel>
+                </FluentStack>
             </FluentStack>
         }
         else
@@ -46,58 +56,20 @@
         }
 
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-            <FluentLabel>@AwayTeamName</FluentLabel>
+            <FluentLabel Typo="Typography.H3">@AwayTeamName</FluentLabel>
         </FluentStack>
 
     </FluentStack>
-
-
-    @if (MatchStarted)
-    {
-        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-            <FluentLabel Typo="Typography.Header" Weight="FontWeight.Bold">
-                Time: @FormattedGameClock
-            </FluentLabel>
-        </FluentStack>
-    }
-        
-    <FluentStack Orientation="Orientation.Horizontal">
-
-        @if (!MatchStarted)
-        {
-            <FluentButton Appearance="Appearance.Neutral" OnClick="StartMatch">Start Match</FluentButton>
-        }
-
-    </FluentStack>
-
-    <FluentStack Orientation="Orientation.Vertical">
-
-        <FluentButton Appearance="Appearance.Stealth">Opposition Goal</FluentButton>
-
-    </FluentStack>
-
+    
 </FluentStack>
 
 @code {
     [Parameter] public FixtureDto? Fixture { get; set; }
 
-    [Parameter] public EventCallback OnStartMatch { get; set; }
-
     [Parameter] public bool MatchStarted { get; set; }
 
     [Parameter] public TimeSpan GameClock { get; set; }
     [Parameter] public int CurrentHalf { get; set; }
-
-    private string CurrentHalfDisplay => CurrentHalf switch
-    {
-        0 => "Not Started",
-        1 => "First Half",
-        2 => "Second Half",
-        3 => "Extra Time",
-        4 => "Penalty Shootout",
-        5 => "Full Time",
-        _ => "Unknown"
-    };
 
     private string FormattedGameClock => $"{GameClock.Minutes:00}:{GameClock.Seconds:00}";
 
@@ -122,6 +94,4 @@
         "Neutral" => AwayNamePlaceholder,
         _ => AwayNamePlaceholder
     };
-
-    private async Task StartMatch() => await OnStartMatch.InvokeAsync();
 }
