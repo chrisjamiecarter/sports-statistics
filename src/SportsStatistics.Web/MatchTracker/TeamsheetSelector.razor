@@ -15,7 +15,7 @@
         <div class ="full-width">
             <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true">
                 <SelectColumn TGridItem="PlayerDto" SelectMode="DataGridSelectMode.Multiple" SelectFromEntireRow="@true" @bind-SelectedItems="Input.Players" />
-                <PropertyColumn Property="@(player => player.Position)" />
+                <PropertyColumn Property="@(player => player.PositionName)" />
                 <PropertyColumn Property="@(player => player.Name)" />
             </FluentDataGrid>
 
@@ -53,7 +53,7 @@
 
     private const int PlayersRequired = 11;
 
-    private IQueryable<PlayerDto> OrderedPlayers => Players.OrderBy(player => player.PostionId).ThenBy(player => player.Name).AsQueryable();
+    private IQueryable<PlayerDto> OrderedPlayers => Players.OrderBy(player => player.PositionId).ThenBy(player => player.Name).AsQueryable();
 
     // private IEnumerable<PlayerDto> SelectedPlayers { get; set; } = [];
 
