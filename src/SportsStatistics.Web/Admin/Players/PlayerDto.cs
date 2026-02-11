@@ -5,6 +5,6 @@ public sealed record PlayerDto(Guid Id,
                                int SquadNumber,
                                string Nationality,
                                DateOnly DateOfBirth,
-                               int PostionId,
+                               int PositionId,
                                string Position,
                                int Age);
