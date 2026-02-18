@@ -9,7 +9,8 @@ internal static class Program
 
         var sqlServer = builder.AddSqlServer(Resources.SqlName, port: Resources.SqlPort)
                                .WithContainerName(Resources.SqlContainerName)
-                               .WithLifetime(ContainerLifetime.Persistent);
+                               .WithLifetime(ContainerLifetime.Persistent)
+                               .WithDataVolume();
 
         var database = sqlServer.AddDatabase(Resources.SqlDatabase);
 
