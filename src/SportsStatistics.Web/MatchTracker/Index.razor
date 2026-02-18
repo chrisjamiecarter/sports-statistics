@@ -1,7 +1,12 @@
-﻿@page "/match-tracker"
+@page "/match-tracker"
 @using SportsStatistics.Application.Abstractions.Messaging
 @using SportsStatistics.Application.Fixtures.GetByDate
+@using SportsStatistics.Application.MatchTracking.GetByFixtureId
+@using SportsStatistics.Application.MatchTracking.MatchEvents.Create
+@using SportsStatistics.Application.MatchTracking.PlayerEvents.Create
+@using SportsStatistics.Application.MatchTracking.SubstitutionEvents.Create
 @using SportsStatistics.Application.Players.GetAll
+@using SportsStatistics.Domain.MatchTracking.MatchEvents
 @using SportsStatistics.Web.Abstractions.Messaging
 @implements IDisposable
 
@@ -26,9 +31,20 @@
         case PageState.MatchTracking:
         <FluentStack Orientation="Orientation.Vertical">
             <MatchHeader Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted"/>
-            <MatchEvents CurrentHalf="@currentHalf" OnStartFirstHalf="StartMatch" OnHomeGoal="HomeGoal" OnAwayGoal="AwayGoal" />
-            <MatchTracker Players="@SelectedPlayers" OnAddMatchEvent="AddMatchEvent" MatchInProgess="@matchStarted" />
-            <Overview MatchEvents="@MatchEvents" />
+            <MatchEvents CurrentHalf="@currentHalf" 
+                         OnStartFirstHalf="StartMatch"
+                         OnFinishFirstHalf="FinishFirstHalf"
+                         OnStartSecondHalf="StartSecondHalf"
+                         OnFinishSecondHalf="FinishSecondHalf"
+                         OnHomeGoal="HomeGoal" 
+                         OnAwayGoal="AwayGoal" />
+            <MatchTracker Players="@SelectedPlayers" 
+                         FixtureId="@Fixture!.Id"
+                         CurrentMinute="@currentMinute"
+                         MatchInProgress="@matchStarted"
+                         OnAddPlayerEvent="AddPlayerEvent"
+                         OnAddSubstitutionEvent="AddSubstitutionEvent" />
+            <Overview MatchEvents="@DisplayEvents" />
         </FluentStack>
             break;
         default:
@@ -47,13 +63,22 @@
 
     public FixtureDto? Fixture { get; set; }
 
-    public List<MatchEventDto> MatchEvents { get; set; } = [];
+    public List<MatchEventResponse> PersistedEvents { get; set; } = [];
+
+    public List<DisplayMatchEventDto> DisplayEvents { get; set; } = [];
 
     public List<PlayerDto>? Players { get; set; }
 
     public List<PlayerDto> SelectedPlayers { get; set; } = [];
 
     private PageState CurrentPageState = PageState.FixtureSelect;
+
+    private int currentHalf = 0;
+    private int currentMinute => matchStartedAtUtc.HasValue ? (int)(DateTime.UtcNow - matchStartedAtUtc.Value).TotalMinutes : 0;
+    private System.Timers.Timer? _timer;
+    private DateTime? matchStartedAtUtc;
+    private TimeSpan gameClock => matchStartedAtUtc.HasValue ? DateTime.UtcNow - matchStartedAtUtc.Value : TimeSpan.Zero;
+    private bool matchStarted = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -89,40 +114,50 @@
         Players = result.Value.Select(player => player.ToDto()).ToList();
     }
 
+    private async Task LoadMatchEventsAsync()
+    {
+        if (Fixture is null) return;
+
+        var request = new GetMatchEventsByFixtureIdQuery(Fixture.Id);
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            PersistedEvents = [];
+            return;
+        }
+
+        PersistedEvents = result.Value;
+        UpdateDisplayEvents();
+    }
+
+    private void UpdateDisplayEvents()
+    {
+        DisplayEvents = PersistedEvents
+            .Select(e => new DisplayMatchEventDto(e.Minute, e.EventType, e.PlayerName ?? "", e.OccurredAtUtc))
+            .OrderBy(e => e.Minute)
+            .ThenBy(e => e.OccurredAtUtc)
+            .ToList();
+    }
+
     private async Task FixtureSelected(Guid fixtureId)
     {
-        Console.WriteLine($"Selected Fixture ID: {fixtureId}");
         CurrentPageState++;
         await Task.CompletedTask;
     }
 
     private async Task TeamsheetConfirmed(IReadOnlyList<PlayerDto> players)
     {
-        Console.WriteLine($"Selected Players: {string.Join(',', players.Select(player => player.Name))}");
         SelectedPlayers = players.ToList();
         CurrentPageState++;
-        await Task.CompletedTask;
+        await LoadMatchEventsAsync();
     }
 
     private async Task TeamsheetCancelled()
     {
-        Console.WriteLine("Teamsheet Cancelled");
         CurrentPageState--;
         await Task.CompletedTask;
     }
 
-    private async Task AddMatchEvent(MatchEventDto matchEvent)
-    {
-        MatchEvents.Add(matchEvent);
-        await Task.CompletedTask;
-    }
-
-    // TODO:
-    private int currentHalf = 0;
-    private System.Timers.Timer? _timer;
-    private DateTime? matchStartedAtUtc;
-    private TimeSpan gameClock => matchStartedAtUtc.HasValue ? DateTime.UtcNow - matchStartedAtUtc.Value : TimeSpan.Zero;
-    private bool matchStarted = false;
     private async Task StartMatch()
     {
         matchStartedAtUtc = DateTime.UtcNow;
@@ -132,19 +167,110 @@
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
         _timer.Start();
 
-        await AddMatchEvent(new MatchEventDto("First Half Started", matchStartedAtUtc.Value));
+        await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, 0);
+    }
+
+    private async Task FinishFirstHalf()
+    {
+        var minute = currentMinute;
+        currentHalf = 2;
+        matchStarted = false;
+        
+        await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute);
+    }
+
+    private async Task StartSecondHalf()
+    {
+        matchStartedAtUtc = DateTime.UtcNow;
+        matchStarted = true;
+        currentHalf = 3;
+
+        await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, 45);
+    }
+
+    private async Task FinishSecondHalf()
+    {
+        var minute = 45 + currentMinute;
+        currentHalf = 4;
+        matchStarted = false;
+
+        await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute);
     }
 
     private async Task HomeGoal()
     {
-        Fixture = Fixture! with { HomeGoals = Fixture.HomeGoals + 1 };
-        await AddMatchEvent(new MatchEventDto("Home Goal", DateTime.UtcNow));
+        if (Fixture is null) return;
+
+        Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
+        
+        await RecordMatchEvent(MatchEventType.HomeGoal.Value, currentMinute);
     }
 
     private async Task AwayGoal()
     {
-        Fixture = Fixture! with { AwayGoals = Fixture.AwayGoals + 1 };
-        await AddMatchEvent(new MatchEventDto("Away Goal", DateTime.UtcNow));
+        if (Fixture is null) return;
+
+        Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
+        
+        await RecordMatchEvent(MatchEventType.AwayGoal.Value, currentMinute);
+    }
+
+    private async Task RecordMatchEvent(int eventTypeId, int minute)
+    {
+        if (Fixture is null) return;
+
+        var command = new CreateMatchEventCommand(
+            Fixture.Id,
+            eventTypeId,
+            minute,
+            DateTime.UtcNow);
+
+        var result = await Messenger.SendAsync(command);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+            return;
+        }
+
+        await LoadMatchEventsAsync();
+    }
+
+    private async Task AddPlayerEvent(PlayerEventDto playerEvent)
+    {
+        var command = new CreatePlayerEventCommand(
+            playerEvent.FixtureId,
+            playerEvent.PlayerId,
+            playerEvent.PlayerEventTypeId,
+            playerEvent.Minute,
+            playerEvent.OccurredAtUtc);
+
+        var result = await Messenger.SendAsync(command);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+            return;
+        }
+
+        await LoadMatchEventsAsync();
+    }
+
+    private async Task AddSubstitutionEvent(SubstitutionEventDto substitutionEvent)
+    {
+        var command = new CreateSubstitutionEventCommand(
+            substitutionEvent.FixtureId,
+            substitutionEvent.PlayerOffId,
+            substitutionEvent.PlayerOnId,
+            substitutionEvent.Minute,
+            substitutionEvent.OccurredAtUtc);
+
+        var result = await Messenger.SendAsync(command);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+            return;
+        }
+
+        await LoadMatchEventsAsync();
     }
 
     public void Dispose()

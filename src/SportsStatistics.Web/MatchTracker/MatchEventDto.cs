@@ -1,3 +1,9 @@
-﻿namespace SportsStatistics.Web.MatchTracker;
+namespace SportsStatistics.Web.MatchTracker;
 
-public sealed record MatchEventDto(string DisplayText, DateTime OccuredAtUtc);
+public sealed record MatchEventDto(string DisplayText,
+                                   DateTime OccuredAtUtc,
+                                   Guid? FixtureId = null,
+                                   Guid? PlayerId = null,
+                                   int? EventTypeId = null,
+                                   int Minute = 0,
+                                   string EventType = "Display");

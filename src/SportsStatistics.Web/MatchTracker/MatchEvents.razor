@@ -1,4 +1,4 @@
-﻿<FluentStack Orientation="Orientation.Vertical">
+<FluentStack Orientation="Orientation.Vertical">
 
     <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
 
@@ -44,13 +44,15 @@
     [Parameter] public int CurrentHalf { get; set; }
     
     [Parameter] public EventCallback OnStartFirstHalf { get; set; }
-    // [Parameter] 
-    public EventCallback OnFinishFirstHalf { get; set; }
-    // [Parameter] 
-    public EventCallback OnStartSecondHalf { get; set; }
-    // [Parameter] 
-    public EventCallback OnFinishSecondHalf { get; set; }
+    
+    [Parameter] public EventCallback OnFinishFirstHalf { get; set; }
+    
+    [Parameter] public EventCallback OnStartSecondHalf { get; set; }
+    
+    [Parameter] public EventCallback OnFinishSecondHalf { get; set; }
+    
     [Parameter] public EventCallback OnHomeGoal { get; set; }
+    
     [Parameter] public EventCallback OnAwayGoal { get; set; }
 
     private async Task StartFirstHalf() => await OnStartFirstHalf.InvokeAsync();
