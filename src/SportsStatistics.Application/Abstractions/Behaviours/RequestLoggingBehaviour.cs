@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using SportsStatistics.SharedKernel;
 
@@ -23,7 +23,10 @@ internal sealed class RequestLoggingBehaviour<TRequest, TResponse>(ILogger<Reque
             ["RequestType"] = requestName,
         });
 
-        _logger.LogInformation("Starting request {Request}", requestName);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Starting request {Request}", requestName);
+        }
 
         if (_logger.IsEnabled(LogLevel.Debug))
         {
@@ -37,7 +40,10 @@ internal sealed class RequestLoggingBehaviour<TRequest, TResponse>(ILogger<Reque
             {
                 if (result.IsSuccess)
                 {
-                    _logger.LogInformation("Completed request {Request}", requestName);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Completed request {Request}", requestName);
+                    }
                 }
                 else
                 {
@@ -52,7 +58,10 @@ internal sealed class RequestLoggingBehaviour<TRequest, TResponse>(ILogger<Reque
             {
                 if (GetResultIsSuccess(response))
                 {
-                    _logger.LogInformation("Completed request {Request}", requestName);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Completed request {Request}", requestName);
+                    }
                 }
                 else
                 {
@@ -68,7 +77,10 @@ internal sealed class RequestLoggingBehaviour<TRequest, TResponse>(ILogger<Reque
             }
             else
             {
-                _logger.LogInformation("Completed request {Request}", requestName);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Completed request {Request}", requestName);
+                }
             }
 
             return response;
