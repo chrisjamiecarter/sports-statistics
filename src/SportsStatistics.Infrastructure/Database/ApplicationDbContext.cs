@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Domain.MatchTracking.MatchEvents;
 using SportsStatistics.Domain.MatchTracking.PlayerEvents;
+using SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Infrastructure.Database.Converters;
@@ -20,7 +21,11 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
 
     public DbSet<Player> Players { get; set; }
 
+    public DbSet<PlayerEvent> PlayerEvents { get; set; }
+
     public DbSet<Season> Seasons { get; set; }
+
+    public DbSet<SubstitutionEvent> SubstitutionEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
