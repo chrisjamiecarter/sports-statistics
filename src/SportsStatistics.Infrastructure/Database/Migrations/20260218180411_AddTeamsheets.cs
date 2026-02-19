@@ -53,7 +53,7 @@ namespace SportsStatistics.Infrastructure.Persistence.Migrations
                 name: "IX_TeamsheetPlayers_TeamsheetId_PlayerId",
                 schema: "sports",
                 table: "TeamsheetPlayers",
-                columns: new[] { "TeamsheetId", "PlayerId" },
+                columns: ["TeamsheetId", "PlayerId"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
