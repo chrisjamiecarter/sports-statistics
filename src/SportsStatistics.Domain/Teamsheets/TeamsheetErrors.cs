@@ -4,6 +4,10 @@ namespace SportsStatistics.Domain.Teamsheets;
 
 public static class TeamsheetErrors
 {
+    public static Error NotFound(Guid id) => Error.NotFound(
+        "Teamsheet.NotFound",
+        $"The teamsheet with the Id = '{id}' was not found.");
+
     public static class FixtureId
     {
         public static readonly Error Required = Error.Validation(
