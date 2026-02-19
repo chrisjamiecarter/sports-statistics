@@ -6,6 +6,7 @@ using SportsStatistics.Domain.MatchTracking.PlayerEvents;
 using SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
+using SportsStatistics.Domain.Teamsheets;
 
 namespace SportsStatistics.Application.Abstractions.Data;
 
@@ -24,6 +25,10 @@ public interface IApplicationDbContext
     DbSet<Season> Seasons { get; }
 
     DbSet<SubstitutionEvent> SubstitutionEvents { get; }
+
+    DbSet<Teamsheet> Teamsheets { get; }
+
+    DbSet<TeamsheetPlayer> TeamsheetPlayers { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
