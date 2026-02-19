@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Infrastructure.Database;
+namespace SportsStatistics.Infrastructure.Database;
 
 internal static class Schemas
 {
@@ -14,4 +14,6 @@ internal static class Schemas
     public static readonly SchemaMetadata Players = new(Schema, "Players");
     public static readonly SchemaMetadata Seasons = new(Schema, "Seasons");
     public static readonly SchemaMetadata SubstitutionEvents = new(Schema, "SubstitutionEvents");
+    public static readonly SchemaMetadata Teamsheets = new(Schema, "Teamsheets");
+    public static readonly SchemaMetadata TeamsheetPlayers = new(Schema, "TeamsheetPlayers");
 }

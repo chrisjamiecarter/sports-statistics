@@ -7,6 +7,7 @@ using SportsStatistics.Domain.MatchTracking.PlayerEvents;
 using SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
+using SportsStatistics.Domain.Teamsheets;
 using SportsStatistics.Infrastructure.Database.Converters;
 
 namespace SportsStatistics.Infrastructure.Database;
@@ -26,6 +27,10 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<Season> Seasons { get; set; }
 
     public DbSet<SubstitutionEvent> SubstitutionEvents { get; set; }
+
+    public DbSet<Teamsheet> Teamsheets { get; set; }
+
+    public DbSet<TeamsheetPlayer> TeamsheetPlayers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
