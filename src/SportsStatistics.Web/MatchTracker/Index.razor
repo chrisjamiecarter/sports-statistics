@@ -6,6 +6,8 @@
 @using SportsStatistics.Application.MatchTracking.PlayerEvents.Create
 @using SportsStatistics.Application.MatchTracking.SubstitutionEvents.Create
 @using SportsStatistics.Application.Players.GetAll
+@using SportsStatistics.Application.Teamsheets.Create
+@using SportsStatistics.Application.Teamsheets.GetByFixtureId
 @using SportsStatistics.Domain.MatchTracking.MatchEvents
 @using SportsStatistics.Web.Abstractions.Messaging
 @implements IDisposable
@@ -26,26 +28,44 @@
             <FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="FixtureSelected" />
             break;
         case PageState.TeamsheetSelect:
-            <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
+            @if (ExistingTeamsheet is null)
+            {
+                <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
+            }
+            else
+            {
+                <FluentStack Orientation="Orientation.Vertical">
+                    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+                        Teamsheet Already Submitted
+                    </FluentLabel>
+                    <FluentLabel Typo="Typography.Body">
+                        Submitted at: @ExistingTeamsheet.SubmittedAtUtc.ToLocalTime().ToString("g")
+                    </FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent" OnClick="ProceedToMatchTracking">
+                        Continue to Match Tracking
+                    </FluentButton>
+                </FluentStack>
+            }
             break;
         case PageState.MatchTracking:
-        <FluentStack Orientation="Orientation.Vertical">
-            <MatchHeader Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted"/>
-            <MatchEvents CurrentHalf="@currentHalf" 
-                         OnStartFirstHalf="StartMatch"
-                         OnFinishFirstHalf="FinishFirstHalf"
-                         OnStartSecondHalf="StartSecondHalf"
-                         OnFinishSecondHalf="FinishSecondHalf"
-                         OnHomeGoal="HomeGoal" 
-                         OnAwayGoal="AwayGoal" />
-            <MatchTracker Players="@SelectedPlayers" 
-                         FixtureId="@Fixture!.Id"
-                         CurrentMinute="@currentMinute"
-                         MatchInProgress="@matchStarted"
-                         OnAddPlayerEvent="AddPlayerEvent"
-                         OnAddSubstitutionEvent="AddSubstitutionEvent" />
-            <Overview MatchEvents="@DisplayEvents" />
-        </FluentStack>
+            <FluentStack Orientation="Orientation.Vertical">
+                <MatchHeader Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted"/>
+                <MatchEvents CurrentHalf="@currentHalf" 
+                             OnStartFirstHalf="StartMatch"
+                             OnFinishFirstHalf="FinishFirstHalf"
+                             OnStartSecondHalf="StartSecondHalf"
+                             OnFinishSecondHalf="FinishSecondHalf"
+                             OnHomeGoal="HomeGoal" 
+                             OnAwayGoal="AwayGoal" />
+                <MatchTracker Players="@StartingPlayers" 
+                             SubstitutePlayers="@SubstitutePlayers"
+                             FixtureId="@Fixture!.Id"
+                             CurrentMinute="@currentMinute"
+                             MatchInProgress="@matchStarted"
+                             OnAddPlayerEvent="AddPlayerEvent"
+                             OnAddSubstitutionEvent="AddSubstitutionEvent" />
+                <Overview MatchEvents="@DisplayEvents" />
+            </FluentStack>
             break;
         default:
             break;
@@ -69,7 +89,11 @@
 
     public List<PlayerDto>? Players { get; set; }
 
-    public List<PlayerDto> SelectedPlayers { get; set; } = [];
+    public List<PlayerDto> StartingPlayers { get; set; } = [];
+
+    public List<PlayerDto> SubstitutePlayers { get; set; } = [];
+
+    public TeamsheetResponse? ExistingTeamsheet { get; set; }
 
     private PageState CurrentPageState = PageState.FixtureSelect;
 
@@ -130,6 +154,36 @@
         UpdateDisplayEvents();
     }
 
+    private async Task LoadExistingTeamsheetAsync()
+    {
+        if (Fixture is null || Players is null) return;
+
+        var request = new GetTeamsheetByFixtureIdQuery(Fixture.Id);
+        var result = await Messenger.SendAsync(request);
+        if (result.IsFailure)
+        {
+            ExistingTeamsheet = null;
+            return;
+        }
+
+        ExistingTeamsheet = result.Value;
+
+        if (ExistingTeamsheet is not null)
+        {
+            var playerDict = Players.ToDictionary(p => p.Id);
+
+            StartingPlayers = ExistingTeamsheet.Starters
+                .Where(s => playerDict.ContainsKey(s.PlayerId))
+                .Select(s => playerDict[s.PlayerId])
+                .ToList();
+
+            SubstitutePlayers = ExistingTeamsheet.Substitutes
+                .Where(s => playerDict.ContainsKey(s.PlayerId))
+                .Select(s => playerDict[s.PlayerId])
+                .ToList();
+        }
+    }
+
     private void UpdateDisplayEvents()
     {
         DisplayEvents = PersistedEvents
@@ -141,13 +195,35 @@
 
     private async Task FixtureSelected(Guid fixtureId)
     {
+        await LoadExistingTeamsheetAsync();
         CurrentPageState++;
-        await Task.CompletedTask;
     }
 
-    private async Task TeamsheetConfirmed(IReadOnlyList<PlayerDto> players)
+    private async Task TeamsheetConfirmed(IReadOnlyList<PlayerDto> selectedPlayers)
     {
-        SelectedPlayers = players.ToList();
+        if (Fixture is null || Players is null) return;
+
+        var starterIds = selectedPlayers.Select(p => p.Id).ToList();
+
+        var command = new CreateTeamsheetCommand(Fixture.Id, starterIds);
+        var result = await Messenger.SendAsync(command);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+            return;
+        }
+
+        StartingPlayers = selectedPlayers.ToList();
+        SubstitutePlayers = Players
+            .Where(p => !starterIds.Contains(p.Id))
+            .ToList();
+
+        CurrentPageState++;
+        await LoadMatchEventsAsync();
+    }
+
+    private async Task ProceedToMatchTracking()
+    {
         CurrentPageState++;
         await LoadMatchEventsAsync();
     }

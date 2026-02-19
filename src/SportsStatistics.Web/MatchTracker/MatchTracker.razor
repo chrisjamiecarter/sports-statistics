@@ -44,7 +44,7 @@
             <FluentButton IconEnd="@(new Icons.Filled.Size20.DocumentBorder().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!MatchInProgress)" />
         </TemplateColumn>
         <TemplateColumn Align="Align.End">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!MatchInProgress)" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!MatchInProgress || !SubstitutePlayers.Any())" />
         </TemplateColumn>
     </FluentDataGrid>
 
@@ -54,7 +54,7 @@
             <FluentStack Orientation="Orientation.Vertical">
                 <FluentLabel>Player Off: @SubstitutionPlayerOff?.Name</FluentLabel>
                 <FluentLabel>Select Player On:</FluentLabel>
-                <FluentSelect Items="@AvailableSubstitutePlayers" 
+                <FluentSelect Items="@SubstitutePlayers" 
                               OptionText="@(p => p?.Name ?? "")" 
                               OptionValue="@(p => p?.Id.ToString() ?? "")"
                               @bind-SelectedOption="@SelectedSubstitutePlayer" />
@@ -71,6 +71,8 @@
 @code {
     [Parameter] public List<PlayerDto> Players { get; set; } = [];
 
+    [Parameter] public List<PlayerDto> SubstitutePlayers { get; set; } = [];
+
     [Parameter] public EventCallback<PlayerEventDto> OnAddPlayerEvent { get; set; }
 
     [Parameter] public EventCallback<SubstitutionEventDto> OnAddSubstitutionEvent { get; set; }
@@ -86,7 +88,6 @@
     private bool ShowSubstitutionDialog { get; set; } = false;
     private PlayerDto? SubstitutionPlayerOff { get; set; }
     private PlayerDto? SelectedSubstitutePlayer { get; set; }
-    private IEnumerable<PlayerDto> AvailableSubstitutePlayers => Players.Where(p => SubstitutionPlayerOff == null || p.Id != SubstitutionPlayerOff.Id);
 
     private async Task AddPlayerMatchEvent(PlayerDto player, PlayerEventType type)
     {
