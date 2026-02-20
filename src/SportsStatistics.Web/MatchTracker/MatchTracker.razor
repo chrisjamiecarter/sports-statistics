@@ -10,41 +10,51 @@
 
     <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true" RowSize="DataGridRowSize.Medium" GridTemplateColumns="0.10fr 0.50fr 0.50fr 0.25fr 0.25fr 0.25fr 0.25fr 0.25fr 0.25fr">
         <PropertyColumn Property="@(player => player.SquadNumber)" Title="#" />
-        <PropertyColumn Property="@(player => player.Name)" />
+        <TemplateColumn Title="Name">
+            @if (PlayersSubstitutedOff.Contains(context.Id))
+            {
+                <FluentIcon Value="@(new Icons.Filled.Size20.ArrowDownload().WithColor("#DD3636"))" Title="Substituted Off" />
+            }
+            else if (PlayersSubstitutedOn.Contains(context.Id))
+            {
+                <FluentIcon Value="@(new Icons.Filled.Size20.ArrowUpload().WithColor("var(--bs-success)"))" Title="Substituted On" />
+            }
+            @context.Name
+        </TemplateColumn>
         <PropertyColumn Property="@(player => player.PositionName)" Title="Position" />
         <TemplateColumn Title="Defensive" Align="Align.Center">
             @if (context.IsGoalkeeper)
             {
-                <FluentButton IconEnd="@(new Icons.Filled.Size20.ShieldPerson())" Appearance="Appearance.Neutral" OnClick="@(() => AddSave(context))" Title="Save" Disabled="@(!MatchInProgress)" />
+                <FluentButton IconEnd="@(new Icons.Filled.Size20.ShieldPerson())" Appearance="Appearance.Neutral" OnClick="@(() => AddSave(context))" Title="Save" Disabled="@(!CanPlayerAct(context))" />
             }
             else
             {
-                <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonLightning())" Appearance="Appearance.Neutral" OnClick="@(() => AddTackle(context))" Title="Tackle" Disabled="@(!MatchInProgress)" />
+                <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonLightning())" Appearance="Appearance.Neutral" OnClick="@(() => AddTackle(context))" Title="Tackle" Disabled="@(!CanPlayerAct(context))" />
             }
         </TemplateColumn>
         <TemplateColumn Title="Passing" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassSuccess(context))" Title="Pass Success" Disabled="@(!MatchInProgress)" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassFailure(context))" Title="Pass Failure" Disabled="@(!MatchInProgress)" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassSuccess(context))" Title="Pass Success" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassFailure(context))" Title="Pass Failure" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Shooting" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.Target().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOnTarget(context))" Title="Shot On Target" Disabled="@(!MatchInProgress)" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.TargetDismiss().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOffTarget(context))" Title="Shot Off Target" Disabled="@(!MatchInProgress)" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.Target().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOnTarget(context))" Title="Shot On Target" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.TargetDismiss().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOffTarget(context))" Title="Shot Off Target" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Goals" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.Handshake())" Appearance="Appearance.Neutral" OnClick="@(() => AddGoalAssist(context))" Title="Goal Assist" Disabled="@(!MatchInProgress)" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.SportSoccer().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddGoal(context))" Title="Goal" Disabled="@(!MatchInProgress)" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.SportSoccer().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddOwnGoal(context))" Title="Own Goal" Disabled="@(!MatchInProgress)" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.Handshake())" Appearance="Appearance.Neutral" OnClick="@(() => AddGoalAssist(context))" Title="Goal Assist" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.SportSoccer().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddGoal(context))" Title="Goal" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.SportSoccer().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddOwnGoal(context))" Title="Own Goal" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Fouls" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!MatchInProgress)" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceeded" Disabled="@(!MatchInProgress)" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceeded" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Discipline" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.DocumentBorder().WithColor("#FFCE2C"))" Appearance="Appearance.Neutral" OnClick="@(() => AddYellowCard(context))" Title="Yellow Card" Disabled="@(!MatchInProgress)" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.DocumentBorder().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!MatchInProgress)" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.DocumentBorder().WithColor("#FFCE2C"))" Appearance="Appearance.Neutral" OnClick="@(() => AddYellowCard(context))" Title="Yellow Card" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.DocumentBorder().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Align="Align.End">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!MatchInProgress || !SubstitutePlayers.Any())" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!CanSubstitute || PlayersSubstitutedOff.Contains(context.Id))" />
         </TemplateColumn>
     </FluentDataGrid>
 
@@ -54,8 +64,8 @@
             <FluentStack Orientation="Orientation.Vertical">
                 <FluentLabel>Player Off: @SubstitutionPlayerOff?.Name</FluentLabel>
                 <FluentLabel>Select Player On:</FluentLabel>
-                <FluentSelect Items="@SubstitutePlayers" 
-                              OptionText="@(p => p?.Name ?? "")" 
+                <FluentSelect Items="@SubstitutePlayers"
+                              OptionText="@(p => $"#{p?.SquadNumber} {p?.Name} ({p?.PositionName})")"
                               OptionValue="@(p => p?.Id.ToString() ?? "")"
                               @bind-SelectedOption="@SelectedSubstitutePlayer" />
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
@@ -73,17 +83,32 @@
 
     [Parameter] public List<PlayerDto> SubstitutePlayers { get; set; } = [];
 
+    [Parameter] public HashSet<Guid> PlayersSubstitutedOff { get; set; } = [];
+
+    [Parameter] public HashSet<Guid> PlayersSubstitutedOn { get; set; } = [];
+
     [Parameter] public EventCallback<PlayerEventDto> OnAddPlayerEvent { get; set; }
 
     [Parameter] public EventCallback<SubstitutionEventDto> OnAddSubstitutionEvent { get; set; }
 
-    [Parameter] public bool MatchInProgress { get; set; }
+    [Parameter] public int CurrentHalf { get; set; }
 
     [Parameter] public Guid FixtureId { get; set; }
 
     [Parameter] public int CurrentMinute { get; set; }
 
-    private IQueryable<PlayerDto> OrderedPlayers => Players.OrderBy(player => player.PositionId).ThenBy(player => player.Name).AsQueryable();
+    [Parameter] public bool MatchInProgress { get; set; }
+
+    private bool CanSubstitute => CurrentHalf is 1 or 2 or 3 && SubstitutePlayers.Any();
+
+    private bool CanPlayerAct(PlayerDto player) =>
+        MatchInProgress && !PlayersSubstitutedOff.Contains(player.Id);
+
+    private IQueryable<PlayerDto> OrderedPlayers =>
+        Players.OrderBy(p => PlayersSubstitutedOff.Contains(p.Id) ? 1 : 0)
+               .ThenBy(p => p.PositionId)
+               .ThenBy(p => p.SquadNumber)
+               .AsQueryable();
 
     private bool ShowSubstitutionDialog { get; set; } = false;
     private PlayerDto? SubstitutionPlayerOff { get; set; }

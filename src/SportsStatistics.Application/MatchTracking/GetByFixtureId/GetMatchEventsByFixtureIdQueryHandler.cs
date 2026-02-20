@@ -5,14 +5,11 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.MatchTracking.GetByFixtureId;
 
-internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContext dbContext) 
-    : IQueryHandler<GetMatchEventsByFixtureIdQuery, List<MatchEventResponse>>
+internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContext dbContext) : IQueryHandler<GetMatchEventsByFixtureIdQuery, List<MatchEventResponse>>
 {
     private readonly IApplicationDbContext _dbContext = dbContext;
 
-    public async Task<Result<List<MatchEventResponse>>> Handle(
-        GetMatchEventsByFixtureIdQuery request, 
-        CancellationToken cancellationToken)
+    public async Task<Result<List<MatchEventResponse>>> Handle(GetMatchEventsByFixtureIdQuery request, CancellationToken cancellationToken)
     {
         var matchEvents = await _dbContext.MatchEvents
             .AsNoTracking()
@@ -47,14 +44,21 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
         var substitutionEvents = await _dbContext.SubstitutionEvents
             .AsNoTracking()
             .Where(e => e.FixtureId == request.FixtureId)
-            .Select(e => new MatchEventResponse(
-                e.Id,
-                e.FixtureId,
-                "Substitution",
-                e.Minute.Value,
-                e.OccurredAtUtc,
-                null,
-                null))
+            .Join(_dbContext.Players.AsNoTracking(),
+                e => e.Substitution.PlayerOffId,
+                p => p.Id,
+                (e, playerOff) => new { Event = e, PlayerOffName = playerOff.Name.Value })
+            .Join(_dbContext.Players.AsNoTracking(),
+                x => x.Event.Substitution.PlayerOnId,
+                p => p.Id,
+                (x, playerOn) => new MatchEventResponse(
+                    x.Event.Id,
+                    x.Event.FixtureId,
+                    "Substitution",
+                    x.Event.Minute.Value,
+                    x.Event.OccurredAtUtc,
+                    $"{x.PlayerOffName} → {playerOn.Name.Value}",
+                    x.Event.Substitution.PlayerOffId))
             .ToListAsync(cancellationToken);
 
         var allEvents = matchEvents

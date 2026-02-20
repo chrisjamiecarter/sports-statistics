@@ -5,6 +5,7 @@
 @using SportsStatistics.Application.MatchTracking.MatchEvents.Create
 @using SportsStatistics.Application.MatchTracking.PlayerEvents.Create
 @using SportsStatistics.Application.MatchTracking.SubstitutionEvents.Create
+@using SportsStatistics.Application.MatchTracking.SubstitutionEvents.GetByFixtureId
 @using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Application.Teamsheets.Create
 @using SportsStatistics.Application.Teamsheets.GetByFixtureId
@@ -57,11 +58,14 @@
                              OnFinishSecondHalf="FinishSecondHalf"
                              OnHomeGoal="HomeGoal" 
                              OnAwayGoal="AwayGoal" />
-                <MatchTracker Players="@StartingPlayers" 
-                             SubstitutePlayers="@SubstitutePlayers"
+                <MatchTracker Players="@StartingPlayers"
+                             SubstitutePlayers="@AvailableSubstitutes"
+                             PlayersSubstitutedOff="@_substitutedOffPlayerIds"
+                             PlayersSubstitutedOn="@_substitutedOnPlayerIds"
+                             CurrentHalf="@currentHalf"
                              FixtureId="@Fixture!.Id"
                              CurrentMinute="@currentMinute"
-                             MatchInProgress="@matchStarted"
+                             MatchInProgress="@(currentHalf is 1 or 3)"
                              OnAddPlayerEvent="AddPlayerEvent"
                              OnAddSubstitutionEvent="AddSubstitutionEvent" />
                 <Overview MatchEvents="@DisplayEvents" />
@@ -92,6 +96,12 @@
     public List<PlayerDto> StartingPlayers { get; set; } = [];
 
     public List<PlayerDto> SubstitutePlayers { get; set; } = [];
+
+    private HashSet<Guid> _substitutedOffPlayerIds = [];
+    private HashSet<Guid> _substitutedOnPlayerIds = [];
+
+    private List<PlayerDto> AvailableSubstitutes =>
+        SubstitutePlayers.Where(p => !_substitutedOnPlayerIds.Contains(p.Id)).ToList();
 
     public TeamsheetResponse? ExistingTeamsheet { get; set; }
 
@@ -184,6 +194,33 @@
         }
     }
 
+    private async Task LoadSubstitutionsAsync()
+    {
+        if (Fixture is null) return;
+
+        var query = new GetSubstitutionsByFixtureIdQuery(Fixture.Id);
+        var result = await Messenger.SendAsync(query);
+
+        if (result.IsFailure)
+        {
+            _substitutedOffPlayerIds = [];
+            _substitutedOnPlayerIds = [];
+            return;
+        }
+
+        _substitutedOffPlayerIds = result.Value.Select(s => s.PlayerOffId).ToHashSet();
+        _substitutedOnPlayerIds = result.Value.Select(s => s.PlayerOnId).ToHashSet();
+
+        foreach (var playerOnId in _substitutedOnPlayerIds)
+        {
+            var playerOn = SubstitutePlayers.FirstOrDefault(p => p.Id == playerOnId);
+            if (playerOn is not null && !StartingPlayers.Contains(playerOn))
+            {
+                StartingPlayers.Add(playerOn);
+            }
+        }
+    }
+
     private void UpdateDisplayEvents()
     {
         DisplayEvents = PersistedEvents
@@ -220,12 +257,14 @@
 
         CurrentPageState++;
         await LoadMatchEventsAsync();
+        await LoadSubstitutionsAsync();
     }
 
     private async Task ProceedToMatchTracking()
     {
         CurrentPageState++;
         await LoadMatchEventsAsync();
+        await LoadSubstitutionsAsync();
     }
 
     private async Task TeamsheetCancelled()
@@ -344,6 +383,15 @@
         {
             ToastService.ShowError(result.Error.Description);
             return;
+        }
+
+        _substitutedOffPlayerIds.Add(substitutionEvent.PlayerOffId);
+        _substitutedOnPlayerIds.Add(substitutionEvent.PlayerOnId);
+
+        var playerOn = SubstitutePlayers.FirstOrDefault(p => p.Id == substitutionEvent.PlayerOnId);
+        if (playerOn is not null && !StartingPlayers.Contains(playerOn))
+        {
+            StartingPlayers.Add(playerOn);
         }
 
         await LoadMatchEventsAsync();
