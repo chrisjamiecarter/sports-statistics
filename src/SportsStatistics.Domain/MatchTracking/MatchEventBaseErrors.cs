@@ -1,4 +1,4 @@
-﻿using SportsStatistics.SharedKernel;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.MatchTracking;
 
@@ -21,17 +21,6 @@ public static class MatchEventBaseErrors
         public static Error Unknown => Error.Validation(
             "MatchTracking.MatchEventType.Unknown",
             "The match event type cannot be inferred from the name.");
-    }
-
-    public static class Minute
-    {
-        public static Error BelowMinValue => Error.Validation(
-            "MatchTracking.Minute.BelowMinValue",
-            "The match minute is below the minimum allowed value.");
-
-        public static Error NullOrEmpty => Error.Validation(
-            "MatchTracking.Minute.NullOrEmpty",
-            "The match minute cannot be null or empty.");
     }
 
     public static class PlayerEventType

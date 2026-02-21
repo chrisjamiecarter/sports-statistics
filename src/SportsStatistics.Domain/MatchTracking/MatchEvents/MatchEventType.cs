@@ -1,4 +1,4 @@
-﻿using SportsStatistics.SharedKernel;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Domain.MatchTracking.MatchEvents;
 
