@@ -29,7 +29,7 @@ internal sealed class CreateSubstitutionEventCommandHandler(IApplicationDbContex
             return Result.Failure(substitutionResult.Error);
         }
 
-        var minuteResult = Minute.Create(request.Minute);
+        var minuteResult = Minute.Create(request.BaseMinute, request.StoppageMinute);
         if (minuteResult.IsFailure)
         {
             return Result.Failure(minuteResult.Error);

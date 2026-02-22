@@ -11,6 +11,8 @@ internal static class SubstitutionMapper
         => new(substitutionEvent.Id,
                substitutionEvent.Substitution.PlayerOffId,
                substitutionEvent.Substitution.PlayerOnId,
-               substitutionEvent.Minute.Value,
+               substitutionEvent.Minute.BaseMinute,
+               substitutionEvent.Minute.StoppageMinute,
+               substitutionEvent.Minute.DisplayNotation,
                substitutionEvent.OccurredAtUtc);
 }

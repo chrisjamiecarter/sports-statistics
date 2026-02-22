@@ -15,10 +15,27 @@ internal sealed class CreateMatchEventCommandValidator : AbstractValidator<Creat
         RuleFor(c => c.MatchEventTypeId)
             .Must(MatchEventType.ContainsValue).WithError(MatchEventBaseErrors.MatchEventType.Unknown);
 
-        RuleFor(c => c.Minute)
-            .GreaterThanOrEqualTo(Minute.MinValue).WithError(MatchEventBaseErrors.Minute.BelowMinValue);
+        RuleFor(c => c.BaseMinute)
+            .GreaterThanOrEqualTo(Minute.MinBaseMinute).WithError(MinuteErrors.BelowMinimum);
+
+        RuleFor(c => c.BaseMinute)
+            .LessThanOrEqualTo(Minute.MaxBaseMinute).WithError(MinuteErrors.AboveMaximum);
+
+        RuleFor(c => c.StoppageMinute)
+            .GreaterThanOrEqualTo(1)
+            .When(c => c.StoppageMinute.HasValue)
+            .WithError(MinuteErrors.InvalidStoppageMinute);
+
+        RuleFor(c => c)
+            .Must(c => !c.StoppageMinute.HasValue || IsValidStoppageBaseMinute(c.BaseMinute))
+            .When(c => c.StoppageMinute.HasValue)
+            .WithError(MinuteErrors.InvalidStoppageBaseMinute);
 
         RuleFor(c => c.OccurredAtUtc)
             .NotEmpty().WithError(MatchEventErrors.OccurredAtDateAndTimeIsRequired);
     }
+
+    private static bool IsValidStoppageBaseMinute(int baseMinute) =>
+        baseMinute == Minute.FirstHalfEnd ||
+        baseMinute == Minute.SecondHalfEnd;
 }

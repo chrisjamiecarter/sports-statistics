@@ -18,10 +18,27 @@ internal sealed class CreatePlayerEventCommandValidator : AbstractValidator<Crea
         RuleFor(c => c.PlayerEventTypeId)
             .Must(PlayerEventType.ContainsValue).WithError(MatchEventBaseErrors.PlayerEventType.Unknown);
 
-        RuleFor(c => c.Minute)
-            .GreaterThanOrEqualTo(Domain.MatchTracking.Minute.MinValue).WithError(MatchEventBaseErrors.Minute.BelowMinValue);
+        RuleFor(c => c.BaseMinute)
+            .GreaterThanOrEqualTo(Minute.MinBaseMinute).WithError(MinuteErrors.BelowMinimum);
+
+        RuleFor(c => c.BaseMinute)
+            .LessThanOrEqualTo(Minute.MaxBaseMinute).WithError(MinuteErrors.AboveMaximum);
+
+        RuleFor(c => c.StoppageMinute)
+            .GreaterThanOrEqualTo(1)
+            .When(c => c.StoppageMinute.HasValue)
+            .WithError(MinuteErrors.InvalidStoppageMinute);
+
+        RuleFor(c => c)
+            .Must(c => !c.StoppageMinute.HasValue || IsValidStoppageBaseMinute(c.BaseMinute))
+            .When(c => c.StoppageMinute.HasValue)
+            .WithError(MinuteErrors.InvalidStoppageBaseMinute);
 
         RuleFor(c => c.OccurredAtUtc)
             .NotEmpty().WithError(PlayerEventErrors.OccurredAtDateAndTimeIsRequired);
     }
+
+    private static bool IsValidStoppageBaseMinute(int baseMinute) =>
+        baseMinute == Minute.FirstHalfEnd ||
+        baseMinute == Minute.SecondHalfEnd;
 }

@@ -14,7 +14,8 @@ internal sealed class GetSubstitutionsByFixtureIdQueryHandler(IApplicationDbCont
     {
         var substitutions = await _dbContext.SubstitutionEvents.AsNoTracking()
                                                                .Where(e => e.FixtureId == request.FixtureId)
-                                                               .OrderBy(e => e.Minute.Value)
+                                                               .OrderBy(e => e.Minute.BaseMinute)
+                                                               .ThenBy(e => e.Minute.StoppageMinute ?? 0)
                                                                .ThenBy(e => e.OccurredAtUtc)
                                                                .ToListAsync(cancellationToken);
 

@@ -39,7 +39,7 @@ internal sealed class CreatePlayerEventCommandHandler(IApplicationDbContext dbCo
             return Result.Failure(MatchEventBaseErrors.PlayerEventType.Unknown);
         }
 
-        var minuteResult = Minute.Create(request.Minute);
+        var minuteResult = Minute.Create(request.BaseMinute, request.StoppageMinute);
         if (minuteResult.IsFailure)
         {
             return Result.Failure(minuteResult.Error);
