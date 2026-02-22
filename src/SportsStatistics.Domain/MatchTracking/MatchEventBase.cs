@@ -11,7 +11,6 @@ public abstract class MatchEventBase : Entity, ISoftDeletableEntity
     {
         FixtureId = fixtureId;
         Minute = minute;
-        Period = minute.Period;
         OccurredAtUtc = occurredAtUtc;
     }
 
@@ -26,11 +25,6 @@ public abstract class MatchEventBase : Entity, ISoftDeletableEntity
     public Guid FixtureId { get; private set; } = default!;
 
     public Minute Minute { get; private set; } = default!;
-
-    /// <summary>
-    /// Gets the match period derived from the minute value.
-    /// </summary>
-    public MatchPeriod Period { get; private set; } = default!;
 
     public DateTime OccurredAtUtc { get; private set; } = default!;
 
