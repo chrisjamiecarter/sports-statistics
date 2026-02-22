@@ -5,7 +5,7 @@
     </FluentLabel>
 
     <FluentDataGrid Items="@OrderedEvents" ShowHover="@true">
-        <PropertyColumn Property="@(matchEvent => matchEvent.Minute)" Title="Minute" />
+        <PropertyColumn Property="@(matchEvent => matchEvent.DisplayMinute)" Title="Minute" />
         <PropertyColumn Property="@(matchEvent => matchEvent.EventType)" Title="Event" />
         <PropertyColumn Property="@(matchEvent => matchEvent.PlayerName)" Title="Player" />
         <PropertyColumn Property="@(matchEvent => matchEvent.OccurredAtUtc.ToLocalTime())" Title="Time" />

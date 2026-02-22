@@ -122,6 +122,7 @@
             player.Id,
             type.Value,
             CurrentMinute,
+            null, // No stoppage minute for now
             $"{player.Name} - {type.Name}",
             occuredAtUtc);
 
@@ -168,6 +169,7 @@
             SubstitutionPlayerOff.Id,
             SelectedSubstitutePlayer.Id,
             CurrentMinute,
+            null, // No stoppage minute for now
             $"Substitution: {SubstitutionPlayerOff.Name} off, {SelectedSubstitutePlayer.Name} on",
             DateTime.UtcNow);
 

@@ -108,7 +108,9 @@
     private PageState CurrentPageState = PageState.FixtureSelect;
 
     private int currentHalf = 0;
-    private int currentMinute => matchStartedAtUtc.HasValue ? (int)(DateTime.UtcNow - matchStartedAtUtc.Value).TotalMinutes : 0;
+    private int currentMinute => matchStartedAtUtc.HasValue 
+        ? (int)(DateTime.UtcNow - matchStartedAtUtc.Value).TotalMinutes + 1  // BR-002: floor(elapsed/60) + 1
+        : 1;
     private System.Timers.Timer? _timer;
     private DateTime? matchStartedAtUtc;
     private TimeSpan gameClock => matchStartedAtUtc.HasValue ? DateTime.UtcNow - matchStartedAtUtc.Value : TimeSpan.Zero;
@@ -224,9 +226,8 @@
     private void UpdateDisplayEvents()
     {
         DisplayEvents = PersistedEvents
-            .Select(e => new DisplayMatchEventDto(e.Minute, e.EventType, e.PlayerName ?? "", e.OccurredAtUtc))
-            .OrderBy(e => e.Minute)
-            .ThenBy(e => e.OccurredAtUtc)
+            .Select(e => new DisplayMatchEventDto(e.DisplayMinute, e.EventType, e.PlayerName ?? "", e.OccurredAtUtc))
+            .OrderBy(e => e.OccurredAtUtc)
             .ToList();
     }
 
@@ -282,7 +283,7 @@
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
         _timer.Start();
 
-        await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, 0);
+        await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, 1);  // BR-007: minimum minute is 1
     }
 
     private async Task FinishFirstHalf()
@@ -300,7 +301,7 @@
         matchStarted = true;
         currentHalf = 3;
 
-        await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, 45);
+        await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, 46);  // BR-004: second half starts at minute 46
     }
 
     private async Task FinishSecondHalf()
@@ -338,6 +339,7 @@
             Fixture.Id,
             eventTypeId,
             minute,
+            null, // No stoppage minute for regulation time
             DateTime.UtcNow);
 
         var result = await Messenger.SendAsync(command);
@@ -356,7 +358,8 @@
             playerEvent.FixtureId,
             playerEvent.PlayerId,
             playerEvent.PlayerEventTypeId,
-            playerEvent.Minute,
+            playerEvent.BaseMinute,
+            playerEvent.StoppageMinute,
             playerEvent.OccurredAtUtc);
 
         var result = await Messenger.SendAsync(command);
@@ -375,7 +378,8 @@
             substitutionEvent.FixtureId,
             substitutionEvent.PlayerOffId,
             substitutionEvent.PlayerOnId,
-            substitutionEvent.Minute,
+            substitutionEvent.BaseMinute,
+            substitutionEvent.StoppageMinute,
             substitutionEvent.OccurredAtUtc);
 
         var result = await Messenger.SendAsync(command);
