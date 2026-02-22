@@ -89,19 +89,28 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureMinutePropertyCorrectly()
     {
         // Arrange.
-        var expectedColumnName = nameof(PlayerEvent.Minute);
-        var expectedIsNullable = false;
+        var expectedBaseMinuteColumnName = "minute_base";
+        var expectedStoppageMinuteColumnName = "minute_stoppage";
 
         // Act.
-        var complex = _entity.GetComplexProperties()
-                             .Single(p => p.Name == nameof(PlayerEvent.Minute));
-
-        var property = complex.ComplexType.FindProperty(nameof(Minute.Value));
+        var navigation = _entity.FindNavigation(nameof(PlayerEvent.Minute));
 
         // Assert.
-        property.ShouldNotBeNull();
-        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
-        property.IsNullable.ShouldBe(expectedIsNullable);
+        navigation.ShouldNotBeNull();
+        navigation.IsOnDependent.ShouldBeFalse(); // OwnsOne - navigation is on the principal
+
+        var ownedEntityType = navigation.TargetEntityType;
+        ownedEntityType.ShouldNotBeNull();
+
+        var baseMinuteProperty = ownedEntityType.FindProperty(nameof(Minute.BaseMinute));
+        baseMinuteProperty.ShouldNotBeNull();
+        baseMinuteProperty.GetColumnName().ShouldBeEquivalentTo(expectedBaseMinuteColumnName);
+        baseMinuteProperty.IsNullable.ShouldBe(false);
+
+        var stoppageMinuteProperty = ownedEntityType.FindProperty(nameof(Minute.StoppageMinute));
+        stoppageMinuteProperty.ShouldNotBeNull();
+        stoppageMinuteProperty.GetColumnName().ShouldBeEquivalentTo(expectedStoppageMinuteColumnName);
+        stoppageMinuteProperty.IsNullable.ShouldBe(true);
     }
 
     [Fact]
