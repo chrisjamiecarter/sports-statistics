@@ -1,6 +1,7 @@
 @using SportsStatistics.Domain.MatchTracking.MatchEvents
 @using SportsStatistics.Domain.MatchTracking.PlayerEvents
 @using SportsStatistics.Domain.Players
+@using SportsStatistics.Web.MatchTracker
 
 <FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
 
@@ -8,17 +9,56 @@
         Match Tracker
     </FluentLabel>
 
-    <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true" RowSize="DataGridRowSize.Medium" GridTemplateColumns="0.10fr 0.50fr 0.50fr 0.25fr 0.25fr 0.25fr 0.25fr 0.25fr 0.25fr">
+    <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true" RowSize="DataGridRowSize.Medium" GridTemplateColumns="0.20fr 0.10fr 0.40fr 0.30fr 0.20fr 0.20fr 0.20fr 0.20fr 0.20fr 0.20fr 0.20fr">
+        <TemplateColumn Title="" Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var status) && status.HasAnyStatus)
+            {
+                <div class="player-status">
+                    @* Cards: Yellow + Red overlapping, or single card *@
+                    @if (status.HasYellowCard && status.HasRedCard)
+                    {
+                        <div class="icon-stack" title="Yellow Card, Red Card">
+                            <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Title="Yellow Card" Style="z-index: 1; margin-right: -1.25rem; margin-top:1px;" />
+                            <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Title="Red Card" Style="z-index: 2; margin-bottom:1px;" />
+                        </div>
+                    }
+                    else if (status.HasYellowCard)
+                    {
+                        <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Title="Yellow Card" />
+                    }
+                    else if (status.HasRedCard)
+                    {
+                        <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Title="Red Card" />
+                    }
+                    @* Goals - single icon with count in title *@
+                    @if (status.HasGoals)
+                    {
+                        var goalCount = status.Goals.Count;
+                        <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Neutral))" Title="@(goalCount == 1 ? "1 Goal" : $"{goalCount} Goals")" />
+                    }
+                    @* Assists - single icon with count in title *@
+                    @if (status.HasAssists)
+                    {
+                        var assistCount = status.Assists.Count;
+                        <FluentIcon Value="@(new Icons.Filled.Size20.Handshake().WithColor(Color.Neutral))" Title="@(assistCount == 1 ? "1 Assist" : $"{assistCount} Assists")" />
+                    }
+                    @* Substitution - single icon *@
+                    @if (status.Substitution is not null)
+                    {
+                        @if (status.Substitution.IsSubstitutedOff)
+                        {
+                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowLeft().WithColor("var(--bs-danger)"))" Title="Substituted Off" />
+                        }
+                        else if (status.Substitution.IsSubstitutedOn)
+                        {
+                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowRight().WithColor("var(--bs-success)"))" Title="Substituted On" />
+                        }
+                    }
+                </div>
+            }
+        </TemplateColumn>
         <PropertyColumn Property="@(player => player.SquadNumber)" Title="#" />
         <TemplateColumn Title="Name">
-            @if (PlayersSubstitutedOff.Contains(context.Id))
-            {
-                <FluentIcon Value="@(new Icons.Filled.Size20.ArrowDownload().WithColor("#DD3636"))" Title="Substituted Off" />
-            }
-            else if (PlayersSubstitutedOn.Contains(context.Id))
-            {
-                <FluentIcon Value="@(new Icons.Filled.Size20.ArrowUpload().WithColor("var(--bs-success)"))" Title="Substituted On" />
-            }
             @context.Name
         </TemplateColumn>
         <PropertyColumn Property="@(player => player.PositionName)" Title="Position" />
@@ -50,8 +90,8 @@
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceeded" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Discipline" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.DocumentBorder().WithColor("#FFCE2C"))" Appearance="Appearance.Neutral" OnClick="@(() => AddYellowCard(context))" Title="Yellow Card" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.DocumentBorder().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Appearance="Appearance.Neutral" OnClick="@(() => AddYellowCard(context))" Title="Yellow Card" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Align="Align.End">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!CanSubstitute || PlayersSubstitutedOff.Contains(context.Id))" />
@@ -87,6 +127,8 @@
 
     [Parameter] public HashSet<Guid> PlayersSubstitutedOn { get; set; } = [];
 
+    [Parameter] public Dictionary<Guid, PlayerStatusDto> PlayerStatuses { get; set; } = new();
+
     [Parameter] public EventCallback<PlayerEventDto> OnAddPlayerEvent { get; set; }
 
     [Parameter] public EventCallback<SubstitutionEventDto> OnAddSubstitutionEvent { get; set; }
@@ -113,6 +155,14 @@
     private bool ShowSubstitutionDialog { get; set; } = false;
     private PlayerDto? SubstitutionPlayerOff { get; set; }
     private PlayerDto? SelectedSubstitutePlayer { get; set; }
+
+    private string GetCardsTooltip(PlayerStatusDto status)
+    {
+        var parts = new List<string>();
+        if (status.HasYellowCard) parts.Add("Yellow Card");
+        if (status.HasRedCard) parts.Add("Red Card");
+        return string.Join(", ", parts);
+    }
 
     private async Task AddPlayerMatchEvent(PlayerDto player, PlayerEventType type)
     {

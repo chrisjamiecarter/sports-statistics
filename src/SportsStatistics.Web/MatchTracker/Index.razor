@@ -11,6 +11,7 @@
 @using SportsStatistics.Application.Teamsheets.GetByFixtureId
 @using SportsStatistics.Domain.MatchTracking.MatchEvents
 @using SportsStatistics.Web.Abstractions.Messaging
+@using SportsStatistics.Web.MatchTracker
 @implements IDisposable
 
 <PageTitle>Match Tracker</PageTitle>
@@ -59,15 +60,16 @@
                              OnHomeGoal="HomeGoal" 
                              OnAwayGoal="AwayGoal" />
                 <MatchTracker Players="@StartingPlayers"
-                             SubstitutePlayers="@AvailableSubstitutes"
-                             PlayersSubstitutedOff="@_substitutedOffPlayerIds"
-                             PlayersSubstitutedOn="@_substitutedOnPlayerIds"
-                             CurrentHalf="@currentHalf"
-                             FixtureId="@Fixture!.Id"
-                             CurrentMinute="@currentMinute"
-                             MatchInProgress="@(currentHalf is 1 or 3)"
-                             OnAddPlayerEvent="AddPlayerEvent"
-                             OnAddSubstitutionEvent="AddSubstitutionEvent" />
+                              SubstitutePlayers="@AvailableSubstitutes"
+                              PlayersSubstitutedOff="@_substitutedOffPlayerIds"
+                              PlayersSubstitutedOn="@_substitutedOnPlayerIds"
+                              PlayerStatuses="@_playerStatuses"
+                              CurrentHalf="@currentHalf"
+                              FixtureId="@Fixture!.Id"
+                              CurrentMinute="@currentMinute"
+                              MatchInProgress="@(currentHalf is 1 or 3)"
+                              OnAddPlayerEvent="AddPlayerEvent"
+                              OnAddSubstitutionEvent="AddSubstitutionEvent" />
                 <Overview MatchEvents="@DisplayEvents" />
             </FluentStack>
             break;
@@ -99,6 +101,7 @@
 
     private HashSet<Guid> _substitutedOffPlayerIds = [];
     private HashSet<Guid> _substitutedOnPlayerIds = [];
+    private Dictionary<Guid, PlayerStatusDto> _playerStatuses = new();
 
     private List<PlayerDto> AvailableSubstitutes =>
         SubstitutePlayers.Where(p => !_substitutedOnPlayerIds.Contains(p.Id)).ToList();
@@ -164,6 +167,7 @@
 
         PersistedEvents = result.Value;
         UpdateDisplayEvents();
+        UpdatePlayerStatuses();
     }
 
     private async Task LoadExistingTeamsheetAsync()
@@ -231,6 +235,58 @@
             .ToList();
     }
 
+    private void UpdatePlayerStatuses()
+    {
+        var statuses = new Dictionary<Guid, PlayerStatusDto>();
+        var allPlayers = StartingPlayers.Concat(SubstitutePlayers).ToList();
+
+        foreach (var player in allPlayers)
+        {
+            var playerEvents = PersistedEvents
+                .Where(e => e.PlayerId == player.Id)
+                .ToList();
+
+            // Cards (yellow and red - only 1 of each max per business rule)
+            var hasYellowCard = playerEvents.Any(e => e.EventType == "YellowCard");
+            var hasRedCard = playerEvents.Any(e => e.EventType == "RedCard");
+
+            // Goals
+            var goals = playerEvents
+                .Where(e => e.EventType == "Goal")
+                .OrderByDescending(e => e.OccurredAtUtc)
+                .Select(e => new GoalEventDto(e.OccurredAtUtc))
+                .ToList();
+
+            // Assists
+            var assists = playerEvents
+                .Where(e => e.EventType == "GoalAssist")
+                .OrderByDescending(e => e.OccurredAtUtc)
+                .Select(e => new AssistEventDto(e.OccurredAtUtc))
+                .ToList();
+
+            // Substitution
+            SubstitutionStatusDto? substitution = null;
+            if (_substitutedOffPlayerIds.Contains(player.Id))
+            {
+                substitution = new SubstitutionStatusDto(false, true, DateTime.UtcNow);
+            }
+            else if (_substitutedOnPlayerIds.Contains(player.Id))
+            {
+                substitution = new SubstitutionStatusDto(true, false, DateTime.UtcNow);
+            }
+
+            statuses[player.Id] = new PlayerStatusDto(
+                player.Id,
+                hasYellowCard,
+                hasRedCard,
+                goals,
+                assists,
+                substitution);
+        }
+
+        _playerStatuses = statuses;
+    }
+
     private async Task FixtureSelected(Guid fixtureId)
     {
         await LoadExistingTeamsheetAsync();
@@ -257,15 +313,15 @@
             .ToList();
 
         CurrentPageState++;
-        await LoadMatchEventsAsync();
         await LoadSubstitutionsAsync();
+        await LoadMatchEventsAsync();
     }
 
     private async Task ProceedToMatchTracking()
     {
         CurrentPageState++;
-        await LoadMatchEventsAsync();
         await LoadSubstitutionsAsync();
+        await LoadMatchEventsAsync();
     }
 
     private async Task TeamsheetCancelled()
