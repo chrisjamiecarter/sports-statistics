@@ -9,6 +9,7 @@
 @using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Application.Teamsheets.Create
 @using SportsStatistics.Application.Teamsheets.GetByFixtureId
+@using SportsStatistics.Domain.MatchTracking
 @using SportsStatistics.Domain.MatchTracking.MatchEvents
 @using SportsStatistics.Web.Abstractions.Messaging
 @using SportsStatistics.Web.MatchTracker
@@ -52,7 +53,7 @@
         case PageState.MatchTracking:
             <FluentStack Orientation="Orientation.Vertical">
                 <MatchHeader Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted"/>
-                <MatchEvents CurrentHalf="@currentHalf" 
+                <MatchEvents CurrentHalf="@currentPeriod.Value" 
                              OnStartFirstHalf="StartMatch"
                              OnFinishFirstHalf="FinishFirstHalf"
                              OnStartSecondHalf="StartSecondHalf"
@@ -64,10 +65,10 @@
                               PlayersSubstitutedOff="@_substitutedOffPlayerIds"
                               PlayersSubstitutedOn="@_substitutedOnPlayerIds"
                               PlayerStatuses="@_playerStatuses"
-                              CurrentHalf="@currentHalf"
+                              CurrentHalf="@currentPeriod.Value"
                               FixtureId="@Fixture!.Id"
                               CurrentMinute="@currentMinute"
-                              MatchInProgress="@(currentHalf is 1 or 3)"
+                              MatchInProgress="@(currentPeriod.Value is 1 or 3)"
                               OnAddPlayerEvent="AddPlayerEvent"
                               OnAddSubstitutionEvent="AddSubstitutionEvent" />
                 <Overview MatchEvents="@DisplayEvents" />
@@ -79,7 +80,7 @@
 
 </FluentCard>
 
-@code {
+    @code {
     private enum PageState
     {
         FixtureSelect = 0,
@@ -110,13 +111,32 @@
 
     private PageState CurrentPageState = PageState.FixtureSelect;
 
-    private int currentHalf = 0;
-    private int currentMinute => matchStartedAtUtc.HasValue 
-        ? (int)(DateTime.UtcNow - matchStartedAtUtc.Value).TotalMinutes + 1  // BR-002: floor(elapsed/60) + 1
-        : 1;
+    private MatchPeriod currentPeriod = MatchPeriod.HalfTime;
+    private int currentMinute => (int)gameClock.TotalMinutes + 1;
     private System.Timers.Timer? _timer;
     private DateTime? matchStartedAtUtc;
-    private TimeSpan gameClock => matchStartedAtUtc.HasValue ? DateTime.UtcNow - matchStartedAtUtc.Value : TimeSpan.Zero;
+    private TimeSpan gameClock
+    {
+        get
+        {
+            if (!matchStartedAtUtc.HasValue)
+                return TimeSpan.Zero;
+
+            var elapsedThisPeriod = DateTime.UtcNow - matchStartedAtUtc.Value;
+
+            if (currentPeriod == MatchPeriod.FirstHalf || currentPeriod == MatchPeriod.FirstHalfStoppage)
+            {
+                return elapsedThisPeriod;
+            }
+
+            if (currentPeriod == MatchPeriod.SecondHalf || currentPeriod == MatchPeriod.SecondHalfStoppage)
+            {
+                return TimeSpan.FromMinutes(45) + elapsedThisPeriod;
+            }
+
+            return TimeSpan.Zero;
+        }
+    }
     private bool matchStarted = false;
 
     protected override async Task OnInitializedAsync()
@@ -334,39 +354,89 @@
     {
         matchStartedAtUtc = DateTime.UtcNow;
         matchStarted = true;
-        currentHalf = 1;
+        currentPeriod = MatchPeriod.FirstHalf;
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
         _timer.Start();
 
-        await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, 1);  // BR-007: minimum minute is 1
+        // TODO: Magic numbers for regulation time start minutes - consider deriving from domain or configuration.
+        await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, 1);
     }
 
     private async Task FinishFirstHalf()
     {
-        var minute = currentMinute;
-        currentHalf = 2;
+        var minuteResult = GetMinute();
+        if (minuteResult.IsFailure)
+        {
+            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
+            await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, currentMinute);
+        }
+
+        var minute = minuteResult.Value;
+        currentPeriod = MatchPeriod.HalfTime;
         matchStarted = false;
-        
-        await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute);
+        await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
+    }
+
+    private Result<Minute> GetMinute()
+    {
+        int minute = 0;
+        int? stoppageMinute = null;
+
+        var period = currentPeriod;
+        if (period == MatchPeriod.FirstHalf)
+        {
+            if (currentMinute > 45)
+            {
+                minute = 45;
+                stoppageMinute = currentMinute - 45;
+            }
+            else
+            {
+                minute = currentMinute;
+            }
+        }
+
+        if (period == MatchPeriod.SecondHalf)
+        {
+            if (currentMinute > 90)
+            {
+                minute = 90;
+                stoppageMinute = currentMinute - 90;
+            }
+            else
+            {
+                minute = currentMinute;
+            }
+        }
+
+        return Minute.Create(minute, stoppageMinute);
     }
 
     private async Task StartSecondHalf()
     {
         matchStartedAtUtc = DateTime.UtcNow;
         matchStarted = true;
-        currentHalf = 3;
+        currentPeriod = MatchPeriod.SecondHalf;
 
-        await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, 46);  // BR-004: second half starts at minute 46
+        // TODO: Magic numbers for regulation time start minutes - consider deriving from domain or configuration.
+        await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, 46);
     }
 
     private async Task FinishSecondHalf()
     {
-        var minute = 45 + currentMinute;
-        currentHalf = 4;
+        var minuteResult = GetMinute();
+        if (minuteResult.IsFailure)
+        {
+            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
+            await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, currentMinute);
+        }
+
+        var minute = minuteResult.Value;
+        currentPeriod = MatchPeriod.FullTime;
         matchStarted = false;
 
-        await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute);
+        await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
     }
 
     private async Task HomeGoal()
@@ -375,7 +445,15 @@
 
         Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
         
-        await RecordMatchEvent(MatchEventType.HomeGoal.Value, currentMinute);
+        var minuteResult = GetMinute();
+        if (minuteResult.IsFailure)
+        {
+            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
+            await RecordMatchEvent(MatchEventType.HomeGoal.Value, currentMinute);
+        }
+        
+        var minute = minuteResult.Value;
+        await RecordMatchEvent(MatchEventType.HomeGoal.Value, minute.BaseMinute, minute.StoppageMinute);
     }
 
     private async Task AwayGoal()
@@ -384,18 +462,26 @@
 
         Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
         
-        await RecordMatchEvent(MatchEventType.AwayGoal.Value, currentMinute);
+        var minuteResult = GetMinute();
+        if (minuteResult.IsFailure)
+        {
+            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
+            await RecordMatchEvent(MatchEventType.AwayGoal.Value, currentMinute);
+        }
+
+        var minute = minuteResult.Value;
+        await RecordMatchEvent(MatchEventType.AwayGoal.Value, minute.BaseMinute, minute.StoppageMinute);
     }
 
-    private async Task RecordMatchEvent(int eventTypeId, int minute)
+    private async Task RecordMatchEvent(int eventTypeId, int baseMinute, int? stoppageMinute = null)
     {
         if (Fixture is null) return;
 
         var command = new CreateMatchEventCommand(
             Fixture.Id,
             eventTypeId,
-            minute,
-            null, // No stoppage minute for regulation time
+            baseMinute,
+            stoppageMinute,
             DateTime.UtcNow);
 
         var result = await Messenger.SendAsync(command);
