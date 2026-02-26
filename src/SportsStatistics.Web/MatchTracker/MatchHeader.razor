@@ -1,4 +1,5 @@
-﻿@if (Fixture is null)
+﻿@using SportsStatistics.Domain.MatchTracking
+@if (Fixture is null)
 {
     return;
 }
@@ -34,7 +35,13 @@
             <FluentLabel Typo="Typography.H3">@HomeTeamName</FluentLabel>
         </FluentStack>
 
-        @if (MatchStarted)
+        @if (CurrentMatchPeriod == MatchPeriod.PreMatch)
+        {
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                <FluentLabel>@Fixture.DisplayKickoffTime</FluentLabel>
+            </FluentStack>
+        }
+        else
         {
             <FluentStack Orientation="Orientation.Vertical">
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
@@ -43,15 +50,27 @@
                     <FluentLabel Typo="Typography.H3">@Fixture.AwayGoals</FluentLabel>
                 </FluentStack>
 
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-                    <FluentLabel Color="Color.Accent" Weight="FontWeight.Bold">@FormattedGameClock</FluentLabel>
-                </FluentStack>
-            </FluentStack>
-        }
-        else
-        {
-            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-                <FluentLabel>@Fixture.DisplayKickoffTime</FluentLabel>
+                @if (CurrentMatchPeriod == MatchPeriod.FirstHalf || CurrentMatchPeriod == MatchPeriod.SecondHalf)
+                {
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                        <FluentLabel Color="Color.Accent" Weight="FontWeight.Bold">@FormattedGameClock</FluentLabel>
+                    </FluentStack>
+                }
+                
+                @if (CurrentMatchPeriod == MatchPeriod.HalfTime)
+                {
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                        <FluentLabel Color="Color.Accent" Weight="FontWeight.Bold">Half Time</FluentLabel>
+                    </FluentStack>
+                }
+
+                @if (CurrentMatchPeriod == MatchPeriod.FullTime)
+                {
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                        <FluentLabel Color="Color.Accent" Weight="FontWeight.Bold">Full Time</FluentLabel>
+                    </FluentStack>
+                }
+
             </FluentStack>
         }
 
@@ -66,10 +85,9 @@
 @code {
     [Parameter] public FixtureDto? Fixture { get; set; }
 
-    [Parameter] public bool MatchStarted { get; set; }
+    [Parameter] public MatchPeriod CurrentMatchPeriod { get; set; } = MatchPeriod.PreMatch;
 
     [Parameter] public TimeSpan GameClock { get; set; }
-    [Parameter] public int CurrentHalf { get; set; }
 
     private string FormattedGameClock => $"{GameClock.Minutes:00}:{GameClock.Seconds:00}";
 

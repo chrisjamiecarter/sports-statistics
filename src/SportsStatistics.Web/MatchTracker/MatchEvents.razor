@@ -1,51 +1,52 @@
 @using SportsStatistics.Domain.MatchTracking
-<FluentStack Orientation="Orientation.Vertical">
 
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+@if (CurrentMatchPeriod != MatchPeriod.FullTime)
+{
+    <FluentStack Orientation="Orientation.Vertical">
 
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-            <FluentButton OnClick="HomeGoal" Disabled="@(!CurrentMatchPeriod.IsPlayingPeriod())">Home Goal</FluentButton>
-        </FluentStack>
+
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                <FluentButton OnClick="HomeGoal" Disabled="@(!CurrentMatchPeriod.IsPlayingPeriod())">Home Goal</FluentButton>
+            </FluentStack>
         
-        @if (CurrentMatchPeriod == MatchPeriod.PreMatch)
-        {
+            @if (CurrentMatchPeriod == MatchPeriod.PreMatch)
+            {
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton OnClick="StartFirstHalf">Start First Half</FluentButton>
+                </FluentStack>
+            }
+
+            @if (CurrentMatchPeriod == MatchPeriod.FirstHalf)
+            {
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton OnClick="FinishFirstHalf">Finish First Half</FluentButton>
+                </FluentStack>
+            }
+
+            @if (CurrentMatchPeriod == MatchPeriod.HalfTime)
+            {
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton OnClick="StartSecondHalf">Start Second Half</FluentButton>
+                </FluentStack>
+            }
+
+            @if (CurrentMatchPeriod == MatchPeriod.SecondHalf)
+            {
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton OnClick="FinishSecondHalf">Finish Second Half</FluentButton>
+                </FluentStack>
+            }
+
             <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-                <FluentButton OnClick="StartFirstHalf">Start First Half</FluentButton>
+                <FluentButton OnClick="AwayGoal" Disabled="@(!CurrentMatchPeriod.IsPlayingPeriod())">Away Goal</FluentButton>
             </FluentStack>
-        }
 
-        @if (CurrentMatchPeriod == MatchPeriod.FirstHalf)
-        {
-            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-                <FluentButton OnClick="FinishFirstHalf">Finish First Half</FluentButton>
-            </FluentStack>
-        }
-
-        @if (CurrentMatchPeriod == MatchPeriod.HalfTime)
-        {
-            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-                <FluentButton OnClick="StartSecondHalf">Start Second Half</FluentButton>
-            </FluentStack>
-        }
-
-        @if (CurrentMatchPeriod == MatchPeriod.SecondHalf)
-        {
-            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-                <FluentButton OnClick="FinishSecondHalf">Finish Second Half</FluentButton>
-            </FluentStack>
-        }
-
-        @if (CurrentMatchPeriod == MatchPeriod.FullTime)
-        {
-        }
-
-        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
-            <FluentButton OnClick="AwayGoal" Disabled="@(!CurrentMatchPeriod.IsPlayingPeriod())">Away Goal</FluentButton>
         </FluentStack>
 
     </FluentStack>
+}
 
-</FluentStack>
 
 @code {
     [Parameter] public MatchPeriod CurrentMatchPeriod { get; set; } = MatchPeriod.PreMatch;

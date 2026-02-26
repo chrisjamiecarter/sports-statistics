@@ -52,7 +52,7 @@
             break;
         case PageState.MatchTracking:
             <FluentStack Orientation="Orientation.Vertical">
-                <MatchHeader Fixture="@Fixture" GameClock="@gameClock" MatchStarted="@matchStarted"/>
+                <MatchHeader Fixture="@Fixture" GameClock="@gameClock" CurrentMatchPeriod="@currentPeriod" />
                 <MatchEvents CurrentMatchPeriod="@currentPeriod" 
                              OnStartFirstHalf="StartMatch"
                              OnFinishFirstHalf="FinishFirstHalf"
@@ -137,7 +137,6 @@
             return TimeSpan.Zero;
         }
     }
-    private bool matchStarted = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -353,7 +352,6 @@
     private async Task StartMatch()
     {
         matchStartedAtUtc = DateTime.UtcNow;
-        matchStarted = true;
         currentPeriod = MatchPeriod.FirstHalf;
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
@@ -374,7 +372,6 @@
 
         var minute = minuteResult.Value;
         currentPeriod = MatchPeriod.HalfTime;
-        matchStarted = false;
         await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
     }
 
@@ -416,7 +413,6 @@
     private async Task StartSecondHalf()
     {
         matchStartedAtUtc = DateTime.UtcNow;
-        matchStarted = true;
         currentPeriod = MatchPeriod.SecondHalf;
 
         // TODO: Magic numbers for regulation time start minutes - consider deriving from domain or configuration.
@@ -434,7 +430,6 @@
 
         var minute = minuteResult.Value;
         currentPeriod = MatchPeriod.FullTime;
-        matchStarted = false;
 
         await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
     }
