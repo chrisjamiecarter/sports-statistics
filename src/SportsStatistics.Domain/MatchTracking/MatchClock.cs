@@ -43,21 +43,21 @@ public sealed record MatchClock
     /// <summary>
     /// Determines whether the clock is currently in stoppage time.
     /// </summary>
-    public bool IsInStoppageTime() => Period.IsStoppageTime();
+    //public bool IsInStoppageTime() => Period.IsStoppageTime();
 
     /// <summary>
     /// Gets the elapsed seconds within stoppage time (if currently in stoppage).
     /// </summary>
-    public int GetStoppageElapsedSeconds()
-    {
-        if (!IsInStoppageTime())
-        {
-            return 0;
-        }
+    //public int GetStoppageElapsedSeconds()
+    //{
+    //    if (!IsInStoppageTime())
+    //    {
+    //        return 0;
+    //    }
 
-        var periodBoundary = Period.GetStoppageBaseMinute()!.Value * 60;
-        return ElapsedSeconds - periodBoundary;
-    }
+    //    var periodBoundary = Period.GetStoppageBaseMinute()!.Value * 60;
+    //    return ElapsedSeconds - periodBoundary;
+    //}
 
     /// <summary>
     /// Starts the first half of the match.
@@ -85,25 +85,25 @@ public sealed record MatchClock
     /// </summary>
     /// <returns>A new MatchClock in stoppage time period.</returns>
     /// <exception cref="InvalidOperationException">Thrown when not at a half boundary.</exception>
-    public MatchClock EnterStoppageTime()
-    {
-        MatchPeriod stoppagePeriod;
+    //public MatchClock EnterStoppageTime()
+    //{
+    //    MatchPeriod stoppagePeriod;
 
-        if (Period == MatchPeriod.FirstHalf)
-        {
-            stoppagePeriod = MatchPeriod.FirstHalfStoppage;
-        }
-        else if (Period == MatchPeriod.SecondHalf)
-        {
-            stoppagePeriod = MatchPeriod.SecondHalfStoppage;
-        }
-        else
-        {
-            throw new InvalidOperationException($"Cannot enter stoppage time from period '{Period.Name}'.");
-        }
+    //    if (Period == MatchPeriod.FirstHalf)
+    //    {
+    //        stoppagePeriod = MatchPeriod.FirstHalfStoppage;
+    //    }
+    //    else if (Period == MatchPeriod.SecondHalf)
+    //    {
+    //        stoppagePeriod = MatchPeriod.SecondHalfStoppage;
+    //    }
+    //    else
+    //    {
+    //        throw new InvalidOperationException($"Cannot enter stoppage time from period '{Period.Name}'.");
+    //    }
 
-        return new MatchClock(stoppagePeriod, ElapsedSeconds);
-    }
+    //    return new MatchClock(stoppagePeriod, ElapsedSeconds);
+    //}
 
     /// <summary>
     /// Starts the second half of the match.

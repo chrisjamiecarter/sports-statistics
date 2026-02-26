@@ -222,9 +222,9 @@ public sealed record Minute
         return period switch
         {
             _ when period == MatchPeriod.FirstHalf => FirstHalfMinute(calculatedMinute),
-            _ when period == MatchPeriod.FirstHalfStoppage => FirstHalfStoppage(calculatedMinute),
+            //_ when period == MatchPeriod.FirstHalfStoppage => FirstHalfStoppage(calculatedMinute),
             _ when period == MatchPeriod.SecondHalf => SecondHalfMinute(FirstHalfEnd + calculatedMinute),
-            _ when period == MatchPeriod.SecondHalfStoppage => SecondHalfStoppage(calculatedMinute),
+            //_ when period == MatchPeriod.SecondHalfStoppage => SecondHalfStoppage(calculatedMinute),
             _ => Result.Failure<Minute>(Error.Validation(
                 "MatchTracking.Minute.InvalidPeriod",
                 $"Cannot create a minute for period '{period.Name}'."))
@@ -247,8 +247,8 @@ public sealed record Minute
         {
             return BaseMinute switch
             {
-                FirstHalfEnd => MatchPeriod.FirstHalfStoppage,
-                SecondHalfEnd => MatchPeriod.SecondHalfStoppage,
+                //FirstHalfEnd => MatchPeriod.FirstHalfStoppage,
+                //SecondHalfEnd => MatchPeriod.SecondHalfStoppage,
                 _ => MatchPeriod.FirstHalf // Should not happen with valid construction
             };
         }
