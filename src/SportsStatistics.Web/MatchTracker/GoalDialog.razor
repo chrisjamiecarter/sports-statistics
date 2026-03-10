@@ -1,7 +1,5 @@
 @implements IDialogContentComponent<GoalDialogData>
 
-@* <FluentDialog Visible="@IsOpen" Title="@DialogTitle"> *@
-
 <EditForm Model="@Input" OnValidSubmit="ConfirmAsync" FormName="player-form" style="width: 100%">
     <FluentValidator />
         
@@ -62,21 +60,7 @@
         </FluentButton>
     </FluentDialogFooter>
 
-
-@*         <FluentStack Orientation="Orientation.Vertical">
-            <FluentStack Orientation="Orientation.Horizontal">
-                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%">
-                    Confirm
-                </FluentButton>
-                <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="CancelGoal">
-                    Cancel
-                </FluentButton>
-            </FluentStack>
-        </FluentStack> *@
-
-    </EditForm>
-
-@* </FluentDialog> *@
+</EditForm>
 
 @code {
     [Parameter]
@@ -85,159 +69,19 @@
     [CascadingParameter]
     public FluentDialog Dialog { get; set; } = default!;
 
+    [SupplyParameterFromForm]
+    private GoalFormModel Input { get; set; } = new();
+
     private bool ScorerRequired => 
         (Input.GoalType == GoalType.TeamGoal && !Input.IsOwnGoal) ||
         (Input.GoalType == GoalType.OppositionGoal && Input.IsOwnGoal);
 
     private bool AssisterRequired => Input.GoalType == GoalType.TeamGoal && !Input.IsOwnGoal;
 
-    // private bool _wasOpen;
-    // private IEnumerable<PlayerOptionDto> GoalScorerOptions = [];
-    // private IEnumerable<PlayerOptionDto> AssisterOptions = [];
-
-    // [Parameter] public bool IsOpen { get; set; }
-
-    // [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
-
-    // [Parameter] public bool IsHomeGoal { get; set; }
-
-    // [Parameter] public List<PlayerDto> StartingPlayers { get; set; } = [];
-
-    // [Parameter] public EventCallback<GoalDialogData> OnConfirm { get; set; }
-
-    // [Parameter] public EventCallback OnCancel { get; set; }
-
-    [SupplyParameterFromForm]
-    private GoalFormModel Input { get; set; } = new();
-
-    // private bool IsOwnGoal { get; set; }
-
-    // private Guid? SelectedScorerId { get; set; }
-
-    // private Guid? SelectedAssistId { get; set; }
-
-    // private string ValidationError { get; set; } = string.Empty;
-
-    // private DateTime _dialogOpenedAtUtc;
-
-    // public DateTime OccurredAtUtc => _dialogOpenedAtUtc;
-
-    // private string DialogTitle => IsHomeGoal ? "Record Your Club's Goal" : "Record Opponent's Goal";
-
-    // private bool CanConfirm
-    // {
-    //     get
-    //     {
-    //         if (IsOwnGoal)
-    //         {
-    //             return true;
-    //         }
-
-    //         return StartingPlayers.Any() && SelectedScorerId.HasValue;
-    //     }
-    // }
-
-    // private IEnumerable<PlayerDto?> AssistOptions
-    // {
-    //     get
-    //     {
-    //         var options = new List<PlayerDto?>();
-    //         options.Add(null); // "No-one" option first
-
-    //         // Exclude the scorer from assist options (cannot assist themselves)
-    //         if (SelectedScorerId.HasValue)
-    //         {
-    //             options.AddRange(StartingPlayers.Where(p => p.Id != SelectedScorerId.Value));
-    //         }
-    //         else
-    //         {
-    //             options.AddRange(StartingPlayers);
-    //         }
-
-    //         return options;
-    //     }
-    // }
-
     protected override void OnParametersSet()
     {
         Input.GoalType = Content.GoalType;
-        // // Detect when dialog transitions from closed to open
-        // if (IsOpen && !_wasOpen)
-        // {
-        //     // Dialog just opened - reset state and capture timestamp
-        //     ResetState();
-        //     _dialogOpenedAtUtc = DateTime.UtcNow;
-        // }
-
-        // _wasOpen = IsOpen;
     }
-
-    // private void OnIsOwnGoalChanged(bool value)
-    // {
-    //     IsOwnGoal = value;
-
-    //     // Clear scorer and assist when Own Goal is checked
-    //     if (value)
-    //     {
-    //         SelectedScorerId = null;
-    //         SelectedAssistId = null;
-    //         ValidationError = string.Empty;
-    //     }
-    // }
-
-    // private void OnScorerChanged()
-    // {
-    //     // Clear validation error when scorer changes
-    //     ValidationError = string.Empty;
-
-    //     // If assist is now the same as scorer, clear it
-    //     if (SelectedAssistId.HasValue && SelectedScorerId.HasValue && SelectedAssistId == SelectedScorerId)
-    //     {
-    //         SelectedAssistId = null;
-    //     }
-    // }
-
-    // private void OnAssistChanged()
-    // {
-    //     // Check validation when assist changes
-    //     if (SelectedScorerId.HasValue && SelectedAssistId.HasValue && SelectedScorerId == SelectedAssistId)
-    //     {
-    //         ValidationError = "A player cannot assist themselves";
-    //     }
-    //     else
-    //     {
-    //         ValidationError = string.Empty;
-    //     }
-    // }
-
-    // private void ResetState()
-    // {
-    //     IsOwnGoal = false;
-    //     SelectedScorerId = null;
-    //     SelectedAssistId = null;
-    //     ValidationError = string.Empty;
-    //     GoalScorerOptions = StartingPlayers.Select(player => new PlayerOptionDto(player.Id, player.Name));
-    //     AssisterOptions = GoalScorerOptions.Prepend(new PlayerOptionDto(null, "No Assist"));
-    // }
-
-    // private async Task ConfirmGoal()
-    // {
-    //     // Validate: scorer cannot be the assist
-    //     if (!IsOwnGoal && SelectedScorerId.HasValue && SelectedAssistId.HasValue && SelectedScorerId == SelectedAssistId)
-    //     {
-    //         ValidationError = "A player cannot assist themselves";
-    //         return;
-    //     }
-
-    //     var result = new GoalDialogResult(
-    //         IsOwnGoal,
-    //         IsOwnGoal ? null : SelectedScorerId,
-    //         IsOwnGoal ? null : SelectedAssistId,
-    //         OccurredAtUtc);
-
-    //     await OnConfirm.InvokeAsync(result);
-    //     await IsOpenChanged.InvokeAsync(false);
-    // }
 
     private async Task ConfirmAsync()
     {
@@ -248,15 +92,10 @@
         };
 
         await Dialog.CloseAsync(result);
-
-        // await OnCancel.InvokeAsync();
-        // await IsOpenChanged.InvokeAsync(false);
     }
 
     private async Task CancelAsync()
     {
         await Dialog.CancelAsync();
-        // await OnCancel.InvokeAsync();
-        // await IsOpenChanged.InvokeAsync(false);
     }
 }
