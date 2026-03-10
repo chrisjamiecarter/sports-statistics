@@ -1,7 +1,9 @@
 ﻿namespace SportsStatistics.Web.MatchTracker;
 
-public sealed class TeamGoalFormModel
+public sealed class GoalFormModel
 {
+    public GoalType GoalType { get; set; }
+
     public bool IsOwnGoal { get; set; }
 
     public PlayerOptionDto? GoalScorer { get; set; }

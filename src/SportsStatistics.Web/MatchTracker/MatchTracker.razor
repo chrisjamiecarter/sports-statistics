@@ -80,11 +80,6 @@
             <FluentButton IconEnd="@(new Icons.Filled.Size20.Target().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOnTarget(context))" Title="Shot On Target" Disabled="@(!CanPlayerAct(context))" />
             <FluentButton IconEnd="@(new Icons.Filled.Size20.TargetDismiss().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOffTarget(context))" Title="Shot Off Target" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
-        <TemplateColumn Title="Goals" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.Handshake())" Appearance="Appearance.Neutral" OnClick="@(() => AddGoalAssist(context))" Title="Goal Assist" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.SportSoccer().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddGoal(context))" Title="Goal" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.SportSoccer().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddOwnGoal(context))" Title="Own Goal" Disabled="@(!CanPlayerAct(context))" />
-        </TemplateColumn>
         <TemplateColumn Title="Fouls" Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!CanPlayerAct(context))" />
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceeded" Disabled="@(!CanPlayerAct(context))" />
@@ -183,9 +178,6 @@
     private async Task AddPassFailure(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.PassFailure);
     private async Task AddShotOnTarget(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.ShotOnTarget);
     private async Task AddShotOffTarget(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.ShotOffTarget);
-    private async Task AddGoal(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Goal);
-    private async Task AddGoalAssist(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.GoalAssist);
-    private async Task AddOwnGoal(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.OwnGoal);
     private async Task AddSave(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Save);
     private async Task AddTackle(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Tackle);
     private async Task AddFoulWon(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulWon);

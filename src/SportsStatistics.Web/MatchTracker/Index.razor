@@ -11,6 +11,7 @@
 @using SportsStatistics.Application.Teamsheets.GetByFixtureId
 @using SportsStatistics.Domain.MatchTracking
 @using SportsStatistics.Domain.MatchTracking.MatchEvents
+@using SportsStatistics.Domain.MatchTracking.PlayerEvents
 @using SportsStatistics.Web.Abstractions.Messaging
 @using SportsStatistics.Web.MatchTracker
 @implements IDisposable
@@ -54,12 +55,14 @@
             <FluentStack Orientation="Orientation.Vertical">
                 <MatchHeader Fixture="@Fixture" GameClock="@gameClock" CurrentMatchPeriod="@currentPeriod" />
                 <MatchEvents CurrentMatchPeriod="@currentPeriod" 
+                             IsHomeGame="@IsHomeGame"
+                             StartingPlayers="@CurrentOnPitchPlayers"
                              OnStartFirstHalf="StartMatch"
                              OnFinishFirstHalf="FinishFirstHalf"
                              OnStartSecondHalf="StartSecondHalf"
                              OnFinishSecondHalf="FinishSecondHalf"
-                             OnHomeGoal="HomeGoal" 
-                             OnAwayGoal="AwayGoal" />
+                             OnOurClubGoal="OurClubGoal" 
+                             OnOpponentGoal="OpponentGoal" />
                 <MatchTracker Players="@StartingPlayers"
                               SubstitutePlayers="@AvailableSubstitutes"
                               PlayersSubstitutedOff="@_substitutedOffPlayerIds"
@@ -80,7 +83,7 @@
 
 </FluentCard>
 
-@code {
+    @code {
     private enum PageState
     {
         FixtureSelect = 0,
@@ -110,6 +113,11 @@
     public TeamsheetResponse? ExistingTeamsheet { get; set; }
 
     private PageState CurrentPageState = PageState.FixtureSelect;
+
+    private bool IsHomeGame => Fixture?.LocationId == 0;
+
+    private List<PlayerDto> CurrentOnPitchPlayers =>
+        StartingPlayers.Where(p => !_substitutedOffPlayerIds.Contains(p.Id)).ToList();
 
     private MatchPeriod currentPeriod = MatchPeriod.PreMatch;
     private int currentMinute => (int)gameClock.TotalMinutes + 1;
@@ -434,41 +442,94 @@
         await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
     }
 
-    private async Task HomeGoal()
+    private async Task OurClubGoal(GoalDialogData result)
     {
         if (Fixture is null) return;
 
-        Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
-        
+        // Determine if scoring at home or away based on IsHomeGame
+        var isHomeGoal = IsHomeGame;
+
+        // Update score
+        if (isHomeGoal)
+        {
+            Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
+        }
+        else
+        {
+            Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
+        }
+
         var minuteResult = GetMinute();
+        int baseMinute;
+        int? stoppageMinute;
+
         if (minuteResult.IsFailure)
         {
-            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
-            await RecordMatchEvent(MatchEventType.HomeGoal.Value, currentMinute);
+            baseMinute = currentMinute;
+            stoppageMinute = null;
         }
-        
-        var minute = minuteResult.Value;
-        await RecordMatchEvent(MatchEventType.HomeGoal.Value, minute.BaseMinute, minute.StoppageMinute);
+        else
+        {
+            baseMinute = minuteResult.Value.BaseMinute;
+            stoppageMinute = minuteResult.Value.StoppageMinute;
+        }
+
+        // Record match event
+        var matchEventType = isHomeGoal ? MatchEventType.HomeGoal.Value : MatchEventType.AwayGoal.Value;
+        await RecordMatchEvent(matchEventType, baseMinute, stoppageMinute, result.OccurredAtUtc);
+
+        // If not own goal, record scorer and optionally assist
+        if (!result.IsOwnGoal && result.ScorerPlayerId.HasValue)
+        {
+            await RecordPlayerEvent(result.ScorerPlayerId.Value, PlayerEventType.Goal.Value, baseMinute, stoppageMinute, result.OccurredAtUtc);
+
+            if (result.AssistPlayerId.HasValue)
+            {
+                await RecordPlayerEvent(result.AssistPlayerId.Value, PlayerEventType.GoalAssist.Value, baseMinute, stoppageMinute, result.OccurredAtUtc);
+            }
+        }
+
+        await LoadMatchEventsAsync();
     }
 
-    private async Task AwayGoal()
+    private async Task OpponentGoal()
     {
         if (Fixture is null) return;
 
-        Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
-        
-        var minuteResult = GetMinute();
-        if (minuteResult.IsFailure)
+        // Determine if opponent scores at our home or away
+        var isOpponentHomeGoal = IsHomeGame;
+
+        // Update score
+        if (isOpponentHomeGoal)
         {
-            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
-            await RecordMatchEvent(MatchEventType.AwayGoal.Value, currentMinute);
+            Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
+        }
+        else
+        {
+            Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
         }
 
-        var minute = minuteResult.Value;
-        await RecordMatchEvent(MatchEventType.AwayGoal.Value, minute.BaseMinute, minute.StoppageMinute);
+        var minuteResult = GetMinute();
+        int baseMinute;
+        int? stoppageMinute;
+
+        if (minuteResult.IsFailure)
+        {
+            baseMinute = currentMinute;
+            stoppageMinute = null;
+        }
+        else
+        {
+            baseMinute = minuteResult.Value.BaseMinute;
+            stoppageMinute = minuteResult.Value.StoppageMinute;
+        }
+
+        // Record match event - opponent scored (opposite of our club)
+        var matchEventType = isOpponentHomeGoal ? MatchEventType.AwayGoal.Value : MatchEventType.HomeGoal.Value;
+        await RecordMatchEvent(matchEventType, baseMinute, stoppageMinute);
     }
 
-    private async Task RecordMatchEvent(int eventTypeId, int baseMinute, int? stoppageMinute = null)
+    private async Task RecordMatchEvent(int eventTypeId, int baseMinute, int? stoppageMinute = null, DateTime? occurredAtUtc = null)
     {
         if (Fixture is null) return;
 
@@ -477,7 +538,7 @@
             eventTypeId,
             baseMinute,
             stoppageMinute,
-            DateTime.UtcNow);
+            occurredAtUtc ?? DateTime.UtcNow);
 
         var result = await Messenger.SendAsync(command);
         if (result.IsFailure)
@@ -487,6 +548,29 @@
         }
 
         await LoadMatchEventsAsync();
+    }
+
+    private async Task RecordPlayerEvent(Guid playerId, int playerEventTypeId, int baseMinute, int? stoppageMinute, DateTime occurredAtUtc)
+    {
+        if (Fixture is null) return;
+
+        var player = StartingPlayers.FirstOrDefault(p => p.Id == playerId);
+        var playerName = player?.Name ?? "Unknown";
+
+        var command = new CreatePlayerEventCommand(
+            Fixture.Id,
+            playerId,
+            playerEventTypeId,
+            baseMinute,
+            stoppageMinute,
+            occurredAtUtc);
+
+        var result = await Messenger.SendAsync(command);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+            return;
+        }
     }
 
     private async Task AddPlayerEvent(PlayerEventDto playerEvent)
