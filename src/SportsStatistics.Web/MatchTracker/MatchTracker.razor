@@ -14,6 +14,7 @@
             @if (PlayerStatuses.TryGetValue(context.Id, out var status) && status.HasAnyStatus)
             {
                 <div class="player-status">
+
                     @* Cards: Yellow + Red overlapping, or single card *@
                     @if (status.HasYellowCard && status.HasRedCard)
                     {
@@ -30,28 +31,38 @@
                     {
                         <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Title="Red Card" />
                     }
+
                     @* Goals - single icon with count in title *@
                     @if (status.HasGoals)
                     {
                         var goalCount = status.Goals.Count;
                         <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Neutral))" Title="@(goalCount == 1 ? "1 Goal" : $"{goalCount} Goals")" />
                     }
+
                     @* Assists - single icon with count in title *@
                     @if (status.HasAssists)
                     {
                         var assistCount = status.Assists.Count;
                         <FluentIcon Value="@(new Icons.Filled.Size20.Handshake().WithColor(Color.Neutral))" Title="@(assistCount == 1 ? "1 Assist" : $"{assistCount} Assists")" />
                     }
+
+                    @* Own Goals - single icon with count in title *@
+                    @if (status.HasOwnGoals)
+                    {
+                        var ownGoalsCount = status.OwnGoals.Count;
+                        <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Error))" Title="@(ownGoalsCount == 1 ? "1 Own Goal" : $"{ownGoalsCount} Own Goals")" />
+                    }
+
                     @* Substitution - single icon *@
                     @if (status.Substitution is not null)
                     {
                         @if (status.Substitution.IsSubstitutedOff)
                         {
-                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowLeft().WithColor("var(--bs-danger)"))" Title="Substituted Off" />
+                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowLeft().WithColor(Color.Error))" Title="Substituted Off" />
                         }
                         else if (status.Substitution.IsSubstitutedOn)
                         {
-                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowRight().WithColor("var(--bs-success)"))" Title="Substituted On" />
+                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowRight().WithColor(Color.Success))" Title="Substituted On" />
                         }
                     }
                 </div>
@@ -73,16 +84,16 @@
             }
         </TemplateColumn>
         <TemplateColumn Title="Passing" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassSuccess(context))" Title="Pass Success" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassFailure(context))" Title="Pass Failure" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassSuccess(context))" Title="Pass Success" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassFailure(context))" Title="Pass Failure" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Shooting" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.Target().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOnTarget(context))" Title="Shot On Target" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.TargetDismiss().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOffTarget(context))" Title="Shot Off Target" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.Target().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOnTarget(context))" Title="Shot On Target" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.TargetDismiss().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOffTarget(context))" Title="Shot Off Target" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Fouls" Align="Align.Center">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-success)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor("var(--bs-danger)"))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceeded" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceeded" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Title="Discipline" Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Appearance="Appearance.Neutral" OnClick="@(() => AddYellowCard(context))" Title="Yellow Card" Disabled="@(!CanPlayerAct(context))" />

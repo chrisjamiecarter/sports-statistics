@@ -61,7 +61,7 @@
                              OnFinishFirstHalf="FinishFirstHalf"
                              OnStartSecondHalf="StartSecondHalf"
                              OnFinishSecondHalf="FinishSecondHalf"
-                             OnOurClubGoal="OurClubGoal" 
+                             OnOurClubGoal="TeamGoal" 
                              OnOpponentGoal="OpponentGoal" />
                 <MatchTracker Players="@StartingPlayers"
                               SubstitutePlayers="@AvailableSubstitutes"
@@ -118,6 +118,9 @@
 
     private List<PlayerDto> CurrentOnPitchPlayers =>
         StartingPlayers.Where(p => !_substitutedOffPlayerIds.Contains(p.Id)).ToList();
+
+    private DateTime? FirstHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.FirstHalfStarted.Name)?.OccurredAtUtc;
+    private DateTime? SecondHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.SecondHalfStarted.Name)?.OccurredAtUtc;
 
     private MatchPeriod currentPeriod = MatchPeriod.PreMatch;
     private int currentMinute => (int)gameClock.TotalMinutes + 1;
@@ -273,23 +276,30 @@
                 .Where(e => e.PlayerId == player.Id)
                 .ToList();
 
-            // Cards (yellow and red - only 1 of each max per business rule)
-            var hasYellowCard = playerEvents.Any(e => e.EventType == "YellowCard");
-            var hasRedCard = playerEvents.Any(e => e.EventType == "RedCard");
+            // Cards (yellow and red - only 1 of each max per business rule).
+            var hasYellowCard = playerEvents.Any(e => e.EventType == PlayerEventType.YellowCard.Name);
+            var hasRedCard = playerEvents.Any(e => e.EventType == PlayerEventType.RedCard.Name);
 
-            // Goals
+            // Goals.
             var goals = playerEvents
-                .Where(e => e.EventType == "Goal")
+                .Where(e => e.EventType == PlayerEventType.Goal.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
                 .Select(e => new GoalEventDto(e.OccurredAtUtc))
                 .ToList();
-
             // Assists
             var assists = playerEvents
-                .Where(e => e.EventType == "GoalAssist")
+                .Where(e => e.EventType == PlayerEventType.GoalAssist.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
                 .Select(e => new AssistEventDto(e.OccurredAtUtc))
                 .ToList();
+
+            // Own Goals.
+            var ownGoals = playerEvents
+                .Where(e => e.EventType == PlayerEventType.OwnGoal.Name)
+                .OrderByDescending(e => e.OccurredAtUtc)
+                .Select(e => new OwnGoalEventDto(e.OccurredAtUtc))
+                .ToList();
+
 
             // Substitution
             SubstitutionStatusDto? substitution = null;
@@ -308,6 +318,7 @@
                 hasRedCard,
                 goals,
                 assists,
+                ownGoals,
                 substitution);
         }
 
@@ -371,51 +382,12 @@
 
     private async Task FinishFirstHalf()
     {
-        var minuteResult = GetMinute();
-        if (minuteResult.IsFailure)
-        {
-            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
-            await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, currentMinute);
-        }
+        if (FirstHalfStartedAtUtc is null) return;
 
-        var minute = minuteResult.Value;
+        var minute = MatchMinuteCalculator.Calculate(DateTime.UtcNow, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
         currentPeriod = MatchPeriod.HalfTime;
+
         await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
-    }
-
-    private Result<Minute> GetMinute()
-    {
-        int minute = 0;
-        int? stoppageMinute = null;
-
-        var period = currentPeriod;
-        if (period == MatchPeriod.FirstHalf)
-        {
-            if (currentMinute > 45)
-            {
-                minute = 45;
-                stoppageMinute = currentMinute - 45;
-            }
-            else
-            {
-                minute = currentMinute;
-            }
-        }
-
-        if (period == MatchPeriod.SecondHalf)
-        {
-            if (currentMinute > 90)
-            {
-                minute = 90;
-                stoppageMinute = currentMinute - 90;
-            }
-            else
-            {
-                minute = currentMinute;
-            }
-        }
-
-        return Minute.Create(minute, stoppageMinute);
     }
 
     private async Task StartSecondHalf()
@@ -429,28 +401,21 @@
 
     private async Task FinishSecondHalf()
     {
-        var minuteResult = GetMinute();
-        if (minuteResult.IsFailure)
-        {
-            // Default if we can't determine the minute - this is not ideal but allows the match to progress in case of issues with the game clock calculation.
-            await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, currentMinute);
-        }
+        if (FirstHalfStartedAtUtc is null) return;
 
-        var minute = minuteResult.Value;
+        var minute = MatchMinuteCalculator.Calculate(DateTime.UtcNow, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
         currentPeriod = MatchPeriod.FullTime;
 
         await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
     }
 
-    private async Task OurClubGoal(GoalDialogData result)
+    private async Task TeamGoal(GoalDialogData result)
     {
         if (Fixture is null) return;
+        if (FirstHalfStartedAtUtc is null) return;
 
-        // Determine if scoring at home or away based on IsHomeGame
-        var isHomeGoal = IsHomeGame;
-
-        // Update score
-        if (isHomeGoal)
+        // Update score.
+        if (IsHomeGame)
         {
             Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
         }
@@ -459,48 +424,32 @@
             Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
         }
 
-        var minuteResult = GetMinute();
-        int baseMinute;
-        int? stoppageMinute;
+        var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        
+        var matchEventType = IsHomeGame ? MatchEventType.HomeGoal.Value : MatchEventType.AwayGoal.Value;
 
-        if (minuteResult.IsFailure)
-        {
-            baseMinute = currentMinute;
-            stoppageMinute = null;
-        }
-        else
-        {
-            baseMinute = minuteResult.Value.BaseMinute;
-            stoppageMinute = minuteResult.Value.StoppageMinute;
-        }
+        await RecordMatchEvent(matchEventType, minute.BaseMinute, minute.StoppageMinute, result.OccurredAtUtc);
 
-        // Record match event
-        var matchEventType = isHomeGoal ? MatchEventType.HomeGoal.Value : MatchEventType.AwayGoal.Value;
-        await RecordMatchEvent(matchEventType, baseMinute, stoppageMinute, result.OccurredAtUtc);
-
-        // If not own goal, record scorer and optionally assist
         if (!result.IsOwnGoal && result.ScorerPlayerId.HasValue)
         {
-            await RecordPlayerEvent(result.ScorerPlayerId.Value, PlayerEventType.Goal.Value, baseMinute, stoppageMinute, result.OccurredAtUtc);
+            await RecordPlayerEvent(result.ScorerPlayerId.Value, PlayerEventType.Goal.Value, minute.BaseMinute, minute.StoppageMinute, result.OccurredAtUtc);
 
             if (result.AssistPlayerId.HasValue)
             {
-                await RecordPlayerEvent(result.AssistPlayerId.Value, PlayerEventType.GoalAssist.Value, baseMinute, stoppageMinute, result.OccurredAtUtc);
+                await RecordPlayerEvent(result.AssistPlayerId.Value, PlayerEventType.GoalAssist.Value, minute.BaseMinute, minute.StoppageMinute, result.OccurredAtUtc);
             }
         }
 
         await LoadMatchEventsAsync();
     }
 
-    private async Task OpponentGoal()
+    private async Task OpponentGoal(GoalDialogData result)
     {
         if (Fixture is null) return;
+        if (FirstHalfStartedAtUtc is null) return;
 
-        // Determine if opponent scores at our home or away
-        var isOpponentHomeGoal = IsHomeGame;
-
-        // Update score
-        if (isOpponentHomeGoal)
+        // Update score.
+        if (IsHomeGame)
         {
             Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
         }
@@ -509,24 +458,17 @@
             Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
         }
 
-        var minuteResult = GetMinute();
-        int baseMinute;
-        int? stoppageMinute;
+        var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
 
-        if (minuteResult.IsFailure)
+        var matchEventType = IsHomeGame ? MatchEventType.AwayGoal.Value : MatchEventType.HomeGoal.Value;
+        await RecordMatchEvent(matchEventType, minute.BaseMinute, minute.StoppageMinute);
+
+        if (result.IsOwnGoal && result.ScorerPlayerId.HasValue)
         {
-            baseMinute = currentMinute;
-            stoppageMinute = null;
-        }
-        else
-        {
-            baseMinute = minuteResult.Value.BaseMinute;
-            stoppageMinute = minuteResult.Value.StoppageMinute;
+            await RecordPlayerEvent(result.ScorerPlayerId.Value, PlayerEventType.OwnGoal.Value, minute.BaseMinute, minute.StoppageMinute, result.OccurredAtUtc);
         }
 
-        // Record match event - opponent scored (opposite of our club)
-        var matchEventType = isOpponentHomeGoal ? MatchEventType.AwayGoal.Value : MatchEventType.HomeGoal.Value;
-        await RecordMatchEvent(matchEventType, baseMinute, stoppageMinute);
+        await LoadMatchEventsAsync();
     }
 
     private async Task RecordMatchEvent(int eventTypeId, int baseMinute, int? stoppageMinute = null, DateTime? occurredAtUtc = null)

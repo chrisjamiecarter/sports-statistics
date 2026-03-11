@@ -86,7 +86,9 @@
     private async Task ConfirmAsync()
     {
         var result = Content with 
-        { 
+        {
+            GoalType = Input.GoalType,
+            IsOwnGoal = Input.IsOwnGoal,
             ScorerPlayerId = Input.GoalScorer?.Value,
             AssistPlayerId = Input.Assister?.Value 
         };

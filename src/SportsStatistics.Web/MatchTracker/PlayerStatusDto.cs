@@ -15,6 +15,7 @@ public sealed record PlayerStatusDto(
     bool HasRedCard,
     IReadOnlyList<GoalEventDto> Goals,
     IReadOnlyList<AssistEventDto> Assists,
+    IReadOnlyList<OwnGoalEventDto> OwnGoals,
     SubstitutionStatusDto? Substitution)
 {
     /// <summary>
@@ -28,6 +29,11 @@ public sealed record PlayerStatusDto(
     public bool HasAssists => Assists.Count > 0;
 
     /// <summary>
+    /// Gets a value indicating whether the player has scored any own goals.
+    /// </summary>
+    public bool HasOwnGoals => OwnGoals.Count > 0;
+
+    /// <summary>
     /// Gets a value indicating whether the player has been sent off (received a red card).
     /// </summary>
     public bool IsSentOff => HasRedCard;
@@ -35,7 +41,7 @@ public sealed record PlayerStatusDto(
     /// <summary>
     /// Gets a value indicating whether the player has any status to display.
     /// </summary>
-    public bool HasAnyStatus => HasYellowCard || HasRedCard || HasGoals || HasAssists || Substitution is not null;
+    public bool HasAnyStatus => HasYellowCard || HasRedCard || HasGoals || HasAssists || HasOwnGoals || Substitution is not null;
 }
 
 /// <summary>
@@ -49,6 +55,12 @@ public sealed record GoalEventDto(DateTime OccurredAtUtc);
 /// </summary>
 /// <param name="OccurredAtUtc">The UTC timestamp when the assist was made.</param>
 public sealed record AssistEventDto(DateTime OccurredAtUtc);
+
+/// <summary>
+/// Represents an own goal event for a player.
+/// </summary>
+/// <param name="OccurredAtUtc">The UTC timestamp when the own goal was scored.</param>
+public sealed record OwnGoalEventDto(DateTime OccurredAtUtc);
 
 /// <summary>
 /// Represents the substitution status of a player.

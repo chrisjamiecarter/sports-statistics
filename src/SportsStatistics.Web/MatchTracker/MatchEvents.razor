@@ -52,16 +52,6 @@
     </FluentStack>
 }
 
-@* @if (ShowGoalDialog)
-{
-    <GoalDialog IsOpen="@ShowGoalDialog"
-                IsHomeGoal="@ShowGoalDialogForHomeGoal"
-                StartingPlayers="@StartingPlayers"
-                OnConfirm="GoalDialogConfirmed"
-                OnCancel="GoalDialogCancelled" />
-} *@
-
-
 @code {
     [Parameter] public MatchPeriod CurrentMatchPeriod { get; set; } = MatchPeriod.PreMatch;
 
@@ -79,7 +69,7 @@
 
     [Parameter] public EventCallback<GoalDialogData> OnOurClubGoal { get; set; }
 
-    [Parameter] public EventCallback OnOpponentGoal { get; set; }
+    [Parameter] public EventCallback<GoalDialogData> OnOpponentGoal { get; set; }
 
     private bool ShowGoalDialog { get; set; }
     private bool ShowGoalDialogForHomeGoal { get; set; }
@@ -115,7 +105,7 @@
             }
             else
             {
-                await OnOpponentGoal.InvokeAsync();
+                await OnOpponentGoal.InvokeAsync(goalResult);
             }
         }
     }
@@ -129,17 +119,4 @@
     {
         await RecordGoal(IsHomeGame ? GoalType.OppositionGoal : GoalType.TeamGoal);
     }
-
-    // private async Task GoalDialogConfirmed(GoalDialogResult result)
-    // {
-    //     var dialog = await DialogService.Sho
-
-    //     ShowGoalDialog = false;
-    //     await OnOurClubGoal.InvokeAsync(result);
-    // }
-
-    // private async Task GoalDialogCancelled()
-    // {
-    //     ShowGoalDialog = false;
-    // }
 }
