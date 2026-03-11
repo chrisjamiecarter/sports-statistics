@@ -21,7 +21,7 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
                 TypeName = e.Type.Name,
                 e.Minute.BaseMinute,
                 e.Minute.StoppageMinute,
-                DisplayMinute = e.Minute.DisplayNotation,
+                DisplayMinute = e.Minute.Display,
                 e.OccurredAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -54,7 +54,7 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
                     TypeName = pe.Type.Name,
                     pe.Minute.BaseMinute,
                     pe.Minute.StoppageMinute,
-                    DisplayMinute = pe.Minute.DisplayNotation,
+                    DisplayMinute = pe.Minute.Display,
                     pe.OccurredAtUtc,
                     PlayerName = p.Name.Value,
                     pe.PlayerId
@@ -87,7 +87,7 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
                     e.FixtureId,
                     e.Minute.BaseMinute,
                     e.Minute.StoppageMinute,
-                    DisplayMinute = e.Minute.DisplayNotation,
+                    DisplayMinute = e.Minute.Display,
                     e.OccurredAtUtc,
                     PlayerOffName = playerOff.Name.Value,
                     e.Substitution.PlayerOffId,

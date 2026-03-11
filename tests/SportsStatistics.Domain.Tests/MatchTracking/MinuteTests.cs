@@ -25,7 +25,7 @@ public class MinuteTests
         var minute = result.Value;
         minute.BaseMinute.ShouldBe(baseMinute);
         minute.StoppageMinute.ShouldBe(stoppageMinute);
-        minute.DisplayNotation.ShouldBe(expectedDisplay);
+        minute.Display.ShouldBe(expectedDisplay);
         minute.Period.ShouldBe(expectedPeriod);
     }
 
@@ -115,7 +115,7 @@ public class MinuteTests
         // Assert.
         result.IsSuccess.ShouldBeTrue();
         result.Value.BaseMinute.ShouldBe(1);
-        result.Value.DisplayNotation.ShouldBe("1");
+        result.Value.Display.ShouldBe("1");
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class MinuteTests
         // Assert.
         result.IsSuccess.ShouldBeTrue();
         result.Value.BaseMinute.ShouldBe(45);
-        result.Value.DisplayNotation.ShouldBe("45");
+        result.Value.Display.ShouldBe("45");
     }
 
     #endregion
@@ -146,7 +146,7 @@ public class MinuteTests
         result.IsSuccess.ShouldBeTrue();
         result.Value.BaseMinute.ShouldBe(45);
         result.Value.StoppageMinute.ShouldBe(1);
-        result.Value.DisplayNotation.ShouldBe("45+1");
+        result.Value.Display.ShouldBe("45+1");
         result.Value.Period.ShouldBe(MatchPeriod.FirstHalfStoppage);
     }
 
@@ -209,7 +209,7 @@ public class MinuteTests
         // Assert.
         result.IsSuccess.ShouldBeTrue();
         result.Value.BaseMinute.ShouldBe(46);
-        result.Value.DisplayNotation.ShouldBe("46");
+        result.Value.Display.ShouldBe("46");
     }
 
     #endregion
@@ -227,7 +227,7 @@ public class MinuteTests
         result.IsSuccess.ShouldBeTrue();
         result.Value.BaseMinute.ShouldBe(90);
         result.Value.StoppageMinute.ShouldBe(1);
-        result.Value.DisplayNotation.ShouldBe("90+1");
+        result.Value.Display.ShouldBe("90+1");
         result.Value.Period.ShouldBe(MatchPeriod.SecondHalfStoppage);
     }
 
@@ -240,7 +240,7 @@ public class MinuteTests
 
         // Assert.
         result.IsSuccess.ShouldBeTrue();
-        result.Value.DisplayNotation.ShouldBe("90+5");
+        result.Value.Display.ShouldBe("90+5");
     }
 
     #endregion
@@ -264,7 +264,7 @@ public class MinuteTests
         result.IsSuccess.ShouldBeTrue();
         result.Value.BaseMinute.ShouldBe(expectedBaseMinute);
         result.Value.StoppageMinute.ShouldBe(expectedStoppageMinute);
-        result.Value.DisplayNotation.ShouldBe(expectedDisplay);
+        result.Value.Display.ShouldBe(expectedDisplay);
     }
 
     [Fact]
@@ -379,7 +379,7 @@ public class MinuteTests
         var minute = Minute.Create(baseMinute, stoppage).Value;
 
         // Act.
-        var display = minute.DisplayNotation;
+        var display = minute.Display;
 
         // Assert.
         display.ShouldBe(expected);

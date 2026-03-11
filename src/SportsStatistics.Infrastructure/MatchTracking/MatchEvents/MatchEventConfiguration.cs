@@ -32,8 +32,6 @@ internal sealed class MatchEventConfiguration : IEntityTypeConfiguration<MatchEv
 
             ownedBuilder.Property(minute => minute.StoppageMinute)
                         .HasColumnName(nameof(Minute.StoppageMinute));
-
-            ownedBuilder.Ignore(minute => minute.Period);
         });
 
         builder.Property(matchEvent => matchEvent.OccurredAtUtc)

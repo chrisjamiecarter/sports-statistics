@@ -13,6 +13,6 @@ internal static class SubstitutionMapper
                substitutionEvent.Substitution.PlayerOnId,
                substitutionEvent.Minute.BaseMinute,
                substitutionEvent.Minute.StoppageMinute,
-               substitutionEvent.Minute.DisplayNotation,
+               substitutionEvent.Minute.Display,
                substitutionEvent.OccurredAtUtc);
 }

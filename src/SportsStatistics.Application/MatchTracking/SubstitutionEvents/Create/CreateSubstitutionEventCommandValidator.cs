@@ -19,13 +19,13 @@ internal sealed class CreateSubstitutionEventCommandValidator : AbstractValidato
             .NotEmpty().WithError(SubstitutionEventErrors.PlayerOnIdIsRequired);
 
         RuleFor(c => c.BaseMinute)
-            .GreaterThanOrEqualTo(Minute.MinBaseMinute).WithError(MinuteErrors.BelowMinimum);
+            .GreaterThanOrEqualTo(Minute.MinMinute).WithError(MinuteErrors.BelowMinimum);
 
         RuleFor(c => c.BaseMinute)
             .LessThanOrEqualTo(Minute.MaxBaseMinute).WithError(MinuteErrors.AboveMaximum);
 
         RuleFor(c => c.StoppageMinute)
-            .GreaterThanOrEqualTo(1)
+            .GreaterThanOrEqualTo(Minute.MinMinute)
             .When(c => c.StoppageMinute.HasValue)
             .WithError(MinuteErrors.InvalidStoppageMinute);
 
@@ -39,6 +39,6 @@ internal sealed class CreateSubstitutionEventCommandValidator : AbstractValidato
     }
 
     private static bool IsValidStoppageBaseMinute(int baseMinute) =>
-        baseMinute == Minute.FirstHalfEnd ||
-        baseMinute == Minute.SecondHalfEnd;
+        baseMinute == Minute.FirstHalfEndMinute ||
+        baseMinute == Minute.SecondHalfEndMinute;
 }

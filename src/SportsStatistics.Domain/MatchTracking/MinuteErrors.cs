@@ -75,5 +75,5 @@ public static class MinuteErrors
     /// </summary>
     public static Error InvalidStoppageBaseMinute => Error.Validation(
         "MatchTracking.Minute.InvalidStoppageBaseMinute",
-        "Stoppage time base minute must be 45, 90, 105, or 120.");
+        "Stoppage time base minute must be 45 or 90.");
 }

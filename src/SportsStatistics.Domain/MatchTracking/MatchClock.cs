@@ -34,11 +34,11 @@ public sealed record MatchClock
     /// <summary>
     /// Gets the current minute based on elapsed time and period.
     /// </summary>
-    public Minute GetCurrentMinute()
-    {
-        var result = Minute.FromElapsedSeconds(ElapsedSeconds, Period);
-        return result.IsSuccess ? result.Value : throw new InvalidOperationException($"Cannot determine current minute: {result.Error.Description}");
-    }
+    //public Minute GetCurrentMinute()
+    //{
+    //    var result = Minute.FromElapsedSeconds(ElapsedSeconds, Period);
+    //    return result.IsSuccess ? result.Value : throw new InvalidOperationException($"Cannot determine current minute: {result.Error.Description}");
+    //}
 
     /// <summary>
     /// Determines whether the clock is currently in stoppage time.
