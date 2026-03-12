@@ -155,6 +155,7 @@
     {
         await LoadFixtureAsync(DateOnly.FromDateTime(DateTime.UtcNow));
         await LoadPlayersAsync();
+        await LoadCurrentPageState();
     }
 
     private async Task LoadFixtureAsync(DateOnly fixtureDate)
@@ -610,6 +611,64 @@
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
         _timer.Start();
+    }
+
+    private PageState GetPageState()
+    {
+        if (PersistedEvents.Any(e => e.EventType == MatchEventType.FirstHalfStarted.Name))
+        {
+            return PageState.MatchTracking;
+        }
+
+        if (ExistingTeamsheet is not null)
+        {
+            return PageState.TeamsheetSelect;
+        }
+
+        return PageState.FixtureSelect;
+    }
+
+    private bool IsMatchInProgress()
+    {
+        var hasSecondHalfStarted = PersistedEvents.Any(e => e.EventType == MatchEventType.SecondHalfStarted.Name);
+        var hasSecondHalfFinished = PersistedEvents.Any(e => e.EventType == MatchEventType.SecondHalfFinished.Name);
+        var hasFirstHalfStarted = PersistedEvents.Any(e => e.EventType == MatchEventType.FirstHalfStarted.Name);
+        var hasFirstHalfFinished = PersistedEvents.Any(e => e.EventType == MatchEventType.FirstHalfFinished.Name);
+
+        if (hasSecondHalfStarted && !hasSecondHalfFinished)
+        {
+            return true;
+        }
+
+        if (hasFirstHalfStarted && !hasFirstHalfFinished)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task LoadCurrentPageState()
+    {
+        if (Fixture is null)
+        {
+            CurrentPageState = PageState.FixtureSelect;
+            return;
+        }
+
+        await LoadExistingTeamsheetAsync();
+        if (ExistingTeamsheet is null)
+        {
+            CurrentPageState = PageState.TeamsheetSelect;
+            return;
+        }
+
+        CurrentPageState = PageState.MatchTracking;
+
+        await LoadSubstitutionsAsync();
+        await LoadMatchEventsAsync();
+
+        RestoreMatchState();
     }
 
     public void Dispose()
