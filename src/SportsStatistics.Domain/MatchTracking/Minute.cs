@@ -54,7 +54,7 @@ public sealed record Minute
                 return MinuteErrors.InvalidStoppageMinute;
             }
 
-            if (baseMinute is not FirstHalfEndMinute || baseMinute is not SecondHalfEndMinute)
+            if (baseMinute is not FirstHalfEndMinute && baseMinute is not SecondHalfEndMinute)
             {
                 return MinuteErrors.InvalidStoppageBaseMinute;
             }
