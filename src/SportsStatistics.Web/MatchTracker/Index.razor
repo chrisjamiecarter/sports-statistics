@@ -57,7 +57,7 @@
                 <MatchEvents CurrentMatchPeriod="@currentPeriod" 
                              IsHomeGame="@IsHomeGame"
                              StartingPlayers="@CurrentOnPitchPlayers"
-                             OnStartFirstHalf="StartMatch"
+                             OnStartFirstHalf="StartFirstHalf"
                              OnFinishFirstHalf="FinishFirstHalf"
                              OnStartSecondHalf="StartSecondHalf"
                              OnFinishSecondHalf="FinishSecondHalf"
@@ -70,7 +70,6 @@
                               PlayerStatuses="@_playerStatuses"
                               CurrentHalf="@currentPeriod.Value"
                               FixtureId="@Fixture!.Id"
-                              CurrentMinute="@currentMinute"
                               MatchInProgress="@(currentPeriod.IsPlayingPeriod())"
                               OnAddPlayerEvent="AddPlayerEvent"
                               OnAddSubstitutionEvent="AddSubstitutionEvent" />
@@ -125,7 +124,6 @@
     private DateTime? SecondHalfFinishedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.SecondHalfFinished.Name)?.OccurredAtUtc;
 
     private MatchPeriod currentPeriod = MatchPeriod.PreMatch;
-    private int currentMinute => (int)gameClock.TotalMinutes + 1;
     private System.Timers.Timer? _timer;
     private DateTime? matchStartedAtUtc;
     private TimeSpan gameClock
@@ -144,7 +142,7 @@
 
             if (currentPeriod == MatchPeriod.SecondHalf)
             {
-                return TimeSpan.FromMinutes(45) + elapsedThisPeriod;
+                return TimeSpan.FromMinutes(Minute.FirstHalfEndMinute) + elapsedThisPeriod;
             }
 
             return TimeSpan.Zero;
@@ -373,44 +371,62 @@
         await Task.CompletedTask;
     }
 
-    private async Task StartMatch()
+    private async Task StartFirstHalf()
     {
-        matchStartedAtUtc = DateTime.UtcNow;
-        currentPeriod = MatchPeriod.FirstHalf;
+        var occuredAtUtc = DateTime.UtcNow;
 
+        matchStartedAtUtc = occuredAtUtc;
         StartTimer();
 
-        // TODO: Magic numbers for regulation time start minutes - consider deriving from domain or configuration.
-        await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, 1);
+        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, occuredAtUtc, null);
+        currentPeriod = MatchPeriod.FirstHalf;
+
+        await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
     }
 
     private async Task FinishFirstHalf()
     {
         if (FirstHalfStartedAtUtc is null) return;
 
-        var minute = MatchMinuteCalculator.Calculate(DateTime.UtcNow, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var occuredAtUtc = DateTime.UtcNow;
+
+        matchStartedAtUtc = null;
+        StopTimer();
+
+        var minute = MatchMinuteCalculator.Calculate(DateTime.UtcNow, FirstHalfStartedAtUtc.Value, null);
         currentPeriod = MatchPeriod.HalfTime;
 
-        await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
+        await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
     }
 
     private async Task StartSecondHalf()
     {
-        matchStartedAtUtc = DateTime.UtcNow;
+        if (FirstHalfStartedAtUtc is null) return;
+
+        var occuredAtUtc = DateTime.UtcNow;
+
+        matchStartedAtUtc = occuredAtUtc;
+        StartTimer();
+
+        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
         currentPeriod = MatchPeriod.SecondHalf;
 
-        // TODO: Magic numbers for regulation time start minutes - consider deriving from domain or configuration.
-        await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, 46);
+        await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
     }
 
     private async Task FinishSecondHalf()
     {
         if (FirstHalfStartedAtUtc is null) return;
+        
+        var occuredAtUtc = DateTime.UtcNow;
+        
+        matchStartedAtUtc = null;
+        StopTimer();
 
-        var minute = MatchMinuteCalculator.Calculate(DateTime.UtcNow, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(occuredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
         currentPeriod = MatchPeriod.FullTime;
 
-        await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute);
+        await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
     }
 
     private async Task TeamGoal(GoalDialogData result)
@@ -521,12 +537,16 @@
 
     private async Task AddPlayerEvent(PlayerEventDto playerEvent)
     {
+        if (FirstHalfStartedAtUtc is null) return;
+
+        var minute = MatchMinuteCalculator.Calculate(playerEvent.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+
         var command = new CreatePlayerEventCommand(
             playerEvent.FixtureId,
             playerEvent.PlayerId,
             playerEvent.PlayerEventTypeId,
-            playerEvent.BaseMinute,
-            playerEvent.StoppageMinute,
+            minute.BaseMinute,
+            minute.StoppageMinute,
             playerEvent.OccurredAtUtc);
 
         var result = await Messenger.SendAsync(command);
@@ -541,12 +561,16 @@
 
     private async Task AddSubstitutionEvent(SubstitutionEventDto substitutionEvent)
     {
+        if (FirstHalfStartedAtUtc is null) return;
+
+        var minute = MatchMinuteCalculator.Calculate(substitutionEvent.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+
         var command = new CreateSubstitutionEventCommand(
             substitutionEvent.FixtureId,
             substitutionEvent.PlayerOffId,
             substitutionEvent.PlayerOnId,
-            substitutionEvent.BaseMinute,
-            substitutionEvent.StoppageMinute,
+            minute.BaseMinute,
+            minute.StoppageMinute,
             substitutionEvent.OccurredAtUtc);
 
         var result = await Messenger.SendAsync(command);
@@ -611,6 +635,13 @@
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
         _timer.Start();
+    }
+
+
+    private void StopTimer()
+    {
+        _timer?.Stop();
+        _timer?.Dispose();
     }
 
     private PageState GetPageState()
