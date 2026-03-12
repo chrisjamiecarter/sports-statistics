@@ -13,7 +13,7 @@ public static class MatchMinuteCalculator
         }
         else
         {
-            return Calculate(occuredAtUtc - secondHalfStartedAtUtc.Value, MatchPeriod.SecondHalf);
+            return Calculate(occuredAtUtc.AddMinutes(Minute.FirstHalfEndMinute) - secondHalfStartedAtUtc.Value, MatchPeriod.SecondHalf);
         }
     }
 
