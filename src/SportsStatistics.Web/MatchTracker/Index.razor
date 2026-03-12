@@ -120,7 +120,9 @@
         StartingPlayers.Where(p => !_substitutedOffPlayerIds.Contains(p.Id)).ToList();
 
     private DateTime? FirstHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.FirstHalfStarted.Name)?.OccurredAtUtc;
+    private DateTime? FirstHalfFinishedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.FirstHalfFinished.Name)?.OccurredAtUtc;
     private DateTime? SecondHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.SecondHalfStarted.Name)?.OccurredAtUtc;
+    private DateTime? SecondHalfFinishedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.SecondHalfFinished.Name)?.OccurredAtUtc;
 
     private MatchPeriod currentPeriod = MatchPeriod.PreMatch;
     private int currentMinute => (int)gameClock.TotalMinutes + 1;
@@ -360,6 +362,8 @@
         CurrentPageState++;
         await LoadSubstitutionsAsync();
         await LoadMatchEventsAsync();
+
+        RestoreMatchState();
     }
 
     private async Task TeamsheetCancelled()
@@ -372,9 +376,8 @@
     {
         matchStartedAtUtc = DateTime.UtcNow;
         currentPeriod = MatchPeriod.FirstHalf;
-        _timer = new System.Timers.Timer(1000);
-        _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
-        _timer.Start();
+
+        StartTimer();
 
         // TODO: Magic numbers for regulation time start minutes - consider deriving from domain or configuration.
         await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, 1);
@@ -425,7 +428,7 @@
         }
 
         var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
-        
+
         var matchEventType = IsHomeGame ? MatchEventType.HomeGoal.Value : MatchEventType.AwayGoal.Value;
 
         await RecordMatchEvent(matchEventType, minute.BaseMinute, minute.StoppageMinute, result.OccurredAtUtc);
@@ -562,6 +565,51 @@
         }
 
         await LoadMatchEventsAsync();
+    }
+
+    private void RestoreMatchState()
+    {
+        if (SecondHalfFinishedAtUtc.HasValue)
+        {
+            currentPeriod = MatchPeriod.FullTime;
+            matchStartedAtUtc = null;
+            return;
+        }
+
+        if (SecondHalfStartedAtUtc.HasValue)
+        {
+            currentPeriod = MatchPeriod.SecondHalf;
+            matchStartedAtUtc = SecondHalfStartedAtUtc;
+            StartTimer();
+            return;
+        }
+
+        if (FirstHalfFinishedAtUtc.HasValue)
+        {
+            currentPeriod = MatchPeriod.HalfTime;
+            matchStartedAtUtc = null;
+            return;
+        }
+
+        if (FirstHalfStartedAtUtc.HasValue)
+        {
+            currentPeriod = MatchPeriod.FirstHalf;
+            matchStartedAtUtc = FirstHalfStartedAtUtc;
+            StartTimer();
+            return;
+        }
+
+        currentPeriod = MatchPeriod.PreMatch;
+        matchStartedAtUtc = null;
+    }
+
+    private void StartTimer()
+    {
+        if (_timer is not null) return;
+
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
+        _timer.Start();
     }
 
     public void Dispose()
