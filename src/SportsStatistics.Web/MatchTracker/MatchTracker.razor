@@ -143,8 +143,6 @@
 
     [Parameter] public Guid FixtureId { get; set; }
 
-    [Parameter] public int CurrentMinute { get; set; }
-
     [Parameter] public bool MatchInProgress { get; set; }
 
     private bool CanSubstitute => CurrentHalf is 1 or 2 or 3 && SubstitutePlayers.Any();
@@ -177,8 +175,6 @@
             FixtureId,
             player.Id,
             type.Value,
-            CurrentMinute,
-            null, // No stoppage minute for now
             $"{player.Name} - {type.Name}",
             occuredAtUtc);
 
@@ -221,8 +217,6 @@
             FixtureId,
             SubstitutionPlayerOff.Id,
             SelectedSubstitutePlayer.Id,
-            CurrentMinute,
-            null, // No stoppage minute for now
             $"Substitution: {SubstitutionPlayerOff.Name} off, {SelectedSubstitutePlayer.Name} on",
             DateTime.UtcNow);
 
