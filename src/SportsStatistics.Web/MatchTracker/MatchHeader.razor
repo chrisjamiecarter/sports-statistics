@@ -89,7 +89,7 @@
 
     [Parameter] public TimeSpan GameClock { get; set; }
 
-    private string FormattedGameClock => $"{GameClock.Minutes:00}:{GameClock.Seconds:00}";
+    private string FormattedGameClock => $"{GameClock.TotalMinutes:00}:{GameClock.Seconds:00}";
 
     private string FormattedCountdownClock => $"{(Fixture?.KickoffTimeUtc - DateTime.UtcNow):HH:mm:ss}";
 
