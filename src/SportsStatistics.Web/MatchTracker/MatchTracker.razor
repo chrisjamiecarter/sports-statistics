@@ -100,7 +100,7 @@
             <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Align="Align.End">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!CanSubstitute || PlayersSubstitutedOff.Contains(context.Id))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!CanSubstitute || !CanSubstitutePlayer(context))" />
         </TemplateColumn>
     </FluentDataGrid>
 
@@ -124,7 +124,7 @@
 
 </FluentStack>
 
-@code {
+    @code {
     [Parameter] public List<PlayerDto> Players { get; set; } = [];
 
     [Parameter] public List<PlayerDto> SubstitutePlayers { get; set; } = [];
@@ -147,11 +147,17 @@
 
     private bool CanSubstitute => CurrentHalf is 1 or 2 or 3 && SubstitutePlayers.Any();
 
-    private bool CanPlayerAct(PlayerDto player) =>
-        MatchInProgress && !PlayersSubstitutedOff.Contains(player.Id);
+    private bool CanPlayerAct(PlayerDto player) => MatchInProgress && !HasBeenSubstituted(player) && !HasRedCard(player);
+
+    private bool CanSubstitutePlayer(PlayerDto player) => !HasBeenSubstituted(player) && !HasRedCard(player);
+
+    private bool HasBeenSubstituted(PlayerDto player) => PlayersSubstitutedOff.Contains(player.Id);
+
+    private bool HasRedCard(PlayerDto player) => (!PlayerStatuses.TryGetValue(player.Id, out var status) || status.HasRedCard);
 
     private IQueryable<PlayerDto> OrderedPlayers =>
-        Players.OrderBy(p => PlayersSubstitutedOff.Contains(p.Id) ? 1 : 0)
+        Players.OrderBy(p => HasBeenSubstituted(p) ? 1 : 0)
+               .ThenBy(p => HasRedCard(p) ? 1 : 0)
                .ThenBy(p => p.PositionId)
                .ThenBy(p => p.SquadNumber)
                .AsQueryable();
@@ -189,8 +195,18 @@
     private async Task AddTackle(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Tackle);
     private async Task AddFoulWon(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulWon);
     private async Task AddFoulConceeded(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulConceeded);
-    private async Task AddYellowCard(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.YellowCard);
     private async Task AddRedCard(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.RedCard);
+    
+    private async Task AddYellowCard(PlayerDto player)
+    {
+        if (PlayerStatuses.TryGetValue(player.Id, out var status) && status.HasYellowCard)
+        {
+            // If player already has a yellow card, add a red card instead.
+            await AddRedCard(player);
+        }
+        await AddPlayerMatchEvent(player, PlayerEventType.YellowCard);
+    }
+
 
     private void OpenSubstitutionDialog(PlayerDto playerOff)
     {

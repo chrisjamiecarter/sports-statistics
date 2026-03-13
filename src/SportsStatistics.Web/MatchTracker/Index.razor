@@ -545,6 +545,14 @@
 
         var minute = MatchMinuteCalculator.Calculate(playerEvent.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
 
+        if (playerEvent.PlayerEventTypeId == PlayerEventType.YellowCard.Value)
+        {
+            if (PersistedEvents.Any(e => e.PlayerId == playerEvent.PlayerId && e.EventType == PlayerEventType.YellowCard.Name))
+            {
+                playerEvent = playerEvent with { PlayerEventTypeId = PlayerEventType.RedCard.Value };
+            }
+        }
+
         var command = new CreatePlayerEventCommand(
             playerEvent.FixtureId,
             playerEvent.PlayerId,
