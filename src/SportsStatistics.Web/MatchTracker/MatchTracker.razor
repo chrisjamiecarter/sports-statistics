@@ -1,3 +1,4 @@
+@using SportsStatistics.Domain.MatchTracking
 @using SportsStatistics.Domain.MatchTracking.MatchEvents
 @using SportsStatistics.Domain.MatchTracking.PlayerEvents
 @using SportsStatistics.Domain.Players
@@ -100,28 +101,9 @@
             <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
         <TemplateColumn Align="Align.End">
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => OpenSubstitutionDialog(context))" Disabled="@(!CanSubstitute || !CanSubstitutePlayer(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => SubstitutePlayerClicked(context))" Disabled="@(!CanSubstitutePlayer(context))" />
         </TemplateColumn>
     </FluentDataGrid>
-
-    @if (ShowSubstitutionDialog)
-    {
-        <FluentDialog @bind-Visible="ShowSubstitutionDialog" Title="Substitution">
-            <FluentStack Orientation="Orientation.Vertical">
-                <FluentLabel>Player Off: @SubstitutionPlayerOff?.Name</FluentLabel>
-                <FluentLabel>Select Player On:</FluentLabel>
-                <FluentSelect Items="@SubstitutePlayers"
-                              OptionText="@(p => $"#{p?.SquadNumber} {p?.Name} ({p?.PositionName})")"
-                              OptionValue="@(p => p?.Id.ToString() ?? "")"
-                              @bind-SelectedOption="@SelectedSubstitutePlayer" />
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
-                    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmSubstitution">Confirm</FluentButton>
-                    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelSubstitution">Cancel</FluentButton>
-                </FluentStack>
-            </FluentStack>
-        </FluentDialog>
-    }
-
 </FluentStack>
 
     @code {
@@ -139,17 +121,13 @@
 
     [Parameter] public EventCallback<SubstitutionEventDto> OnAddSubstitutionEvent { get; set; }
 
-    [Parameter] public int CurrentHalf { get; set; }
-
     [Parameter] public Guid FixtureId { get; set; }
 
-    [Parameter] public bool MatchInProgress { get; set; }
+    [Parameter] public MatchPeriod CurrentMatchPeriod { get; set; } = MatchPeriod.PreMatch;
 
-    private bool CanSubstitute => CurrentHalf is 1 or 2 or 3 && SubstitutePlayers.Any();
+    private bool CanPlayerAct(PlayerDto player) => CurrentMatchPeriod.IsPlayingPeriod() && !HasBeenSubstituted(player) && !HasRedCard(player);
 
-    private bool CanPlayerAct(PlayerDto player) => MatchInProgress && !HasBeenSubstituted(player) && !HasRedCard(player);
-
-    private bool CanSubstitutePlayer(PlayerDto player) => !HasBeenSubstituted(player) && !HasRedCard(player);
+    private bool CanSubstitutePlayer(PlayerDto player) => CurrentMatchPeriod.IsSubstitutionPeriod() && SubstitutePlayers.Any() && !HasBeenSubstituted(player) && !HasRedCard(player);
 
     private bool HasBeenSubstituted(PlayerDto player) => PlayersSubstitutedOff.Contains(player.Id);
 
@@ -196,7 +174,7 @@
     private async Task AddFoulWon(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulWon);
     private async Task AddFoulConceeded(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulConceeded);
     private async Task AddRedCard(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.RedCard);
-    
+
     private async Task AddYellowCard(PlayerDto player)
     {
         if (PlayerStatuses.TryGetValue(player.Id, out var status) && status.HasYellowCard)
@@ -207,39 +185,39 @@
         await AddPlayerMatchEvent(player, PlayerEventType.YellowCard);
     }
 
-
-    private void OpenSubstitutionDialog(PlayerDto playerOff)
+    private async Task SubstitutePlayerClicked(PlayerDto player)
     {
-        SubstitutionPlayerOff = playerOff;
-        SelectedSubstitutePlayer = null;
-        ShowSubstitutionDialog = true;
-    }
+        var substititionOptions = SubstitutePlayers.OrderBy(player => player.SquadNumber).Select(player => new PlayerOptionDto(player.Id, player.Display));
 
-    private void CancelSubstitution()
-    {
-        ShowSubstitutionDialog = false;
-        SubstitutionPlayerOff = null;
-        SelectedSubstitutePlayer = null;
-    }
+        var data = new SubstitutionDialogData(substititionOptions, player, null, DateTime.UtcNow);
 
-    private async Task ConfirmSubstitution()
-    {
-        if (SubstitutionPlayerOff is null || SelectedSubstitutePlayer is null)
+        var dialog = await DialogService.ShowDialogAsync<SubstitutionDialog>(data, new DialogParameters()
         {
-            return;
+            Title = $"Substitution",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        });
+
+        var result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data is not null)
+        {
+            var substitutionResult = result.Data as SubstitutionDialogData;
+
+            if (substitutionResult is null) return;
+            if (substitutionResult.PlayerOff is null) return;
+            if (substitutionResult.PlayerOnId is null) return;
+            var playerOn = SubstitutePlayers.FirstOrDefault(p => p.Id == substitutionResult.PlayerOnId.Value);
+            if (playerOn is null) return;
+
+            var substitutionEvent = new SubstitutionEventDto(
+                FixtureId,
+                substitutionResult.PlayerOff.Id,
+                playerOn.Id,
+                $"Substitution: {substitutionResult.PlayerOff.Name} off, {playerOn.Name} on",
+                substitutionResult.OccurredAtUtc);
+
+            await OnAddSubstitutionEvent.InvokeAsync(substitutionEvent);
         }
-
-        var substitutionEvent = new SubstitutionEventDto(
-            FixtureId,
-            SubstitutionPlayerOff.Id,
-            SelectedSubstitutePlayer.Id,
-            $"Substitution: {SubstitutionPlayerOff.Name} off, {SelectedSubstitutePlayer.Name} on",
-            DateTime.UtcNow);
-
-        await OnAddSubstitutionEvent.InvokeAsync(substitutionEvent);
-
-        ShowSubstitutionDialog = false;
-        SubstitutionPlayerOff = null;
-        SelectedSubstitutePlayer = null;
     }
 }

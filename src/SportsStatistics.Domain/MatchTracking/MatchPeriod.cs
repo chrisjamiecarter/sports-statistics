@@ -58,6 +58,12 @@ public sealed class MatchPeriod : Enumeration<MatchPeriod>
     /// <summary>
     /// Determines whether this period allows match events to be recorded.
     /// </summary>
-    public bool IsPlayingPeriod() => this == FirstHalf ||
-                                     this == SecondHalf;
+    public bool IsPlayingPeriod() 
+        => this == FirstHalf
+        || this == SecondHalf;
+
+    public bool IsSubstitutionPeriod()
+        => this == FirstHalf 
+        || this == HalfTime
+        || this == SecondHalf;
 }

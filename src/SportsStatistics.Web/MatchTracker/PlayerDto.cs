@@ -12,4 +12,5 @@ public sealed record PlayerDto(Guid Id,
                                int Age)
 {
     public bool IsGoalkeeper => PositionId == Position.Goalkeeper.Value;
+    public string Display => $"#{SquadNumber} {Name} ({PositionName})";
 }

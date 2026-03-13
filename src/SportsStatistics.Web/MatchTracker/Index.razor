@@ -72,9 +72,8 @@
                               PlayersSubstitutedOff="@_substitutedOffPlayerIds"
                               PlayersSubstitutedOn="@_substitutedOnPlayerIds"
                               PlayerStatuses="@_playerStatuses"
-                              CurrentHalf="@currentPeriod.Value"
+                              CurrentMatchPeriod="@currentPeriod"
                               FixtureId="@Fixture!.Id"
-                              MatchInProgress="@(currentPeriod.IsPlayingPeriod())"
                               OnAddPlayerEvent="AddPlayerEvent"
                               OnAddSubstitutionEvent="AddSubstitutionEvent" />
                 <Overview MatchEvents="@DisplayEvents" />
