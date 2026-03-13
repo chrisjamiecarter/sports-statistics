@@ -14,7 +14,7 @@
 
     @* Body *@
     <FluentDialogBody>
-        <div class="full-width">
+        <div class="full-width" style="margin-bottom: 1rem;">
             <FluentCheckbox Name="Input.IsOwnGoal" @bind-Value="Input.IsOwnGoal" Placeholder="Is Own Goal" Label="Own Goal?" Style="width: 100%" />
             <FluentValidationMessage For="() => Input.IsOwnGoal" class="text-danger" />
         </div>
