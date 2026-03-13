@@ -25,7 +25,11 @@ internal sealed class UpdateFixtureStatusCommandHandler(
             return Result.Failure(FixtureErrors.NotFound(request.FixtureId));
         }
 
-        fixture.ChangeStatus(request.FixtureStatus);
+        var result = fixture.ChangeStatus(request.FixtureStatus);
+        if (result.IsFailure)
+        {
+            return result;
+        }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

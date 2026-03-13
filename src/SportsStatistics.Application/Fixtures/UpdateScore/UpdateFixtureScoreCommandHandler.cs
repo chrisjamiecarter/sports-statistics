@@ -25,8 +25,12 @@ internal sealed class UpdateFixtureScoreCommandHandler(
             return Result.Failure(FixtureErrors.NotFound(request.FixtureId));
         }
 
-        fixture.ChangeScore(request.FixtureScore);
-        
+        var result = fixture.ChangeScore(request.FixtureScore);
+        if (result.IsFailure)
+        {
+            return result;
+        }
+
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

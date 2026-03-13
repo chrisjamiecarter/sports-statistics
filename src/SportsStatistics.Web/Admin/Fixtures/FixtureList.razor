@@ -1,4 +1,5 @@
-﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+﻿@using SportsStatistics.Domain.Fixtures
+<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
 
     <FluentStack>
         <FluentLabel Typo="Typography.Header">
@@ -20,8 +21,8 @@
         <PropertyColumn Property="@(p => p.DisplayStatus)" Title="Status" />
 
         <TemplateColumn Align="Align.End">
-            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
-            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="@(EditButtonText(context))" Disabled="@(!CanEditFixture(context))" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="@(DeleteButtonText(context))" Disabled="@(!CanDeleteFixture(context))" />
         </TemplateColumn>
     </FluentDataGrid>
 
@@ -54,5 +55,25 @@
     private async Task Edit(FixtureDto fixture)
     {
         await ShowFixtureFormCallback.InvokeAsync(fixture);
+    }
+
+    private bool CanDeleteFixture(FixtureDto fixture)
+    {
+        return fixture.StatusId == Status.Scheduled.Value;
+    }
+
+    private string DeleteButtonText(FixtureDto fixture)
+    {
+        return CanDeleteFixture(fixture) ? "Delete" : "Can only delete a scheduled fixture";
+    }
+
+    private bool CanEditFixture(FixtureDto fixture)
+    {
+        return fixture.StatusId == Status.Scheduled.Value;
+    }
+
+    private string EditButtonText(FixtureDto fixture)
+    {
+        return CanEditFixture(fixture) ? "Edit" : "Can only edit a scheduled fixture";
     }
 }

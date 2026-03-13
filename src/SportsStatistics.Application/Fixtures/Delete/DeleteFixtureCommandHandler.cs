@@ -20,10 +20,11 @@ internal sealed class DeleteFixtureCommandHandler(IApplicationDbContext dbContex
             return Result.Failure(FixtureErrors.NotFound(request.FixtureId));
         }
 
-        fixture.Delete(DateTime.UtcNow);
-
-        // TODO: Soft delete?
-        _dbContext.Fixtures.Remove(fixture);
+        var result = fixture.Delete(DateTime.UtcNow);
+        if (result.IsFailure)
+        {
+            return result;
+        }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

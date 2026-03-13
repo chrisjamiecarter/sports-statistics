@@ -67,11 +67,23 @@ internal sealed class UpdateFixtureCommandHandler(IApplicationDbContext dbContex
             return Result.Failure(FixtureErrors.AlreadyScheduledOnDate(kickoffDate));
         }
 
-        fixture.ChangeOpponent(opponentResult.Value);
-        
-        fixture.ChangeKickoffTimeUtc(kickOffTimeUtcResult.Value);
-        
-        fixture.ChangeLocation(locationResult.Value);
+        var changeOpponentResult = fixture.ChangeOpponent(opponentResult.Value);
+        if (changeOpponentResult.IsFailure)
+        {
+            return changeOpponentResult;
+        }
+
+        var changeKickoffTimeUtcResult = fixture.ChangeKickoffTimeUtc(kickOffTimeUtcResult.Value);
+        if (changeKickoffTimeUtcResult.IsFailure)
+        {
+            return changeKickoffTimeUtcResult;
+        }
+
+        var changeLocationResult = fixture.ChangeLocation(locationResult.Value);
+        if (changeLocationResult.IsFailure)
+        {
+            return changeLocationResult;
+        }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

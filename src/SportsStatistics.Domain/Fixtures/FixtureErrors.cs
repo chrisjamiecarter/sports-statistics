@@ -4,10 +4,6 @@ namespace SportsStatistics.Domain.Fixtures;
 
 public static class FixtureErrors
 {
-    public static Error AlreadyDeleted => Error.Validation(
-        "Fixture.AlreadyDeleted",
-        "The fixture has already been deleted.");
-
     public static Error AlreadyScheduledOnDate(DateOnly date) => Error.Conflict(
         "Fixture.AlreadyScheduledOnDate",
         $"A fixture is already scheduled on {date:yyyy-MM-dd}. Only one fixture per day is allowed.");
@@ -19,6 +15,22 @@ public static class FixtureErrors
     public static Error FixtureIdIsRequired => Error.Validation(
         "Fixture.FixtureIdIsRequired",
         "The fixture identifier is required.");
+
+    public static Error CannotUpdateFixtureNotScheduled => Error.Conflict(
+        "Fixture.CannotUpdateFixtureNotScheduled",
+        "The fixture can only be updated when the fixture is in progress.");
+
+    public static Error CannotUpdateFixtureScoreNotInProgress => Error.Conflict(
+        "Fixture.CannotUpdateFixtureScoreNotInProgress",
+        "The fixture score can only be updated when the fixture is in progress.");
+
+    public static Error CannotUpdateFixtureStatus(string from, string to) => Error.Conflict(
+        "Fixture.CannotUpdateFixtureScoreNotInProgress",
+        $"The fixture status cannot be updated from {from} to {to}.");
+
+    public static Error CannotDeleteFixtureNotScheduled => Error.Conflict(
+        "Fixture.CannotDeleteFixtureNotScheduled",
+        "The fixture can only be deleted when the fixture has a scheduled status.");
 
     public static Error FixtureScoreIsRequired => Error.Validation(
         "Fixture.FixtureScoreIsRequired",

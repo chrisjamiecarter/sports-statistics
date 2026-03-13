@@ -61,93 +61,132 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
         return fixture;
     }
 
-    public bool ChangeOpponent(Opponent opponent)
+    public Result ChangeOpponent(Opponent opponent)
     {
         if (Opponent == opponent)
         {
-            return false;
+            return Result.Success();
+        }
+
+        if (Status != Status.Scheduled)
+        {
+            return Result.Failure(FixtureErrors.CannotUpdateFixtureNotScheduled);
         }
 
         var previousOpponent = Opponent;
         Opponent = opponent;
         Raise(new FixtureOpponentChangedDomainEvent(this, previousOpponent));
 
-        return true;
+        return Result.Success();
     }
 
-    public bool ChangeKickoffTimeUtc(KickoffTimeUtc kickoffTimeUtc)
+    public Result ChangeKickoffTimeUtc(KickoffTimeUtc kickoffTimeUtc)
     {
         if (KickoffTimeUtc == kickoffTimeUtc)
         {
-            return false;
+            return Result.Success();
+        }
+
+        if (Status != Status.Scheduled)
+        {
+            return Result.Failure(FixtureErrors.CannotUpdateFixtureNotScheduled);
         }
 
         var previousKickoffTimeUtc = KickoffTimeUtc;
         KickoffTimeUtc = kickoffTimeUtc;
         Raise(new FixtureKickoffTimeUtcChangedDomainEvent(this, previousKickoffTimeUtc));
 
-        return true;
+        return Result.Success();
     }
 
-    public bool ChangeLocation(Location location)
+    public Result ChangeLocation(Location location)
     {
         if (Location == location)
         {
-            return false;
+            return Result.Success();
+        }
+
+        if (Status != Status.Scheduled)
+        {
+            return Result.Failure(FixtureErrors.CannotUpdateFixtureNotScheduled);
         }
 
         var previousLocation = Location;
         Location = location;
         Raise(new FixtureLocationChangedDomainEvent(this, previousLocation));
 
-        return true;
+        return Result.Success();
     }
 
-    public bool ChangeScore(Score score)
+    public Result ChangeScore(Score score)
     {
         if (Score == score)
         {
-            return false;
+            return Result.Success();
+        }
+
+        if (Status != Status.InProgress)
+        {
+            return Result.Failure(FixtureErrors.CannotUpdateFixtureScoreNotInProgress);
         }
 
         var previousScore = Score;
         Score = score;
         Raise(new FixtureScoreChangedDomainEvent(this, previousScore));
 
-        return true;
+        return Result.Success();
     }
 
-    public bool ChangeStatus(Status status)
+    public Result ChangeStatus(Status status)
     {
-        if (Status == status)
+        if (status is null)
         {
-            return false;
+            return Result.Failure(FixtureErrors.FixtureStatusIsRequired);
         }
 
-        // TODO: Validate status transition.
-        // Scheduled -> InProgress -> Completed.
+        if (Status == status)
+        {
+            return Result.Success();
+        }
+
+        if (Status == Status.Completed)
+        {
+            return Result.Failure(FixtureErrors.CannotUpdateFixtureStatus(Status.Name, status.Name));
+        }
+
+        if (Status == Status.InProgress && status != Status.Completed)
+        {
+            return Result.Failure(FixtureErrors.CannotUpdateFixtureStatus(Status.Name, status.Name));
+        }
+
+        if (Status == Status.Scheduled && status != Status.InProgress)
+        {
+            return Result.Failure(FixtureErrors.CannotUpdateFixtureStatus(Status.Name, status.Name));
+        }
 
         var previousStatus = Status;
         Status = status;
         Raise(new FixtureStatusChangedDomainEvent(this, previousStatus));
 
-        return true;
+        return Result.Success();
     }
 
-    public void Delete(DateTime utcNow)
+    public Result Delete(DateTime utcNow)
     {
-        if (Status != Status.Scheduled)
-        {
-            throw new InvalidOperationException("Only scheduled fixtures can be deleted.");
-        }
-
         if (Deleted)
         {
-            return;
+            return Result.Success();
+        }
+
+        if (Status != Status.Scheduled)
+        {
+            return Result.Failure(FixtureErrors.CannotDeleteFixtureNotScheduled);
         }
 
         Deleted = true;
         DeletedOnUtc = utcNow;
         Raise(new FixtureDeletedDomainEvent(Id));
+
+        return Result.Success();
     }
 }
