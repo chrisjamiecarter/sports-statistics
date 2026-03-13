@@ -14,6 +14,11 @@ internal static class PlayerMapper
                player.Position,
                player.Age);
 
+    public static IEnumerable<PlayerOptionDto> ToOptions(this IEnumerable<PlayerDto> players) 
+        => players
+        .OrderBy(player => player.SquadNumber)
+        .Select(player => new PlayerOptionDto(player.Id, player.Display));
+
     //public static PlayerFormModel ToInputModel(this PlayerDto player, IEnumerable<PositionOptionDto> positionOptions)
     //    => new()
     //    {

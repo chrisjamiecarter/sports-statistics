@@ -81,7 +81,7 @@
 
     private async Task RecordGoal(GoalType goalType)
     {
-        var scorerOptions = StartingPlayers.Select(p => new PlayerOptionDto(p.Id, p.Name));
+        var scorerOptions = StartingPlayers.ToOptions();
         var assisterOptions = scorerOptions.Prepend(new PlayerOptionDto(null, "No Assist"));
 
         var data = new GoalDialogData(goalType, false, scorerOptions, assisterOptions, null, null, DateTime.UtcNow);
