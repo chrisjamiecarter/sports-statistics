@@ -1,6 +1,9 @@
 @page "/match-tracker"
 @using SportsStatistics.Application.Abstractions.Messaging
 @using SportsStatistics.Application.Fixtures.GetByDate
+@using SportsStatistics.Application.Fixtures.Update
+@using SportsStatistics.Application.Fixtures.UpdateScore
+@using SportsStatistics.Application.Fixtures.UpdateStatus
 @using SportsStatistics.Application.MatchTracking.GetByFixtureId
 @using SportsStatistics.Application.MatchTracking.MatchEvents.Create
 @using SportsStatistics.Application.MatchTracking.PlayerEvents.Create
@@ -9,6 +12,7 @@
 @using SportsStatistics.Application.Players.GetAll
 @using SportsStatistics.Application.Teamsheets.Create
 @using SportsStatistics.Application.Teamsheets.GetByFixtureId
+@using SportsStatistics.Domain.Fixtures
 @using SportsStatistics.Domain.MatchTracking
 @using SportsStatistics.Domain.MatchTracking.MatchEvents
 @using SportsStatistics.Domain.MatchTracking.PlayerEvents
@@ -381,6 +385,7 @@
         var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, occuredAtUtc, null);
         currentPeriod = MatchPeriod.FirstHalf;
 
+        await UpdateFixtureStatusAsync(Status.InProgress);
         await RecordMatchEvent(MatchEventType.FirstHalfStarted.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
     }
 
@@ -408,7 +413,7 @@
         matchStartedAtUtc = occuredAtUtc;
         StartTimer();
 
-        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, FirstHalfStartedAtUtc.Value, matchStartedAtUtc);
         currentPeriod = MatchPeriod.SecondHalf;
 
         await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
@@ -417,15 +422,16 @@
     private async Task FinishSecondHalf()
     {
         if (FirstHalfStartedAtUtc is null) return;
-        
+
         var occuredAtUtc = DateTime.UtcNow;
-        
+
         matchStartedAtUtc = null;
         StopTimer();
 
         var minute = MatchMinuteCalculator.Calculate(occuredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
         currentPeriod = MatchPeriod.FullTime;
 
+        await UpdateFixtureStatusAsync(Status.Completed);
         await RecordMatchEvent(MatchEventType.SecondHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
     }
 
@@ -434,14 +440,13 @@
         if (Fixture is null) return;
         if (FirstHalfStartedAtUtc is null) return;
 
-        // Update score.
         if (IsHomeGame)
         {
-            Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
+            await UpdateFixtureScoreAsync(Fixture.HomeGoals + 1, Fixture.AwayGoals);
         }
         else
         {
-            Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
+            await UpdateFixtureScoreAsync(Fixture.HomeGoals, Fixture.AwayGoals + 1);
         }
 
         var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
@@ -468,20 +473,19 @@
         if (Fixture is null) return;
         if (FirstHalfStartedAtUtc is null) return;
 
-        // Update score.
         if (IsHomeGame)
         {
-            Fixture = Fixture with { AwayGoals = Fixture.AwayGoals + 1 };
+            await UpdateFixtureScoreAsync(Fixture.HomeGoals, Fixture.AwayGoals + 1);
         }
         else
         {
-            Fixture = Fixture with { HomeGoals = Fixture.HomeGoals + 1 };
+            await UpdateFixtureScoreAsync(Fixture.HomeGoals + 1, Fixture.AwayGoals);
         }
 
         var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
 
         var matchEventType = IsHomeGame ? MatchEventType.AwayGoal.Value : MatchEventType.HomeGoal.Value;
-        await RecordMatchEvent(matchEventType, minute.BaseMinute, minute.StoppageMinute);
+        await RecordMatchEvent(matchEventType, minute.BaseMinute, minute.StoppageMinute, result.OccurredAtUtc);
 
         if (result.IsOwnGoal && result.ScorerPlayerId.HasValue)
         {
@@ -700,6 +704,51 @@
         await LoadMatchEventsAsync();
 
         RestoreMatchState();
+    }
+
+    private async Task UpdateFixtureScoreAsync(int homeGoals, int awayGoals)
+    {
+        if (Fixture is null) return;
+
+        var scoreResult = Score.Create(homeGoals, awayGoals);
+        if (scoreResult.IsFailure)
+        {
+            ToastService.ShowError(scoreResult.Error.Description);
+            return;
+        }
+
+        var score = scoreResult.Value;
+
+        var command = new UpdateFixtureScoreCommand(
+            Fixture.Id,
+            score);
+
+        var result = await Messenger.SendAsync(command);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+            return;
+        }
+
+        Fixture = Fixture with { HomeGoals = score.HomeGoals, AwayGoals = score.AwayGoals };
+    }
+
+    private async Task UpdateFixtureStatusAsync(Status status)
+    {
+        if (Fixture is null) return;
+
+        var command = new UpdateFixtureStatusCommand(
+            Fixture.Id,
+            status);
+
+        var result = await Messenger.SendAsync(command);
+        if (result.IsFailure)
+        {
+            ToastService.ShowError(result.Error.Description);
+            return;
+        }
+
+        Fixture = Fixture with { Status = status.Name };
     }
 
     public void Dispose()
