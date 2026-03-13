@@ -5,18 +5,20 @@ namespace SportsStatistics.Domain.Fixtures;
 
 public sealed class Fixture : Entity, ISoftDeletableEntity
 {
-    private Fixture(Guid competitionId,
-                    Opponent opponent,
-                    KickoffTimeUtc kickoffTimeUtc,
-                    Location location,
-                    Status status)
+    private Fixture(
+        Guid competitionId,
+        Opponent opponent,
+        KickoffTimeUtc kickoffTimeUtc,
+        Location location,
+        Score score,
+        Status status)
         : base(Guid.CreateVersion7())
     {
         CompetitionId = competitionId;
         Opponent = opponent;
         KickoffTimeUtc = kickoffTimeUtc;
         Location = location;
-        Score = Score.Create(0, 0).Value;
+        Score = score;
         Status = status;
     }
 
@@ -46,7 +48,13 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
 
     internal static Fixture Create(Competition competition, Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
     {
-        var fixture = new Fixture(competition.Id, opponent, kickoffTimeUtc, location, Status.Scheduled);
+        var fixture = new Fixture(
+            competition.Id,
+            opponent,
+            kickoffTimeUtc,
+            location,
+            Score.Create(0, 0).Value,
+            Status.Scheduled);
 
         fixture.Raise(new FixtureCreatedDomainEvent(fixture.Id));
 
@@ -95,8 +103,44 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
         return true;
     }
 
+    public bool ChangeScore(Score score)
+    {
+        if (Score == score)
+        {
+            return false;
+        }
+
+        var previousScore = Score;
+        Score = score;
+        Raise(new FixtureScoreChangedDomainEvent(this, previousScore));
+
+        return true;
+    }
+
+    public bool ChangeStatus(Status status)
+    {
+        if (Status == status)
+        {
+            return false;
+        }
+
+        // TODO: Validate status transition.
+        // Scheduled -> InProgress -> Completed.
+
+        var previousStatus = Status;
+        Status = status;
+        Raise(new FixtureStatusChangedDomainEvent(this, previousStatus));
+
+        return true;
+    }
+
     public void Delete(DateTime utcNow)
     {
+        if (Status != Status.Scheduled)
+        {
+            throw new InvalidOperationException("Only scheduled fixtures can be deleted.");
+        }
+
         if (Deleted)
         {
             return;

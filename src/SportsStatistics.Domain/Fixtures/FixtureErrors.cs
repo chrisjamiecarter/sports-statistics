@@ -20,6 +20,14 @@ public static class FixtureErrors
         "Fixture.FixtureIdIsRequired",
         "The fixture identifier is required.");
 
+    public static Error FixtureScoreIsRequired => Error.Validation(
+        "Fixture.FixtureScoreIsRequired",
+        "The fixture score is required.");
+
+    public static Error FixtureStatusIsRequired => Error.Validation(
+        "Fixture.FixtureStatusIsRequired",
+        "The fixture status is required.");
+
     public static Error InvalidLocation(string location) => Error.Failure(
         "Fixture.InvalidLocation",
         $"A fixture cannot have a location of '{location}'.");
