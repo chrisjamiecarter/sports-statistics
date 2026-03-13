@@ -4,6 +4,7 @@ namespace SportsStatistics.Web.MatchTracker;
 
 internal sealed class GoalFormModelValidator : AbstractValidator<GoalFormModel>
 {
+    // TODO: Errors.
     public GoalFormModelValidator()
     {
         RuleFor(model => model.GoalType)
