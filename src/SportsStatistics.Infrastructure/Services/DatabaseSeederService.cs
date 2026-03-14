@@ -5,8 +5,10 @@ using Microsoft.Extensions.Logging;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Authorization.Constants;
 using SportsStatistics.Authorization.Entities;
+using SportsStatistics.Domain.Clubs;
 using SportsStatistics.Infrastructure.Database;
 using SportsStatistics.SharedKernel;
+using ClubName = SportsStatistics.Domain.Clubs.Name;
 
 namespace SportsStatistics.Infrastructure.Services;
 
@@ -44,6 +46,12 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
             if (usersResult.IsFailure)
             {
                 return usersResult;
+            }
+
+            var clubResult = await SeedClubAsync(cancellationToken);
+            if (clubResult.IsFailure)
+            {
+                return clubResult;
             }
 
             return Result.Success();
@@ -116,6 +124,28 @@ internal sealed class DatabaseSeederService : IDatabaseSeederService
                 return Result.Failure(Error.Failure("Role.Create", $"Failed to create role '{roleName}': {string.Join(", ", result.Errors.Select(e => e.Description))}"));
             }
         }
+
+        return Result.Success();
+    }
+
+    private async Task<Result> SeedClubAsync(CancellationToken cancellationToken)
+    {
+        if (await _dbContext.Clubs.AnyAsync(cancellationToken))
+        {
+            return Result.Success();
+        }
+
+        var nameResult = ClubName.Create(ClubName.DefaultValue);
+        if (nameResult.IsFailure)
+        {
+            return nameResult;
+        }
+
+        var club = Club.Create(nameResult.Value);
+
+        _dbContext.Clubs.Add(club);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
