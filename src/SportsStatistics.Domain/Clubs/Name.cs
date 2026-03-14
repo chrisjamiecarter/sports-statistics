@@ -4,6 +4,7 @@ namespace SportsStatistics.Domain.Clubs;
 
 public sealed record Name
 {
+    public const string DefaultValue = "Sports Statistics FC";
     public const int MaxLength = 100;
 
     private Name(string value)
@@ -20,7 +21,7 @@ public sealed record Name
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return ClubErrors.Name.NullOrEmpty;
+            return ClubErrors.Name.IsRequired;
         }
 
         if (value.Length > MaxLength)
