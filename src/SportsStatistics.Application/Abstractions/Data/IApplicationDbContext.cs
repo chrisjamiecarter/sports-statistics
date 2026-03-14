@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Domain.Clubs;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Domain.MatchTracking.MatchEvents;
@@ -12,6 +13,8 @@ namespace SportsStatistics.Application.Abstractions.Data;
 
 public interface IApplicationDbContext
 {
+    DbSet<Club> Clubs { get; }
+
     DbSet<Competition> Competitions { get; }
 
     DbSet<Fixture> Fixtures { get; }
