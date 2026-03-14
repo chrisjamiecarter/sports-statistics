@@ -6,6 +6,7 @@ internal static class Schemas
 
     private const string Schema = "sports";
 
+    public static readonly SchemaMetadata Clubs = new(Schema, "Clubs");
     public static readonly SchemaMetadata Competitions = new(Schema, "Competitions");
     public static readonly SchemaMetadata Fixtures = new(Schema, "Fixtures");
     public static readonly SchemaMetadata MatchEvents = new(Schema, "MatchEvents");

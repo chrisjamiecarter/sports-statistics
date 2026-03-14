@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Abstractions.Data;
+using SportsStatistics.Domain.Clubs;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.Domain.MatchTracking.MatchEvents;
@@ -14,6 +15,8 @@ namespace SportsStatistics.Infrastructure.Database;
 
 internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
 {
+    public DbSet<Club> Clubs { get; set; }
+
     public DbSet<Competition> Competitions { get; set; }
 
     public DbSet<Fixture> Fixtures { get; set; }
