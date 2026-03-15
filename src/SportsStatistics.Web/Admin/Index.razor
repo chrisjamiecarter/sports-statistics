@@ -11,16 +11,23 @@
     <FluentDivider />
 
     <FluentStack Wrap="@true">
+        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Club))">
+            <FluentIcon Value="@(new Icons.Regular.Size48.People())" />
+            <FluentLabel Weight="FontWeight.Bold">Club Management</FluentLabel>
+            <FluentLabel>Manage club details</FluentLabel>
+            <FluentButton Appearance="Appearance.Accent">Manage Club</FluentButton>
+        </FluentCard>
+
         <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Players))">
-            <FluentLabel>Players / Team Management</FluentLabel>
-            <p>Manage players, positions, and squad details</p>
-            <FluentButton Appearance="Appearance.Accent">Go to Players</FluentButton>
+            <FluentLabel Weight="FontWeight.Bold">Players Management</FluentLabel>
+            <FluentLabel>Manage players, positions, and squad details</FluentLabel>
+            <FluentButton Appearance="Appearance.Accent">Manage Players</FluentButton>
         </FluentCard>
 
         <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Fixtures))">
-            <FluentLabel>Fixtures Management</FluentLabel>
-            <p>Manage fixtures, results, and match data.</p>
-            <FluentButton Appearance="Appearance.Accent">Go to Fixtures</FluentButton>
+            <FluentLabel Weight="FontWeight.Bold">Fixtures Management</FluentLabel>
+            <FluentLabel>Manage fixtures, results, and match data.</FluentLabel>
+            <FluentButton Appearance="Appearance.Accent">Manage Fixtures</FluentButton>
         </FluentCard>
     </FluentStack>
 
