@@ -1,15 +1,10 @@
-﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
 using SportsStatistics.Domain.Clubs;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Clubs.GetClub;
-
-public sealed record GetClubQuery : IQuery<ClubResponse>;
-
-public sealed record ClubResponse(Guid ClubId, string Name);
 
 internal sealed class GetClubQueryHandler(IApplicationDbContext dbContext) : IQueryHandler<GetClubQuery, ClubResponse>
 {

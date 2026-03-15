@@ -26,7 +26,8 @@ public static class DependencyInjection
 
         builder.AddAuthorizationInternal();
 
-        builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        builder.Services.AddScoped<IDbContextFactory<ApplicationDbContext>, ApplicationDbContextFactory<ApplicationDbContext>>();
+        builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
         builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
         builder.Services.AddScoped<IDatabaseSeederService, DatabaseSeederService>();

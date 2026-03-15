@@ -36,6 +36,7 @@ internal static class DependencyInjection
         builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, includeInternalTypes: true);
 
         builder.Services.AddScoped<IMessenger, Messenger>();
+        builder.Services.AddScoped<IClubNameService, ClubNameService>();
 
         return builder;
     }

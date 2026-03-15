@@ -89,27 +89,32 @@
 
     [Parameter] public TimeSpan GameClock { get; set; }
 
-    private string FormattedGameClock => $"{GameClock.TotalMinutes:00}:{GameClock.Seconds:00}";
-
-    private string FormattedCountdownClock => $"{(Fixture?.KickoffTimeUtc - DateTime.UtcNow):HH:mm:ss}";
-
-    private const string TeamNamePlaceholder = "Sports Statistics FC";
     private const string HomeNamePlaceholder = "Home Team";
     private const string AwayNamePlaceholder = "Away Team";
 
+    private string FormattedGameClock => $"{GameClock.TotalMinutes:00}:{GameClock.Seconds:00}";
+    private string FormattedCountdownClock => $"{(Fixture?.KickoffTimeUtc - DateTime.UtcNow):HH:mm:ss}";
+
+    private string _clubName = string.Empty;
+
     private string HomeTeamName => Fixture?.Location switch
     {
-        "Home" => TeamNamePlaceholder,
+        "Home" => _clubName,
         "Away" => Fixture?.Opponent ?? HomeNamePlaceholder,
-        "Neutral" => TeamNamePlaceholder,
+        "Neutral" => _clubName,
         _ => HomeNamePlaceholder
     };
 
     private string AwayTeamName => Fixture?.Location switch
     {
         "Home" => Fixture?.Opponent ?? AwayNamePlaceholder,
-        "Away" => TeamNamePlaceholder,
+        "Away" => _clubName,
         "Neutral" => AwayNamePlaceholder,
         _ => AwayNamePlaceholder
     };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _clubName = await ClubNameService.GetClubNameAsync();
+    }
 }

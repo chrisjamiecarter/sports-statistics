@@ -5,7 +5,7 @@
 <main>
     <FluentLayout>
         <FluentHeader>
-            Sports Statistics
+            @ClubName
             
             <FluentSpacer />
             
@@ -50,6 +50,13 @@
 
 @code {
     public DesignThemeModes Mode { get; set; }
+
+    private string ClubName { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClubName = await ClubNameService.GetClubNameAsync();
+    }
 
     private void OnLoaded(LoadedEventArgs e)
     {
