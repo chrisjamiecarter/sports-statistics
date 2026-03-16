@@ -5,35 +5,28 @@ public static class MatchMinuteCalculator
     public static Minute Calculate(
         DateTime occuredAtUtc,
         DateTime firstHalfStartedAtUtc,
-        DateTime? secondHalfStartedAtUtc)
-    {
-        if (secondHalfStartedAtUtc is null || occuredAtUtc < secondHalfStartedAtUtc.Value)
-        {
-            return Calculate(occuredAtUtc - firstHalfStartedAtUtc, MatchPeriod.FirstHalf);
-        }
-        else
-        {
-            return Calculate(occuredAtUtc.AddMinutes(Minute.FirstHalfEndMinute) - secondHalfStartedAtUtc.Value, MatchPeriod.SecondHalf);
-        }
-    }
-
-    private static Minute Calculate(
-        TimeSpan elapsed,
+        DateTime? secondHalfStartedAtUtc,
         MatchPeriod matchPeriod)
     {
-        if (matchPeriod == MatchPeriod.FirstHalf)
+        if (matchPeriod == MatchPeriod.PreMatch || matchPeriod == MatchPeriod.FirstHalf)
         {
-            return Calculate(elapsed, Minute.FirstHalfEndMinute);
+            return Calculate(occuredAtUtc - firstHalfStartedAtUtc, Minute.FirstHalfEndMinute);
         }
-        else if (matchPeriod == MatchPeriod.SecondHalf)
+
+        if (matchPeriod == MatchPeriod.HalfTime || matchPeriod == MatchPeriod.SecondHalf)
         {
-            return Calculate(elapsed, Minute.SecondHalfEndMinute);
+            if (secondHalfStartedAtUtc is null)
+            {
+                secondHalfStartedAtUtc = occuredAtUtc;
+                //throw new InvalidOperationException($"Unable to calculate a second half minute for a null started at time.");
+            }
+
+            return Calculate(occuredAtUtc.AddMinutes(Minute.FirstHalfEndMinute) - secondHalfStartedAtUtc.Value, Minute.SecondHalfEndMinute);
         }
-        else
-        {
-            throw new InvalidOperationException($"Cannot calculate minute for match period {matchPeriod}");
-        }
+
+        throw new InvalidOperationException($"Cannot calculate minute for match period {matchPeriod}.");
     }
+    
     private static Minute Calculate(
         TimeSpan elapsed,
         int baseEndMinute)

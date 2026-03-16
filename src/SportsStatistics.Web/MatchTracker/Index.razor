@@ -128,10 +128,10 @@
     private List<PlayerDto> CurrentOnPitchPlayers =>
         StartingPlayers.Where(p => !_substitutedOffPlayerIds.Contains(p.Id)).ToList();
 
-    private DateTime? FirstHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.FirstHalfStarted.Name)?.OccurredAtUtc;
-    private DateTime? FirstHalfFinishedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.FirstHalfFinished.Name)?.OccurredAtUtc;
-    private DateTime? SecondHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.SecondHalfStarted.Name)?.OccurredAtUtc;
-    private DateTime? SecondHalfFinishedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventType == MatchEventType.SecondHalfFinished.Name)?.OccurredAtUtc;
+    private DateTime? FirstHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventTypeName == MatchEventType.FirstHalfStarted.Name)?.OccurredAtUtc;
+    private DateTime? FirstHalfFinishedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventTypeName == MatchEventType.FirstHalfFinished.Name)?.OccurredAtUtc;
+    private DateTime? SecondHalfStartedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventTypeName == MatchEventType.SecondHalfStarted.Name)?.OccurredAtUtc;
+    private DateTime? SecondHalfFinishedAtUtc => PersistedEvents.FirstOrDefault(e => e.EventTypeName == MatchEventType.SecondHalfFinished.Name)?.OccurredAtUtc;
 
     private MatchPeriod currentPeriod = MatchPeriod.PreMatch;
     private System.Timers.Timer? _timer;
@@ -275,7 +275,7 @@
     private void UpdateDisplayEvents()
     {
         DisplayEvents = PersistedEvents
-            .Select(e => new DisplayMatchEventDto(e.DisplayMinute, e.EventType, e.PlayerName ?? "", e.OccurredAtUtc))
+            .Select(e => new DisplayMatchEventDto(e.MinuteDisplay, e.EventTypeDisplay, e.OccurredAtUtc))
             .OrderBy(e => e.OccurredAtUtc)
             .ToList();
     }
@@ -292,25 +292,25 @@
                 .ToList();
 
             // Cards (yellow and red - only 1 of each max per business rule).
-            var hasYellowCard = playerEvents.Any(e => e.EventType == PlayerEventType.YellowCard.Name);
-            var hasRedCard = playerEvents.Any(e => e.EventType == PlayerEventType.RedCard.Name);
+            var hasYellowCard = playerEvents.Any(e => e.EventTypeName == PlayerEventType.YellowCard.Name);
+            var hasRedCard = playerEvents.Any(e => e.EventTypeName == PlayerEventType.RedCard.Name);
 
             // Goals.
             var goals = playerEvents
-                .Where(e => e.EventType == PlayerEventType.Goal.Name)
+                .Where(e => e.EventTypeName == PlayerEventType.Goal.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
                 .Select(e => new GoalEventDto(e.OccurredAtUtc))
                 .ToList();
             // Assists
             var assists = playerEvents
-                .Where(e => e.EventType == PlayerEventType.GoalAssist.Name)
+                .Where(e => e.EventTypeName == PlayerEventType.GoalAssist.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
                 .Select(e => new AssistEventDto(e.OccurredAtUtc))
                 .ToList();
 
             // Own Goals.
             var ownGoals = playerEvents
-                .Where(e => e.EventType == PlayerEventType.OwnGoal.Name)
+                .Where(e => e.EventTypeName == PlayerEventType.OwnGoal.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
                 .Select(e => new OwnGoalEventDto(e.OccurredAtUtc))
                 .ToList();
@@ -392,7 +392,7 @@
         matchStartedAtUtc = occuredAtUtc;
         StartTimer();
 
-        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, occuredAtUtc, null);
+        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, occuredAtUtc, null, currentPeriod);
         currentPeriod = MatchPeriod.FirstHalf;
 
         await UpdateFixtureStatusAsync(Status.InProgress);
@@ -408,7 +408,7 @@
         matchStartedAtUtc = null;
         StopTimer();
 
-        var minute = MatchMinuteCalculator.Calculate(DateTime.UtcNow, FirstHalfStartedAtUtc.Value, null);
+        var minute = MatchMinuteCalculator.Calculate(DateTime.UtcNow, FirstHalfStartedAtUtc.Value, null, currentPeriod);
         currentPeriod = MatchPeriod.HalfTime;
 
         await RecordMatchEvent(MatchEventType.FirstHalfFinished.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
@@ -423,7 +423,7 @@
         matchStartedAtUtc = occuredAtUtc;
         StartTimer();
 
-        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, FirstHalfStartedAtUtc.Value, matchStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(matchStartedAtUtc.Value, FirstHalfStartedAtUtc.Value, matchStartedAtUtc, currentPeriod);
         currentPeriod = MatchPeriod.SecondHalf;
 
         await RecordMatchEvent(MatchEventType.SecondHalfStarted.Value, minute.BaseMinute, minute.StoppageMinute, occuredAtUtc);
@@ -438,7 +438,7 @@
         matchStartedAtUtc = null;
         StopTimer();
 
-        var minute = MatchMinuteCalculator.Calculate(occuredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(occuredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc, currentPeriod);
         currentPeriod = MatchPeriod.FullTime;
 
         await UpdateFixtureStatusAsync(Status.Completed);
@@ -459,7 +459,7 @@
             await UpdateFixtureScoreAsync(Fixture.HomeGoals, Fixture.AwayGoals + 1);
         }
 
-        var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc, currentPeriod);
 
         var matchEventType = IsHomeGame ? MatchEventType.HomeGoal.Value : MatchEventType.AwayGoal.Value;
 
@@ -492,7 +492,7 @@
             await UpdateFixtureScoreAsync(Fixture.HomeGoals + 1, Fixture.AwayGoals);
         }
 
-        var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(result.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc, currentPeriod);
 
         var matchEventType = IsHomeGame ? MatchEventType.AwayGoal.Value : MatchEventType.HomeGoal.Value;
         await RecordMatchEvent(matchEventType, minute.BaseMinute, minute.StoppageMinute, result.OccurredAtUtc);
@@ -553,11 +553,11 @@
     {
         if (FirstHalfStartedAtUtc is null) return;
 
-        var minute = MatchMinuteCalculator.Calculate(playerEvent.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(playerEvent.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc, currentPeriod);
 
         if (playerEvent.PlayerEventTypeId == PlayerEventType.YellowCard.Value)
         {
-            if (PersistedEvents.Any(e => e.PlayerId == playerEvent.PlayerId && e.EventType == PlayerEventType.YellowCard.Name))
+            if (PersistedEvents.Any(e => e.PlayerId == playerEvent.PlayerId && e.EventTypeDisplay == PlayerEventType.YellowCard.Name))
             {
                 playerEvent = playerEvent with { PlayerEventTypeId = PlayerEventType.RedCard.Value };
             }
@@ -585,7 +585,7 @@
     {
         if (FirstHalfStartedAtUtc is null) return;
 
-        var minute = MatchMinuteCalculator.Calculate(substitutionEvent.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc);
+        var minute = MatchMinuteCalculator.Calculate(substitutionEvent.OccurredAtUtc, FirstHalfStartedAtUtc.Value, SecondHalfStartedAtUtc, currentPeriod);
 
         var command = new CreateSubstitutionEventCommand(
             substitutionEvent.FixtureId,
@@ -668,7 +668,7 @@
 
     private PageState GetPageState()
     {
-        if (PersistedEvents.Any(e => e.EventType == MatchEventType.FirstHalfStarted.Name))
+        if (PersistedEvents.Any(e => e.EventTypeDisplay == MatchEventType.FirstHalfStarted.Name))
         {
             return PageState.MatchTracking;
         }
@@ -683,10 +683,10 @@
 
     private bool IsMatchInProgress()
     {
-        var hasSecondHalfStarted = PersistedEvents.Any(e => e.EventType == MatchEventType.SecondHalfStarted.Name);
-        var hasSecondHalfFinished = PersistedEvents.Any(e => e.EventType == MatchEventType.SecondHalfFinished.Name);
-        var hasFirstHalfStarted = PersistedEvents.Any(e => e.EventType == MatchEventType.FirstHalfStarted.Name);
-        var hasFirstHalfFinished = PersistedEvents.Any(e => e.EventType == MatchEventType.FirstHalfFinished.Name);
+        var hasSecondHalfStarted = PersistedEvents.Any(e => e.EventTypeDisplay == MatchEventType.SecondHalfStarted.Name);
+        var hasSecondHalfFinished = PersistedEvents.Any(e => e.EventTypeDisplay == MatchEventType.SecondHalfFinished.Name);
+        var hasFirstHalfStarted = PersistedEvents.Any(e => e.EventTypeDisplay == MatchEventType.FirstHalfStarted.Name);
+        var hasFirstHalfFinished = PersistedEvents.Any(e => e.EventTypeDisplay == MatchEventType.FirstHalfFinished.Name);
 
         if (hasSecondHalfStarted && !hasSecondHalfFinished)
         {

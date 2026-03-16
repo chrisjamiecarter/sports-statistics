@@ -1,7 +1,6 @@
 namespace SportsStatistics.Web.MatchTracker;
 
 public sealed record DisplayMatchEventDto(
-    string DisplayMinute,
-    string EventType,
-    string PlayerName,
+    string MinuteDisplay,
+    string EventTypeDisplay,
     DateTime OccurredAtUtc);

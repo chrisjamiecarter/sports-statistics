@@ -18,10 +18,9 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
             {
                 e.Id,
                 e.FixtureId,
-                TypeName = e.Type.Name,
-                e.Minute.BaseMinute,
-                e.Minute.StoppageMinute,
-                DisplayMinute = e.Minute.Display,
+                EventTypeName = e.Type.Name,
+                EventTypeDisplay = e.Type.GetDescription(),
+                MinuteDisplay = e.Minute.Display,
                 e.OccurredAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -30,13 +29,10 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
             .Select(e => new MatchEventResponse(
                 e.Id,
                 e.FixtureId,
-                e.TypeName,
-                e.BaseMinute,
-                e.StoppageMinute,
-                e.DisplayMinute,
-                DerivePeriodName(e.BaseMinute, e.StoppageMinute),
+                e.EventTypeName,
+                e.EventTypeDisplay,
+                e.MinuteDisplay,
                 e.OccurredAtUtc,
-                null,
                 null))
             .ToList();
 
@@ -51,12 +47,10 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
                 {
                     pe.Id,
                     pe.FixtureId,
-                    TypeName = pe.Type.Name,
-                    pe.Minute.BaseMinute,
-                    pe.Minute.StoppageMinute,
-                    DisplayMinute = pe.Minute.Display,
+                    EventTypeName = pe.Type.Name,
+                    EventTypeDisplay = $"{pe.Type.GetDescription()} ({p.Name.Value})",
+                    MinuteDisplay = pe.Minute.Display,
                     pe.OccurredAtUtc,
-                    PlayerName = p.Name.Value,
                     pe.PlayerId
                 })
             .ToListAsync(cancellationToken);
@@ -65,13 +59,10 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
             .Select(e => new MatchEventResponse(
                 e.Id,
                 e.FixtureId,
-                e.TypeName,
-                e.BaseMinute,
-                e.StoppageMinute,
-                e.DisplayMinute,
-                DerivePeriodName(e.BaseMinute, e.StoppageMinute),
+                e.EventTypeName,
+                e.EventTypeDisplay,
+                e.MinuteDisplay,
                 e.OccurredAtUtc,
-                e.PlayerName,
                 e.PlayerId))
             .ToList();
 
@@ -85,8 +76,6 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
                 {
                     e.Id,
                     e.FixtureId,
-                    e.Minute.BaseMinute,
-                    e.Minute.StoppageMinute,
                     DisplayMinute = e.Minute.Display,
                     e.OccurredAtUtc,
                     PlayerOffName = playerOff.Name.Value,
@@ -100,11 +89,10 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
                 {
                     x.Id,
                     x.FixtureId,
-                    x.BaseMinute,
-                    x.StoppageMinute,
                     x.DisplayMinute,
                     x.OccurredAtUtc,
-                    PlayerName = $"{x.PlayerOffName} → {playerOn.Name.Value}",
+                    x.PlayerOffName,
+                    PlayerOnName = playerOn.Name.Value,
                     x.PlayerOffId
                 })
             .ToListAsync(cancellationToken);
@@ -114,43 +102,18 @@ internal sealed class GetMatchEventsByFixtureIdQueryHandler(IApplicationDbContex
                 e.Id,
                 e.FixtureId,
                 "Substitution",
-                e.BaseMinute,
-                e.StoppageMinute,
+                $"Substitution ({e.PlayerOffName} → {e.PlayerOnName})",
                 e.DisplayMinute,
-                DerivePeriodName(e.BaseMinute, e.StoppageMinute),
                 e.OccurredAtUtc,
-                e.PlayerName,
                 e.PlayerOffId))
             .ToList();
 
         var allEvents = matchEventResponses
             .Concat(playerEventResponses)
             .Concat(substitutionEventResponses)
-            .OrderBy(e => e.BaseMinute)
-            .ThenBy(e => e.StoppageMinute ?? 0)
-            .ThenBy(e => e.OccurredAtUtc)
+            .OrderBy(e => e.OccurredAtUtc)
             .ToList();
 
         return allEvents;
-    }
-
-    private static string DerivePeriodName(int baseMinute, int? stoppageMinute)
-    {
-        if (stoppageMinute.HasValue)
-        {
-            return baseMinute switch
-            {
-                45 => "FirstHalfStoppage",
-                90 => "SecondHalfStoppage",
-                _ => "FirstHalf"
-            };
-        }
-
-        return baseMinute switch
-        {
-            >= 1 and <= 45 => "FirstHalf",
-            >= 46 and <= 90 => "SecondHalf",
-            _ => "FirstHalf"
-        };
     }
 }
