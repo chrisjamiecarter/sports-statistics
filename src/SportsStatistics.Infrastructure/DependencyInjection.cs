@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Abstractions.Data;
@@ -16,18 +17,19 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-        builder.AddSqlServerDbContext<ApplicationDbContext>(Resources.SqlDatabase, configureDbContextOptions: options =>
+        var connectionString = builder.Configuration.GetConnectionString(Resources.SqlDatabase) ?? throw new InvalidOperationException($"Unable to get connection string.");
+        
+        builder.Services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
         {
-            options.UseSqlServer(sqlOptions =>
+            options.UseSqlServer(connectionString, sqlOptions =>
             {
                 sqlOptions.MigrationsHistoryTable(Schemas.MigrationsHistory.Table, Schemas.MigrationsHistory.Schema);
             });
-        });
+        }, ServiceLifetime.Transient);
+        
+        builder.EnrichSqlServerDbContext<ApplicationDbContext>();
 
         builder.AddAuthorizationInternal();
-
-        builder.Services.AddScoped<IDbContextFactory<ApplicationDbContext>, ApplicationDbContextFactory<ApplicationDbContext>>();
-        builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
         builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
         builder.Services.AddScoped<IDatabaseSeederService, DatabaseSeederService>();
