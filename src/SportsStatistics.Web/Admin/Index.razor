@@ -4,31 +4,39 @@
 
 <PageTitle>Admin</PageTitle>
 
-<FluentCard>
+<FluentStack Orientation="Orientation.Vertical">
+    <FluentGrid>
+        <FluentGridItem xs="12" sm="12" md="12" lg="4">
+            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Club))">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start" Gap="12">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.Building())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Club Management</FluentLabel>
+                    <FluentLabel>Manage club details, stadium information, and club branding.</FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent">Manage Club</FluentButton>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
 
-    <FluentLabel>Admin Dashboard</FluentLabel>
+        <FluentGridItem xs="12" sm="12" md="12" lg="4">
+            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Players))">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start" Gap="12">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.PeopleSettings())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Players Management</FluentLabel>
+                    <FluentLabel>Manage players, positions, squad numbers, and player statistics.</FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent">Manage Players</FluentButton>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
 
-    <FluentDivider />
-
-    <FluentStack Wrap="@true">
-        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Club))">
-            <FluentIcon Value="@(new Icons.Regular.Size48.People())" />
-            <FluentLabel Weight="FontWeight.Bold">Club Management</FluentLabel>
-            <FluentLabel>Manage club details</FluentLabel>
-            <FluentButton Appearance="Appearance.Accent">Manage Club</FluentButton>
-        </FluentCard>
-
-        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Players))">
-            <FluentLabel Weight="FontWeight.Bold">Players Management</FluentLabel>
-            <FluentLabel>Manage players, positions, and squad details</FluentLabel>
-            <FluentButton Appearance="Appearance.Accent">Manage Players</FluentButton>
-        </FluentCard>
-
-        <FluentCard onclick="@(() => Navigation.NavigateTo(Routes.Admin.Fixtures))">
-            <FluentLabel Weight="FontWeight.Bold">Fixtures Management</FluentLabel>
-            <FluentLabel>Manage fixtures, results, and match data.</FluentLabel>
-            <FluentButton Appearance="Appearance.Accent">Manage Fixtures</FluentButton>
-        </FluentCard>
-    </FluentStack>
-
-</FluentCard>
+        <FluentGridItem xs="12" sm="12" md="12" lg="4">
+            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Fixtures))">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start" Gap="12">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.CalendarSettings())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Fixtures Management</FluentLabel>
+                    <FluentLabel>Manage fixtures, results, seasons, competitions, and match data.</FluentLabel>
+                    <FluentButton Appearance="Appearance.Accent">Manage Fixtures</FluentButton>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+</FluentStack>
