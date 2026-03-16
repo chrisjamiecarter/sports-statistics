@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace SportsStatistics.SharedKernel;
 
@@ -95,6 +96,16 @@ public abstract class Enumeration<TEnum> : IComparable<Enumeration<TEnum>>, IEqu
     }
 
     public override string ToString() => Name;
+
+    public string GetDescription()
+    {
+        var field = GetType().GetField(Name, BindingFlags.Public | BindingFlags.Static);
+        var displayAttribute = field?.GetCustomAttribute<DisplayAttribute>();
+
+        return displayAttribute?.Name is not null 
+            ? displayAttribute.Name 
+            : Name;
+    }
 
     private static List<TEnum> GetAllEnumerationOptions()
     {
