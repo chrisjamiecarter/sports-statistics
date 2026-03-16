@@ -291,24 +291,21 @@
                 .Where(e => e.PlayerId == player.Id)
                 .ToList();
 
-            // Cards (yellow and red - only 1 of each max per business rule).
             var hasYellowCard = playerEvents.Any(e => e.EventTypeName == PlayerEventType.YellowCard.Name);
             var hasRedCard = playerEvents.Any(e => e.EventTypeName == PlayerEventType.RedCard.Name);
 
-            // Goals.
             var goals = playerEvents
                 .Where(e => e.EventTypeName == PlayerEventType.Goal.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
                 .Select(e => new GoalEventDto(e.OccurredAtUtc))
                 .ToList();
-            // Assists
+
             var assists = playerEvents
                 .Where(e => e.EventTypeName == PlayerEventType.GoalAssist.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
                 .Select(e => new AssistEventDto(e.OccurredAtUtc))
                 .ToList();
 
-            // Own Goals.
             var ownGoals = playerEvents
                 .Where(e => e.EventTypeName == PlayerEventType.OwnGoal.Name)
                 .OrderByDescending(e => e.OccurredAtUtc)
@@ -316,7 +313,6 @@
                 .ToList();
 
 
-            // Substitution
             SubstitutionStatusDto? substitution = null;
             if (_substitutedOffPlayerIds.Contains(player.Id))
             {

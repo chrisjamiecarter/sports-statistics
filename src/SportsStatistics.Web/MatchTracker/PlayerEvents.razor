@@ -6,71 +6,83 @@
 
 <FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
     
-    <FluentDataGrid Items="@OrderedPlayers" ShowHover="@true" RowSize="DataGridRowSize.Medium" GridTemplateColumns="0.20fr 0.10fr 0.40fr 0.30fr 0.20fr 0.20fr 0.20fr 0.20fr 0.20fr 0.20fr 0.20fr">
-        <TemplateColumn Title="" Align="Align.Center">
-            @if (PlayerStatuses.TryGetValue(context.Id, out var status) && status.HasAnyStatus)
+    <FluentDataGrid 
+        Items="@OrderedPlayers"
+        ShowHover="@true"
+        RowSize="DataGridRowSize.Medium"
+                    GridTemplateColumns="auto auto auto auto auto 0.5fr 2fr 1fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr auto">
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var cardStatus))
             {
-                <div class="player-status">
-
-                    @* Cards: Yellow + Red overlapping, or single card *@
-                    @if (status.HasYellowCard && status.HasRedCard)
-                    {
-                        <div class="icon-stack" title="Yellow Card, Red Card">
-                            <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Title="Yellow Card" Style="z-index: 1; margin-right: -1.25rem; margin-top:1px;" />
-                            <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Title="Red Card" Style="z-index: 2; margin-bottom:1px;" />
-                        </div>
-                    }
-                    else if (status.HasYellowCard)
-                    {
-                        <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Title="Yellow Card" />
-                    }
-                    else if (status.HasRedCard)
-                    {
-                        <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Title="Red Card" />
-                    }
-
-                    @* Goals - single icon with count in title *@
-                    @if (status.HasGoals)
-                    {
-                        var goalCount = status.Goals.Count;
-                        <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Neutral))" Title="@(goalCount == 1 ? "1 Goal" : $"{goalCount} Goals")" />
-                    }
-
-                    @* Assists - single icon with count in title *@
-                    @if (status.HasAssists)
-                    {
-                        var assistCount = status.Assists.Count;
-                        <FluentIcon Value="@(new Icons.Filled.Size20.Handshake().WithColor(Color.Neutral))" Title="@(assistCount == 1 ? "1 Assist" : $"{assistCount} Assists")" />
-                    }
-
-                    @* Own Goals - single icon with count in title *@
-                    @if (status.HasOwnGoals)
-                    {
-                        var ownGoalsCount = status.OwnGoals.Count;
-                        <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Error))" Title="@(ownGoalsCount == 1 ? "1 Own Goal" : $"{ownGoalsCount} Own Goals")" />
-                    }
-
-                    @* Substitution - single icon *@
-                    @if (status.Substitution is not null)
-                    {
-                        @if (status.Substitution.IsSubstitutedOff)
-                        {
-                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowLeft().WithColor(Color.Error))" Title="Substituted Off" />
-                        }
-                        else if (status.Substitution.IsSubstitutedOn)
-                        {
-                            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowRight().WithColor(Color.Success))" Title="Substituted On" />
-                        }
-                    }
-                </div>
+                if (cardStatus.HasRedCard)
+                {
+                    <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Title="Red Card" />
+                }
+                else if (cardStatus.HasYellowCard)
+                {
+                    <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Title="Yellow Card" />
+                }
             }
         </TemplateColumn>
-        <PropertyColumn Property="@(player => player.SquadNumber)" Title="#" />
-        <TemplateColumn Title="Name">
-            @context.Name
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var goalStatus))
+            {
+                @if (goalStatus.HasGoals)
+                {
+                    var goalCount = goalStatus.Goals.Count;
+                    <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Neutral))" Title="@(goalCount == 1 ? "1 Goal" : $"{goalCount} Goals")" />
+                }
+            }
         </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var assistStatus))
+            {
+                @if (assistStatus.HasAssists)
+                {
+                    var assistCount = assistStatus.Assists.Count;
+                    <FluentIcon Value="@(new Icons.Filled.Size20.Handshake().WithColor(Color.Neutral))" Title="@(assistCount == 1 ? "1 Assist" : $"{assistCount} Assists")" />
+                }
+            }
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var ownGoalStatus))
+            {
+                @if (ownGoalStatus.HasOwnGoals)
+                {
+                    var ownGoalsCount = ownGoalStatus.OwnGoals.Count;
+                    <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Error))" Title="@(ownGoalsCount == 1 ? "1 Own Goal" : $"{ownGoalsCount} Own Goals")" />
+                }
+            }
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var subStatus))
+            {
+                @if (subStatus.Substitution is not null)
+                {
+                    @if (subStatus.Substitution.IsSubstitutedOff)
+                    {
+                        <FluentIcon Value="@(new Icons.Filled.Size20.ArrowLeft().WithColor(Color.Error))" Title="Substituted Off" />
+                    }
+                    else if (subStatus.Substitution.IsSubstitutedOn)
+                    {
+                        <FluentIcon Value="@(new Icons.Filled.Size20.ArrowRight().WithColor(Color.Success))" Title="Substituted On" />
+                    }
+                }
+            }
+        </TemplateColumn>
+
+        <PropertyColumn Property="@(player => player.SquadNumber)" Title="#" />
+
+        <PropertyColumn Property="@(player => player.Name)" Title="Name" />
+
         <PropertyColumn Property="@(player => player.PositionName)" Title="Position" />
-        <TemplateColumn Title="Defensive" Align="Align.Center">
+
+        <TemplateColumn Title="Defence" Align="Align.Center">
             @if (context.IsGoalkeeper)
             {
                 <FluentButton IconEnd="@(new Icons.Filled.Size20.ShieldPerson())" Appearance="Appearance.Neutral" OnClick="@(() => AddSave(context))" Title="Save" Disabled="@(!CanPlayerAct(context))" />
@@ -80,26 +92,33 @@
                 <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonLightning())" Appearance="Appearance.Neutral" OnClick="@(() => AddTackle(context))" Title="Tackle" Disabled="@(!CanPlayerAct(context))" />
             }
         </TemplateColumn>
+
         <TemplateColumn Title="Passing" Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassSuccess(context))" Title="Pass Success" Disabled="@(!CanPlayerAct(context))" />
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassFailure(context))" Title="Pass Failure" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
+
         <TemplateColumn Title="Shooting" Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.Target().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOnTarget(context))" Title="Shot On Target" Disabled="@(!CanPlayerAct(context))" />
             <FluentButton IconEnd="@(new Icons.Filled.Size20.TargetDismiss().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOffTarget(context))" Title="Shot Off Target" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
+
         <TemplateColumn Title="Fouls" Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceeded" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceded" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
-        <TemplateColumn Title="Discipline" Align="Align.Center">
+
+        <TemplateColumn Title="Cards" Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Appearance="Appearance.Neutral" OnClick="@(() => AddYellowCard(context))" Title="Yellow Card" Disabled="@(!CanPlayerAct(context))" />
             <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
-        <TemplateColumn Align="Align.End">
+
+        <TemplateColumn Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => SubstitutePlayerClicked(context))" Disabled="@(!CanSubstitutePlayer(context))" />
         </TemplateColumn>
+
     </FluentDataGrid>
+
 </FluentStack>
 
     @code {
