@@ -5,36 +5,36 @@
 <PageTitle>Admin</PageTitle>
 
 <FluentStack Orientation="Orientation.Vertical">
-    <FluentGrid>
+    <FluentGrid Style="width: 100%;">
         <FluentGridItem xs="12" sm="12" md="12" lg="4">
             <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Club))">
-                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start" Gap="12">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
                     <FluentIcon Value="@(new Icons.Regular.Size32.Building())" Color="Color.Accent" />
                     <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Club Management</FluentLabel>
+                    <FluentSpacer />
                     <FluentLabel>Manage club details, stadium information, and club branding.</FluentLabel>
-                    <FluentButton Appearance="Appearance.Accent">Manage Club</FluentButton>
                 </FluentStack>
             </FluentCard>
         </FluentGridItem>
 
         <FluentGridItem xs="12" sm="12" md="12" lg="4">
             <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Players))">
-                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start" Gap="12">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
                     <FluentIcon Value="@(new Icons.Regular.Size32.PeopleSettings())" Color="Color.Accent" />
                     <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Players Management</FluentLabel>
+                    <FluentSpacer />
                     <FluentLabel>Manage players, positions, squad numbers, and player statistics.</FluentLabel>
-                    <FluentButton Appearance="Appearance.Accent">Manage Players</FluentButton>
                 </FluentStack>
             </FluentCard>
         </FluentGridItem>
 
         <FluentGridItem xs="12" sm="12" md="12" lg="4">
             <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Fixtures))">
-                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start" Gap="12">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
                     <FluentIcon Value="@(new Icons.Regular.Size32.CalendarSettings())" Color="Color.Accent" />
                     <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Fixtures Management</FluentLabel>
+                    <FluentSpacer />
                     <FluentLabel>Manage fixtures, results, seasons, competitions, and match data.</FluentLabel>
-                    <FluentButton Appearance="Appearance.Accent">Manage Fixtures</FluentButton>
                 </FluentStack>
             </FluentCard>
         </FluentGridItem>
