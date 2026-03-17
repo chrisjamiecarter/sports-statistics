@@ -8,10 +8,7 @@ internal sealed class GetRecentFormQueryValidator
 {
     public GetRecentFormQueryValidator()
     {
-        RuleFor(query => query.SeasonId)
-            .NotEmpty().WithError(GetRecentFormQueryErrors.SeasonIdRequired);
-
         RuleFor(query => query.Count)
-            .GreaterThan(0).WithError(GetRecentFormQueryErrors.SeasonIdRequired);
+            .GreaterThan(0).WithError(GetRecentFormQueryErrors.CountLessThanOrEqualToZero);
     }
 }
