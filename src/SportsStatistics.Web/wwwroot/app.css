@@ -220,3 +220,12 @@ code {
 .full-width {
     width: 100%;
 }
+
+fluent-badge {
+    --badge-fill-win: rgba(0, 152, 95, 1.0);
+    --badge-fill-draw: rgba(141, 148, 153, 1.0);
+    --badge-fill-loss: rgba(221, 54, 54, 1.0);
+    --badge-color-win: white;
+    --badge-color-draw: white;
+    --badge-color-loss: white;
+}
