@@ -9,9 +9,9 @@
     <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
     <nav class="sitenav" aria-labelledby="main-menu">
         <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
-            <FluentNavLink Href="@(Routes.Home)" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
             <AuthorizeView>
                 <Authorized>
+                    <FluentNavLink Href="@(Routes.Home)" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
                     <FluentNavGroup Href="@(Routes.Admin.Index)" Icon="@(new Icons.Regular.Size20.Settings())" IconColor="Color.Accent" Title="Admin">
                         <FluentNavLink Href="@(Routes.Admin.Club)" Icon="@(new Icons.Regular.Size20.Building())" IconColor="Color.Accent">Club</FluentNavLink>
                         <FluentNavLink Href="@(Routes.Admin.Players)" Icon="@(new Icons.Regular.Size20.PeopleSettings())" IconColor="Color.Accent">Players</FluentNavLink>

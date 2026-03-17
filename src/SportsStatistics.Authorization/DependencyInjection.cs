@@ -40,7 +40,12 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<IdentityDbContext>()
         .AddDefaultTokenProviders();
 
-        //builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/signin";
+            options.LogoutPath = "/signout";
+            options.AccessDeniedPath = "/signin";
+        });
 
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingServerAuthenticationStateProvider>();
