@@ -1,0 +1,368 @@
+﻿@page "/"
+@using SportsStatistics.Application.Abstractions.Messaging
+@using SportsStatistics.Application.Fixtures.GetNext
+@using SportsStatistics.Application.Fixtures.GetPrevious
+@using SportsStatistics.Application.Fixtures.GetRecentForm
+@using SportsStatistics.Application.Fixtures.GetSeasonStatistics
+@using SportsStatistics.Application.Fixtures.GetTodays
+@using SportsStatistics.Application.Seasons.GetCurrent
+@using SportsStatistics.Domain.Fixtures
+@using SportsStatistics.Web.Abstractions.Messaging
+
+<PageTitle>Home</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical">
+
+    <FluentGrid Style="width: 100%;">
+
+    <!-- Previous Fixture Card -->
+    <FluentGridItem xs="12" sm="12" md="6" lg="4">
+        <FluentCard Style="height: 100%;">
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H4">Previous Fixture</FluentLabel>
+                <FluentDivider />
+                @if (PreviousFixture is null)
+                {
+                    <FluentLabel>No previous fixtures</FluentLabel>
+                }
+                else
+                {
+                    <FluentStack Orientation="Orientation.Vertical">
+                        <FluentLabel Typo="Typography.Body">@PreviousFixture.CompetitionName</FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal">
+                            <FluentLabel Weight="FontWeight.Bold">
+                                @if (PreviousFixture.Location == "Home" || PreviousFixture.Location == "Neutral")
+                                {
+                                    @ClubName
+                                }
+                                else
+                                {
+                                    @PreviousFixture.Opponent
+                                }
+                            </FluentLabel>
+                            <FluentLabel>-</FluentLabel>
+                            <FluentLabel Weight="FontWeight.Bold">
+                                @if (PreviousFixture.Location == "Home" || PreviousFixture.Location == "Neutral")
+                                {
+                                    @PreviousFixture.Opponent
+                                }
+                                else
+                                {
+                                    @ClubName
+                                }
+                            </FluentLabel>
+                        </FluentStack>
+                        <FluentLabel Typo="Typography.Body">
+                            @PreviousFixture.HomeGoals - @PreviousFixture.AwayGoals (@PreviousFixture.OutcomeOrStatus)
+                        </FluentLabel>
+                        <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+                            @PreviousFixture.KickoffTimeLocal.ToString("dd MMM yyyy")
+                        </FluentLabel>
+                    </FluentStack>
+                }
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+
+    <!-- Today's Fixture Card -->
+    <FluentGridItem xs="12" sm="12" md="6" lg="4">
+        <FluentCard Style="height: 100%;">
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H4">Today's Fixture</FluentLabel>
+                <FluentDivider />
+                @if (TodaysFixture is null)
+                {
+                    <FluentLabel>No fixture today</FluentLabel>
+                }
+                else
+                {
+                    <FluentStack Orientation="Orientation.Vertical">
+                        <FluentLabel Typo="Typography.Body">@TodaysFixture.CompetitionName</FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal">
+                            <FluentLabel Weight="FontWeight.Bold">
+                                @if (TodaysFixture.Location == "Home" || TodaysFixture.Location == "Neutral")
+                                {
+                                    @ClubName
+                                }
+                                else
+                                {
+                                    @TodaysFixture.Opponent
+                                }
+                            </FluentLabel>
+                            <FluentLabel>-</FluentLabel>
+                            <FluentLabel Weight="FontWeight.Bold">
+                                @if (TodaysFixture.Location == "Home" || TodaysFixture.Location == "Neutral")
+                                {
+                                    @TodaysFixture.Opponent
+                                }
+                                else
+                                {
+                                    @ClubName
+                                }
+                            </FluentLabel>
+                        </FluentStack>
+                            <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+                            @TodaysFixture.KickoffTimeLocal.ToString("HH:mm")
+                            (@TodaysFixture.OutcomeOrStatus)
+                        </FluentLabel>
+                    </FluentStack>
+                }
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+
+    <!-- Next Fixture Card -->
+    <FluentGridItem xs="12" sm="12" md="6" lg="4">
+        <FluentCard Style="height: 100%;">
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H4">Next Fixture</FluentLabel>
+                <FluentDivider />
+                @if (NextFixture is null)
+                {
+                    <FluentLabel>No upcoming fixtures</FluentLabel>
+                }
+                else
+                {
+                    <FluentStack Orientation="Orientation.Vertical">
+                            <FluentLabel Typo="Typography.Body">@NextFixture.CompetitionName</FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal">
+                            <FluentLabel Weight="FontWeight.Bold">
+                                @if (NextFixture.Location == "Home" || NextFixture.Location == "Neutral")
+                                {
+                                    @ClubName
+                                }
+                                else
+                                {
+                                    @NextFixture.Opponent
+                                }
+                            </FluentLabel>
+                            <FluentLabel>-</FluentLabel>
+                            <FluentLabel Weight="FontWeight.Bold">
+                                @if (NextFixture.Location == "Home" || NextFixture.Location == "Neutral")
+                                {
+                                    @NextFixture.Opponent
+                                }
+                                else
+                                {
+                                    @ClubName
+                                }
+                            </FluentLabel>
+                        </FluentStack>
+                            <FluentLabel Typo="Typography.Body" Color="Color.Lightweight">
+                            @NextFixture.KickoffTimeLocal.ToString("dd MMM yyyy HH:mm")
+                        </FluentLabel>
+                    </FluentStack>
+                }
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+
+    <!-- Season Statistics Card -->
+    <FluentGridItem xs="12" sm="12" md="6" lg="6">
+        <FluentCard Style="height: 100%;">
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                <FluentStack Orientation="Orientation.Horizontal" Gap="8px">
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H4">Season Statistics</FluentLabel>
+                    @if (CurrentSeason is not null)
+                    {
+                        <FluentBadge Appearance="Appearance.Accent">@CurrentSeason.Name</FluentBadge>
+                    }
+                </FluentStack>
+                <FluentDivider />
+                @if (SeasonStatistics is null || CurrentSeason is null)
+                {
+                    <FluentLabel>No active season</FluentLabel>
+                }
+                else
+                {
+                    <FluentGrid>
+                        <FluentGridItem xs="4">
+                            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+                                <FluentLabel Typo="Typography.H3" Weight="FontWeight.Bold">@SeasonStatistics.GamesPlayed</FluentLabel>
+                                    <FluentLabel Typo="Typography.Body">Played</FluentLabel>
+                            </FluentStack>
+                        </FluentGridItem>
+                        <FluentGridItem xs="8">
+                            <FluentStack Orientation="Orientation.Horizontal" Gap="16px">
+                                <FluentStack Orientation="Orientation.Vertical">
+                                    <FluentLabel Weight="FontWeight.Bold" Color="Color.Success">@SeasonStatistics.Wins W</FluentLabel>
+                                    <FluentLabel Weight="FontWeight.Bold" Color="Color.Warning">@SeasonStatistics.Draws D</FluentLabel>
+                                    <FluentLabel Weight="FontWeight.Bold" Color="Color.Error">@SeasonStatistics.Losses L</FluentLabel>
+                                </FluentStack>
+                                <FluentStack Orientation="Orientation.Vertical">
+                                    <FluentLabel>GF: @SeasonStatistics.GoalsFor</FluentLabel>
+                                    <FluentLabel>GA: @SeasonStatistics.GoalsAgainst</FluentLabel>
+                                    <FluentLabel>GD: @(SeasonStatistics.GoalDifference >= 0 ? $"+{SeasonStatistics.GoalDifference}" : $"{SeasonStatistics.GoalDifference}")</FluentLabel>
+                                </FluentStack>
+                            </FluentStack>
+                        </FluentGridItem>
+                    </FluentGrid>
+                }
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+
+    <!-- Recent Form Card -->
+    <FluentGridItem xs="12" sm="12" md="6" lg="6">
+        <FluentCard Style="height: 100%;">
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H4">Recent Form</FluentLabel>
+                <FluentDivider />
+                @if (RecentForm is null)
+                {
+                    <FluentLabel>No recent form data</FluentLabel>
+                }
+                else
+                {
+                    <FluentStack Orientation="Orientation.Horizontal">
+                            @foreach (var result in RecentForm.Items)
+                        {
+                            <FluentCard Style="min-width: 50px; text-align: center; padding: 8px;">
+                                <FluentStack Orientation="Orientation.Vertical">
+                                    <FluentLabel Weight="FontWeight.Bold"
+                                                 Color="@(result.Result == "W" ? Color.Success : result.Result == "D" ? Color.Warning : Color.Error)">
+                                        @result.Result
+                                    </FluentLabel>
+                                    <FluentLabel Typo="Typography.Body">@result.HomeGoals-@result.AwayGoals</FluentLabel>
+                                </FluentStack>
+                            </FluentCard>
+                        }
+                    </FluentStack>
+                }
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+
+        <!-- Admin Navigation Card -->
+        <FluentGridItem xs="12" sm="12" md="12" lg="4">
+            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Index))">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.Settings())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Admin</FluentLabel>
+                    <FluentSpacer />
+                    <FluentLabel>Manage club, players, and fixtures.</FluentLabel>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
+
+        <!-- Match Tracker Navigation Card -->
+        <FluentGridItem xs="12" sm="12" md="12" lg="4">
+            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.MatchTracker))">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.Timer())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Match Tracker</FluentLabel>
+                    <FluentSpacer />
+                    <FluentLabel>Track match events live.</FluentLabel>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
+
+        <!-- Reports Navigation Card -->
+        <FluentGridItem xs="12" sm="12" md="12" lg="4"">
+            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Reports))">
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.ChartMultiple())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Reports</FluentLabel>
+                    <FluentSpacer />
+                    <FluentLabel>View statistics, performance trends, and match history.</FluentLabel>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
+
+    </FluentGrid>
+
+</FluentStack>
+
+@code {
+    private FixtureCardDto? PreviousFixture { get; set; }
+    private FixtureCardDto? TodaysFixture { get; set; }
+    private FixtureCardDto? NextFixture { get; set; }
+    private SeasonStatisticCardDto? SeasonStatistics { get; set; }
+    private RecentFormCardDto? RecentForm { get; set; }
+    private CurrentSeasonDto? CurrentSeason { get; set; }
+    private string ClubName { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClubName = await ClubNameService.GetClubNameAsync();
+
+        var currentSeasonResult = await Messenger.SendAsync(new GetCurrentSeasonQuery());
+        if (currentSeasonResult.IsSuccess)
+        {
+            var currentSeason = currentSeasonResult.Value;
+            CurrentSeason = new CurrentSeasonDto(currentSeason.Name);
+
+            var seasonStatisticsResult = await Messenger.SendAsync(new GetSeasonStatisticsQuery(currentSeason.SeasonId));
+            if (seasonStatisticsResult.IsSuccess)
+            {
+                var seasonStatistics = seasonStatisticsResult.Value;
+                SeasonStatistics = new SeasonStatisticCardDto(
+                    seasonStatistics.GamesPlayed,
+                    seasonStatistics.Wins,
+                    seasonStatistics.Draws,
+                    seasonStatistics.Losses,
+                    seasonStatistics.GoalsFor,
+                    seasonStatistics.GoalsAgainst,
+                    seasonStatistics.GoalDifference);
+            }
+
+            var recentFormResult = await Messenger.SendAsync(new GetRecentFormQuery(currentSeason.SeasonId));
+            if (recentFormResult.IsSuccess)
+            {
+                var recentForm = recentFormResult.Value;
+                RecentForm = new RecentFormCardDto(
+                    recentForm.Select(item => new RecentFormItemDto(
+                        item.Outcome.Name,
+                        item.HomeGoals,
+                        item.AwayGoals)).ToList());
+            }
+        }
+
+        var todayStart = new DateTime(DateOnly.FromDateTime(DateTime.Now), TimeOnly.MinValue);
+        var previousFixtureResult = await Messenger.SendAsync(new GetPreviousFixtureQuery(todayStart));
+        if (previousFixtureResult.IsSuccess)
+        {
+            var fixture = previousFixtureResult.Value;
+            PreviousFixture = new FixtureCardDto(
+                fixture.Id,
+                fixture.CompetitionName,
+                fixture.Opponent,
+                fixture.Location.Name,
+                fixture.KickoffTimeUtc.ToLocalTime(),
+                fixture.Score.HomeGoals,
+                fixture.Score.AwayGoals,
+                fixture.Outcome.Name);
+        }
+
+        var todaysFixtureResult = await Messenger.SendAsync(new GetTodaysFixtureQuery());
+        if (todaysFixtureResult.IsSuccess)
+        {
+            var fixture = todaysFixtureResult.Value;
+            TodaysFixture = new FixtureCardDto(
+                fixture.Id,
+                fixture.CompetitionName,
+                fixture.Opponent,
+                fixture.Location.Name,
+                fixture.KickoffTimeUtc.ToLocalTime(),
+                fixture.Score.HomeGoals,
+                fixture.Score.AwayGoals,
+                fixture.Outcome == Outcome.None ? fixture.Status.Name : fixture.Outcome.Name);
+        }
+
+        var todayEnd = new DateTime(DateOnly.FromDateTime(DateTime.Now), TimeOnly.MaxValue);
+        var nextFixtureResult = await Messenger.SendAsync(new GetNextFixtureQuery(todayEnd));
+        if (nextFixtureResult.IsSuccess)
+        {
+            var fixture = nextFixtureResult.Value;
+            NextFixture = new FixtureCardDto(
+                fixture.Id,
+                fixture.CompetitionName,
+                fixture.Opponent,
+                fixture.Location.Name,
+                fixture.KickoffTimeUtc.ToLocalTime(),
+                0,
+                0,
+                fixture.Status.Name);
+        }
+    }
+}

@@ -46,6 +46,16 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
 
     public bool Deleted { get; private set; }
 
+    public int ClubGoals => Location == Location.Home || Location == Location.Neutral
+        ? Score.HomeGoals
+        : Score.AwayGoals;
+
+    public int OpponentGoals => Location == Location.Home || Location == Location.Neutral
+            ? Score.AwayGoals
+            : Score.HomeGoals;
+
+    public Outcome Outcome => GetOutcome();
+
     internal static Fixture Create(Competition competition, Opponent opponent, KickoffTimeUtc kickoffTimeUtc, Location location)
     {
         var fixture = new Fixture(
@@ -188,5 +198,19 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
         Raise(new FixtureDeletedDomainEvent(Id));
 
         return Result.Success();
+    }
+
+    private Outcome GetOutcome()
+    {
+        if (Status != Status.Completed)
+        {
+            return Outcome.None;
+        }
+
+        return ClubGoals > OpponentGoals
+            ? Outcome.Win
+            : ClubGoals < OpponentGoals
+                ? Outcome.Loss
+                : Outcome.Draw;
     }
 }

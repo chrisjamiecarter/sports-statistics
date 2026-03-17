@@ -4,6 +4,10 @@ namespace SportsStatistics.Domain.Seasons;
 
 public static class SeasonErrors
 {
+    public static Error NoCurrentSeasonFound(DateOnly today) => Error.Failure(
+        "Season.NoCurrentSeasonFound",
+        $"A season for '{today}' was not found.");
+
     public static Error NotCreated(DateOnly startDate, DateOnly endDate) => Error.Failure(
         "Season.NotCreated",
         $"The season with the StartDate = '{startDate}' and EndDate = '{endDate}' was not created.");

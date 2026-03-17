@@ -60,6 +60,10 @@ public static class FixtureErrors
         "Fixture.LocationNotFound",
         "The location with the specified identifier was not found.");
 
+    public static Error NoneFound => Error.Failure(
+        "Fixture.NoneFound",
+        "No fixture was found.");
+
     public static Error NotCreated(string opponent, DateTime kickoffTimeUtc, string fixtureLocationName) => Error.Failure(
         "Fixture.NotCreated",
         $"The fixture with the Opponent = '{opponent}', Kickoff Time = '{kickoffTimeUtc}' and Location = '{fixtureLocationName}' was not created.");
