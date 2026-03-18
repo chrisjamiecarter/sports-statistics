@@ -17,16 +17,20 @@
         }
         else
         {
+            <FluentSpacer />
             <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="width: 100%;">
                 @foreach (var result in Results)
                 {
-                    <FluentBadge Appearance="Appearance.Neutral" Fill="@GetScoreBadgeFill(result.Result)">
+                    <FluentSpacer />
+                    <FluentBadge Appearance="Appearance.Neutral" Fill="@GetScoreBadgeFill(result.Result)" title="@result.Opponent">
                         <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H4" Color="Color.Custom" CustomColor="white" Style="margin: 0.25rem 0.5rem;">
                             @result.HomeGoals - @result.AwayGoals
                         </FluentLabel>
                     </FluentBadge>
+                    <FluentSpacer />
                 }
             </FluentStack>
+            <FluentSpacer />
         }
     </FluentStack>
 </FluentCard>

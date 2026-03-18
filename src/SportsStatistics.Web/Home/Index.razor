@@ -15,48 +15,6 @@
 
     <FluentGrid Style="width: 100%;" Justify="JustifyContent.Center">
 
-        <!-- Admin Navigation Card -->
-        <FluentGridItem xs="12" sm="12" md="12" lg="4">
-            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Admin.Index))">
-                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
-                    <FluentIcon Value="@(new Icons.Regular.Size32.Settings())" Color="Color.Accent" />
-                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Admin</FluentLabel>
-                    <FluentSpacer />
-                    <FluentButton Appearance="Appearance.Accent">
-                        Manage club, players, and fixtures
-                    </FluentButton>
-                </FluentStack>
-            </FluentCard>
-        </FluentGridItem>
-
-        <!-- Match Tracker Navigation Card -->
-        <FluentGridItem xs="12" sm="12" md="12" lg="4">
-            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.MatchTracker))">
-                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
-                    <FluentIcon Value="@(new Icons.Regular.Size32.Timer())" Color="Color.Accent" />
-                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Match Tracker</FluentLabel>
-                    <FluentSpacer />
-                    <FluentButton Appearance="Appearance.Accent">
-                        Track match events live
-                    </FluentButton>
-                </FluentStack>
-            </FluentCard>
-        </FluentGridItem>
-
-        <!-- Reports Navigation Card -->
-        <FluentGridItem xs="12" sm="12" md="12" lg="4" ">
-            <FluentCard Style="cursor: pointer; height: 100%;" @onclick="@(() => Navigation.NavigateTo(Routes.Reports))">
-                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Start">
-                    <FluentIcon Value="@(new Icons.Regular.Size32.ChartMultiple())" Color="Color.Accent" />
-                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Reports</FluentLabel>
-                    <FluentSpacer />
-                    <FluentButton Appearance="Appearance.Accent">
-                        View statistics, performance trends, and match history
-                    </FluentButton>
-                </FluentStack>
-            </FluentCard>
-        </FluentGridItem>
-
         <!-- Previous Fixture Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <FixtureCard Title="Previous Fixture"
@@ -85,7 +43,7 @@
         </FluentGridItem>
 
         <!-- Recent Form Card -->
-        <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
+        <FluentGridItem xs="12" sm="12" md="12" lg="12" xl="12">
             <RecentFormCard Results="RecentForm?.Items" />
         </FluentGridItem>
 
@@ -111,6 +69,7 @@
             RecentForm = new RecentFormCardDto(
                 recentForm.Select(item => new RecentFormItemDto(
                     item.Outcome.Name,
+                    item.Opponent,
                     item.HomeGoals,
                     item.AwayGoals)).ToList());
         }

@@ -9,16 +9,22 @@
         </FluentStack>
                 
         <FluentDivider />
-
+        
         @if (Fixture is null)
         {
+            <FluentSpacer />
             <FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentSpacer />
                 <FluentIcon Value="@(new Icons.Regular.Size24.CalendarEmpty())" Color="Color.Accent" />
+                <FluentSpacer />
                 <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@EmptyMessage</FluentLabel>
+                <FluentSpacer />
             </FluentStack>
+            <FluentSpacer />
         }
         else
         {
+            <FluentSpacer />
             <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
                 <FluentLabel Typo="Typography.Subject">@Fixture.KickoffTimeLocal.ToString("ddd dd MMM")</FluentLabel>
                 <FluentBadge Appearance="Appearance.Neutral">
@@ -26,7 +32,7 @@
                     <FluentIcon Value="@(new Icons.Regular.Size20.Trophy())" />
                 </FluentBadge>
             </FluentStack>
-
+            <FluentSpacer />
             <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" Style="">
                 
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
@@ -57,26 +63,23 @@
                         <FluentLabel Typo="Typography.H5" Alignment="HorizontalAlignment.Start">@GetAwayTeamName()</FluentLabel>
                     </FluentStack>
                 </FluentStack>
+
             </FluentStack>
+            <FluentSpacer />
         }
     </FluentStack>
 </FluentCard>
 
 @code {
-    [Parameter] 
-    public string Title { get; set; } = string.Empty;
+    [Parameter] public string Title { get; set; } = string.Empty;
 
-    [Parameter]
-    public Icon? Icon { get; set; }
+    [Parameter] public Icon? Icon { get; set; }
 
-    [Parameter]
-    public FixtureCardDto? Fixture { get; set; }
+    [Parameter] public FixtureCardDto? Fixture { get; set; }
 
-    [Parameter]
-    public string ClubName { get; set; } = string.Empty;
+    [Parameter] public string ClubName { get; set; } = string.Empty;
 
-    [Parameter]
-    public string EmptyMessage { get; set; } = "No fixture";
+    [Parameter] public string EmptyMessage { get; set; } = "No fixture";
 
     private bool IsPlayedOrInProgress =>
         Fixture?.OutcomeOrStatus == Outcome.Win.Name ||
