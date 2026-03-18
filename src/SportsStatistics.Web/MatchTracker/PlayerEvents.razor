@@ -121,7 +121,7 @@
 
 </FluentStack>
 
-    @code {
+@code {
     [Parameter] public List<PlayerDto> Players { get; set; } = [];
 
     [Parameter] public List<PlayerDto> SubstitutePlayers { get; set; } = [];
@@ -192,12 +192,15 @@
 
     private async Task AddYellowCard(PlayerDto player)
     {
+        // If player already has a yellow card, add a red card instead.
         if (PlayerStatuses.TryGetValue(player.Id, out var status) && status.HasYellowCard)
         {
-            // If player already has a yellow card, add a red card instead.
             await AddRedCard(player);
         }
-        await AddPlayerMatchEvent(player, PlayerEventType.YellowCard);
+        else
+        {
+            await AddPlayerMatchEvent(player, PlayerEventType.YellowCard);
+        }
     }
 
     private async Task SubstitutePlayerClicked(PlayerDto player)

@@ -648,13 +648,10 @@
 
     private void StartTimer()
     {
-        if (_timer is not null) return;
-
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (_, _) => InvokeAsync(StateHasChanged);
         _timer.Start();
     }
-
 
     private void StopTimer()
     {
