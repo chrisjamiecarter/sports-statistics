@@ -1,4 +1,3 @@
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Abstractions.Messaging;
@@ -7,15 +6,18 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Teamsheets.GetByFixtureId;
 
-internal sealed class GetTeamsheetByFixtureIdQueryHandler(IApplicationDbContext dbContext) : IQueryHandler<GetTeamsheetByFixtureIdQuery, TeamsheetResponse>
+internal sealed class GetTeamsheetByFixtureIdQueryHandler(
+    IApplicationDbContext dbContext)
+    : IQueryHandler<GetTeamsheetByFixtureIdQuery, TeamsheetResponse>
 {
     private readonly IApplicationDbContext _dbContext = dbContext;
 
     public async Task<Result<TeamsheetResponse>> Handle(GetTeamsheetByFixtureIdQuery request, CancellationToken cancellationToken)
     {
-        var teamsheet = await _dbContext.Teamsheets.AsNoTracking()
-                                                   .Where(teamsheet => teamsheet.FixtureId == request.FixtureId)
-                                                   .FirstOrDefaultAsync(cancellationToken);
+        var teamsheet = await _dbContext.Teamsheets
+            .AsNoTracking()
+            .Where(teamsheet => teamsheet.FixtureId == request.FixtureId)
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (teamsheet is null)
         {
@@ -42,7 +44,6 @@ internal sealed class GetTeamsheetByFixtureIdQueryHandler(IApplicationDbContext 
         var starters = teamsheetPlayers
             .Where(p => p.IsStarter)
             .Select(p => new TeamsheetPlayerResponse(
-                Guid.NewGuid(),
                 p.PlayerId,
                 p.Name,
                 p.SquadNumber,
@@ -52,7 +53,6 @@ internal sealed class GetTeamsheetByFixtureIdQueryHandler(IApplicationDbContext 
         var substitutes = teamsheetPlayers
             .Where(p => !p.IsStarter)
             .Select(p => new TeamsheetPlayerResponse(
-                Guid.NewGuid(),
                 p.PlayerId,
                 p.Name,
                 p.SquadNumber,
