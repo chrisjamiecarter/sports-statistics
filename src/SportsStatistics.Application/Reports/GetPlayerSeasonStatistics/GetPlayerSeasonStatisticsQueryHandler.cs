@@ -113,7 +113,7 @@ internal sealed class GetPlayerSeasonStatisticsQueryHandler(
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.Save),
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.Tackle),
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.FoulWon),
-                    group.Count(playerEvent => playerEvent.Type == PlayerEventType.FoulConceeded),
+                    group.Count(playerEvent => playerEvent.Type == PlayerEventType.FoulConceded),
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.YellowCard),
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.RedCard));
             });

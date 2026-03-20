@@ -19,6 +19,6 @@ public sealed record PlayerSeasonStatisticsResponse(
     int SaveCount,
     int TackleCount,
     int FoulWonCount,
-    int FoulConceededCount,
+    int FoulConcededCount,
     int YellowCardCount,
     int RedCardCount);

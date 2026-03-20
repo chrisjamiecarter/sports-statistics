@@ -105,7 +105,7 @@
 
         <TemplateColumn Title="Fouls" Align="Align.Center">
             <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!CanPlayerAct(context))" />
-            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceeded(context))" Title="Foul Conceded" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceded(context))" Title="Foul Conceded" Disabled="@(!CanPlayerAct(context))" />
         </TemplateColumn>
 
         <TemplateColumn Title="Cards" Align="Align.Center">
@@ -187,7 +187,7 @@
     private async Task AddSave(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Save);
     private async Task AddTackle(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Tackle);
     private async Task AddFoulWon(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulWon);
-    private async Task AddFoulConceeded(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulConceeded);
+    private async Task AddFoulConceded(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulConceded);
     private async Task AddRedCard(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.RedCard);
 
     private async Task AddYellowCard(PlayerDto player)

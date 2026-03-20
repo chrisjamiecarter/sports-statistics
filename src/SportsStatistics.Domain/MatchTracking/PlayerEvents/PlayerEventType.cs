@@ -32,8 +32,8 @@ public sealed class PlayerEventType : Enumeration<PlayerEventType>
     [Display(Name = "Foul Won")]
     public static readonly PlayerEventType FoulWon = new(9, nameof(FoulWon));
 
-    [Display(Name = "Foul Conceeded")]
-    public static readonly PlayerEventType FoulConceeded = new(10, nameof(FoulConceeded));
+    [Display(Name = "Foul Conceded")]
+    public static readonly PlayerEventType FoulConceded = new(10, nameof(FoulConceded));
 
     [Display(Name = "Yellow Card")]
     public static readonly PlayerEventType YellowCard = new(11, nameof(YellowCard));
