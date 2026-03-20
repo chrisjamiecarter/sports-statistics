@@ -1,0 +1,33 @@
+﻿<FluentCard Style="padding: 1rem;">
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="margin-bottom: 1rem;">
+        Game-by-Game Breakdown
+    </FluentLabel>
+
+    <FluentDataGrid Items="@SeasonFixtures"
+                    ResizableColumns="true"
+                    Style="width: 100%;">
+        <PropertyColumn Property="@(f => f.KickoffTimeUtc)" Title="Date" Format="dd/MM/yyyy HH:mm" Sortable="true" />
+        <PropertyColumn Property="@(f => f.Opponent)" Title="Opponent" Sortable="true" />
+        <PropertyColumn Property="@(f => f.Location)" Title="Location" Sortable="true" />
+        <TemplateColumn Title="Score">
+            <span style="font-weight: bold;">
+                @context.HomeGoals - @context.AwayGoals
+            </span>
+        </TemplateColumn>
+        @* <PropertyColumn Property="@(f => f.Outcome)" Title="Result" Sortable="true" /> *@
+        <TemplateColumn Title="Actions">
+            <FluentButton Appearance="Appearance.Accent"
+                            OnClick="@(() => OnFixtureSelected.InvokeAsync(context))">
+                View Details
+            </FluentButton>
+        </TemplateColumn>
+    </FluentDataGrid>
+</FluentCard>
+
+@code {
+    [Parameter]
+    public IQueryable<FixtureResponse>? SeasonFixtures { get; set; }
+    
+    [Parameter]
+    public EventCallback<FixtureResponse> OnFixtureSelected { get; set; }
+}

@@ -1,0 +1,156 @@
+﻿@page "/reports"
+@using SportsStatistics.Web.Reports.Components
+
+<PageTitle>Reports</PageTitle>
+
+<FluentCard Style="overflow-y: auto;" MinimalStyle>
+    
+    <FluentBreadcrumb Style="margin-bottom: 1rem;">
+        <FluentBreadcrumbItem Appearance="Appearance.Accent">
+            Reports
+        </FluentBreadcrumbItem>
+    </FluentBreadcrumb>
+
+    @if (Loading)
+    {
+        <FluentProgressRing />
+    }
+    else
+    {
+        <FluentStack Orientation="Orientation.Vertical">
+
+            <SeasonSelector
+                Seasons="@Seasons"
+                SelectedSeason="@SelectedSeason"
+                OnSelectedSeasonChanged="HandleSelectedSeasonChangedAsync" />
+
+
+            @if (SelectedSeason is not null)
+            {
+                <StatisticsView 
+                    PlayerSeasonStatistics="@PlayerSeasonStatistics"
+                    OnPlayerSeasonStatisticsSelected="HandlePlayerSeasonStatisticsSelectedAsync" />
+            
+                    <FixtureBreakdown
+                        SeasonFixtures="@SelectedSeasonFixtures"
+                        OnFixtureSelected="HandleFixtureSelectedAsync" />
+            }
+
+        </FluentStack>
+    }
+
+</FluentCard>
+
+@code {
+    private bool Loading = true;
+    private List<SeasonDto> Seasons = [];
+    private SeasonDto? SelectedSeason;
+    private IQueryable<PlayerSeasonStatisticsDto>? PlayerSeasonStatistics;
+    private IQueryable<FixtureResponse>? SelectedSeasonFixtures;
+    // private PlayerSeasonStatisticsDto? SelectedPlayerSeasonStatistics;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Loading = true;
+
+        await LoadSeasonsAsync();
+        Loading = false;
+    }
+
+    private async Task LoadFixturesAsync(SeasonDto season)
+    {
+        var request = new GetFixturesBySeasonIdQuery(season.SeasonId);
+        var result = await Messenger.SendAsync(request);
+
+        if (result.IsFailure)
+        {
+            SelectedSeasonFixtures = null;
+            ToastService.ShowError("Unable to load fixtures");
+            return;
+        }
+
+        SelectedSeasonFixtures = result.Value.AsQueryable();
+    }
+
+    private async Task LoadPlayerSeasonStatisticsAsync(SeasonDto season)
+    {
+        var request = new GetPlayerSeasonStatisticsQuery(season.SeasonId);
+        var result = await Messenger.SendAsync(request);
+
+        if (result.IsFailure)
+        {
+            PlayerSeasonStatistics = null;
+            ToastService.ShowError("Unable to load player season statistics");
+            return;
+        }
+
+        PlayerSeasonStatistics = result.Value.ToQueryable();
+    }
+
+    private async Task LoadSeasonsAsync()
+    {
+        var request = new GetSeasonsQuery();
+        var result = await Messenger.SendAsync(request);
+
+        if (result.IsFailure)
+        {
+            Seasons = [];
+            SelectedSeason = null;
+            ToastService.ShowError("Unable to load seasons");
+            return;
+        }
+
+        Seasons = result.Value.ToDto();
+
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var defaultSeason = Seasons.FirstOrDefault(season => season.StartDate <= today && season.EndDate >= today);
+        if (defaultSeason is not null)
+        {
+            await HandleSelectedSeasonChangedAsync(defaultSeason);
+        }
+    }
+
+    private async Task HandleSelectedSeasonChangedAsync(SeasonDto season)
+    {
+        SelectedSeason = season;
+        await LoadFixturesAsync(season);
+        await LoadPlayerSeasonStatisticsAsync(season);
+    }
+
+    private async Task HandlePlayerSeasonStatisticsSelectedAsync(PlayerSeasonStatisticsDto player)
+    {
+        var dialog = await DialogService.ShowDialogAsync<PlayerChartDialog>(player, new DialogParameters()
+        {
+            Title = $"{player.PlayerName} (#{player.SquadNumber}) - Statistics Breakdown",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        });
+
+        await dialog.Result;
+    }
+
+    private async Task HandleFixtureSelectedAsync(FixtureResponse fixture)
+    {
+        var request = new GetPlayerFixtureStatisticsQuery(fixture.Id);
+        var result = await Messenger.SendAsync(request);
+
+        if (result.IsFailure)
+        {
+            SelectedSeasonFixtures = null;
+            ToastService.ShowError("Unable to load fixtures");
+            return;
+        }
+
+        var response = result.Value;
+
+        var dialog = await DialogService.ShowDialogAsync<FixtureDetailsDialog>(response, new DialogParameters()
+        {
+            Title = $"vs {fixture.Opponent} ({fixture.Location}) - Fixture Detail",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+            Width = "100%",
+        });
+
+        await dialog.Result;
+    }
+}

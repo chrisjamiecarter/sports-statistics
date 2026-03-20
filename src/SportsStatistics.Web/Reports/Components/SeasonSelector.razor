@@ -1,0 +1,32 @@
+﻿<FluentStack Orientation="Orientation.Horizontal">
+    <FluentSelect Label="Season"
+                  Items="@Seasons"
+                  OptionText="@(s => s?.Name)"
+                  Placeholder="Select a season..."
+                  SelectedOption="@SelectedSeason"
+                  SelectedOptionChanged="OnSelectedSeasonChanged"
+                  Style="min-width: 200px;" />
+</FluentStack>
+
+@code {
+    [Parameter]
+    public List<SeasonDto> Seasons { get; set; } = [];
+
+    [Parameter]
+    public SeasonDto? SelectedSeason { get; set; }
+
+    [Parameter]
+    public EventCallback<SeasonDto> OnSelectedSeasonChanged { get; set; }
+
+    // private SeasonResponse? SelectedSeason
+    // {
+    //     get => Seasons.FirstOrDefault(s => s.Id == SelectedSeasonId);
+    //     set
+    //     {
+    //         if (value is not null)
+    //         {
+    //             OnSeasonSelected.InvokeAsync(value.Id);
+    //         }
+    //     }
+    // }
+}
