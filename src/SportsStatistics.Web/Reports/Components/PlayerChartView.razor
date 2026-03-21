@@ -1,15 +1,16 @@
-﻿@if (PlayerStatistics is not null)
+﻿@using System.Linq.Expressions
+@if (PlayerStatistics is not null)
 {
     <FluentCard Style="padding: 1rem;">
         <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="margin-bottom: 1rem;">
-            @PlayerStatistics.PlayerName (#@PlayerStatistics.SquadNumber) - Statistics Breakdown
+            @PlayerStatistics.PlayerName (@PlayerStatistics.Position.Name) - Statistics Breakdown
         </FluentLabel>
 
         <FluentGrid>
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold" Color="Color.Success">
-                        @PlayerStatistics.GoalCount
+                        @PlayerStatistics.GoalCount.Value
                     </FluentLabel>
                     <FluentLabel>Goals</FluentLabel>
                 </FluentCard>
@@ -18,7 +19,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold" Color="Color.Success">
-                        @PlayerStatistics.GoalAssistCount
+                        @PlayerStatistics.GoalAssistCount.Value
                     </FluentLabel>
                     <FluentLabel>Assists</FluentLabel>
                 </FluentCard>
@@ -27,7 +28,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold" Color="Color.Info">
-                        @PlayerStatistics.ShotOnTargetCount
+                        @PlayerStatistics.ShotOnTargetCount.Value
                     </FluentLabel>
                     <FluentLabel>Shots on Target</FluentLabel>
                 </FluentCard>
@@ -36,7 +37,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold">
-                        @PlayerStatistics.ShotOffTargetCount
+                        @PlayerStatistics.ShotOffTargetCount.Value
                     </FluentLabel>
                     <FluentLabel>Shots off Target</FluentLabel>
                 </FluentCard>
@@ -45,7 +46,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold" Color="Color.Success">
-                        @PlayerStatistics.PassSuccessCount
+                        @PlayerStatistics.PassSuccessCount.Value
                     </FluentLabel>
                     <FluentLabel>Passes (Success)</FluentLabel>
                 </FluentCard>
@@ -54,7 +55,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold">
-                        @PlayerStatistics.PassFailureCount
+                        @PlayerStatistics.PassFailureCount.Value
                     </FluentLabel>
                     <FluentLabel>Passes (Failed)</FluentLabel>
                 </FluentCard>
@@ -63,7 +64,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold">
-                        @PlayerStatistics.TackleCount
+                        @PlayerStatistics.TackleCount.Value
                     </FluentLabel>
                     <FluentLabel>Tackles</FluentLabel>
                 </FluentCard>
@@ -72,7 +73,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold">
-                        @PlayerStatistics.FoulWonCount
+                        @PlayerStatistics.FoulWonCount.Value
                     </FluentLabel>
                     <FluentLabel>Fouls Won</FluentLabel>
                 </FluentCard>
@@ -81,7 +82,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold">
-                        @PlayerStatistics.FoulConcededCount
+                        @PlayerStatistics.FoulConcededCount.Value
                     </FluentLabel>
                     <FluentLabel>Fouls Conceded</FluentLabel>
                 </FluentCard>
@@ -90,7 +91,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold" Color="Color.Warning">
-                        @PlayerStatistics.YellowCardCount
+                        @PlayerStatistics.YellowCardCount.Value
                     </FluentLabel>
                     <FluentLabel>Yellow Cards</FluentLabel>
                 </FluentCard>
@@ -99,7 +100,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold" Color="Color.Error">
-                        @PlayerStatistics.RedCardCount
+                        @PlayerStatistics.RedCardCount.Value
                     </FluentLabel>
                     <FluentLabel>Red Cards</FluentLabel>
                 </FluentCard>
@@ -108,7 +109,7 @@
             <FluentGridItem xs="12" sm="6" md="4" lg="3">
                 <FluentCard Style="text-align: center; padding: 1rem;">
                     <FluentLabel Weight="FontWeight.Bold">
-                        @PlayerStatistics.SaveCount
+                        @PlayerStatistics.SaveCount.Value
                     </FluentLabel>
                     <FluentLabel>Saves</FluentLabel>
                 </FluentCard>
@@ -121,18 +122,18 @@
                 Attack Statistics
             </FluentLabel>
             <FluentProgress
-                Value="@(PlayerStatistics.GoalCount * 10)" 
+                Value="@((int)PlayerStatistics.GoalCount.Percentage)" 
                 Max="100" 
                 Color="Color.Success"
                 Style="margin-bottom: 0.5rem;" />
-            <FluentLabel>Goals (@PlayerStatistics.GoalCount)</FluentLabel>
+            <FluentLabel>Goals (@PlayerStatistics.GoalCount.Value)</FluentLabel>
                 
             <FluentProgress
-                Value="@(PlayerStatistics.ShotOnTargetCount * 5)" 
+                Value="@((int)PlayerStatistics.ShotOnTargetCount.Percentage)" 
                 Max="100" 
                 Color="Color.Info"
                 Style="margin-top: 1rem; margin-bottom: 0.5rem;" />
-            <FluentLabel>Shots on Target (@PlayerStatistics.ShotOnTargetCount)</FluentLabel>
+            <FluentLabel>Shots on Target (@PlayerStatistics.ShotOnTargetCount.Value)</FluentLabel>
         </div>
 
         <div style="margin-top: 2rem;">
@@ -140,18 +141,18 @@
                 Passing Statistics
             </FluentLabel>
             <FluentProgress
-                Value="@(PlayerStatistics.PassSuccessCount * 2)" 
+                Value="@((int)PlayerStatistics.PassSuccessCount.Percentage)" 
                 Max="100" 
                 Color="Color.Success"
                 Style="margin-bottom: 0.5rem;" />
-            <FluentLabel>Successful Passes (@PlayerStatistics.PassSuccessCount)</FluentLabel>
+            <FluentLabel>Successful Passes (@PlayerStatistics.PassSuccessCount.Value)</FluentLabel>
                 
             <FluentProgress
-                Value="@(PlayerStatistics.PassFailureCount * 2)" 
+                Value="@((int)PlayerStatistics.PassFailureCount.Percentage)" 
                 Max="100" 
                 Color="Color.Neutral"
                 Style="margin-top: 1rem; margin-bottom: 0.5rem;" />
-            <FluentLabel>Failed Passes (@PlayerStatistics.PassFailureCount)</FluentLabel>
+            <FluentLabel>Failed Passes (@PlayerStatistics.PassFailureCount.Value)</FluentLabel>
         </div>
 
         <div style="margin-top: 2rem;">
@@ -159,18 +160,24 @@
                 Discipline
             </FluentLabel>
             <FluentProgress
-                Value="@(PlayerStatistics.YellowCardCount * 20)" 
+                Id="PlayerStatistics.YellowCardCount.Percentage"
+                Value="@((int)PlayerStatistics.YellowCardCount.Percentage)" 
                 Max="100" 
                 Color="Color.Warning"
+                Stroke="ProgressStroke.Large"
                 Style="margin-bottom: 0.5rem;" />
-            <FluentLabel>Yellow Cards (@PlayerStatistics.YellowCardCount)</FluentLabel>
-                
+            <FluentTooltip 
+                Anchor="PlayerStatistics.YellowCardCount.Percentage" 
+                Position="TooltipPosition.Top">
+                @PlayerStatistics.YellowCardCount.Percentage
+            </FluentTooltip>
+            <FluentLabel>Yellow Cards (@PlayerStatistics.YellowCardCount.Value)</FluentLabel>
             <FluentProgress
-                Value="@(PlayerStatistics.RedCardCount * 50)" 
+                Value="@((int)PlayerStatistics.RedCardCount.Percentage)"
                 Max="100" 
                 Color="Color.Error"
                 Style="margin-top: 1rem; margin-bottom: 0.5rem;" />
-            <FluentLabel>Red Cards (@PlayerStatistics.RedCardCount)</FluentLabel>
+            <FluentLabel>Red Cards (@PlayerStatistics.RedCardCount.Value)</FluentLabel>
         </div>
     </FluentCard>
     }

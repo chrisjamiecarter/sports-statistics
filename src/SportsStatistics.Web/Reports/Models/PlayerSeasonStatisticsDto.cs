@@ -5,24 +5,21 @@ namespace SportsStatistics.Web.Reports.Models;
 public sealed record PlayerSeasonStatisticsDto(
     Guid PlayerId,
     string PlayerName,
-    int SquadNumber,
     Position Position,
-    int GamesStarted,
-    int GamesPlayed,
-    int PassSuccessCount,
-    int PassFailureCount,
-    int ShotOnTargetCount,
-    int ShotOffTargetCount,
-    int GoalCount,
-    int GoalAssistCount,
-    int OwnGoalCount,
-    int SaveCount,
-    int TackleCount,
-    int FoulWonCount,
-    int FoulConcededCount,
-    int YellowCardCount,
-    int RedCardCount)
-{
-    public int TotalPasses => PassSuccessCount + PassFailureCount;
-    public int TotalShots => ShotOnTargetCount + ShotOffTargetCount;
-}
+    StatPair FixturesPlayed,
+    StatPair FixturesStarted,
+    StatPair PassCount,
+    StatPair PassSuccessCount,
+    StatPair PassFailureCount,
+    StatPair ShotCount,
+    StatPair ShotOnTargetCount,
+    StatPair ShotOffTargetCount,
+    StatPair GoalCount,
+    StatPair GoalAssistCount,
+    StatPair OwnGoalCount,
+    StatPair SaveCount,
+    StatPair TackleCount,
+    StatPair FoulWonCount,
+    StatPair FoulConcededCount,
+    StatPair YellowCardCount,
+    StatPair RedCardCount);

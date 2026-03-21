@@ -12,31 +12,37 @@
 
                 <PropertyColumn Property="@(p => p.Position)" Title="Position" Sortable="true" />
                 
-                <PropertyColumn Property="@(p => p.GamesPlayed)" Title="Apps" Align="Align.Center" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending">
+                <PropertyColumn Property="@(p => p.FixturesPlayed.Value)" Title="Apps" Align="Align.Center" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending">
                     <HeaderCellTitleTemplate>
                         <FluentIcon Value="@(new Icons.Regular.Size20.Calendar())" Color="Color.Neutral" />
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
 
-                <PropertyColumn Property="@(p => p.GoalCount)" Title="Goals" Align="Align.Center" Sortable="true">
+                <PropertyColumn Property="@(p => p.GoalCount.Value)" Title="Goals" Align="Align.Center" Sortable="true">
                     <HeaderCellTitleTemplate>
                         <FluentIcon Value="@(new Icons.Regular.Size20.SportSoccer())" Color="Color.Neutral" />
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
                 
-                <PropertyColumn Property="@(p => p.GoalAssistCount)" Title="Assists" Align="Align.Center" Sortable="true">
+                <PropertyColumn Property="@(p => p.GoalAssistCount.Value)" Title="Assists" Align="Align.Center" Sortable="true">
                     <HeaderCellTitleTemplate>
-                        <FluentIcon Value="@(new Icons.Regular.Size20.Handshake())" Color="Color.Neutral" />
+                        <FluentIcon Id="GoalsIcon" Value="@(new Icons.Regular.Size20.Handshake())" Color="Color.Neutral" />
+                        <FluentTooltip
+                            Anchor="GoalsIcon"
+                            Position="TooltipPosition.Top"
+                            UseTooltipService="false">
+                            Goals
+                        </FluentTooltip>
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
 
-                <PropertyColumn Property="@(p => p.YellowCardCount)" Title="Yellow Cards" Align="Align.Center" Sortable="true" HeaderTooltip="Yellow Cards" Tooltip>
+                <PropertyColumn Property="@(p => p.YellowCardCount.Value)" Title="Yellow Cards" Align="Align.Center" Sortable="true" HeaderTooltip="Yellow Cards" Tooltip>
                     <HeaderCellTitleTemplate>
-                            <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" />
+                        <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" />
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
 
-                <PropertyColumn Property="@(p => p.RedCardCount)" Title="Red Cards" Align="Align.Center" Sortable="true">
+                <PropertyColumn Property="@(p => p.RedCardCount.Value)" Title="Red Cards" Align="Align.Center" Sortable="true">
                     <HeaderCellTitleTemplate>
                         <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" />
                     </HeaderCellTitleTemplate>

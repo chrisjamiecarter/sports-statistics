@@ -11,167 +11,136 @@
 
 @* Body *@
 <FluentDialogBody>
-    <FluentGrid >
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;" Width="100%">
-                <FluentLabel Weight="FontWeight.Bold" Color="Color.Success">
-                    @Content.GoalCount
-                </FluentLabel>
-                <FluentLabel>Goals</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold" Color="Color.Success">
-                    @Content.GoalAssistCount
-                </FluentLabel>
-                <FluentLabel>Assists</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+    <FluentStack Orientation="Orientation.Vertical">
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold" Color="Color.Info">
-                    @Content.ShotOnTargetCount
-                </FluentLabel>
-                <FluentLabel>Shots on Target</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+        <FluentStack Orientation="Orientation.Horizontal"
+                     HorizontalAlignment="HorizontalAlignment.SpaceBetween"
+                     VerticalAlignment="VerticalAlignment.Center">
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold">
-                    @Content.ShotOffTargetCount
+            <FluentStack Orientation="Orientation.Horizontal"
+                         HorizontalAlignment="HorizontalAlignment.Start"
+                         VerticalAlignment="VerticalAlignment.Center">
+                <FluentLabel Typo="Typography.Subject" 
+                             Weight="FontWeight.Bold">
+                    Shooting
                 </FluentLabel>
-                <FluentLabel>Shots off Target</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
-
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold" Color="Color.Success">
-                    @Content.PassSuccessCount
+            </FluentStack>
+            <FluentStack Orientation="Orientation.Horizontal"
+                     HorizontalAlignment="HorizontalAlignment.Center"
+                     VerticalAlignment="VerticalAlignment.Center">
+                <FluentLabel Typo="Typography.Subject"
+                             Weight="FontWeight.Bold">
+                    Team Comparison
                 </FluentLabel>
-                <FluentLabel>Passes (Success)</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+            </FluentStack>
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold">
-                    @Content.PassFailureCount
-                </FluentLabel>
-                <FluentLabel>Passes (Failed)</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+        </FluentStack>
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold">
-                    @Content.TackleCount
-                </FluentLabel>
-                <FluentLabel>Tackles</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+        <StatisticProgress Label="Goals"
+                           Value="@Content.GoalCount.Value"
+                           Percentage="@Content.GoalCount.Percentage"
+                           IsPositive="true" />
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold">
-                    @Content.FoulWonCount
-                </FluentLabel>
-                <FluentLabel>Fouls Won</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+        <StatisticProgress Label="Shots"
+                           Value="@Content.ShotCount.Value"
+                           Percentage="@Content.ShotCount.Percentage"
+                           IsPositive="true" />
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold">
-                    @Content.FoulConcededCount
-                </FluentLabel>
-                <FluentLabel>Fouls Conceded</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+        <StatisticProgress Label="Shots on target"
+                           Value="@Content.ShotOnTargetCount.Value"
+                           Percentage="@Content.ShotOnTargetCount.Percentage"
+                           IsPositive="true" />
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold" Color="Color.Warning">
-                    @Content.YellowCardCount
-                </FluentLabel>
-                <FluentLabel>Yellow Cards</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+        <StatisticProgress Label="Shots off target"
+                           Value="@Content.ShotOffTargetCount.Value"
+                           Percentage="@Content.ShotOffTargetCount.Percentage"
+                           IsPositive="false" />
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold" Color="Color.Error">
-                    @Content.RedCardCount
-                </FluentLabel>
-                <FluentLabel>Red Cards</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
+        <FluentSpacer />
 
-        <FluentGridItem xs="6" sm="6" md="4" lg="3">
-            <FluentCard Style="text-align: center; padding: 1rem;">
-                <FluentLabel Weight="FontWeight.Bold">
-                    @Content.SaveCount
-                </FluentLabel>
-                <FluentLabel>Saves</FluentLabel>
-            </FluentCard>
-        </FluentGridItem>
-    </FluentGrid>
-
-    @* Bar Chart for Attack & Defense Stats *@
-    <div style="margin-top: 2rem;">
-        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold" Style="margin-bottom: 0.5rem;">
-            Attack Statistics
+        <FluentLabel Typo="Typography.Subject"
+                     Weight="FontWeight.Bold">
+            Passing
         </FluentLabel>
-        <FluentProgress Value="@(Content.GoalCount * 10)"
-                        Max="100"
-                        Color="Color.Success"
-                        Style="margin-bottom: 0.5rem;" />
-        <FluentLabel>Goals (@Content.GoalCount)</FluentLabel>
                 
-        <FluentProgress Value="@(Content.ShotOnTargetCount * 5)"
-                        Max="100"
-                        Color="Color.Info"
-                        Style="margin-top: 1rem; margin-bottom: 0.5rem;" />
-        <FluentLabel>Shots on Target (@Content.ShotOnTargetCount)</FluentLabel>
-    </div>
+        <StatisticProgress Label="Assists"
+                           Value="@Content.GoalAssistCount.Value"
+                           Percentage="@Content.GoalAssistCount.Percentage"
+                           IsPositive="true" />
 
-    <div style="margin-top: 2rem;">
-        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold" Style="margin-bottom: 0.5rem;">
-            Passing Statistics
+        <StatisticProgress Label="Passes"
+                           Value="@Content.PassCount.Value"
+                           Percentage="@Content.PassCount.Percentage"
+                           IsPositive="true" />
+
+        <StatisticProgress Label="Successful Passes"
+                           Value="@Content.PassSuccessCount.Value"
+                           Percentage="@Content.PassSuccessCount.Percentage"
+                           IsPositive="true" />
+
+        <StatisticProgress Label="Failed Passes"
+                           Value="@Content.PassFailureCount.Value"
+                           Percentage="@Content.PassFailureCount.Percentage"
+                           IsPositive="false" />
+                           
+        <FluentSpacer />
+
+        <FluentLabel Typo="Typography.Subject"
+                     Weight="FontWeight.Bold">
+            Possession
         </FluentLabel>
-        <FluentProgress Value="@(Content.PassSuccessCount * 2)"
-                        Max="100"
-                        Color="Color.Success"
-                        Style="margin-bottom: 0.5rem;" />
-        <FluentLabel>Successful Passes (@Content.PassSuccessCount)</FluentLabel>
                 
-        <FluentProgress Value="@(Content.PassFailureCount * 2)"
-                        Max="100"
-                        Color="Color.Neutral"
-                        Style="margin-top: 1rem; margin-bottom: 0.5rem;" />
-        <FluentLabel>Failed Passes (@Content.PassFailureCount)</FluentLabel>
-    </div>
+        <StatisticProgress Label="Fouls Won"
+                           Value="@Content.FoulWonCount.Value"
+                           Percentage="@Content.FoulWonCount.Percentage"
+                           IsPositive="true" />
+                                                      
+        <FluentSpacer />
 
-    <div style="margin-top: 2rem;">
-        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold" Style="margin-bottom: 0.5rem;">
+        <FluentLabel Typo="Typography.Subject"
+                     Weight="FontWeight.Bold">
+            Defending
+        </FluentLabel>
+                
+        <StatisticProgress Label="Tackles"
+                           Value="@Content.TackleCount.Value"
+                           Percentage="@Content.TackleCount.Percentage"
+                           IsPositive="true" />
+                           
+        <StatisticProgress Label="Saves"
+                           Value="@Content.SaveCount.Value"
+                           Percentage="@Content.SaveCount.Percentage"
+                           IsPositive="true" />
+                           
+        <StatisticProgress Label="Fouls Conceded"
+                           Value="@Content.FoulConcededCount.Value"
+                           Percentage="@Content.FoulConcededCount.Percentage"
+                           IsPositive="false" />
+                                               
+        <StatisticProgress Label="Own Goals"
+                           Value="@Content.OwnGoalCount.Value"
+                           Percentage="@Content.OwnGoalCount.Percentage"
+                           IsPositive="false" />
+
+        <FluentSpacer />
+
+        <FluentLabel Typo="Typography.Subject"
+                     Weight="FontWeight.Bold">
             Discipline
         </FluentLabel>
-        <FluentProgress Value="@(Content.YellowCardCount * 20)"
-                        Max="100"
-                        Color="Color.Warning"
-                        Style="margin-bottom: 0.5rem;" />
-        <FluentLabel>Yellow Cards (@Content.YellowCardCount)</FluentLabel>
                 
-        <FluentProgress Value="@(Content.RedCardCount * 50)"
-                        Max="100"
-                        Stroke="ProgressStroke.Large"
-                        Style="margin-top: 1rem; margin-bottom: 0.5rem;" />
-        <FluentLabel>Red Cards (@Content.RedCardCount)</FluentLabel>
-    </div>
+        <StatisticProgress Label="Yellow Cards"
+                           Value="@Content.YellowCardCount.Value"
+                           Percentage="@Content.YellowCardCount.Percentage"
+                           IsPositive="false" />
+                           
+        <StatisticProgress Label="Red Cards"
+                           Value="@Content.RedCardCount.Value"
+                           Percentage="@Content.RedCardCount.Percentage"
+                           IsPositive="false" />
+    </FluentStack>
+
 </FluentDialogBody>
 
 

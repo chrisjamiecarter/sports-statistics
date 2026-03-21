@@ -96,13 +96,12 @@ internal sealed class GetPlayerSeasonStatisticsQueryHandler(
             {
                 var player = players[group.Key];
                 var appearances = playerAppearances[group.Key];
-                return new PlayerSeasonStatisticsResponse(
+                return new PlayerSeasonStatistics(
                     player.Id,
                     player.Name,
-                    player.SquadNumber,
                     player.Position,
-                    appearances?.Starts ?? 0,
                     appearances?.Total ?? 0,
+                    appearances?.Starts ?? 0,
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.PassSuccess),
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.PassFailure),
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.ShotOnTarget),
@@ -118,6 +117,61 @@ internal sealed class GetPlayerSeasonStatisticsQueryHandler(
                     group.Count(playerEvent => playerEvent.Type == PlayerEventType.RedCard));
             });
 
-        return statistics.ToList();
+        var maxFixturesPlayed = statistics.Max(statistic => statistic.FixturesPlayed);
+        var maxFixturesStarted = statistics.Max(statistic => statistic.FixturesStarted);
+        var maxPassCount = statistics.Max(statistic => statistic.PassCount);
+        var maxPassSuccessCount = statistics.Max(statistic => statistic.PassSuccessCount);
+        var maxPassFailureCount = statistics.Max(statistic => statistic.PassFailureCount);
+        var maxShotCount = statistics.Max(statistic => statistic.ShotCount);
+        var maxShotOnTargetCount = statistics.Max(statistic => statistic.ShotOnTargetCount);
+        var maxShotOffTargetCount = statistics.Max(statistic => statistic.ShotOffTargetCount);
+        var maxGoalCount = statistics.Max(statistic => statistic.GoalCount);
+        var maxGoalAssistCount = statistics.Max(statistic => statistic.GoalAssistCount);
+        var maxOwnGoalCount = statistics.Max(statistic => statistic.OwnGoalCount);
+        var maxSaveCount = statistics.Max(statistic => statistic.SaveCount);
+        var maxTackleCount = statistics.Max(statistic => statistic.TackleCount);
+        var maxFoulWonCount = statistics.Max(statistic => statistic.FoulWonCount);
+        var maxFoulConcededCount = statistics.Max(statistic => statistic.FoulConcededCount);
+        var maxYellowCardCount = statistics.Max(statistic => statistic.YellowCardCount);
+        var maxRedCardCount = statistics.Max(statistic => statistic.RedCardCount);
+
+        return statistics.Select(statistic => new PlayerSeasonStatisticsResponse(
+            statistic.PlayerId,
+            statistic.PlayerName,
+            statistic.Position,
+            statistic.FixturesStarted,
+            statistic.FixturesPlayed,
+            statistic.PassCount,
+            statistic.PassSuccessCount,
+            statistic.PassFailureCount,
+            statistic.ShotCount,
+            statistic.ShotOnTargetCount,
+            statistic.ShotOffTargetCount,
+            statistic.GoalCount,
+            statistic.GoalAssistCount,
+            statistic.OwnGoalCount,
+            statistic.SaveCount,
+            statistic.TackleCount,
+            statistic.FoulWonCount,
+            statistic.FoulConcededCount,
+            statistic.YellowCardCount,
+            statistic.RedCardCount,
+            maxFixturesPlayed,
+            maxFixturesStarted,
+            maxPassCount,
+            maxPassSuccessCount,
+            maxPassFailureCount,
+            maxShotCount,
+            maxShotOnTargetCount,
+            maxShotOffTargetCount,
+            maxGoalCount,
+            maxGoalAssistCount,
+            maxOwnGoalCount,
+            maxSaveCount,
+            maxTackleCount,
+            maxFoulWonCount,
+            maxFoulConcededCount,
+            maxYellowCardCount,
+            maxRedCardCount)).ToList();
     }    
 }

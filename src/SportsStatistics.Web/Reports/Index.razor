@@ -136,7 +136,7 @@
         SelectedPlayerSeasonStatistics = player;
         var dialog = await DialogService.ShowDialogAsync<PlayerChartDialog>(player, new DialogParameters()
         {
-            Title = $"{player.PlayerName} (#{player.SquadNumber}) - Statistics Breakdown",
+            Title = $"{player.PlayerName} ({player.Position.Name}) - Statistics Breakdown",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
             Width = "75%",
