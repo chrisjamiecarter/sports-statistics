@@ -1,11 +1,15 @@
-﻿<FluentStack Orientation="Orientation.Horizontal">
-    <FluentSelect Label="Season"
-                  Items="@Seasons"
-                  OptionText="@(s => s?.Name)"
-                  Placeholder="Select a season..."
-                  SelectedOption="@SelectedSeason"
-                  SelectedOptionChanged="OnSelectedSeasonChanged"
-                  Style="min-width: 200px;" />
+﻿<FluentStack 
+    Orientation="Orientation.Horizontal" 
+    HorizontalAlignment="HorizontalAlignment.Stretch" 
+    VerticalAlignment="VerticalAlignment.Center">
+    <FluentSelect 
+        Label="Season"
+        Items="@Seasons"
+        OptionText="@(s => s?.Name)"
+        Placeholder="Select a season..."
+        SelectedOption="@SelectedSeason"
+        SelectedOptionChanged="OnSelectedSeasonChanged"
+        Style="min-width: 200px;" />
 </FluentStack>
 
 @code {

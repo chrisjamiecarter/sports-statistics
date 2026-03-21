@@ -4,39 +4,39 @@
     <div style="display: table; table-layout: fixed; width: 100%;">
         <div style="overflow-x: auto;">
             <FluentDataGrid Items="@PlayerSeasonStatistics"
-                            ResizableColumns="true"
                             RowSize="DataGridRowSize.Medium"
+                            ShowHover
                             Style="min-width: max-content;">
                 
                 <PropertyColumn Property="@(p => p.PlayerName)" Title="Player" Sortable="true" />
 
                 <PropertyColumn Property="@(p => p.Position)" Title="Position" Sortable="true" />
                 
-                <PropertyColumn Property="@(p => p.GamesPlayed)" Title="Apps" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending">
+                <PropertyColumn Property="@(p => p.GamesPlayed)" Title="Apps" Align="Align.Center" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending">
                     <HeaderCellTitleTemplate>
                         <FluentIcon Value="@(new Icons.Regular.Size20.Calendar())" Color="Color.Neutral" />
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
 
-                <PropertyColumn Property="@(p => p.GoalCount)" Title="Goals" Sortable="true">
+                <PropertyColumn Property="@(p => p.GoalCount)" Title="Goals" Align="Align.Center" Sortable="true">
                     <HeaderCellTitleTemplate>
                         <FluentIcon Value="@(new Icons.Regular.Size20.SportSoccer())" Color="Color.Neutral" />
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
                 
-                <PropertyColumn Property="@(p => p.GoalAssistCount)" Title="Assists" Sortable="true">
+                <PropertyColumn Property="@(p => p.GoalAssistCount)" Title="Assists" Align="Align.Center" Sortable="true">
                     <HeaderCellTitleTemplate>
                         <FluentIcon Value="@(new Icons.Regular.Size20.Handshake())" Color="Color.Neutral" />
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
 
-                <PropertyColumn Property="@(p => p.YellowCardCount)" Title="Yellow Cards" Sortable="true" HeaderTooltip="Yellow Cards" Tooltip>
+                <PropertyColumn Property="@(p => p.YellowCardCount)" Title="Yellow Cards" Align="Align.Center" Sortable="true" HeaderTooltip="Yellow Cards" Tooltip>
                     <HeaderCellTitleTemplate>
                             <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" />
                     </HeaderCellTitleTemplate>
                 </PropertyColumn>
 
-                <PropertyColumn Property="@(p => p.RedCardCount)" Title="Red Cards" Sortable="true">
+                <PropertyColumn Property="@(p => p.RedCardCount)" Title="Red Cards" Align="Align.Center" Sortable="true">
                     <HeaderCellTitleTemplate>
                         <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" />
                     </HeaderCellTitleTemplate>

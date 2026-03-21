@@ -26,7 +26,7 @@
 
             @if (SelectedSeason is not null)
             {
-                <FluentTabs ActiveTabId="tab-1" Width="100%" Size="TabSize.Large">
+                <FluentTabs @bind-ActiveTabId="@ActiveTabId" Width="100%" Size="TabSize.Large">
                     
                     <FluentTab Id="tab-1" Label="Season Statistics" Style="">
                         <StatisticsView
@@ -61,6 +61,7 @@
     private IQueryable<PlayerSeasonStatisticsDto>? PlayerSeasonStatistics;
     private IQueryable<FixtureResponse>? SelectedSeasonFixtures;
     private PlayerSeasonStatisticsDto? SelectedPlayerSeasonStatistics;
+    private string ActiveTabId = "tab-1";
 
     protected override async Task OnInitializedAsync()
     {
