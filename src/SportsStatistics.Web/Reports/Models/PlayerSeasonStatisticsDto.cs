@@ -21,4 +21,8 @@ public sealed record PlayerSeasonStatisticsDto(
     int FoulWonCount,
     int FoulConcededCount,
     int YellowCardCount,
-    int RedCardCount);
+    int RedCardCount)
+{
+    public int TotalPasses => PassSuccessCount + PassFailureCount;
+    public int TotalShots => ShotOnTargetCount + ShotOffTargetCount;
+}

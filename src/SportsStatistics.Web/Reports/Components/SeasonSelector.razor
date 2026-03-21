@@ -17,16 +17,4 @@
 
     [Parameter]
     public EventCallback<SeasonDto> OnSelectedSeasonChanged { get; set; }
-
-    // private SeasonResponse? SelectedSeason
-    // {
-    //     get => Seasons.FirstOrDefault(s => s.Id == SelectedSeasonId);
-    //     set
-    //     {
-    //         if (value is not null)
-    //         {
-    //             OnSeasonSelected.InvokeAsync(value.Id);
-    //         }
-    //     }
-    // }
 }

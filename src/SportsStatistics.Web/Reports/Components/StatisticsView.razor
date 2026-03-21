@@ -1,35 +1,60 @@
-﻿<FluentCard Style="padding: 1rem;">
-    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="margin-bottom: 1rem;">
-        Player Statistics - Season Summary
-    </FluentLabel>
+﻿@using SportsStatistics.Domain.Players
 
-    <FluentDataGrid Items="@PlayerSeasonStatistics"
-                    ResizableColumns="true"
-                    RowSize="DataGridRowSize.Medium">
-        <PropertyColumn Property="@(p => p.SquadNumber)" Title="#" Sortable="true" />
-        <PropertyColumn Property="@(p => p.PlayerName)" Title="Player" Sortable="true" />
-        <PropertyColumn Property="@(p => p.Position)" Title="Position" Sortable="true" />
-        <PropertyColumn Property="@(p => p.GamesPlayed)" Title="GP" Sortable="true" />
-        <PropertyColumn Property="@(p => p.GoalCount)" Title="G" Sortable="true" IsDefaultSortColumn />
-        <PropertyColumn Property="@(p => p.GoalAssistCount)" Title="A" Sortable="true" />
-        <PropertyColumn Property="@(p => p.PassSuccessCount)" Title="PS" Sortable="true" />
-        <PropertyColumn Property="@(p => p.PassFailureCount)" Title="PF" Sortable="true" />
-        <PropertyColumn Property="@(p => p.ShotOnTargetCount)" Title="SOT" Sortable="true" />
-        <PropertyColumn Property="@(p => p.ShotOffTargetCount)" Title="SOFF" Sortable="true" />
-        <PropertyColumn Property="@(p => p.TackleCount)" Title="Tkl" Sortable="true" />
-        <PropertyColumn Property="@(p => p.FoulWonCount)" Title="FW" Sortable="true" />
-        <PropertyColumn Property="@(p => p.FoulConcededCount)" Title="FC" Sortable="true" />
-        <PropertyColumn Property="@(p => p.YellowCardCount)" Title="YC" Sortable="true" />
-        <PropertyColumn Property="@(p => p.RedCardCount)" Title="RC" Sortable="true" />
-        <TemplateColumn Align="Align.End">
-            <FluentButton Appearance="Appearance.Accent"
-                          IconEnd="@(new Icons.Regular.Size20.ChartPerson())"
-                          OnClick="@(() => PlayerSeasonStatisticsSelected(context))" />
-        </TemplateColumn>
-    </FluentDataGrid>
+<FluentCard Style="padding: 1rem;">
+    <div style="display: table; table-layout: fixed; width: 100%;">
+        <div style="overflow-x: auto;">
+            <FluentDataGrid Items="@PlayerSeasonStatistics"
+                            ResizableColumns="true"
+                            RowSize="DataGridRowSize.Medium"
+                            Style="min-width: max-content;">
+                
+                <PropertyColumn Property="@(p => p.PlayerName)" Title="Player" Sortable="true" />
+
+                <PropertyColumn Property="@(p => p.Position)" Title="Position" Sortable="true" />
+                
+                <PropertyColumn Property="@(p => p.GamesPlayed)" Title="Apps" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending">
+                    <HeaderCellTitleTemplate>
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Calendar())" Color="Color.Neutral" />
+                    </HeaderCellTitleTemplate>
+                </PropertyColumn>
+
+                <PropertyColumn Property="@(p => p.GoalCount)" Title="Goals" Sortable="true">
+                    <HeaderCellTitleTemplate>
+                        <FluentIcon Value="@(new Icons.Regular.Size20.SportSoccer())" Color="Color.Neutral" />
+                    </HeaderCellTitleTemplate>
+                </PropertyColumn>
+                
+                <PropertyColumn Property="@(p => p.GoalAssistCount)" Title="Assists" Sortable="true">
+                    <HeaderCellTitleTemplate>
+                        <FluentIcon Value="@(new Icons.Regular.Size20.Handshake())" Color="Color.Neutral" />
+                    </HeaderCellTitleTemplate>
+                </PropertyColumn>
+
+                <PropertyColumn Property="@(p => p.YellowCardCount)" Title="Yellow Cards" Sortable="true" HeaderTooltip="Yellow Cards" Tooltip>
+                    <HeaderCellTitleTemplate>
+                            <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" />
+                    </HeaderCellTitleTemplate>
+                </PropertyColumn>
+
+                <PropertyColumn Property="@(p => p.RedCardCount)" Title="Red Cards" Sortable="true">
+                    <HeaderCellTitleTemplate>
+                        <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" />
+                    </HeaderCellTitleTemplate>
+                </PropertyColumn>
+
+                <TemplateColumn Align="Align.End">
+                    <FluentButton Appearance="Appearance.Accent"
+                                    IconEnd="@(new Icons.Regular.Size20.ChartPerson())"
+                                    OnClick="@(() => PlayerSeasonStatisticsSelected(context))" />
+                </TemplateColumn>
+
+            </FluentDataGrid>
+        </div>
+    </div>
+    
 </FluentCard>
 
-@code {
+    @code {
     [Parameter]
     public IQueryable<PlayerSeasonStatisticsDto>? PlayerSeasonStatistics { get; set; }
 

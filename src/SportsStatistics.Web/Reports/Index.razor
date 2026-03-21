@@ -24,16 +24,29 @@
                 SelectedSeason="@SelectedSeason"
                 OnSelectedSeasonChanged="HandleSelectedSeasonChangedAsync" />
 
-
             @if (SelectedSeason is not null)
             {
-                <StatisticsView 
-                    PlayerSeasonStatistics="@PlayerSeasonStatistics"
-                    OnPlayerSeasonStatisticsSelected="HandlePlayerSeasonStatisticsSelectedAsync" />
-            
-                    <FixtureBreakdown
-                        SeasonFixtures="@SelectedSeasonFixtures"
-                        OnFixtureSelected="HandleFixtureSelectedAsync" />
+                <FluentTabs ActiveTabId="tab-1" Width="100%" Size="TabSize.Large">
+                    
+                    <FluentTab Id="tab-1" Label="Season Statistics" Style="">
+                        <StatisticsView
+                            PlayerSeasonStatistics="@PlayerSeasonStatistics"
+                            OnPlayerSeasonStatisticsSelected="HandlePlayerSeasonStatisticsSelectedAsync" />
+                        
+                        @if (SelectedPlayerSeasonStatistics is not null)
+                        {
+                            <PlayerChartView
+                                PlayerStatistics="@SelectedPlayerSeasonStatistics" />
+                        }
+                    </FluentTab>
+
+                    <FluentTab Id="tab-2" Label="Fixture Statistics">
+                        <FixtureBreakdown
+                            SeasonFixtures="@SelectedSeasonFixtures"
+                            OnFixtureSelected="HandleFixtureSelectedAsync" />
+                    </FluentTab>
+
+                </FluentTabs>
             }
 
         </FluentStack>
@@ -47,7 +60,7 @@
     private SeasonDto? SelectedSeason;
     private IQueryable<PlayerSeasonStatisticsDto>? PlayerSeasonStatistics;
     private IQueryable<FixtureResponse>? SelectedSeasonFixtures;
-    // private PlayerSeasonStatisticsDto? SelectedPlayerSeasonStatistics;
+    private PlayerSeasonStatisticsDto? SelectedPlayerSeasonStatistics;
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,11 +132,13 @@
 
     private async Task HandlePlayerSeasonStatisticsSelectedAsync(PlayerSeasonStatisticsDto player)
     {
+        SelectedPlayerSeasonStatistics = player;
         var dialog = await DialogService.ShowDialogAsync<PlayerChartDialog>(player, new DialogParameters()
         {
             Title = $"{player.PlayerName} (#{player.SquadNumber}) - Statistics Breakdown",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
+            Width = "75%",
         });
 
         await dialog.Result;
