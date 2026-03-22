@@ -2,15 +2,13 @@
 
 namespace SportsStatistics.Application.Reports.GetPlayerFixtureStatistics;
 
-public sealed record PlayerFixtureStatisticsResponse(
+public sealed record PlayerFixtureStatistics(
     Guid PlayerId,
     string PlayerName,
     Position Position,
     int MinutesPlayed,
-    int PassCount,
     int PassSuccessCount,
     int PassFailureCount,
-    int ShotCount,
     int ShotOnTargetCount,
     int ShotOffTargetCount,
     int GoalCount,
@@ -21,4 +19,8 @@ public sealed record PlayerFixtureStatisticsResponse(
     int FoulWonCount,
     int FoulConcededCount,
     int YellowCardCount,
-    int RedCardCount);
+    int RedCardCount)
+{
+    public int PassCount => PassSuccessCount + PassFailureCount;
+    public int ShotCount => ShotOnTargetCount + ShotOffTargetCount;
+}
