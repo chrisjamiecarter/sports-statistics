@@ -4,6 +4,7 @@
     <div style="display: table; table-layout: fixed; width: 100%;">
         <div style="overflow-x: auto;">
             <FluentDataGrid Items="@PlayerSeasonStatistics"
+                            Pagination="@Pagination"
                             RowSize="DataGridRowSize.Medium"
                             ShowHover
                             Style="min-width: max-content;">
@@ -50,17 +51,21 @@
 
                 <TemplateColumn Align="Align.End">
                     <FluentButton Appearance="Appearance.Accent"
-                                    IconEnd="@(new Icons.Regular.Size20.ChartPerson())"
-                                    OnClick="@(() => PlayerSeasonStatisticsSelected(context))" />
+                                  IconEnd="@(new Icons.Regular.Size20.ChartMultiple())"
+                                  OnClick="@(() => PlayerSeasonStatisticsSelected(context))" />
                 </TemplateColumn>
 
             </FluentDataGrid>
         </div>
     </div>
+
+    <FluentPaginator State="@Pagination" />
     
 </FluentCard>
 
-    @code {
+@code {
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+
     [Parameter]
     public IQueryable<PlayerSeasonStatisticsDto>? PlayerSeasonStatistics { get; set; }
 

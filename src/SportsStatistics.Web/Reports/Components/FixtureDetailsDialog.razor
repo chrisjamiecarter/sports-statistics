@@ -1,4 +1,4 @@
-﻿@implements IDialogContentComponent<List<PlayerFixtureStatisticsResponse>>
+﻿@implements IDialogContentComponent<IQueryable<PlayerFixtureStatisticsDto>>
 
 @* Header *@
 <FluentDialogHeader ShowDismiss="true">
@@ -11,29 +11,22 @@
 
 @* Body *@
 <FluentDialogBody>
-    <FluentDataGrid Items="@Content.AsQueryable()"
-                    ResizableColumns="true"
-                    Style="width: 100%;">
-        <PropertyColumn Property="@(p => p.SquadNumber)" Title="#" Sortable="true" />
-        <PropertyColumn Property="@(p => p.PlayerName)" Title="Player" Sortable="true" />
-        <PropertyColumn Property="@(p => p.Position)" Title="Pos" Sortable="true" />
-        <TemplateColumn Title="Role">
-            @(context.WasStarter ? "Starter" : "Sub")
-        </TemplateColumn>
-        <PropertyColumn Property="@(p => p.GoalCount)" Title="G" Sortable="true" />
-        <PropertyColumn Property="@(p => p.GoalAssistCount)" Title="A" Sortable="true" />
-        <PropertyColumn Property="@(p => p.OwnGoalCount)" Title="A" Sortable="true" />
-        <PropertyColumn Property="@(p => p.PassSuccessCount)" Title="PS" Sortable="true" />
-        <PropertyColumn Property="@(p => p.PassFailureCount)" Title="PF" Sortable="true" />
-        <PropertyColumn Property="@(p => p.ShotOnTargetCount)" Title="SOT" Sortable="true" />
-        <PropertyColumn Property="@(p => p.ShotOffTargetCount)" Title="SOFF" Sortable="true" />
-        <PropertyColumn Property="@(p => p.TackleCount)" Title="Tkl" Sortable="true" />
-        <PropertyColumn Property="@(p => p.FoulWonCount)" Title="FW" Sortable="true" />
-        <PropertyColumn Property="@(p => p.FoulConcededCount)" Title="FC" Sortable="true" />
-        <PropertyColumn Property="@(p => p.YellowCardCount)" Title="YC" Sortable="true" />
-        <PropertyColumn Property="@(p => p.RedCardCount)" Title="RC" Sortable="true" />
-        <PropertyColumn Property="@(p => p.SaveCount)" Title="Svs" Sortable="true" />
-    </FluentDataGrid>
+    <div style="display: table; table-layout: fixed; width: 100%;">
+        <div style="overflow-x: auto;">
+            <FluentDataGrid Items="@Content"
+                            ResizableColumns="true"
+                            ShowHover
+                            Style="min-width: max-content;">
+
+                <PropertyColumn Property="@(p => p.PlayerName)" Title="Player" Sortable="true" />
+
+                <PropertyColumn Property="@(p => p.Position)" Title="Pos" Sortable="true" />
+
+                <PropertyColumn Property="@(p => p.MinutesPlayed)" Title="Minutes" Sortable="true" />
+
+            </FluentDataGrid>
+        </div>
+    </div>
 </FluentDialogBody>
 
 
@@ -44,7 +37,7 @@
 
 @code {
     [Parameter]
-    public List<PlayerFixtureStatisticsResponse> Content { get; set; } = default!;
+    public IQueryable<PlayerFixtureStatisticsDto> Content { get; set; } = default!;
 
     [CascadingParameter]
     public FluentDialog Dialog { get; set; } = default!;

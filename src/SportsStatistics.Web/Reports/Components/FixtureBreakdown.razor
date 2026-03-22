@@ -1,33 +1,51 @@
 ﻿<FluentCard Style="padding: 1rem;">
-    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="margin-bottom: 1rem;">
-        Game-by-Game Breakdown
-    </FluentLabel>
+    <div style="display: table; table-layout: fixed; width: 100%;">
+        <div style="overflow-x: auto;">
+            <FluentDataGrid Items="@SeasonFixtures"
+                            Pagination="@Pagination"
+                            RowSize="DataGridRowSize.Medium"
+                            ShowHover
+                            Style="min-width: max-content;">
 
-    <FluentDataGrid Items="@SeasonFixtures"
-                    ResizableColumns="true"
-                    Style="width: 100%;">
-        <PropertyColumn Property="@(f => f.KickoffTimeUtc)" Title="Date" Format="dd/MM/yyyy HH:mm" Sortable="true" />
-        <PropertyColumn Property="@(f => f.Opponent)" Title="Opponent" Sortable="true" />
-        <PropertyColumn Property="@(f => f.Location)" Title="Location" Sortable="true" />
-        <TemplateColumn Title="Score">
-            <span style="font-weight: bold;">
-                @context.HomeGoals - @context.AwayGoals
-            </span>
-        </TemplateColumn>
-        @* <PropertyColumn Property="@(f => f.Outcome)" Title="Result" Sortable="true" /> *@
-        <TemplateColumn Title="Actions">
-            <FluentButton Appearance="Appearance.Accent"
-                            OnClick="@(() => OnFixtureSelected.InvokeAsync(context))">
-                View Details
-            </FluentButton>
-        </TemplateColumn>
-    </FluentDataGrid>
+                <PropertyColumn Property="@(f => f.KickoffTimeUtc)" Title="Date" Format="dd MMM yyyy" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" />
+                
+                <PropertyColumn Property="@(f => f.Opponent)" Title="Opponent" Sortable="true" />
+                
+                <PropertyColumn Property="@(f => f.Location)" Title="Location" Sortable="true" />
+
+                <TemplateColumn Title="Score">
+                    @context.Score.HomeGoals - @context.Score.AwayGoals
+                </TemplateColumn>
+
+                <PropertyColumn Property="@(f => f.Outcome.Name)" Title="Result" Sortable="true" />
+
+                <PropertyColumn Property="@(fixture => fixture.CompetitionName)" Title="Competition" Sortable="true" />
+
+                <TemplateColumn Align="Align.End">
+                    <FluentButton Appearance="Appearance.Accent"
+                                  IconEnd="@(new Icons.Regular.Size20.ChartMultiple())"
+                                  OnClick="@(() => FixtureSelected(context))" />
+                </TemplateColumn>
+
+            </FluentDataGrid>
+        </div>
+    </div>
+
+    <FluentPaginator State="@Pagination" />
+
 </FluentCard>
 
 @code {
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+
     [Parameter]
-    public IQueryable<FixtureResponse>? SeasonFixtures { get; set; }
+    public IQueryable<FixtureDto>? SeasonFixtures { get; set; }
     
     [Parameter]
-    public EventCallback<FixtureResponse> OnFixtureSelected { get; set; }
+    public EventCallback<FixtureDto> OnFixtureSelected { get; set; }
+    
+    private async Task FixtureSelected(FixtureDto fixture)
+    {
+        await OnFixtureSelected.InvokeAsync(fixture);
+    }
 }

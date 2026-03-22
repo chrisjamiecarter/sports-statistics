@@ -32,12 +32,6 @@
                         <StatisticsView
                             PlayerSeasonStatistics="@PlayerSeasonStatistics"
                             OnPlayerSeasonStatisticsSelected="HandlePlayerSeasonStatisticsSelectedAsync" />
-                        
-                        @if (SelectedPlayerSeasonStatistics is not null)
-                        {
-                            <PlayerChartView
-                                PlayerStatistics="@SelectedPlayerSeasonStatistics" />
-                        }
                     </FluentTab>
 
                     <FluentTab Id="tab-2" Label="Fixture Statistics">
@@ -59,7 +53,7 @@
     private List<SeasonDto> Seasons = [];
     private SeasonDto? SelectedSeason;
     private IQueryable<PlayerSeasonStatisticsDto>? PlayerSeasonStatistics;
-    private IQueryable<FixtureResponse>? SelectedSeasonFixtures;
+    private IQueryable<FixtureDto>? SelectedSeasonFixtures;
     private PlayerSeasonStatisticsDto? SelectedPlayerSeasonStatistics;
     private string ActiveTabId = "tab-1";
 
@@ -73,7 +67,7 @@
 
     private async Task LoadFixturesAsync(SeasonDto season)
     {
-        var request = new GetFixturesBySeasonIdQuery(season.SeasonId);
+        var request = new GetCompletedFixturesBySeasonIdQuery(season.SeasonId);
         var result = await Messenger.SendAsync(request);
 
         if (result.IsFailure)
@@ -83,7 +77,7 @@
             return;
         }
 
-        SelectedSeasonFixtures = result.Value.AsQueryable();
+        SelectedSeasonFixtures = result.Value.ToQueryable();
     }
 
     private async Task LoadPlayerSeasonStatisticsAsync(SeasonDto season)
@@ -145,19 +139,19 @@
         await dialog.Result;
     }
 
-    private async Task HandleFixtureSelectedAsync(FixtureResponse fixture)
+    private async Task HandleFixtureSelectedAsync(FixtureDto fixture)
     {
-        var request = new GetPlayerFixtureStatisticsQuery(fixture.Id);
+        var request = new GetPlayerFixtureStatisticsQuery(fixture.FixtureId);
         var result = await Messenger.SendAsync(request);
 
         if (result.IsFailure)
         {
             SelectedSeasonFixtures = null;
-            ToastService.ShowError("Unable to load fixtures");
+            ToastService.ShowError("Unable to load fixture statistics");
             return;
         }
 
-        var response = result.Value;
+        var response = result.Value.ToQueryable();
 
         var dialog = await DialogService.ShowDialogAsync<FixtureDetailsDialog>(response, new DialogParameters()
         {
