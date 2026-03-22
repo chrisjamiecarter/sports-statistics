@@ -18,7 +18,6 @@ public static class MatchMinuteCalculator
             if (secondHalfStartedAtUtc is null)
             {
                 secondHalfStartedAtUtc = occuredAtUtc;
-                //throw new InvalidOperationException($"Unable to calculate a second half minute for a null started at time.");
             }
 
             return Calculate(occuredAtUtc.AddMinutes(Minute.FirstHalfEndMinute) - secondHalfStartedAtUtc.Value, Minute.SecondHalfEndMinute);
