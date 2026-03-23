@@ -5,9 +5,13 @@
 @using SportsStatistics.Application.Fixtures.GetRecentForm
 @using SportsStatistics.Application.Fixtures.GetSeasonStatistics
 @using SportsStatistics.Application.Fixtures.GetTodays
+@using SportsStatistics.Application.Players.GetTopAssistsBySeason
+@using SportsStatistics.Application.Players.GetTopScorersBySeason
 @using SportsStatistics.Application.Seasons.GetCurrent
 @using SportsStatistics.Domain.Fixtures
 @using SportsStatistics.Web.Abstractions.Messaging
+@using SportsStatistics.Web.Home.Components
+@using SportsStatistics.Web.Home.Models
 
 <PageTitle>Home</PageTitle>
 
@@ -43,10 +47,25 @@
         </FluentGridItem>
 
         <!-- Recent Form Card -->
-        <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="12">
+        <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <RecentFormCard Results="RecentForm?.Items" />
         </FluentGridItem>
-
+        
+        <!-- Top Scorers Card -->
+        <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
+            <TopPlayerStatsCard Title="Top Scorers"
+                                Icon="@(new Icons.Regular.Size20.SportSoccer())"
+                                TopPlayerStats="@TopScorers"
+                                EmptyMessage="No goalscorers" />
+        </FluentGridItem>
+        
+        <!-- Top Assists Card -->
+        <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
+            <TopPlayerStatsCard Title="Top Assists"
+                                Icon="@(new Icons.Regular.Size20.Handshake())"
+                                TopPlayerStats="@TopAssists"
+                                EmptyMessage="No assists" />
+        </FluentGridItem>
     </FluentGrid>
 
 </FluentStack>
@@ -56,6 +75,8 @@
     private FixtureCardDto? TodaysFixture { get; set; }
     private FixtureCardDto? NextFixture { get; set; }
     private RecentFormCardDto? RecentForm { get; set; }
+    private TopPlayerStatsCardDto? TopScorers { get; set; }
+    private TopPlayerStatsCardDto? TopAssists { get; set; }
     private string ClubName { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -119,6 +140,42 @@
                 0,
                 0,
                 fixture.Status.Name);
+        }
+
+        var currentSeasonResult = await Messenger.SendAsync(new GetCurrentSeasonQuery());
+        if (currentSeasonResult.IsSuccess)
+        {
+            var currentSeason = currentSeasonResult.Value;
+
+            var topScorersResult = await Messenger.SendAsync(new GetTopScorersBySeasonQuery(currentSeason.SeasonId));
+            if (topScorersResult.IsSuccess)
+            {
+                var topScorers = topScorersResult.Value;
+                TopScorers = new TopPlayerStatsCardDto(
+                    "Goals",
+                    topScorers
+                        .Select(player => new TopPlayerStatDto(
+                            player.PlayerId,
+                            player.PlayerName,
+                            player.Position.Name,
+                            player.GoalCount))
+                        .ToList());
+            }
+
+            var topAssistsResult = await Messenger.SendAsync(new GetTopAssistsBySeasonQuery(currentSeason.SeasonId));
+            if (topAssistsResult.IsSuccess)
+            {
+                var topAssists = topAssistsResult.Value;
+                TopAssists = new TopPlayerStatsCardDto(
+                    "Assists",
+                    topAssists
+                        .Select(player => new TopPlayerStatDto(
+                            player.PlayerId,
+                            player.PlayerName,
+                            player.Position.Name,
+                            player.AssistCount))
+                        .ToList());
+            }
         }
     }
 
