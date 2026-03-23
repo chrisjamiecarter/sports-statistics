@@ -130,7 +130,7 @@
         SelectedPlayerSeasonStatistics = player;
         var dialog = await DialogService.ShowDialogAsync<PlayerChartDialog>(player, new DialogParameters()
         {
-            Title = $"{player.PlayerName} ({player.Position.Name}) - Statistics Breakdown",
+            Title = $"{player.PlayerName} ({player.Position.Name})",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
             Width = "75%",
@@ -155,10 +155,10 @@
 
         var dialog = await DialogService.ShowDialogAsync<FixtureDetailsDialog>(response, new DialogParameters()
         {
-            Title = $"vs {fixture.Opponent} ({fixture.Location}) - Fixture Detail",
+            Title = $"vs {fixture.Opponent} ({fixture.Location})",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
-            Width = "100%",
+            Width = "75%",
         });
 
         await dialog.Result;
