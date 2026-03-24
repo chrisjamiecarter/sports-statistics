@@ -2,7 +2,7 @@
     <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
 
      <FluentStack VerticalAlignment="VerticalAlignment.Center">
-            <FluentIcon Value="@(new Icons.Regular.Size20.History())" Color="Color.Accent" />
+            <FluentIcon Value="@(new Icons.Regular.Size20.DataTrending())" Color="Color.Accent" />
             <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Recent Form</FluentLabel>
         </FluentStack>
 
@@ -10,10 +10,17 @@
 
         @if (Results is null || Results.Count == 0)
         {
-            <FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
-                <FluentIcon Value="@(new Icons.Regular.Size24.QuestionCircle())" Color="Color.Accent" />
+            <FluentSpacer />
+            <FluentStack Orientation="Orientation.Vertical"
+                         VerticalAlignment="VerticalAlignment.Center"
+                         HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentSpacer />
+                <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Accent" />
+                <FluentSpacer />
                 <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">No recent form</FluentLabel>
+                <FluentSpacer />
             </FluentStack>
+            <FluentSpacer />
         }
         else
         {
