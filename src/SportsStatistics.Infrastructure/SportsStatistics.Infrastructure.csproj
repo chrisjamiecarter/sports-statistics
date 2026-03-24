@@ -27,6 +27,7 @@
     <InternalsVisibleTo Include="SportsStatistics.ArchitectureTests" />
     <InternalsVisibleTo Include="SportsStatistics.Infrastructure.Tests" />
     <InternalsVisibleTo Include="SportsStatistics.Tools.DatabaseMigrator" />
+    <InternalsVisibleTo Include="SportsStatistics.Tools.DatabaseSeeder" />
   </ItemGroup>
 
 </Project>

@@ -20,7 +20,7 @@ internal sealed class DatabaseMigratorService(
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
-            _logger.LogInformation("Starting migration for {ContextName}...", dbContextName);
+            _logger.LogInformation("Starting migration for {ContextName}.", dbContextName);
         }
 
         var strategy = dbContext.Database.CreateExecutionStrategy();
@@ -58,7 +58,7 @@ internal sealed class DatabaseMigratorService(
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
-            _logger.LogInformation("Completed migration for {ContextName}...", dbContextName);
+            _logger.LogInformation("Completed migration for {ContextName}.", dbContextName);
         }
 
         return Result.Success();

@@ -1,57 +1,70 @@
-﻿namespace SportsStatistics.Tools.DatabaseSeeder.Services;
+﻿using Microsoft.AspNetCore.Identity;
+using SportsStatistics.Authorization.Constants;
+using SportsStatistics.SharedKernel;
+
+namespace SportsStatistics.Tools.DatabaseSeeder.Services;
 
 internal interface IRoleSeederService
 {
-    Task SeedAsync(CancellationToken cancellationToken = default);
+    Task<Result> SeedAsync(CancellationToken cancellationToken = default);
 }
 
-internal sealed class RoleSeederService
+internal sealed class RoleSeederService(
+    RoleManager<IdentityRole> roleManager,
+    ILogger<RoleSeederService> logger)
     : IRoleSeederService
 {
-    public Task SeedAsync(CancellationToken cancellationToken = default)
+    private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+    private readonly ILogger<RoleSeederService> _logger = logger;
+
+    public async Task<Result> SeedAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("Starting seeding for roles.");
+
+        var roleNames = Roles.GetRoleNames();
+
+        var results = new List<Result>();
+        foreach (var roleName in roleNames)
+        {
+            results.Add(await SeedRoleAsync(roleName, cancellationToken));
+        }
+
+        _logger.LogInformation("Finished seeding for roles.");
+        return Result.FirstFailureOrSuccess([.. results]);
     }
-}
 
-internal interface IUserSeederService
-{
-    Task SeedAsync(CancellationToken cancellationToken = default);
-}
-
-internal sealed class UserSeederService
-    : IUserSeederService
-{
-    public Task SeedAsync(CancellationToken cancellationToken = default)
+    private async Task<Result> SeedRoleAsync(string roleName, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-    }
-}
+        // As RoleManager does not accept the cancellation token, manually check.
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Result.Failure(Error.Problem("Role.Seed", "Cancellation Requested"));
+        }
 
-internal interface IClubSeederService
-{
-    Task SeedAsync(CancellationToken cancellationToken = default);
-}
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Seeding role: {Role}", roleName);
+        }
 
-internal sealed class ClubSeederService
-    : IClubSeederService
-{
-    public Task SeedAsync(CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-}
+        if (await _roleManager.RoleExistsAsync(roleName))
+        {
+            _logger.LogInformation("Role already exists, exiting.");
+            return Result.Success();
+        }
 
-internal interface IDataSeederService
-{
-    Task SeedAsync(CancellationToken cancellationToken = default);
-}
+        var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            _logger.LogError("Failed to create role {Role}: {Errors}", roleName, errors);
+            return Result.Failure(Error.Failure("Role.Create", "Failed to create role"));
+        }
 
-internal sealed class DataSeederService
-    : IDataSeederService
-{
-    public Task SeedAsync(CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Seeded role: {Role}", roleName);
+        }
+
+        return Result.Success();
     }
 }

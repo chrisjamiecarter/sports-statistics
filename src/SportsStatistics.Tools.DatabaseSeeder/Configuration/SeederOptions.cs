@@ -3,13 +3,11 @@
 public class SeederOptions
 {
     public string DefaultPassword { get; set; } = "Password123!";
-
+    public bool SeedTestData { get; set; } = true;
+    public int YearsOfData { get; set; } = 3;
     public AdminUserOptions Admin { get; set; } = new();
     public ReportsUserOptions Reports { get; set; } = new();
     public TrackerUserOptions Tracker { get; set; } = new();
-
-    public bool SeedTestData { get; set; } = true;
-    public int YearsOfData { get; set; } = 3;
 }
 
 public sealed class AdminUserOptions
