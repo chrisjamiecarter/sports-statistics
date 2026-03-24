@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <UserSecretsId>dotnet-SportsStatistics.Tools.DatabaseMigrator-6a787e57-cfdd-47c0-8a5d-41e1088356e5</UserSecretsId>
+    <UserSecretsId>dotnet-SportsStatistics.Tools.DatabaseSeeder-6cc79c78-d9df-4da2-85d3-ed79c559ed13</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

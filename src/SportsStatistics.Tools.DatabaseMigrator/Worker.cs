@@ -1,24 +1,22 @@
 using System.Diagnostics;
-using SportsStatistics.Application.Interfaces.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using SportsStatistics.Authorization.Database;
+using SportsStatistics.Infrastructure.Database;
+using SportsStatistics.Tools.DatabaseMigrator.Services;
 
 namespace SportsStatistics.Tools.DatabaseMigrator;
 
-public class Worker : BackgroundService
+public class Worker(
+    IHostApplicationLifetime hostApplicationLifetime,
+    IServiceProvider serviceProvider)
+    : BackgroundService
 {
-    public const string ActivitySourceName = "Migrations";
+    public const string ActivitySourceName = nameof(DatabaseMigrator);
 
     private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
 
-    private readonly IHostApplicationLifetime _hostApplicationLifetime;
-    private readonly ILogger<Worker> _logger;
-    private readonly IServiceProvider _serviceProvider;
-
-    public Worker(IHostApplicationLifetime hostApplicationLifetime, ILogger<Worker> logger, IServiceProvider serviceProvider)
-    {
-        _hostApplicationLifetime = hostApplicationLifetime;
-        _logger = logger;
-        _serviceProvider = serviceProvider;
-    }
+    private readonly IHostApplicationLifetime _hostApplicationLifetime = hostApplicationLifetime;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -28,40 +26,36 @@ public class Worker : BackgroundService
         {
             using var scope = _serviceProvider.CreateScope();
 
-            var migrationServices = scope.ServiceProvider.GetServices<IDatabaseMigrationService>();
+            var migratorService = scope.ServiceProvider.GetRequiredService<IDatabaseMigratorService>();
 
-            foreach (var migrationService in migrationServices)
+            var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var identityDbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+
+            foreach (var dbContext in new List<DbContext>() { applicationDbContext, identityDbContext} )
             {
-                var migrationResult = await migrationService.MigrateAsync(stoppingToken);
-
-                if (migrationResult.IsSuccess)
+                var result = await migratorService.MigrateAsync(dbContext, stoppingToken);
+                
+                if (result.IsFailure)
                 {
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("Database migration result: {Result}", migrationResult);
-                    }
-                }
-                else
-                {
-                    throw migrationResult.Exception ?? new InvalidOperationException(migrationResult.Message);
+                    throw new InvalidOperationException(result.Error.Description);
                 }
             }
 
-            var seederService = scope.ServiceProvider.GetRequiredService<IDatabaseSeederService>();
+            //var seederService = scope.ServiceProvider.GetRequiredService<IDatabaseSeederService>();
 
-            var seederResult = await seederService.SeedAsync(stoppingToken);
+            //var seederResult = await seederService.SeedAsync(stoppingToken);
 
-            if (seederResult.IsSuccess)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Database seeding completed successfully.");
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException(seederResult.Error.ToString());
-            }
+            //if (seederResult.IsSuccess)
+            //{
+            //    if (_logger.IsEnabled(LogLevel.Information))
+            //    {
+            //        _logger.LogInformation("Database seeding completed successfully.");
+            //    }
+            //}
+            //else
+            //{
+            //    throw new InvalidOperationException(seederResult.Error.ToString());
+            //}
         }
         catch (Exception exception)
         {

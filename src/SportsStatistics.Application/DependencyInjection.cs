@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Abstractions.Behaviours;
@@ -29,8 +28,6 @@ public static class DependencyInjection
             configuration.AddOpenBehavior(typeof(RequestLoggingBehaviour<,>));
             configuration.AddOpenBehavior(typeof(RequestValidationBehaviour<,>));
         });
-
-        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
 
         return services;
     }

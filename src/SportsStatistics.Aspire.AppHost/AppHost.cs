@@ -17,7 +17,7 @@ internal static class Program
         var migrator = builder.AddProject<DatabaseMigratorProject>(Resources.DatabaseMigrator)
                               .WithReference(database)
                               .WaitFor(database);
-
+                
         var web = builder.AddProject<WebProject>(Resources.Web)
                          .WithReference(database)
                          .WaitFor(migrator);

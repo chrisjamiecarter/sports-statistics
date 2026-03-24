@@ -1,6 +1,4 @@
-﻿using SportsStatistics.Tools.DatabaseMigrator.Services;
-
-namespace SportsStatistics.Tools.DatabaseMigrator;
+﻿namespace SportsStatistics.Tools.DatabaseSeeder;
 
 internal static class DependencyInjection
 {
@@ -12,8 +10,6 @@ internal static class DependencyInjection
 
         builder.Services.AddOpenTelemetry()
                         .WithTracing(tracing => tracing.AddSource(Worker.ActivitySourceName));
-
-        builder.Services.AddScoped<IDatabaseMigratorService, DatabaseMigratorService>();
 
         return builder;
     }

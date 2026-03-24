@@ -12,4 +12,7 @@
     <ProjectReference Include="..\SportsStatistics.Aspire.Constants\SportsStatistics.Aspire.Constants.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SportsStatistics.Tools.DatabaseMigrator" />
+  </ItemGroup>
 </Project>
