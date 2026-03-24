@@ -9,7 +9,6 @@
         Choose 11 players for today's fixture.
     </FluentLabel>
 
-
     <EditForm Model="@Input" OnValidSubmit="ConfirmTeamsheet" FormName="teamsheet-form" style="width: 100%">
         <FluentValidator />
         <div class ="full-width">
@@ -37,7 +36,6 @@
         </FluentStack>
     </EditForm>
 
-
 </FluentStack>
 
 
@@ -49,17 +47,20 @@
     [Parameter] public EventCallback OnCancelled { get; set; }
 
     [SupplyParameterFromForm]
-    private TeamsheetFormModel Input { get; set; } = new();
+    private TeamsheetFormModel Input { get; set; } = default!;
 
     private const int PlayersRequired = 11;
 
     private IQueryable<PlayerDto> OrderedPlayers => Players.OrderBy(player => player.PositionId).ThenBy(player => player.Name).AsQueryable();
 
-    // private IEnumerable<PlayerDto> SelectedPlayers { get; set; } = [];
-
     private int SelectedPlayersCount => Input.Players.Count();
 
     private bool IsValid => SelectedPlayersCount == PlayersRequired;
+    
+    protected override void OnInitialized()
+    {
+        Input ??= new();
+    }
 
     private async Task ConfirmTeamsheet()
     {
@@ -75,7 +76,6 @@
 
     private async Task Cancel()
     {
-        // SelectedPlayers = [];
         await OnCancelled.InvokeAsync();
     }
 

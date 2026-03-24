@@ -51,12 +51,17 @@
     private IJSObjectReference? _authJS;
 
     [SupplyParameterFromForm]
-    private SigninInputModel Input { get; set; } = new();
+    private SigninInputModel Input { get; set; } = default!;
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
     private StatusModel SignInStatus { get; set; } = new();
+    
+    protected override void OnInitialized()
+    {
+        Input ??= new();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

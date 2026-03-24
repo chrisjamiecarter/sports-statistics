@@ -70,13 +70,18 @@
     public FluentDialog Dialog { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    private GoalFormModel Input { get; set; } = new();
+    private GoalFormModel Input { get; set; } = default!;
 
     private bool ScorerRequired => 
         (Input.GoalType == GoalType.TeamGoal && !Input.IsOwnGoal) ||
         (Input.GoalType == GoalType.OppositionGoal && Input.IsOwnGoal);
 
     private bool AssisterRequired => Input.GoalType == GoalType.TeamGoal && !Input.IsOwnGoal;
+    
+    protected override void OnInitialized()
+    {
+        Input ??= new();
+    }
 
     protected override void OnParametersSet()
     {

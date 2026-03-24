@@ -54,7 +54,12 @@
     public FluentDialog Dialog { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    private SubstitutionFormModel Input { get; set; } = new();
+    private SubstitutionFormModel Input { get; set; } = default!;
+    
+    protected override void OnInitialized()
+    {
+        Input ??= new();
+    }
 
     private async Task ConfirmAsync()
     {

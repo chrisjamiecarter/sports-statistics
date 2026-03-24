@@ -22,16 +22,16 @@
         <!-- Previous Fixture Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <FixtureCard Title="Previous Fixture"
-                                Icon="@(new Icons.Regular.Size20.ArrowLeft())"
-                                Fixture="@PreviousFixture"
-                                ClubName="@ClubName"
-                                EmptyMessage="No previous fixtures" />
+                         Icon="@(new Icons.Regular.Size20.CalendarReply())"
+                         Fixture="@PreviousFixture"
+                         ClubName="@ClubName"
+                         EmptyMessage="No previous fixtures" />
         </FluentGridItem>
 
         <!-- Today's Fixture Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <FixtureCard Title="Today's Fixture"
-                         Icon="@(new Icons.Regular.Size20.CalendarToday())"
+                         Icon="@(new Icons.Regular.Size20.CalendarDate())"
                          Fixture="@TodaysFixture"
                          ClubName="@ClubName"
                          EmptyMessage="No fixture today" />
@@ -40,7 +40,7 @@
         <!-- Next Fixture Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <FixtureCard Title="Next Fixture"
-                         Icon="@(new Icons.Regular.Size20.ArrowRight())"
+                         Icon="@(new Icons.Regular.Size20.CalendarArrowRight())"
                          Fixture="@NextFixture"
                          ClubName="@ClubName"
                          EmptyMessage="No upcoming fixtures" />

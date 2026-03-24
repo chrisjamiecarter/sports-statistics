@@ -89,13 +89,18 @@
     public EventCallback<FixtureFormModel> OnSubmit { get; set; }
 
     [SupplyParameterFromForm]
-    private FixtureFormModel Input { get; set; } = new();
+    private FixtureFormModel Input { get; set; } = default!;
 
     private bool IsUpdateMode => SelectedFixture is not null;
 
     private string HeaderText => $"{(IsUpdateMode ? "Edit" : "Add")} Fixture";
 
     private string SubmitButtonText => IsUpdateMode ? "Update" : "Create";
+    
+    protected override void OnInitialized()
+    {
+        Input ??= new();
+    }
 
     protected override void OnParametersSet()
     {

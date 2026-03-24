@@ -44,13 +44,18 @@
     public EventCallback<SeasonFormModel> OnSubmit { get; set; }
 
     [SupplyParameterFromForm]
-    private SeasonFormModel Input { get; set; } = new();
+    private SeasonFormModel Input { get; set; } = default!;
 
     private bool IsUpdateMode => SelectedSeason is not null;
 
     private string HeaderText => $"{(IsUpdateMode ? "Edit" : "Add")} Season";
 
     private string SubmitButtonText => IsUpdateMode ? "Update" : "Create";
+    
+    protected override void OnInitialized()
+    {
+        Input ??= new();
+    }
 
     protected override void OnParametersSet()
     {
