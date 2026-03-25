@@ -50,8 +50,6 @@ public static class DependencyInjection
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingServerAuthenticationStateProvider>();
 
-        builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
-
         return builder;
     }
 }

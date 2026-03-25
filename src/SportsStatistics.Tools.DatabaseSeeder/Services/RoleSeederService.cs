@@ -4,10 +4,7 @@ using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Tools.DatabaseSeeder.Services;
 
-internal interface IRoleSeederService
-{
-    Task<Result> SeedAsync(CancellationToken cancellationToken = default);
-}
+internal interface IRoleSeederService : ISeederService { }
 
 internal sealed class RoleSeederService(
     RoleManager<IdentityRole> roleManager,

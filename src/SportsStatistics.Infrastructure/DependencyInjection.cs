@@ -31,9 +31,6 @@ public static class DependencyInjection
 
         builder.AddAuthorizationInternal();
 
-        builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
-        builder.Services.AddScoped<IDatabaseSeederService, DatabaseSeederService>();
-
         return builder;
     }
 }

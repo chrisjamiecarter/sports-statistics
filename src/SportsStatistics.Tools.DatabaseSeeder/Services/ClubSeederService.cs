@@ -6,10 +6,7 @@ using ClubName = SportsStatistics.Domain.Clubs.Name;
 
 namespace SportsStatistics.Tools.DatabaseSeeder.Services;
 
-internal interface IClubSeederService
-{
-    Task<Result> SeedAsync(CancellationToken cancellationToken = default);
-}
+internal interface IClubSeederService : ISeederService { }
 
 internal sealed class ClubSeederService(
     ApplicationDbContext dbContext,

@@ -17,10 +17,14 @@ internal static class Program
         var migrator = builder.AddProject<DatabaseMigratorProject>(Resources.DatabaseMigrator)
                               .WithReference(database)
                               .WaitFor(database);
-                
+
+        var seeder = builder.AddProject<DatabaseSeederProject>(Resources.DatabaseSeeder)
+                              .WithReference(database)
+                              .WaitForCompletion(migrator);
+
         var web = builder.AddProject<WebProject>(Resources.Web)
                          .WithReference(database)
-                         .WaitFor(migrator);
+                         .WaitForCompletion(seeder);
 
         await builder.Build().RunAsync();
     }

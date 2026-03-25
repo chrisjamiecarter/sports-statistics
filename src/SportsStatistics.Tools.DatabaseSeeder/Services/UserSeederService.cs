@@ -1,23 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using SportsStatistics.Authorization.Entities;
 using SportsStatistics.SharedKernel;
 using SportsStatistics.Tools.DatabaseSeeder.Configuration;
 
 namespace SportsStatistics.Tools.DatabaseSeeder.Services;
 
-internal interface IUserSeederService
-{
-    Task<Result> SeedAsync(CancellationToken cancellationToken = default);
-}
+internal interface IUserSeederService : ISeederService { }
 
 internal sealed class UserSeederService(
     UserManager<ApplicationUser> userManager,
-    SeederOptions options,
+    IOptions<SeederOptions> options,
     ILogger<UserSeederService> logger)
     : IUserSeederService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly SeederOptions _options = options;
+    private readonly SeederOptions _options = options.Value;
     private readonly ILogger<UserSeederService> _logger = logger;
 
     public async Task<Result> SeedAsync(CancellationToken cancellationToken = default)

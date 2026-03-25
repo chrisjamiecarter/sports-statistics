@@ -11,9 +11,8 @@ internal static class Program
 
         builder.AddServiceDefaults();
 
-        builder.AddApplication()
-               .AddPresentation()
-               .AddInfrastructure();
+        builder.AddPresentation();
+        builder.AddInfrastructure();
 
         var host = builder.Build();
 

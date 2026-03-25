@@ -1,4 +1,7 @@
-﻿namespace SportsStatistics.Tools.DatabaseSeeder;
+﻿using SportsStatistics.Tools.DatabaseSeeder.Configuration;
+using SportsStatistics.Tools.DatabaseSeeder.Services;
+
+namespace SportsStatistics.Tools.DatabaseSeeder;
 
 internal static class DependencyInjection
 {
@@ -10,6 +13,19 @@ internal static class DependencyInjection
 
         builder.Services.AddOpenTelemetry()
                         .WithTracing(tracing => tracing.AddSource(Worker.ActivitySourceName));
+
+        builder.Services
+            .AddOptions<SeederOptions>()
+            .BindConfiguration(nameof(SeederOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        builder.Services.AddScoped<IClubSeederService, ClubSeederService>();
+        builder.Services.AddScoped<IDataSeederService, DataSeederService>();
+        builder.Services.AddScoped<IPlayerSeederService, PlayerSeederService>();
+        builder.Services.AddScoped<IRoleSeederService, RoleSeederService>();
+        builder.Services.AddScoped<ISeasonSeederService, SeasonSeederService>();
+        builder.Services.AddScoped<IUserSeederService, UserSeederService>();
 
         return builder;
     }

@@ -1,13 +1,20 @@
+using SportsStatistics.Infrastructure;
+
 namespace SportsStatistics.Tools.DatabaseSeeder;
 
-public class Program
+internal static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        builder.Services.AddHostedService<Worker>();
+
+        builder.AddServiceDefaults();
+
+        builder.AddPresentation();
+        builder.AddInfrastructure();
 
         var host = builder.Build();
-        host.Run();
+
+        await host.RunAsync();
     }
 }
