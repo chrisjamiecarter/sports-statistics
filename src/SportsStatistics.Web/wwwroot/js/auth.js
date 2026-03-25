@@ -16,6 +16,21 @@ export async function postSignin({ email, password, isPersistant }) {
     return result;
 }
 
+export async function postDemoSignin({ email }) {
+    const response = await fetch("/api/identity/demo/signin", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email,
+        })
+    });
+
+    const result = await response.json();
+    return result;
+}
+
 export async function postSignout() {
     const xsrf = document.querySelector('meta[name="xsrf-token"]')?.content;
     const formData = new URLSearchParams();

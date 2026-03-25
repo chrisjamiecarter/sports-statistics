@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
 using SportsStatistics.Authorization.Entities;
@@ -13,15 +15,18 @@ internal sealed class AuthenticationService : IAuthenticationService
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHostEnvironment _hostEnvironment;
 
     public AuthenticationService(AuthenticationStateProvider authenticationStateProvider,
                                  SignInManager<ApplicationUser> signInManager,
                                  UserManager<ApplicationUser> userManager,
-                                 IHttpContextAccessor httpContextAccessor)
+                                 IHttpContextAccessor httpContextAccessor,
+                                 IHostEnvironment hostEnvironment)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
+        _hostEnvironment = hostEnvironment;
     }
 
     public async Task<ApplicationUserDto?> GetCurrentUserAsync()
@@ -54,6 +59,23 @@ internal sealed class AuthenticationService : IAuthenticationService
             { RequiresTwoFactor: true } => Result.Failure(Error.Failure("Authentication.TwoFactorRequired", "Two-factor authentication is required")),
             _ => Result.Failure(Error.Failure("Authentication.InvalidSignInAttempt", "Invalid Sign In Attempt")),
         };
+    }
+
+    public async Task<Result> SignInAsync(string email)
+    {
+        if (!_hostEnvironment.IsDevelopment())
+        {
+            return Result.Failure(Error.Failure("Environment.NotAllowed", "Method unavailable in this environment."));
+        }
+        
+        var user = await GetApplicationUserByEmailAsync(email);
+        if (user == null)
+        {
+            return Result.Failure(Error.Failure("Authentication.InvalidSignInAttempt", "Invalid Sign In Attempt"));
+        }
+
+        await _signInManager.SignInAsync(user, false);
+        return Result.Success();
     }
 
     public async Task SignOutAsync()

@@ -4,11 +4,11 @@ namespace SportsStatistics.Web.Api.Endpoints;
 
 internal static class EndpointsExtensions
 {
-    public static IEndpointRouteBuilder MapApiEndpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapApiEndpoints(this IEndpointRouteBuilder builder, bool isDevelopment)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-        builder.MapIdentityEndpoints();
+        builder.MapIdentityEndpoints(isDevelopment);
 
         return builder;
     }

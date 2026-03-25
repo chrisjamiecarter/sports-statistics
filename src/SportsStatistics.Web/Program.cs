@@ -20,9 +20,11 @@ internal sealed class Program
 
         app.MapDefaultEndpoints();
 
-        app.MapApiEndpoints();
+        var isDevelopment = app.Environment.IsDevelopment();
 
-        if (!app.Environment.IsDevelopment())
+        app.MapApiEndpoints(isDevelopment);
+
+        if (!isDevelopment)
         {
             app.UseExceptionHandler("/Error", createScopeForErrors: true);
             app.UseHsts();

@@ -10,5 +10,12 @@ internal static class Routes
 
         public const string Signin = $"{IdentityBase}/signin";
         public const string Signout = $"{IdentityBase}/signout";
+
+        public static class Demo
+        {
+            private const string DemoBase = $"{IdentityBase}/demo";
+
+            public const string Signin = $"{DemoBase}/signin";
+        }
     }
 }

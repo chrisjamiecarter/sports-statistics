@@ -1,4 +1,3 @@
-using SportsStatistics.Application;
 using SportsStatistics.Infrastructure;
 
 namespace SportsStatistics.Tools.DatabaseMigrator;
