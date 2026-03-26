@@ -18,12 +18,12 @@ internal sealed class SeasonSeederService(
 
     public async Task<Result> SeedAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting seeding for seasons.");
-
         var strategy = _dbContext.Database.CreateExecutionStrategy();
 
         return await strategy.ExecuteAsync(async () =>
         {
+            _logger.LogInformation("Starting seeding for seasons.");
+            
             var dateRanges = BuildSeasonDatesPool();
 
             var seasons = new SeasonFaker(
@@ -38,7 +38,7 @@ internal sealed class SeasonSeederService(
         });
     }
 
-    public static Queue<(DateOnly, DateOnly)> BuildSeasonDatesPool()
+    private static Queue<(DateOnly, DateOnly)> BuildSeasonDatesPool()
     {
         var referenceStartDate = new DateTime(DateTime.Today.Year, 1, 1);
         var referenceEndDate = new DateTime(DateTime.Today.Year, 12, 31);
