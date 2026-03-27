@@ -40,8 +40,12 @@ internal sealed class SeasonSeederService(
 
     private static Queue<(DateOnly, DateOnly)> BuildSeasonDatesPool()
     {
-        var referenceStartDate = new DateTime(DateTime.Today.Year, 1, 1);
-        var referenceEndDate = new DateTime(DateTime.Today.Year, 12, 31);
+        var referenceStartDate = new DateTime(DateTime.Today.Year, 8, 1);
+        if (referenceStartDate > DateTime.UtcNow)
+        {
+            referenceStartDate = referenceStartDate.AddYears(-1);
+        }
+        var referenceEndDate = referenceStartDate.AddYears(1).AddDays(-1);
 
         var dateRanges = new List<(DateOnly, DateOnly)>();
         for (var i = SeasonCount - 1; i >= 0; i--)
