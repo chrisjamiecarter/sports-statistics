@@ -10,7 +10,7 @@ namespace SportsStatistics.Tools.DatabaseSeeder.Services;
 
 internal interface IFixtureSeederService : ISeederService { }
 
-internal class FixtureSeederService(
+internal sealed class FixtureSeederService(
     ApplicationDbContext dbContext,
     ILogger<FixtureSeederService> logger)
     : IFixtureSeederService
