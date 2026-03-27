@@ -21,7 +21,10 @@ internal static class DependencyInjection
             .ValidateOnStart();
 
         builder.Services.AddScoped<IClubSeederService, ClubSeederService>();
+        builder.Services.AddScoped<ICompetitionSeederService, CompetitionSeederService>();
         builder.Services.AddScoped<IDataSeederService, DataSeederService>();
+        builder.Services.AddScoped<IFixtureSeederService, FixtureSeederService>();
+        builder.Services.AddScoped<IMatchSimultationSeederService, MatchSimultationSeederService>();
         builder.Services.AddScoped<IPlayerSeederService, PlayerSeederService>();
         builder.Services.AddScoped<IRoleSeederService, RoleSeederService>();
         builder.Services.AddScoped<ISeasonSeederService, SeasonSeederService>();

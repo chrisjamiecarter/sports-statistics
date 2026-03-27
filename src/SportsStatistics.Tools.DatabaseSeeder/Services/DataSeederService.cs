@@ -9,26 +9,18 @@ internal interface IDataSeederService : ISeederService { }
 internal sealed class DataSeederService(
     ApplicationDbContext dbContext,
     IPlayerSeederService playerSeederService,
-    ISeasonSeederService seasonSeederService)
+    ISeasonSeederService seasonSeederService,
+    ICompetitionSeederService competitionSeederService,
+    IFixtureSeederService fixtureSeederService,
+    IMatchSimultationSeederService matchSimultationSeederService)
     : IDataSeederService
 {
-    //private static readonly IReadOnlyList<string> OppositionTeams =
-    //[
-    //    "Riverside Rangers",
-    //    "Oakwood United",
-    //    "Steel City FC",
-    //    "Harborview Athletic",
-    //    "Parkland Wanderers",
-    //    "Meadowbrook City",
-    //    "Ironbridge Town",
-    //    "Crestview Albion",
-    //    "Bayshore United",
-    //    "Valley Rovers"
-    //];
-
     private readonly ApplicationDbContext _dbContext = dbContext;
     private readonly IPlayerSeederService _playerSeederService = playerSeederService;
     private readonly ISeasonSeederService _seasonSeederService = seasonSeederService;
+    private readonly ICompetitionSeederService _competitionSeederService = competitionSeederService;
+    private readonly IFixtureSeederService _fixtureSeederService = fixtureSeederService;
+    private readonly IMatchSimultationSeederService _matchSimultationSeederService = matchSimultationSeederService;
 
     public async Task<Result> SeedAsync(CancellationToken cancellationToken = default)
     {
@@ -39,10 +31,35 @@ internal sealed class DataSeederService(
         }
 
         var playerResult = await _playerSeederService.SeedAsync(cancellationToken);
-        var seasonResult = await _seasonSeederService.SeedAsync(cancellationToken);
+        if (playerResult.IsFailure)
+        {
+            return playerResult;
+        }
         
-        return Result.FirstFailureOrSuccess(
-            playerResult,
-            seasonResult);
+        var seasonResult = await _seasonSeederService.SeedAsync(cancellationToken);
+        if (seasonResult.IsFailure)
+        {
+            return seasonResult;
+        }
+
+        var competitionResult = await _competitionSeederService.SeedAsync(cancellationToken);
+        if (competitionResult.IsFailure)
+        {
+            return competitionResult;
+        }
+
+        var fixtureResult = await _fixtureSeederService.SeedAsync(cancellationToken);
+        if (fixtureResult.IsFailure)
+        {
+            return fixtureResult;
+        }
+
+        var matchSimultationResult = await _matchSimultationSeederService.SeedAsync(cancellationToken);
+        if (matchSimultationResult.IsFailure)
+        {
+            return matchSimultationResult;
+        }
+
+        return Result.Success();
     }
 }
