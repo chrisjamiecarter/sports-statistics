@@ -8,7 +8,7 @@ namespace SportsStatistics.Tools.DatabaseSeeder.Services;
 
 internal interface ICompetitionSeederService : ISeederService { }
 
-internal class CompetitionSeederService(
+internal sealed class CompetitionSeederService(
     ApplicationDbContext dbContext,
     ILogger<CompetitionSeederService> logger)
     : ICompetitionSeederService
