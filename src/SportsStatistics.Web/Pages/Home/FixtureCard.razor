@@ -15,7 +15,7 @@
             <FluentSpacer />
             <FluentStack Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
                 <FluentSpacer />
-                <FluentIcon Value="@(new Icons.Regular.Size24.CalendarEmpty())" Color="Color.Accent" />
+                <FluentIcon Value="@(new Icons.Regular.Size28.CalendarEmpty())" Color="Color.Accent" />
                 <FluentSpacer />
                 <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@EmptyMessage</FluentLabel>
                 <FluentSpacer />
@@ -29,7 +29,8 @@
                 <FluentLabel Typo="Typography.Subject">@Fixture.KickoffTimeLocal.ToString("ddd dd MMM")</FluentLabel>
                 <FluentBadge Appearance="Appearance.Neutral">
                     @Fixture.CompetitionName
-                    <FluentIcon Value="@(new Icons.Regular.Size20.Trophy())" />
+                    <FluentSpacer Width="2" />
+                    <FluentIcon Value="@(new Icons.Regular.Size16.Trophy())" />
                 </FluentBadge>
             </FluentStack>
             <FluentSpacer />

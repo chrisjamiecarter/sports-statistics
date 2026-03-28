@@ -15,14 +15,20 @@
 
 <PageTitle>Home</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical">
+<FluentCard Style="overflow-y: auto;" MinimalStyle>
+    
+    <FluentBreadcrumb Style="margin-bottom: 1rem;">
+        <FluentBreadcrumbItem Appearance="Appearance.Accent">
+            Home
+        </FluentBreadcrumbItem>
+    </FluentBreadcrumb>
 
-    <FluentGrid Style="width: 100%;" Justify="JustifyContent.Center">
+    <FluentGrid>
 
         <!-- Previous Fixture Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <FixtureCard Title="Previous Fixture"
-                         Icon="@(new Icons.Regular.Size20.CalendarReply())"
+                         Icon="@(new Icons.Regular.Size24.CalendarReply())"
                          Fixture="@PreviousFixture"
                          ClubName="@ClubName"
                          EmptyMessage="No previous fixtures" />
@@ -31,7 +37,7 @@
         <!-- Today's Fixture Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <FixtureCard Title="Today's Fixture"
-                         Icon="@(new Icons.Regular.Size20.CalendarDate())"
+                         Icon="@(new Icons.Regular.Size24.CalendarDate())"
                          Fixture="@TodaysFixture"
                          ClubName="@ClubName"
                          EmptyMessage="No fixture today" />
@@ -40,7 +46,7 @@
         <!-- Next Fixture Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <FixtureCard Title="Next Fixture"
-                         Icon="@(new Icons.Regular.Size20.CalendarArrowRight())"
+                         Icon="@(new Icons.Regular.Size24.CalendarArrowRight())"
                          Fixture="@NextFixture"
                          ClubName="@ClubName"
                          EmptyMessage="No upcoming fixtures" />
@@ -54,7 +60,7 @@
         <!-- Top Scorers Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <TopPlayerStatsCard Title="Top Scorers"
-                                Icon="@(new Icons.Regular.Size20.SportSoccer())"
+                                Icon="@(new Icons.Regular.Size24.SportSoccer())"
                                 TopPlayerStats="@TopScorers"
                                 EmptyMessage="No goalscorers" />
         </FluentGridItem>
@@ -62,13 +68,13 @@
         <!-- Top Assists Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
             <TopPlayerStatsCard Title="Top Assists"
-                                Icon="@(new Icons.Regular.Size20.Handshake())"
+                                Icon="@(new Icons.Regular.Size24.Handshake())"
                                 TopPlayerStats="@TopAssists"
                                 EmptyMessage="No assists" />
         </FluentGridItem>
     </FluentGrid>
 
-</FluentStack>
+</FluentCard>
 
 @code {
     private FixtureCardDto? PreviousFixture { get; set; }
