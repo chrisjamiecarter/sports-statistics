@@ -12,8 +12,7 @@
 
                 @if (TodaysFixture is not null)
                 {
-                    <FluentStack Orientation="Orientation.Vertical">
-
+                    <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
                         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                             <FluentIcon Value="@(new Icons.Regular.Size20.Trophy())" Color="Color.Accent" />
                             <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
@@ -29,7 +28,7 @@
                                 <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@TodaysFixture.Opponent</FluentLabel>
                             </FluentStack>
                         </FluentStack>
-
+                        
                         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                             <FluentIcon Value="@(new Icons.Regular.Size20.Timer())" Color="Color.Accent" />
                             <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
@@ -37,22 +36,17 @@
                                 <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@TodaysFixture.DisplayKickoffTime</FluentLabel>
                             </FluentStack>
                         </FluentStack>
-
+                        
+                        <FluentButton Appearance="Appearance.Accent"
+                                        IconStart="@(new Icons.Regular.Size20.Play())"
+                                        OnClick="StartMatchTracking">
+                            Start Match
+                        </FluentButton>
                     </FluentStack>
-
-                    <FluentDivider Style="width: 100%;" />
-
-                    <FluentButton Appearance="Appearance.Accent"
-                                  IconStart="@(new Icons.Regular.Size20.Play())"
-                                  Style="width: 100%;"
-                                  OnClick="StartMatchTracking">
-                        Start Match
-                    </FluentButton>
                 }
                 else
                 {
                     <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
-                        <FluentSpacer />
                         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
                             <FluentIcon Value="@(new Icons.Regular.Size20.CalendarCancel())" Color="Color.Accent" />
                             <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
@@ -60,13 +54,11 @@
                                 <FluentLabel Typo="Typography.Body">Please visit the home page for the next fixture date.</FluentLabel>
                             </FluentStack>
                         </FluentStack>
-                        <FluentSpacer />
                         <FluentButton Appearance="Appearance.Accent"
                                       IconStart="@(new Icons.Regular.Size20.Home())"
                                       OnClick="@(() => Navigation.NavigateTo(Routes.Home))">
                             Return to Home
                         </FluentButton>
-                        <FluentSpacer />
                     </FluentStack>
                 }
 
