@@ -22,4 +22,7 @@ public sealed record PlayerSeasonStatisticsDto(
     StatPair FoulWonCount,
     StatPair FoulConcededCount,
     StatPair YellowCardCount,
-    StatPair RedCardCount);
+    StatPair RedCardCount)
+{
+    public string Title => $"{PlayerName} ({Position.Name})";
+}

@@ -76,7 +76,7 @@
             return;
         }
 
-        SelectedSeasonFixtures = result.Value.ToQueryable();
+        SelectedSeasonFixtures = result.Value.ToQueryable(await ClubNameService.GetClubNameAsync());
     }
 
     private async Task LoadPlayerSeasonStatisticsAsync(SeasonDto season)
@@ -129,7 +129,7 @@
         SelectedPlayerSeasonStatistics = player;
         var dialog = await DialogService.ShowDialogAsync<PlayerChartDialog>(player, new DialogParameters()
         {
-            Title = $"{player.PlayerName} ({player.Position.Name})",
+            Title = player.Title,
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
             Width = "75%",
@@ -154,7 +154,7 @@
 
         var dialog = await DialogService.ShowDialogAsync<FixtureDetailsDialog>(response, new DialogParameters()
         {
-            Title = $"vs {fixture.Opponent} ({fixture.Location})",
+            Title = fixture.Title,
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
             Width = "75%",
