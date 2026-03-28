@@ -9,6 +9,10 @@
         <FluentSpacer />
         <FluentLabel>You do not have permission to access this page.</FluentLabel>
         <FluentSpacer />
-        <FluentButton Appearance="Appearance.Accent" OnClick="@(() => Navigation.NavigateTo(Routes.Home))" Href="/">Return to Home</FluentButton>
+        <FluentButton Appearance="Appearance.Accent"
+                      IconStart="@(new Icons.Regular.Size20.Home())" 
+                      OnClick="@(() => Navigation.NavigateTo(Routes.Home))">
+                      Return to Home
+        </FluentButton>
     </FluentStack>
 </FluentCard>
