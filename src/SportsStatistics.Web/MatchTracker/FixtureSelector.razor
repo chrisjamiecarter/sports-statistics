@@ -1,36 +1,79 @@
-﻿<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+﻿<FluentGrid>
+    <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="6">
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
+                
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.CalendarDate())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.H3">Today's Fixture</FluentLabel>
+                </FluentStack>
 
-    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-        Today's Fixture
-    </FluentLabel>
+                <FluentDivider />
 
-    @if (TodaysFixture is not null)
-    {
+                @if (TodaysFixture is not null)
+                {
+                    <FluentStack Orientation="Orientation.Vertical">
 
-        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
-            @TodaysFixture.CompetitionName
-        </FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Trophy())" Color="Color.Accent" />
+                            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+                                <FluentLabel Typo="Typography.Body" Style="opacity: 0.7;">Competition</FluentLabel>
+                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@TodaysFixture.CompetitionName</FluentLabel>
+                            </FluentStack>
+                        </FluentStack>
 
-        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
-            @TodaysFixture.Opponent
-        </FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.PeopleTeam())" Color="Color.Accent" />
+                            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+                                <FluentLabel Typo="Typography.Body" Style="opacity: 0.7;">Opponent</FluentLabel>
+                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@TodaysFixture.Opponent</FluentLabel>
+                            </FluentStack>
+                        </FluentStack>
 
-        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
-            @TodaysFixture.DisplayKickoffTime
-        </FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Timer())" Color="Color.Accent" />
+                            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+                                <FluentLabel Typo="Typography.Body" Style="opacity: 0.7;">Kick-off</FluentLabel>
+                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@TodaysFixture.DisplayKickoffTime</FluentLabel>
+                            </FluentStack>
+                        </FluentStack>
 
-        <FluentButton Appearance="Appearance.Accent" OnClick="StartMatchTracking">
-            Start Match
-        </FluentButton>
-    }
-    else
-    {
-        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
-            No fixture scheduled today. Please check back later.
-        </FluentLabel>
-    }
+                    </FluentStack>
 
-</FluentStack>
+                    <FluentDivider Style="width: 100%;" />
+
+                    <FluentButton Appearance="Appearance.Accent"
+                                  IconStart="@(new Icons.Regular.Size20.Play())"
+                                  Style="width: 100%;"
+                                  OnClick="StartMatchTracking">
+                        Start Match
+                    </FluentButton>
+                }
+                else
+                {
+                    <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+                        <FluentSpacer />
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.CalendarCancel())" Color="Color.Accent" />
+                            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+                                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">No fixture scheduled today.</FluentLabel>
+                                <FluentLabel Typo="Typography.Body">Please visit the home page for the next fixture date.</FluentLabel>
+                            </FluentStack>
+                        </FluentStack>
+                        <FluentSpacer />
+                        <FluentButton Appearance="Appearance.Accent"
+                                      IconStart="@(new Icons.Regular.Size20.Home())"
+                                      OnClick="@(() => Navigation.NavigateTo(Routes.Home))">
+                            Return to Home
+                        </FluentButton>
+                        <FluentSpacer />
+                    </FluentStack>
+                }
+
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+</FluentGrid>
 
 @code {
     [Parameter] public FixtureDto? TodaysFixture { get; set; }
