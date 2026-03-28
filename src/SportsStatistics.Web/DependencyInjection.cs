@@ -30,8 +30,11 @@ internal static class DependencyInjection
         //    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
         //}).AddIdentityCookies();
 
-        builder.Services.AddAuthorizationBuilder()
-                        .AddPolicy(Policies.RequireAdministratorRole, policy => policy.RequireRole([Roles.Administrator]));
+        builder.Services
+            .AddAuthorizationBuilder()
+            .AddPolicy(Policies.Administrator, policy => policy.RequireRole([Roles.Administrator]))
+            .AddPolicy(Policies.MatchTracker, policy => policy.RequireRole([Roles.Administrator, Roles.MatchTracker]))
+            .AddPolicy(Policies.ReportsViewer, policy => policy.RequireRole([Roles.Administrator, Roles.ReportsViewer]));
 
         builder.Services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, includeInternalTypes: true);
 

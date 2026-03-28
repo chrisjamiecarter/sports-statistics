@@ -44,7 +44,7 @@ public static class DependencyInjection
         {
             options.LoginPath = "/signin";
             options.LogoutPath = "/signout";
-            options.AccessDeniedPath = "/signin";
+            options.AccessDeniedPath = "/access-denied";
         });
 
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();

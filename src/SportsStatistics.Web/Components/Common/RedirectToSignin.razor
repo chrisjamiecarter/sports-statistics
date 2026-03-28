@@ -1,10 +1,6 @@
-﻿@using SportsStatistics.Application.Abstractions.Messaging
-@using SportsStatistics.Web.Abstractions.Messaging
-@inject NavigationManager NavigationManager
-
-@code {
+﻿@code {
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/signin", forceLoad: true);
+        Navigation.NavigateTo(Routes.Identity.Signin, forceLoad: true);
     }
 }

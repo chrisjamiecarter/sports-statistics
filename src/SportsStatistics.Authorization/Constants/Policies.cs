@@ -2,5 +2,7 @@
 
 public static class Policies
 {
-    public const string RequireAdministratorRole = nameof(RequireAdministratorRole);
+    public const string Administrator = nameof(Administrator);
+    public const string MatchTracker = nameof(MatchTracker);
+    public const string ReportsViewer = nameof(ReportsViewer);
 }

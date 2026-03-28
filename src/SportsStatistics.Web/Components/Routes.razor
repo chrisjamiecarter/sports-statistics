@@ -1,8 +1,15 @@
 ﻿<Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
-            <NotAuthorized>
-                <RedirectToSignin />
+            <NotAuthorized Context="authContext">
+                @if (authContext.User.Identity?.IsAuthenticated is true)
+                {
+                    <RedirectToAccessDenied />
+                }
+                else
+                {
+                    <RedirectToSignin />
+                }
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
@@ -27,6 +34,7 @@
 
     public static class Identity
     {
+        public const string AccessDenied = "/access-denied";
         public const string Signin = "/signin";
         public const string Signout = "/signout";
     }
