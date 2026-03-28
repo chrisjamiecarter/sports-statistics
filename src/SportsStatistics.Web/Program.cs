@@ -2,7 +2,6 @@ using SportsStatistics.Application;
 using SportsStatistics.Infrastructure;
 using SportsStatistics.Web;
 using SportsStatistics.Web.Api.Endpoints;
-using SportsStatistics.Web.Components;
 
 internal sealed class Program
 {

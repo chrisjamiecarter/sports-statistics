@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Admin\Players\Models\**" />
-    <Content Remove="Admin\Players\Models\**" />
-    <EmbeddedResource Remove="Admin\Players\Models\**" />
-    <None Remove="Admin\Players\Models\**" />
+    <Compile Remove="Pages\Admin\Players\Models\**" />
+    <Content Remove="Pages\Admin\Players\Models\**" />
+    <EmbeddedResource Remove="Pages\Admin\Players\Models\**" />
+    <None Remove="Pages\Admin\Players\Models\**" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,241 @@
+@using SportsStatistics.Domain.MatchTracking
+@using SportsStatistics.Domain.MatchTracking.MatchEvents
+@using SportsStatistics.Domain.MatchTracking.PlayerEvents
+@using SportsStatistics.Domain.Players
+@using SportsStatistics.Web.Pages.MatchTracker
+
+<FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+    
+    <FluentDataGrid 
+        Items="@OrderedPlayers"
+        ShowHover="@true"
+        RowSize="DataGridRowSize.Medium"
+                    GridTemplateColumns="auto auto auto auto auto 0.5fr 2fr 1fr 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr auto">
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var cardStatus))
+            {
+                if (cardStatus.HasRedCard)
+                {
+                    <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Title="Red Card" />
+                }
+                else if (cardStatus.HasYellowCard)
+                {
+                    <FluentIcon Value="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Title="Yellow Card" />
+                }
+            }
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var goalStatus))
+            {
+                @if (goalStatus.HasGoals)
+                {
+                    var goalCount = goalStatus.Goals.Count;
+                    <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Neutral))" Title="@(goalCount == 1 ? "1 Goal" : $"{goalCount} Goals")" />
+                }
+            }
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var assistStatus))
+            {
+                @if (assistStatus.HasAssists)
+                {
+                    var assistCount = assistStatus.Assists.Count;
+                    <FluentIcon Value="@(new Icons.Filled.Size20.Handshake().WithColor(Color.Neutral))" Title="@(assistCount == 1 ? "1 Assist" : $"{assistCount} Assists")" />
+                }
+            }
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var ownGoalStatus))
+            {
+                @if (ownGoalStatus.HasOwnGoals)
+                {
+                    var ownGoalsCount = ownGoalStatus.OwnGoals.Count;
+                    <FluentIcon Value="@(new Icons.Filled.Size20.SportSoccer().WithColor(Color.Error))" Title="@(ownGoalsCount == 1 ? "1 Own Goal" : $"{ownGoalsCount} Own Goals")" />
+                }
+            }
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @if (PlayerStatuses.TryGetValue(context.Id, out var subStatus))
+            {
+                @if (subStatus.Substitution is not null)
+                {
+                    @if (subStatus.Substitution.IsSubstitutedOff)
+                    {
+                        <FluentIcon Value="@(new Icons.Filled.Size20.ArrowLeft().WithColor(Color.Error))" Title="Substituted Off" />
+                    }
+                    else if (subStatus.Substitution.IsSubstitutedOn)
+                    {
+                        <FluentIcon Value="@(new Icons.Filled.Size20.ArrowRight().WithColor(Color.Success))" Title="Substituted On" />
+                    }
+                }
+            }
+        </TemplateColumn>
+
+        <PropertyColumn Property="@(player => player.SquadNumber)" Title="#" />
+
+        <PropertyColumn Property="@(player => player.Name)" Title="Name" />
+
+        <PropertyColumn Property="@(player => player.PositionName)" Title="Position" />
+
+        <TemplateColumn Title="Defence" Align="Align.Center">
+            @if (context.IsGoalkeeper)
+            {
+                <FluentButton IconEnd="@(new Icons.Filled.Size20.ShieldPerson())" Appearance="Appearance.Neutral" OnClick="@(() => AddSave(context))" Title="Save" Disabled="@(!CanPlayerAct(context))" />
+            }
+            else
+            {
+                <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonLightning())" Appearance="Appearance.Neutral" OnClick="@(() => AddTackle(context))" Title="Tackle" Disabled="@(!CanPlayerAct(context))" />
+            }
+        </TemplateColumn>
+
+        <TemplateColumn Title="Passing" Align="Align.Center">
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassSuccess(context))" Title="Pass Success" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonArrowRight().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddPassFailure(context))" Title="Pass Failure" Disabled="@(!CanPlayerAct(context))" />
+        </TemplateColumn>
+
+        <TemplateColumn Title="Shooting" Align="Align.Center">
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.Target().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOnTarget(context))" Title="Shot On Target" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.TargetDismiss().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddShotOffTarget(context))" Title="Shot Off Target" Disabled="@(!CanPlayerAct(context))" />
+        </TemplateColumn>
+
+        <TemplateColumn Title="Fouls" Align="Align.Center">
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Success))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulWon(context))" Title="Foul Won" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonAlert().WithColor(Color.Error))" Appearance="Appearance.Neutral" OnClick="@(() => AddFoulConceded(context))" Title="Foul Conceded" Disabled="@(!CanPlayerAct(context))" />
+        </TemplateColumn>
+
+        <TemplateColumn Title="Cards" Align="Align.Center">
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#FFCE2C"))" Appearance="Appearance.Neutral" OnClick="@(() => AddYellowCard(context))" Title="Yellow Card" Disabled="@(!CanPlayerAct(context))" />
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.RectanglePortrait().WithColor("#DD3636"))" Appearance="Appearance.Neutral" OnClick="@(() => AddRedCard(context))" Title="Red Card" Disabled="@(!CanPlayerAct(context))" />
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center">
+            <FluentButton IconEnd="@(new Icons.Filled.Size20.PersonSwap())" Appearance="Appearance.Neutral" Title="Substitute" OnClick="@(() => SubstitutePlayerClicked(context))" Disabled="@(!CanSubstitutePlayer(context))" />
+        </TemplateColumn>
+
+    </FluentDataGrid>
+
+</FluentStack>
+
+@code {
+    [Parameter] public List<PlayerDto> Players { get; set; } = [];
+
+    [Parameter] public List<PlayerDto> SubstitutePlayers { get; set; } = [];
+
+    [Parameter] public HashSet<Guid> PlayersSubstitutedOff { get; set; } = [];
+
+    [Parameter] public HashSet<Guid> PlayersSubstitutedOn { get; set; } = [];
+
+    [Parameter] public Dictionary<Guid, PlayerStatusDto> PlayerStatuses { get; set; } = new();
+
+    [Parameter] public EventCallback<PlayerEventDto> OnAddPlayerEvent { get; set; }
+
+    [Parameter] public EventCallback<SubstitutionEventDto> OnAddSubstitutionEvent { get; set; }
+
+    [Parameter] public Guid FixtureId { get; set; }
+
+    [Parameter] public MatchPeriod CurrentMatchPeriod { get; set; } = MatchPeriod.PreMatch;
+
+    private bool CanPlayerAct(PlayerDto player) => CurrentMatchPeriod.IsPlayingPeriod() && !HasBeenSubstituted(player) && !HasRedCard(player);
+
+    private bool CanSubstitutePlayer(PlayerDto player) => CurrentMatchPeriod.IsSubstitutionPeriod() && SubstitutePlayers.Any() && !HasBeenSubstituted(player) && !HasRedCard(player);
+
+    private bool HasBeenSubstituted(PlayerDto player) => PlayersSubstitutedOff.Contains(player.Id);
+
+    private bool HasRedCard(PlayerDto player) => (!PlayerStatuses.TryGetValue(player.Id, out var status) || status.HasRedCard);
+
+    private IQueryable<PlayerDto> OrderedPlayers =>
+        Players.OrderBy(p => HasBeenSubstituted(p) ? 1 : 0)
+               .ThenBy(p => HasRedCard(p) ? 1 : 0)
+               .ThenBy(p => p.PositionId)
+               .ThenBy(p => p.SquadNumber)
+               .AsQueryable();
+
+    private bool ShowSubstitutionDialog { get; set; } = false;
+    private PlayerDto? SubstitutionPlayerOff { get; set; }
+    private PlayerDto? SelectedSubstitutePlayer { get; set; }
+
+    private string GetCardsTooltip(PlayerStatusDto status)
+    {
+        var parts = new List<string>();
+        if (status.HasYellowCard) parts.Add("Yellow Card");
+        if (status.HasRedCard) parts.Add("Red Card");
+        return string.Join(", ", parts);
+    }
+
+    private async Task AddPlayerMatchEvent(PlayerDto player, PlayerEventType type)
+    {
+        var occuredAtUtc = DateTime.UtcNow;
+        var matchEvent = new PlayerEventDto(
+            FixtureId,
+            player.Id,
+            type.Value,
+            $"{player.Name} - {type.Name}",
+            occuredAtUtc);
+
+        await OnAddPlayerEvent.InvokeAsync(matchEvent);
+    }
+
+    private async Task AddPassSuccess(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.PassSuccess);
+    private async Task AddPassFailure(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.PassFailure);
+    private async Task AddShotOnTarget(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.ShotOnTarget);
+    private async Task AddShotOffTarget(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.ShotOffTarget);
+    private async Task AddSave(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Save);
+    private async Task AddTackle(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.Tackle);
+    private async Task AddFoulWon(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulWon);
+    private async Task AddFoulConceded(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.FoulConceded);
+    private async Task AddRedCard(PlayerDto player) => await AddPlayerMatchEvent(player, PlayerEventType.RedCard);
+
+    private async Task AddYellowCard(PlayerDto player)
+    {
+        // If player already has a yellow card, add a red card instead.
+        if (PlayerStatuses.TryGetValue(player.Id, out var status) && status.HasYellowCard)
+        {
+            await AddRedCard(player);
+        }
+        else
+        {
+            await AddPlayerMatchEvent(player, PlayerEventType.YellowCard);
+        }
+    }
+
+    private async Task SubstitutePlayerClicked(PlayerDto player)
+    {
+        var substititionOptions = SubstitutePlayers.ToOptions();
+
+        var data = new SubstitutionDialogData(substititionOptions, player, null, DateTime.UtcNow);
+
+        var dialog = await DialogService.ShowDialogAsync<SubstitutionDialog>(data, new DialogParameters()
+        {
+            Title = $"Substitution",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        });
+
+        var result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data is not null)
+        {
+            var substitutionResult = result.Data as SubstitutionDialogData;
+
+            if (substitutionResult is null) return;
+            if (substitutionResult.PlayerOff is null) return;
+            if (substitutionResult.PlayerOnId is null) return;
+            var playerOn = SubstitutePlayers.FirstOrDefault(p => p.Id == substitutionResult.PlayerOnId.Value);
+            if (playerOn is null) return;
+
+            var substitutionEvent = new SubstitutionEventDto(
+                FixtureId,
+                substitutionResult.PlayerOff.Id,
+                playerOn.Id,
+                $"Substitution: {substitutionResult.PlayerOff.Name} off, {playerOn.Name} on",
+                substitutionResult.OccurredAtUtc);
+
+            await OnAddSubstitutionEvent.InvokeAsync(substitutionEvent);
+        }
+    }
+}
