@@ -2,13 +2,14 @@
 
 namespace SportsStatistics.Domain.Players;
 
-public sealed class Player : Entity, ISoftDeletableEntity
+public sealed class Player : Entity
 {
-    private Player(Name name,
-                   SquadNumber squadNumber,
-                   Nationality nationality,
-                   DateOfBirth dateOfBirth,
-                   Position position)
+    private Player(
+        Name name,
+        SquadNumber squadNumber,
+        Nationality nationality,
+        DateOfBirth dateOfBirth,
+        Position position)
         : base(Guid.CreateVersion7())
     {
         Name = name;
@@ -36,11 +37,11 @@ public sealed class Player : Entity, ISoftDeletableEntity
 
     public Position Position { get; private set; } = default!;
 
+    public bool LeftClub { get; private set; }
+
+    public DateTime? LeftClubOnUtc { get; private set; }
+
     public int Age => DateOfBirth.Value.CalculateAge();
-
-    public DateTime? DeletedOnUtc { get; private set; }
-
-    public bool Deleted { get; private set; }
 
     public static Player Create(Name name, SquadNumber squadNumber, Nationality nationality, DateOfBirth dateOfBirth, Position position)
     {
@@ -121,15 +122,28 @@ public sealed class Player : Entity, ISoftDeletableEntity
         return true;
     }
 
-    public void Delete(DateTime utcNow)
+    public void LeaveClub(DateTime utcNow)
     {
-        if (Deleted)
+        if (LeftClub)
         {
             return;
         }
 
-        Deleted = true;
-        DeletedOnUtc = utcNow;
-        Raise(new PlayerDeletedDomainEvent(Id));
+        LeftClub = true;
+        LeftClubOnUtc = utcNow;
+        Raise(new PlayerLeftClubDomainEvent(this, utcNow));
+    }
+
+    public void RejoinClub()
+    {
+        if (!LeftClub)
+        {
+            return;
+        }
+
+        var previousLeftClubOnUtc = LeftClubOnUtc;
+        LeftClub = false;
+        LeftClubOnUtc = null;
+        Raise(new PlayerRejoinedClubDomainEvent(this, previousLeftClubOnUtc));
     }
 }
