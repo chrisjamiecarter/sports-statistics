@@ -11,9 +11,26 @@ internal sealed class GetAllPlayersQueryHandler(IApplicationDbContext dbContext)
 
     public async Task<Result<List<PlayerResponse>>> Handle(GetAllPlayersQuery query, CancellationToken cancellationToken)
     {
-        var players = await _dbContext.Players.AsNoTracking()
-                                              .ToListAsync(cancellationToken);
+        var queryable = _dbContext.Players.AsNoTracking();
 
-        return players.ToResponse();
+        var filtered = query.Filter switch
+        {
+            PlayerClubStatusFilter.AtClub => queryable.Where(player => !player.LeftClub),
+            PlayerClubStatusFilter.LeftClub => queryable.Where(player => player.LeftClub),
+            _ => queryable
+        };
+
+        return await filtered
+            .Select(player => new PlayerResponse(
+                player.Id,
+                player.Name,
+                player.SquadNumber,
+                player.Nationality,
+                player.DateOfBirth,
+                player.Position,
+                player.LeftClub,
+                player.LeftClubOnUtc,
+                player.Age))
+            .ToListAsync(cancellationToken);
     }
 }

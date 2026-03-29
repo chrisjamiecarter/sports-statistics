@@ -1,19 +1,19 @@
-﻿using SportsStatistics.Domain.Players;
+﻿//using SportsStatistics.Domain.Players;
 
-namespace SportsStatistics.Application.Players.GetAll;
+//namespace SportsStatistics.Application.Players.GetAll;
 
-internal static class PlayerMapper
-{
-    public static List<PlayerResponse> ToResponse(this IEnumerable<Player> players)
-        => [.. players.Select(ToResponse)];
+//internal static class PlayerMapper
+//{
+//    public static List<PlayerResponse> ToResponse(this IEnumerable<Player> players)
+//        => [.. players.Select(ToResponse)];
 
-    public static PlayerResponse ToResponse(this Player player)
-        => new(player.Id,
-               player.Name,
-               player.SquadNumber,
-               player.Nationality,
-               player.DateOfBirth,
-               player.Position.Value,
-               player.Position.Name,
-               player.Age);
-}
+//    public static PlayerResponse ToResponse(this Player player)
+//        => new(player.Id,
+//               player.Name,
+//               player.SquadNumber,
+//               player.Nationality,
+//               player.DateOfBirth,
+//               player.Position.Value,
+//               player.Position.Name,
+//               player.Age);
+//}

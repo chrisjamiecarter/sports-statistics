@@ -2,11 +2,11 @@
 using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Application.Players.Delete;
+namespace SportsStatistics.Application.Players.RejoinedClub;
 
-internal sealed class DeletePlayerCommandValidator : AbstractValidator<DeletePlayerCommand>
+internal sealed class PlayerRejoinedClubCommandValidator : AbstractValidator<PlayerRejoinedClubCommand>
 {
-    public DeletePlayerCommandValidator()
+    public PlayerRejoinedClubCommandValidator()
     {
         RuleFor(c => c.PlayerId)
             .NotEmpty().WithError(PlayerErrors.PlayerIdIsRequired);

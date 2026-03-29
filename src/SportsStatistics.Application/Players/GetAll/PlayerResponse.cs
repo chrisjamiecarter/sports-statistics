@@ -1,10 +1,14 @@
-﻿namespace SportsStatistics.Application.Players.GetAll;
+﻿using SportsStatistics.Domain.Players;
 
-public sealed record PlayerResponse(Guid Id,
-                                    string Name,
-                                    int SquadNumber,
-                                    string Nationality,
-                                    DateOnly DateOfBirth,
-                                    int PositionId,
-                                    string Position,
-                                    int Age);
+namespace SportsStatistics.Application.Players.GetAll;
+
+public sealed record PlayerResponse(
+    Guid Id,
+    string Name,
+    int SquadNumber,
+    string Nationality,
+    DateOnly DateOfBirth,
+    Position Position,
+    bool LeftClub,
+    DateTime? LeftClubOnUtc,
+    int Age);
