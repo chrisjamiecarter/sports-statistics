@@ -2,7 +2,7 @@
 using SportsStatistics.Domain.Clubs;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Web.Pages.Admin.Clubs;
+namespace SportsStatistics.Web.Pages.Admin.Clubs.Models;
 
 internal sealed class ClubFormModelValidator : AbstractValidator<ClubFormModel>
 {

@@ -10,8 +10,8 @@ internal static class PlayerMapper
                player.SquadNumber,
                player.Nationality,
                player.DateOfBirth,
-               player.PositionId,
-               player.Position,
+               player.Position.Value,
+               player.Position.Name,
                player.Age);
 
     public static IEnumerable<PlayerOptionDto> ToOptions(this IEnumerable<PlayerDto> players) 

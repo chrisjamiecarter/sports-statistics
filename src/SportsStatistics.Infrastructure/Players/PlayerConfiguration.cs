@@ -52,15 +52,13 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
                .HasColumnName(nameof(Player.Position))
                .IsRequired();
 
-        builder.Ignore(player => player.Age);
-
-        builder.Property(player => player.DeletedOnUtc)
-               .HasColumnName(nameof(Player.DeletedOnUtc));
-
-        builder.Property(player => player.Deleted)
-               .HasColumnName(nameof(Player.Deleted))
+        builder.Property(player => player.LeftClub)
+               .HasColumnName(nameof(Player.LeftClub))
                .HasDefaultValue(false);
-
-        builder.HasQueryFilter(player => !player.Deleted);
+        
+        builder.Property(player => player.LeftClubOnUtc)
+               .HasColumnName(nameof(Player.LeftClubOnUtc));
+     
+        builder.Ignore(player => player.Age);
     }
 }

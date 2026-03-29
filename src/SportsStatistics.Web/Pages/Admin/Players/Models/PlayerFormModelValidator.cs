@@ -2,7 +2,7 @@
 using SportsStatistics.Domain.Players;
 using SportsStatistics.SharedKernel;
 
-namespace SportsStatistics.Web.Pages.Admin.Players;
+namespace SportsStatistics.Web.Pages.Admin.Players.Models;
 
 internal sealed class PlayerFormModelValidator : AbstractValidator<PlayerFormModel>
 {

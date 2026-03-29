@@ -1,7 +1,7 @@
 ﻿using SportsStatistics.Application.Clubs.GetClub;
 using SportsStatistics.Domain.Clubs;
 
-namespace SportsStatistics.Web.Pages.Admin.Clubs;
+namespace SportsStatistics.Web.Pages.Admin.Clubs.Models;
 
 public sealed record ClubDto(
     Guid Id,

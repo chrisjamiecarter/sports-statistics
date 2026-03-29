@@ -1,7 +1,7 @@
 ﻿using SportsStatistics.Application.Players.Create;
 using SportsStatistics.Application.Players.Update;
 
-namespace SportsStatistics.Web.Pages.Admin.Players;
+namespace SportsStatistics.Web.Pages.Admin.Players.Models;
 
 internal static class PlayerFormModelMapping
 {

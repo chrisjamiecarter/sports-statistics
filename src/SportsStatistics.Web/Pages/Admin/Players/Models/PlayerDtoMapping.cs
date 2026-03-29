@@ -1,7 +1,7 @@
 ﻿using Microsoft.FluentUI.AspNetCore.Components.Extensions;
 using SportsStatistics.Application.Players.GetAll;
 
-namespace SportsStatistics.Web.Pages.Admin.Players;
+namespace SportsStatistics.Web.Pages.Admin.Players.Models;
 
 internal static class PlayerDtoMapping
 {
@@ -11,8 +11,9 @@ internal static class PlayerDtoMapping
                player.SquadNumber,
                player.Nationality,
                player.DateOfBirth,
-               player.PositionId,
                player.Position,
+               player.LeftClub,
+               player.LeftClubOnUtc,
                player.Age);
 
     public static PlayerFormModel ToInputModel(this PlayerDto player, IEnumerable<PositionOptionDto> positionOptions)
@@ -22,7 +23,7 @@ internal static class PlayerDtoMapping
             SquadNumber = player.SquadNumber,
             Nationality = player.Nationality,
             DateOfBirth = player.DateOfBirth.ToDateTime(),
-            Position = positionOptions.SingleOrDefault(option => option.Value == player.PositionId),
+            Position = positionOptions.SingleOrDefault(option => option.Value == player.Position.Value),
         };
 
     public static IQueryable<PlayerDto> ToQueryable(this List<PlayerResponse> players)

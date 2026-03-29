@@ -167,7 +167,7 @@
 
     private async Task LoadPlayersAsync()
     {
-        var request = new GetAllPlayersQuery();
+        var request = new GetAllPlayersQuery(PlayerClubStatusFilter.AtClub);
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {

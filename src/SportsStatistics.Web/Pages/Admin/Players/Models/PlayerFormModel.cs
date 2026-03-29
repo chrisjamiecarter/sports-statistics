@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Web.Pages.Admin.Players;
+﻿namespace SportsStatistics.Web.Pages.Admin.Players.Models;
 
 public sealed class PlayerFormModel
 {

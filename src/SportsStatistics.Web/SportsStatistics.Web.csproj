@@ -5,13 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Pages\Admin\Players\Models\**" />
-    <Content Remove="Pages\Admin\Players\Models\**" />
-    <EmbeddedResource Remove="Pages\Admin\Players\Models\**" />
-    <None Remove="Pages\Admin\Players\Models\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Blazilla" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />

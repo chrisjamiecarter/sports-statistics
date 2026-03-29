@@ -72,18 +72,6 @@
 
     [Parameter] public EventCallback OnCancel { get; set; }
 
-    public sealed record BulkPlayerUploadCollectionModel(List<BulkPlayerUploadModel> Players);
-    public sealed record BulkPlayerUploadModel(string? Name, int? SquadNumber, string? Nationality, DateTime? DateOfBirth, string? Position);
-
-    public sealed class BulkPlayerUploadInputModel
-    {
-        public string? Name { get; set; }
-        public int? SquadNumber { get; set; }
-        public string? Nationality { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-        public PositionOptionDto? Position { get; set; }
-    } 
-
     int ProgressPercent = 0;
     FluentInputFileEventArgs? File;
 

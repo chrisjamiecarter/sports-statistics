@@ -1,6 +1,6 @@
 ﻿using SportsStatistics.Domain.Players;
 
-namespace SportsStatistics.Web.Pages.Admin.Players;
+namespace SportsStatistics.Web.Pages.Admin.Players.Models;
 
 internal static class PositionOptionDtoMapping
 {

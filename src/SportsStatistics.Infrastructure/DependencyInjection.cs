@@ -3,11 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SportsStatistics.Application.Abstractions.Data;
-using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Aspire.Constants;
 using SportsStatistics.Authorization;
 using SportsStatistics.Infrastructure.Database;
-using SportsStatistics.Infrastructure.Services;
 
 namespace SportsStatistics.Infrastructure;
 
@@ -18,7 +16,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
         var connectionString = builder.Configuration.GetConnectionString(Resources.SqlDatabase) ?? throw new InvalidOperationException($"Unable to get connection string.");
-        
+
         builder.Services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
         {
             options.UseSqlServer(connectionString, sqlOptions =>
@@ -26,7 +24,7 @@ public static class DependencyInjection
                 sqlOptions.MigrationsHistoryTable(Schemas.MigrationsHistory.Table, Schemas.MigrationsHistory.Schema);
             });
         }, ServiceLifetime.Transient);
-        
+
         builder.EnrichSqlServerDbContext<ApplicationDbContext>();
 
         builder.AddAuthorizationInternal();

@@ -1,9 +1,9 @@
 ﻿@page "/admin/players"
-@using static SportsStatistics.Web.Pages.Admin.Players.PlayerUpload
+@using SportsStatistics.Application.Players.RejoinedClub
 
 <PageTitle>Players</PageTitle>
 
-<FluentCard Style="overflow-y: auto;">
+<FluentCard Style="overflow-y: auto;" MinimalStyle>
 
     <FluentBreadcrumb Style="margin-bottom: 1rem;">
         <FluentBreadcrumbItem Appearance="Appearance.Hypertext">
@@ -23,7 +23,7 @@
             <PlayerUpload OnCancel="HidePlayerUpload" OnUploadPlayers="UploadPlayers" />
             break;
         default:
-            <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnDeletePlayer="OnDeletePlayer" OnEditPlayer="ShowPlayerForm" OnUploadPlayers="ShowPlayerUpload" />
+            <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnEditPlayer="ShowPlayerForm" OnPlayerLeftClub="OnPlayerLeftClub" OnPlayerRejoinedClub="OnPlayerRejoinedClub" OnUploadPlayers="ShowPlayerUpload" />
             break;
     }
 
@@ -88,12 +88,18 @@
         return !result.Cancelled;
     }
 
-    private async Task OnDeletePlayer(PlayerDto player)
+    private async Task OnPlayerLeftClub(PlayerDto player)
     {
-        if (await GetUserConfirmation($"Are you sure you want to delete <strong>{player.Name}</strong>?", "Delete", "Cancel"))
-        {
-            await HandleDeletePlayerAsync(new DeletePlayerCommand(player.Id));
-        }
+        var command = new PlayerLeftClubCommand(player.Id);
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Marked player as left club.");
+    }
+    
+    private async Task OnPlayerRejoinedClub(PlayerDto player)
+    {
+        var command = new PlayerRejoinedClubCommand(player.Id);
+        var result = await Messenger.SendAsync(command);
+        await HandleResultAsync(result, "Marked player as rejoined club.");
     }
 
     private async Task OnSubmitAsync(PlayerFormModel formModel)
@@ -112,12 +118,6 @@
     {
         var result = await Messenger.SendAsync(command);
         await HandleResultAsync(result, "Player created successfully.");
-    }
-
-    private async Task HandleDeletePlayerAsync(DeletePlayerCommand command)
-    {
-        var result = await Messenger.SendAsync(command);
-        await HandleResultAsync(result, "Player deleted successfully.");
     }
 
     private async Task HandleUpdatePlayerAsync(UpdatePlayerCommand command)

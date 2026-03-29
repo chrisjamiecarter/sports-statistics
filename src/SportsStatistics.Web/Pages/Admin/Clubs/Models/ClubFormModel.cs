@@ -1,6 +1,6 @@
 ﻿using SportsStatistics.Application.Clubs.Update;
 
-namespace SportsStatistics.Web.Pages.Admin.Clubs;
+namespace SportsStatistics.Web.Pages.Admin.Clubs.Models;
 
 public sealed class ClubFormModel
 {
