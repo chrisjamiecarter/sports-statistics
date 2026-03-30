@@ -12,6 +12,10 @@ public static class CompetitionErrors
         "Competition.CompetitionIdIsRequired",
         "The competition identifier is required.");
 
+    public static Error ContainsNonScheduledFixtures => Error.Conflict(
+        "Competition.ContainsNonScheduledFixtures",
+        "The competition cannot be deleted because it contains non-scheduled fixtures.");
+
     public static Error FormatIdIsRequired => Error.Validation(
         "Competition.FormatIdIsRequired",
         "The format identifier is required.");
