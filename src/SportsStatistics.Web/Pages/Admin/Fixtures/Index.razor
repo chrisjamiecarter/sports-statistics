@@ -196,12 +196,12 @@
         }
 
         Seasons = result.Value.Select(x => new SeasonDto(x.Id, x.StartDate, x.EndDate, x.Name));
-
+                
         var now = DateOnly.FromDateTime(DateTime.Now);
-        var defaultSeason = Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
-        if (defaultSeason is not null)
+        var loadSeason = SelectedSeason ?? Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
+        if (loadSeason is not null)
         {
-            await OnSelectedSeasonChangedAsync(defaultSeason);
+            await OnSelectedSeasonChangedAsync(loadSeason);
         }
     }
 
