@@ -60,7 +60,6 @@
 
     private void NavigateToCompetitions(SeasonDto season)
     {
-        // TODO: Change to Routes.Admin.Competitions(season.Id);
-        Navigation.NavigateTo($"{Routes.Admin.Competitions}/{season.Id}");
+        Navigation.NavigateTo(Routes.Admin.Competitions(season.Id));
     }
 }

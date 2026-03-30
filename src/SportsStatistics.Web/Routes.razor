@@ -26,7 +26,7 @@
     {
         private const string Index = "/admin";
         public const string Club = $"{Index}/club";
-        public const string Competitions = $"{Index}/competitions";
+        public static string Competitions(Guid seasonId) => $"{Index}/competitions/{seasonId}";
         public const string Fixtures = $"{Index}/fixtures";
         public const string Players = $"{Index}/players";
         public const string Seasons = $"{Index}/seasons";
