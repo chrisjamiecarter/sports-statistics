@@ -190,7 +190,7 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
 
         if (Status != Status.Scheduled)
         {
-            return Result.Failure(FixtureErrors.CannotDeleteFixtureNotScheduled);
+            return Result.Failure(FixtureErrors.CannotDeleteNonScheduledFixture);
         }
 
         Deleted = true;

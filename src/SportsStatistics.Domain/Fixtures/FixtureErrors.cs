@@ -28,8 +28,8 @@ public static class FixtureErrors
         "Fixture.CannotUpdateFixtureScoreNotInProgress",
         $"The fixture status cannot be updated from {from} to {to}.");
 
-    public static Error CannotDeleteFixtureNotScheduled => Error.Conflict(
-        "Fixture.CannotDeleteFixtureNotScheduled",
+    public static Error CannotDeleteNonScheduledFixture => Error.Conflict(
+        "Fixture.CannotDeleteNonScheduledFixture",
         "The fixture can only be deleted when the fixture has a scheduled status.");
 
     public static Error FixtureScoreIsRequired => Error.Validation(
