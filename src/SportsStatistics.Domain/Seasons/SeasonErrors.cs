@@ -4,6 +4,10 @@ namespace SportsStatistics.Domain.Seasons;
 
 public static class SeasonErrors
 {
+    public static Error ContainsNonScheduledFixtures => Error.Conflict(
+        "Season.ContainsNonScheduledFixtures",
+        "The season cannot be deleted because it contains non-scheduled fixtures.");
+
     public static Error NoCurrentSeasonFound(DateOnly today) => Error.Failure(
         "Season.NoCurrentSeasonFound",
         $"A season for '{today}' was not found.");
