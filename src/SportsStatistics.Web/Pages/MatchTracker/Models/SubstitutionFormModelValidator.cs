@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace SportsStatistics.Web.Pages.MatchTracker;
+namespace SportsStatistics.Web.Pages.MatchTracker.Models;
 
 internal sealed class SubstitutionFormModelValidator : AbstractValidator<SubstitutionFormModel>
 {

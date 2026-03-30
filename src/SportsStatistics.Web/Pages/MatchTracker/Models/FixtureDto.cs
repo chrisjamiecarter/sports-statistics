@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Web.Pages.MatchTracker;
+﻿namespace SportsStatistics.Web.Pages.MatchTracker.Models;
 
 public sealed record FixtureDto(Guid Id,
                                 Guid CompetitionId,

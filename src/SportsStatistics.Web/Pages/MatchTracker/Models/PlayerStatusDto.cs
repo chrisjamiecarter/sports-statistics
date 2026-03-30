@@ -1,4 +1,4 @@
-namespace SportsStatistics.Web.Pages.MatchTracker;
+namespace SportsStatistics.Web.Pages.MatchTracker.Models;
 
 /// <summary>
 /// Represents the status of a player during a match, including cards, goals, assists, and substitution.

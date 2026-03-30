@@ -44,26 +44,32 @@
                 break;
             case PageState.MatchTracking:
                 <FluentStack Orientation="Orientation.Vertical">
-                    <MatchHeader Fixture="@Fixture" GameClock="@gameClock" CurrentMatchPeriod="@currentPeriod" />
-                    <MatchEvents CurrentMatchPeriod="@currentPeriod"
-                                 IsHomeGame="@IsHomeGame"
-                                 StartingPlayers="@CurrentOnPitchPlayers"
-                                 OnStartFirstHalf="StartFirstHalf"
-                                 OnFinishFirstHalf="FinishFirstHalf"
-                                 OnStartSecondHalf="StartSecondHalf"
-                                 OnFinishSecondHalf="FinishSecondHalf"
-                                 OnOurClubGoal="TeamGoal"
-                                 OnOpponentGoal="OpponentGoal" />
-                    <PlayerEvents Players="@StartingPlayers"
-                                  SubstitutePlayers="@AvailableSubstitutes"
-                                  PlayersSubstitutedOff="@_substitutedOffPlayerIds"
-                                  PlayersSubstitutedOn="@_substitutedOnPlayerIds"
-                                  PlayerStatuses="@_playerStatuses"
-                                  CurrentMatchPeriod="@currentPeriod"
-                                  FixtureId="@Fixture!.Id"
-                                  OnAddPlayerEvent="AddPlayerEvent"
-                                  OnAddSubstitutionEvent="AddSubstitutionEvent" />
-                    <Overview MatchEvents="@DisplayEvents" />
+                    <FluentCard AreaRestricted="false">
+                        <MatchHeader Fixture="@Fixture" GameClock="@gameClock" CurrentMatchPeriod="@currentPeriod" />
+                        <MatchEvents CurrentMatchPeriod="@currentPeriod"
+                                     IsHomeGame="@IsHomeGame"
+                                     StartingPlayers="@CurrentOnPitchPlayers"
+                                     OnStartFirstHalf="StartFirstHalf"
+                                     OnFinishFirstHalf="FinishFirstHalf"
+                                     OnStartSecondHalf="StartSecondHalf"
+                                     OnFinishSecondHalf="FinishSecondHalf"
+                                     OnOurClubGoal="TeamGoal"
+                                     OnOpponentGoal="OpponentGoal" />
+                    </FluentCard>
+                    <FluentCard AreaRestricted="false">
+                        <PlayerEvents Players="@StartingPlayers"
+                                      SubstitutePlayers="@AvailableSubstitutes"
+                                      PlayersSubstitutedOff="@_substitutedOffPlayerIds"
+                                      PlayersSubstitutedOn="@_substitutedOnPlayerIds"
+                                      PlayerStatuses="@_playerStatuses"
+                                      CurrentMatchPeriod="@currentPeriod"
+                                      FixtureId="@Fixture!.Id"
+                                      OnAddPlayerEvent="AddPlayerEvent"
+                                      OnAddSubstitutionEvent="AddSubstitutionEvent" />
+                    </FluentCard>
+                    <FluentCard AreaRestricted="false">
+                        <Overview MatchEvents="@DisplayEvents" />
+                    </FluentCard>
                 </FluentStack>
                 break;
             default:

@@ -1,6 +1,6 @@
 ﻿using SportsStatistics.Application.Fixtures.GetByDate;
 
-namespace SportsStatistics.Web.Pages.MatchTracker;
+namespace SportsStatistics.Web.Pages.MatchTracker.Models;
 
 internal static class FixtureMapper
 {

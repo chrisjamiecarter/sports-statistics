@@ -1,17 +1,16 @@
 ﻿<FluentGrid>
     <FluentGridItem xs="12" sm="12" md="12" lg="8" xl="8">
-        <FluentCard>
-            <FluentStack HorizontalAlignment="HorizontalAlignment.Stretch" Orientation="Orientation.Vertical">
+        <FluentCard AreaRestricted="false">
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
+                
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.PeopleTeam())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.Header">Select Starting XI</FluentLabel>
+                </FluentStack>
+                   
+                <FluentDivider />
 
-                <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-                    Select Starting XI
-                </FluentLabel>
-
-                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
-                    Choose 11 players for today's fixture.
-                </FluentLabel>
-
-                <EditForm Model="@Input" OnValidSubmit="ConfirmTeamsheet" FormName="teamsheet-form" style="width: 100%">
+                <EditForm Model="@Input" OnValidSubmit="ConfirmTeamsheet" FormName="teamsheet-form">
                     <FluentValidator />
 
                     <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
@@ -23,6 +22,9 @@
                         <FluentValidationMessage For="() => Input.Players" />
                         <FluentSpacer />
                         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
+                            Choose 11 players for today's fixture.
+                        </FluentLabel>
+                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Normal">
                             <b>Selected:</b> @SelectedPlayersCount/@PlayersRequired players.
                         </FluentLabel>
                         <FluentSpacer />
@@ -30,13 +32,11 @@
                             <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%">
                                 Confirm Teamsheet
                             </FluentButton>
-
-                            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Outline" Style="width: 100%" OnClick="Cancel">
+                            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="Cancel">
                                 Cancel
                             </FluentButton>
                         </FluentStack>
                     </FluentStack>
-
                 </EditForm>
 
             </FluentStack>
