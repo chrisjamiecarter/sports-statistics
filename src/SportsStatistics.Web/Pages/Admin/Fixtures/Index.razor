@@ -2,7 +2,7 @@
 
 <PageTitle>Fixtures</PageTitle>
 
-<FluentCard Style="overflow-y: auto;">
+<FluentCard Style="overflow-y: auto;" MinimalStyle>
 
     <FluentBreadcrumb Style="margin-bottom: 1rem;">
         <FluentBreadcrumbItem Appearance="Appearance.Hypertext">
@@ -12,31 +12,23 @@
             Fixtures
         </FluentBreadcrumbItem>
     </FluentBreadcrumb>
-    
-    @if (!IsFixtureFormVisible)
-    {
-        <div style="margin-bottom: 1rem;">
-            <FluentSelect TOption="SeasonDto"
-                          Label="Season"
-                          Items="@Seasons"
-                          OptionText="@(s => s.Name)"
-                          SelectedOption="SelectedSeason"
-                          SelectedOptionChanged="OnSelectedSeasonChangedAsync" />
-
-            <FluentButton IconEnd="@(new Icons.Regular.Size20.Settings())"
-                          Title="Season Settings"
-                          Appearance="Appearance.Neutral"
-                          OnClick="@(() => Navigation.NavigateTo(Routes.Admin.Seasons))" />
-        </div>
-    }
 
     @switch (true)
     {
         case true when IsFixtureFormVisible:
-            <FixtureForm CompetitionOptions="@Competitions" OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedFixture="@SelectedFixture" SelectedSeason="@SelectedSeason" />
+            <FixtureForm CompetitionOptions="@Competitions"
+                         OnCancel="@OnHideFixtureForm"
+                         OnSubmit="@OnSubmitAsync"
+                         SelectedFixture="@SelectedFixture"
+                         SelectedSeason="@SelectedSeason" />
             break;
         default:
-            <FixtureList Fixtures="Fixtures" ShowFixtureFormCallback="@OnShowFixtureForm" DeleteFixtureCallback="@OnDeleteFixture" />
+            <FixtureList Fixtures="@Fixtures"
+                         ShowFixtureFormCallback="@OnShowFixtureForm"
+                         DeleteFixtureCallback="@OnDeleteFixture"
+                         Seasons="@Seasons"
+                         SelectedSeason="@SelectedSeason"
+                         SelectedSeasonChangedCallback="@OnSelectedSeasonChangedAsync"/>
             break;
     }
 

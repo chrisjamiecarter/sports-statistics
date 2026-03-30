@@ -1,6 +1,4 @@
-﻿using SportsStatistics.Web.Pages.Admin.Seasons;
-
-namespace SportsStatistics.Web.Pages.Admin.Competitions;
+﻿namespace SportsStatistics.Web.Pages.Admin.Competitions.Models;
 
 public class CompetitionFormModel
 {

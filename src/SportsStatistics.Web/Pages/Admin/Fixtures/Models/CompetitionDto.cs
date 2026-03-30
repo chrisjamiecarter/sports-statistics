@@ -1,6 +1,6 @@
 ﻿using SportsStatistics.Domain.Competitions;
 
-namespace SportsStatistics.Web.Pages.Admin.Competitions;
+namespace SportsStatistics.Web.Pages.Admin.Fixtures.Models;
 
 public sealed record CompetitionDto(
     Guid Id,

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SportsStatistics.Domain.Competitions;
 
-namespace SportsStatistics.Web.Pages.Admin.Competitions;
+namespace SportsStatistics.Web.Pages.Admin.Competitions.Models;
 
 internal sealed class CompetitionFormModelValidator : AbstractValidator<CompetitionFormModel>
 {

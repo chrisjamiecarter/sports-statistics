@@ -1,41 +1,41 @@
-﻿@using Microsoft.FluentUI.AspNetCore.Components.Extensions
-<FluentGrid>
+﻿<FluentGrid>
     <FluentGridItem xs="12" sm="12" md="12" lg="12" xl="12">
         <FluentCard>
             <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
                 
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                        <FluentIcon Value="@(new Icons.Regular.Size24.PeopleSettings())" Color="Color.Accent" />
-                        <FluentLabel Weight="FontWeight.Bold" Typo="Typography.Header">Players</FluentLabel>
-                    </FluentStack>
-
-                    <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonAdd())" Appearance="Appearance.Accent" Title="Add Player" OnClick="Add" />
-                
-                    @if (Players?.Any() is false)
-                    {
-                        <FluentButton IconEnd="@(new Icons.Regular.Size20.ArrowUpload())" Appearance="Appearance.Accent" Title="Upload Players" OnClick="Upload" />
-                    }
-                </FluentStack>
-                
                 <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                    <FluentSelect Label="Filter by Status"
-                                  Items="@FilterOptions"
-                                  OptionText="@(f => f.GetDescription(false))"
-                                  @bind-SelectedOption="@SelectedFilter"
-                                  TOption="PlayerClubStatusFilter"
-                                  Width="200px" />
+                    <FluentIcon Value="@(new Icons.Regular.Size24.PeopleSettings())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.Header">Players</FluentLabel>
                 </FluentStack>
 
                 <FluentDivider />
 
-                @if(Players is null)
+                @if (Players is null)
                 {
                     <FluentProgressRing />
                 }
                 else
                 {
-                    <FluentDataGrid Items="@FilteredPlayers?.AsQueryable()" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentSelect Label="Status"
+                                          Items="@FilterOptions"
+                                          OptionText="@(f => f.GetDescription(false))"
+                                          @bind-SelectedOption="@SelectedFilter"
+                                          TOption="PlayerClubStatusFilter"
+                                          Width="200px" />
+
+                        </FluentStack>
+
+                        <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonAdd())"
+                                      Appearance="Appearance.Accent"
+                                      Title="Add Player"
+                                      OnClick="Add" />
+                    </FluentStack>
+
+                    <FluentSpacer />
+
+                    <FluentDataGrid Items="@FilteredPlayers" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
                         <PropertyColumn Property="@(p => p.SquadNumber)" Sortable="true" IsDefaultSortColumn="true" Title="Squad Number" />
                         <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
                         <PropertyColumn Property="@(p => p.Position)" Sortable="true" />
@@ -53,7 +53,6 @@
                         </TemplateColumn>
                         <TemplateColumn Align="Align.End">
                             <FluentButton IconEnd="@(new Icons.Regular.Size20.EditPerson())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
-                            @* <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonDelete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" /> *@
                         </TemplateColumn>
                     </FluentDataGrid>
 
@@ -99,10 +98,5 @@
     private async Task Edit(PlayerDto player)
     {
         await OnEditPlayer.InvokeAsync(player);
-    }
-
-    private async Task Upload()
-    {
-        await OnUploadPlayers.InvokeAsync();
     }
 }

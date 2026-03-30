@@ -3,9 +3,8 @@ using SportsStatistics.Application.Competitions.Delete;
 using SportsStatistics.Application.Competitions.GetAll;
 using SportsStatistics.Application.Competitions.Update;
 using SportsStatistics.Domain.Competitions;
-using SportsStatistics.Web.Pages.Admin.Seasons;
 
-namespace SportsStatistics.Web.Pages.Admin.Competitions;
+namespace SportsStatistics.Web.Pages.Admin.Competitions.Models;
 
 internal static class CompetitionMapper
 {

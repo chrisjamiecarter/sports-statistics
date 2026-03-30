@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace SportsStatistics.Web.Pages.Admin.Seasons;
+namespace SportsStatistics.Web.Pages.Admin.Seasons.Models;
 
 internal sealed class SeasonFormModelValidator : AbstractValidator<SeasonFormModel>
 {

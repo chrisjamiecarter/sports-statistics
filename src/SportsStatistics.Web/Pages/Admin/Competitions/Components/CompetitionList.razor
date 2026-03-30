@@ -1,0 +1,103 @@
+﻿<FluentGrid>
+    <FluentGridItem xs="12" sm="12" md="12" lg="12" xl="12">
+        <FluentCard>
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
+
+                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Trophy())" Color="Color.Accent" />
+                    <FluentLabel Weight="FontWeight.Bold" Typo="Typography.Header">@HeaderText</FluentLabel>
+                </FluentStack>
+
+                <FluentDivider />
+
+                @if (Competitions is null)
+                {
+                    <FluentProgressRing />
+                }
+                else
+                {
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentSelect Label="Format"
+                                          Items="@FormatOptions"
+                                          OptionText="@(f => f?.Name)"
+                                          @bind-SelectedOption="@SelectedFormat" />
+
+                        </FluentStack>
+
+                        <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())"
+                                      Appearance="Appearance.Accent"
+                                      Title="Add Competition"
+                                      OnClick="Add" />
+                    </FluentStack>
+
+                    <FluentSpacer />
+
+                    <FluentDataGrid Items="@FilteredCompetitions" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
+                        <PropertyColumn Property="@(p => p.Name)" Sortable="true" IsDefaultSortColumn="true" />
+                        <PropertyColumn Property="@(p => p.Format)" Sortable="true" />
+            
+                        <TemplateColumn Align="Align.End">
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
+                        </TemplateColumn>
+                    </FluentDataGrid>
+
+                    <FluentPaginator State="@Pagination" />
+                }
+
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+
+    private static readonly FormatOptionDto AllFormats = new(0, "All");
+
+    private IEnumerable<FormatOptionDto?> FormatOptions = Format.List.Select(format => format.ToDto()).Prepend(AllFormats);
+
+    [Parameter]
+    public EventCallback AddCompetitionCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<CompetitionDto> DeleteCompetitionCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<CompetitionDto> EditCompetitionCallback { get; set; }
+
+    [Parameter]
+    public IQueryable<CompetitionDto>? Competitions { get; set; }
+
+    [Parameter]
+    public SeasonDto? SelectedSeason { get; set; }
+
+    private string HeaderText => SelectedSeason != null ? $"Competitions for {SelectedSeason.Name}" : "Competitions";
+
+    private FormatOptionDto? SelectedFormat { get; set; }
+
+    private IQueryable<CompetitionDto> FilteredCompetitions =>
+        Competitions?.Where(competition => SelectedFormat == null || SelectedFormat == AllFormats || competition.Format.Value == SelectedFormat.Value)
+        ?? Enumerable.Empty<CompetitionDto>().AsQueryable();
+
+    protected override void OnInitialized()
+    {
+        SelectedFormat ??= FormatOptions.FirstOrDefault();
+    }
+
+    private async Task Add()
+    {
+        await AddCompetitionCallback.InvokeAsync();
+    }
+
+    private async Task Delete(CompetitionDto competition)
+    {
+        await DeleteCompetitionCallback.InvokeAsync(competition);
+    }
+
+    private async Task Edit(CompetitionDto competition)
+    {
+        await EditCompetitionCallback.InvokeAsync(competition);
+    }
+}

@@ -2,7 +2,7 @@
 using Microsoft.FluentUI.AspNetCore.Components.Extensions;
 using SportsStatistics.Domain.Fixtures;
 
-namespace SportsStatistics.Web.Pages.Admin.Fixtures;
+namespace SportsStatistics.Web.Pages.Admin.Fixtures.Models;
 
 internal sealed class FixtureFormModelValidator : AbstractValidator<FixtureFormModel>
 {

@@ -5,7 +5,7 @@ using SportsStatistics.Application.Seasons.Update;
 using GetAllSeasonResponse = SportsStatistics.Application.Seasons.GetAll.SeasonResponse;
 using GetByIdSeasonResponse = SportsStatistics.Application.Seasons.GetById.SeasonResponse;
 
-namespace SportsStatistics.Web.Pages.Admin.Seasons;
+namespace SportsStatistics.Web.Pages.Admin.Seasons.Models;
 
 internal static class SeasonMapper
 {

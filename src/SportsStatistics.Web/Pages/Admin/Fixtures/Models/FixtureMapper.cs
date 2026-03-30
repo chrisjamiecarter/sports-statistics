@@ -4,7 +4,7 @@ using SportsStatistics.Application.Fixtures.GetBySeasonId;
 using SportsStatistics.Application.Fixtures.Update;
 using SportsStatistics.Domain.Fixtures;
 
-namespace SportsStatistics.Web.Pages.Admin.Fixtures;
+namespace SportsStatistics.Web.Pages.Admin.Fixtures.Models;
 
 internal static class FixtureMapper
 {

@@ -1,10 +1,8 @@
 ﻿@page "/admin/competitions/{seasonId:guid}"
-@using SportsStatistics.Application.Seasons.GetAll
-@using SportsStatistics.Application.Seasons.GetById
 
 <PageTitle>Competitions</PageTitle>
 
-<FluentCard>
+<FluentCard Style="overflow-y: auto;" MinimalStyle>
 
     <FluentBreadcrumb Style="margin-bottom: 1rem;">
         <FluentBreadcrumbItem Appearance="Appearance.Hypertext">
@@ -21,27 +19,22 @@
         </FluentBreadcrumbItem>
     </FluentBreadcrumb>
 
-    @if (IsCompetitionFormVisible)
+    @switch (true)
     {
-        <CompetitionForm CancelCallback="HideCompetitionForm" SelectedCompetition="@SelectedCompetition" SelectedSeason="@SelectedSeason" SubmitCallback="OnSubmitAsync" />
-    }
-    else
-    {
-        <CompetitionList Competitions="@Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" SelectedSeason="@SelectedSeason" />
+        case true when IsCompetitionFormVisible:
+            <CompetitionForm CancelCallback="HideCompetitionForm" SelectedCompetition="@SelectedCompetition" SelectedSeason="@SelectedSeason" SubmitCallback="OnSubmitAsync" />
+            break;
+        default:
+            <CompetitionList Competitions="@Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" SelectedSeason="@SelectedSeason" />
+            break;
     }
 </FluentCard>
 
 @code {
-    private enum CompetitionFormMode
-    {
-        Hide,
-        Show,
-    }
+    private ComponentVisibilityMode CompetitionFormMode { get; set; } = ComponentVisibilityMode.Hide;
 
     [Parameter]
     public Guid SeasonId { get; set; }
-
-    private CompetitionFormMode FormMode { get; set; } = CompetitionFormMode.Hide;
 
     private IQueryable<CompetitionDto>? Competitions { get; set; }
 
@@ -49,25 +42,24 @@
 
     private SeasonDto? SelectedSeason { get; set; }
 
-    private bool IsCompetitionFormVisible => FormMode == CompetitionFormMode.Show;
+    private bool IsCompetitionFormVisible => CompetitionFormMode == ComponentVisibilityMode.Show;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadSeasonAsync(SeasonId);
         await LoadCompetitionsAsync(SeasonId);
-        //await LoadSeasonsAsync();
     }
 
     private void HideCompetitionForm()
     {
         SelectedCompetition = null;
-        FormMode = CompetitionFormMode.Hide;
+        CompetitionFormMode = ComponentVisibilityMode.Hide;
     }
 
     private void ShowCompetitionForm(CompetitionDto? competition = null)
     {
         SelectedCompetition = competition;
-        FormMode = CompetitionFormMode.Show;
+        CompetitionFormMode = ComponentVisibilityMode.Show;
     }
 
     private async Task LoadCompetitionsAsync(Guid seasonId)
@@ -76,9 +68,6 @@
         var result = await Messenger.SendAsync(request);
         if (result.IsFailure)
         {
-            // TODO: confirm.
-            ToastService.ShowError(result.Error.Description);
-            // OR
             ToastService.ShowError("Unable to load competitions");
         }
 
@@ -94,7 +83,7 @@
             ToastService.ShowError("Unable to load seasons");
         }
 
-        SelectedSeason = result.Value.ToDto();
+        SelectedSeason = new SeasonDto(result.Value);
     }
 
     private async Task<bool> GetUserConfirmationAsync(string message, string primaryText, string secondaryText)

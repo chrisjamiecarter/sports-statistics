@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Web.Pages.Admin.Fixtures;
+﻿namespace SportsStatistics.Web.Pages.Admin.Fixtures.Models;
 
 public sealed record FixtureDto(
     Guid Id,
