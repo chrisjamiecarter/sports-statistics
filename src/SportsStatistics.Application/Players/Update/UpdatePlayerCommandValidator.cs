@@ -28,5 +28,8 @@ internal sealed class UpdatePlayerCommandValidator : AbstractValidator<UpdatePla
 
         RuleFor(c => c.PositionId)
             .Must(Position.ContainsValue).WithError(PlayerErrors.PositionNotFound);
+
+        RuleFor(c => c.LeftClub)
+            .NotNull().WithError(PlayerErrors.LeftClubIsRequired);
     }
 }

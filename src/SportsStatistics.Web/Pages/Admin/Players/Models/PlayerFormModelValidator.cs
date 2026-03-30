@@ -29,5 +29,8 @@ internal sealed class PlayerFormModelValidator : AbstractValidator<PlayerFormMod
 
         RuleFor(c => c.Position)
             .NotEmpty();
+
+        RuleFor(c => c.LeftClub)
+            .NotNull();
     }
 }

@@ -122,7 +122,26 @@ public sealed class Player : Entity
         return true;
     }
 
-    public void LeaveClub(DateTime utcNow)
+    public bool ChangeLeftClub(bool leftClub)
+    {
+        if (LeftClub == leftClub)
+        {
+            return false;
+        }
+
+        if (leftClub)
+        {
+            LeaveClub(DateTime.UtcNow);
+        }
+        else
+        {
+            RejoinClub();
+        }
+
+        return true;
+    }
+
+    private void LeaveClub(DateTime utcNow)
     {
         if (LeftClub)
         {
@@ -134,7 +153,7 @@ public sealed class Player : Entity
         Raise(new PlayerLeftClubDomainEvent(this, utcNow));
     }
 
-    public void RejoinClub()
+    private void RejoinClub()
     {
         if (!LeftClub)
         {

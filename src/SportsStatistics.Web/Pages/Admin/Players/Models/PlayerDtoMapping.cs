@@ -24,6 +24,7 @@ internal static class PlayerDtoMapping
             Nationality = player.Nationality,
             DateOfBirth = player.DateOfBirth.ToDateTime(),
             Position = positionOptions.SingleOrDefault(option => option.Value == player.Position.Value),
+            LeftClub = player.LeftClub,
         };
 
     public static IQueryable<PlayerDto> ToQueryable(this List<PlayerResponse> players)

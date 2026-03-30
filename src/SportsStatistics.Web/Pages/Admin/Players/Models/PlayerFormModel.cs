@@ -11,4 +11,6 @@ public sealed class PlayerFormModel
     public DateTime? DateOfBirth { get; set; }
 
     public PositionOptionDto? Position { get; set; }
+
+    public bool LeftClub { get; set; }
 }

@@ -53,14 +53,6 @@
                         </TemplateColumn>
                         <TemplateColumn Align="Align.End">
                             <FluentButton IconEnd="@(new Icons.Regular.Size20.EditPerson())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
-                            @if (context.LeftClub)
-                            {
-                                <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonWalking())" Appearance="Appearance.Accent" OnClick="@(() => RejoinClub(context))" Title="Mark as Rejoined Club" />
-                            }
-                            else
-                            {
-                                <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonWalking())" Appearance="Appearance.Accent" OnClick="@(() => LeftClub(context))" Title="Mark as Left Club" />
-                            }
                             @* <FluentButton IconEnd="@(new Icons.Regular.Size20.PersonDelete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" /> *@
                         </TemplateColumn>
                     </FluentDataGrid>
@@ -85,12 +77,6 @@
     public EventCallback<PlayerDto> OnEditPlayer { get; set; }
 
     [Parameter]
-    public EventCallback<PlayerDto> OnPlayerLeftClub { get; set; }
-    
-    [Parameter]
-    public EventCallback<PlayerDto> OnPlayerRejoinedClub { get; set; }
-
-    [Parameter]
     public EventCallback OnUploadPlayers { get; set; }
 
     [Parameter]
@@ -113,16 +99,6 @@
     private async Task Edit(PlayerDto player)
     {
         await OnEditPlayer.InvokeAsync(player);
-    }
-
-    private async Task LeftClub(PlayerDto player)
-    {
-        await OnPlayerLeftClub.InvokeAsync(player);
-    }
-    
-    private async Task RejoinClub(PlayerDto player)
-    {
-        await OnPlayerRejoinedClub.InvokeAsync(player);
     }
 
     private async Task Upload()

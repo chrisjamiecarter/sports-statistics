@@ -21,6 +21,7 @@ internal static class PlayerFormModelMapping
                    player.SquadNumber,
                    player.Nationality,
                    DateOnly.FromDateTime(player.DateOfBirth.GetValueOrDefault()),
-                   player.Position?.Value ?? -1);
+                   player.Position?.Value ?? -1,
+                   player.LeftClub);
     }
 }

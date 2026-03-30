@@ -12,8 +12,9 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
 
     public async Task<Result> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
     {
-        var player = await _dbContext.Players.Where(player => player.Id == request.PlayerId)
-                                             .SingleOrDefaultAsync(cancellationToken);
+        var player = await _dbContext.Players
+            .Where(player => player.Id == request.PlayerId)
+            .SingleOrDefaultAsync(cancellationToken);
 
         if (player is null)
         {
@@ -36,9 +37,10 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
             return firstFailureOrSuccess;
         }
 
-        var squadNumberTaken = await _dbContext.Players.AsNoTracking()
-                                                       .Where(existing => existing.Id != player.Id && existing.SquadNumber == squadNumberResult.Value)
-                                                       .AnyAsync(cancellationToken);
+        var squadNumberTaken = await _dbContext.Players
+            .AsNoTracking()
+            .Where(existing => existing.Id != player.Id && existing.SquadNumber == squadNumberResult.Value)
+            .AnyAsync(cancellationToken);
 
         if (squadNumberTaken)
         {
@@ -54,6 +56,8 @@ internal sealed class UpdatePlayerCommandHandler(IApplicationDbContext dbContext
         player.ChangeDateOfBirth(dateOfBirthResult.Value);
 
         player.ChangePosition(positionResult.Value);
+
+        player.ChangeLeftClub(request.LeftClub);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

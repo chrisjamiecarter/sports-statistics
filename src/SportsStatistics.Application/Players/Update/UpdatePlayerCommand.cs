@@ -7,4 +7,5 @@ public sealed record UpdatePlayerCommand(Guid PlayerId,
                                          int SquadNumber,
                                          string Nationality,
                                          DateOnly DateOfBirth,
-                                         int PositionId) : ICommand;
+                                         int PositionId,
+                                         bool LeftClub) : ICommand;

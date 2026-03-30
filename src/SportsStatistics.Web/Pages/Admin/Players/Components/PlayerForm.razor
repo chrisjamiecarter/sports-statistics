@@ -10,7 +10,7 @@
 
                 <FluentDivider />
 
-                <EditForm Model="@Input" OnSubmit="OnSubmitAsync" FormName="player-form" style="width: 100%">
+                <EditForm Model="@Input" OnValidSubmit="OnValidSubmitAsync" FormName="player-form" style="width: 100%">
                     <FluentValidator />
 
                     <FluentStack Orientation="Orientation.Vertical">
@@ -42,6 +42,10 @@
                                           @bind-SelectedOption="Input.Position"
                                           Required="!IsUpdateMode" />
                             <FluentValidationMessage For="() => Input.Position" class="text-danger" />
+                        </div>
+                        <div class="full-width">
+                            <FluentCheckbox Name="Input.LeftClub" @bind-Value="Input.LeftClub" Label="Left Club" />
+                            <FluentValidationMessage For="() => Input.LeftClub" class="text-danger" />
                         </div>
                         <FluentSpacer />
                         <FluentStack Orientation="Orientation.Horizontal">
@@ -100,13 +104,12 @@
         await OnCancel.InvokeAsync();
     }
 
-    private async Task OnSubmitAsync(EditContext context)
+    private async Task OnValidSubmitAsync(EditContext context)
     {
         IsSubmitting = true;
 
         if (context.Model is PlayerFormModel player)
         {
-            // TODO: Validation.
             await OnSubmit.InvokeAsync(player);
         }
 

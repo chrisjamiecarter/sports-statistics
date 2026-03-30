@@ -1,5 +1,4 @@
 ﻿@page "/admin/players"
-@using SportsStatistics.Application.Players.RejoinedClub
 
 <PageTitle>Players</PageTitle>
 
@@ -23,7 +22,7 @@
             <PlayerUpload OnCancel="HidePlayerUpload" OnUploadPlayers="UploadPlayers" />
             break;
         default:
-            <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnEditPlayer="ShowPlayerForm" OnPlayerLeftClub="OnPlayerLeftClub" OnPlayerRejoinedClub="OnPlayerRejoinedClub" OnUploadPlayers="ShowPlayerUpload" />
+            <PlayerList Players="Players" OnAddPlayer="@(() => ShowPlayerForm())" OnEditPlayer="ShowPlayerForm" OnUploadPlayers="ShowPlayerUpload" />
             break;
     }
 
@@ -86,20 +85,6 @@
         var dialog = await DialogService.ShowConfirmationAsync(message, primaryText, secondaryText);
         var result = await dialog.Result;
         return !result.Cancelled;
-    }
-
-    private async Task OnPlayerLeftClub(PlayerDto player)
-    {
-        var command = new PlayerLeftClubCommand(player.Id);
-        var result = await Messenger.SendAsync(command);
-        await HandleResultAsync(result, "Marked player as left club.");
-    }
-    
-    private async Task OnPlayerRejoinedClub(PlayerDto player)
-    {
-        var command = new PlayerRejoinedClubCommand(player.Id);
-        var result = await Messenger.SendAsync(command);
-        await HandleResultAsync(result, "Marked player as rejoined club.");
     }
 
     private async Task OnSubmitAsync(PlayerFormModel formModel)

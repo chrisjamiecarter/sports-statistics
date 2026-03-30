@@ -24,6 +24,10 @@ public static class PlayerErrors
         "Player.InvalidPosition",
         $"A player cannot have a position of '{position}'.");
 
+    public static Error LeftClubIsRequired => Error.Validation(
+        "Player.LeftClubIsRequired",
+        "Left club is required.");
+
     public static Error NameExceedsMaxLength => Error.Validation(
         "Player.NameExceedsMaxLength",
         "The name exceeds the maximum allowed length.");
