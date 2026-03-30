@@ -1,9 +1,4 @@
 ﻿@page "/admin/fixtures"
-@using SportsStatistics.Application.Competitions.Create
-@using SportsStatistics.Application.Fixtures.GetBySeasonId
-@using SportsStatistics.Application.Seasons.Create
-@using SportsStatistics.Domain.Competitions
-@using SportsStatistics.Web.Pages.MatchTracker
 
 <PageTitle>Fixtures</PageTitle>
 
@@ -21,7 +16,6 @@
     @if (!IsFixtureFormVisible)
     {
         <div style="margin-bottom: 1rem;">
-            @* TODO: Sort by season name? start date? end date? (just not Id) *@
             <FluentSelect TOption="SeasonDto"
                           Label="Season"
                           Items="@Seasons"
@@ -33,19 +27,11 @@
                           Title="Season Settings"
                           Appearance="Appearance.Neutral"
                           OnClick="@(() => Navigation.NavigateTo(Routes.Admin.Seasons))" />
-
-            @if (Fixtures is null)
-            {
-                <FluentButton IconEnd="@(new Icons.Regular.Size20.ArrowUpload())" Appearance="Appearance.Neutral" Title="Upload Fixtures" OnClick="ToggleFixtureUpload" />
-            }
         </div>
     }
 
     @switch (true)
     {
-        case true when IsFixtureUploadVisible:
-            <FixtureUpload OnCancel="HideFixtureUpload" OnUploadFixtures="UploadFixtures" />
-            break;
         case true when IsFixtureFormVisible:
             <FixtureForm CompetitionOptions="@Competitions" OnCancel="@OnHideFixtureForm" OnSubmit="@OnSubmitAsync" SelectedFixture="@SelectedFixture" SelectedSeason="@SelectedSeason" />
             break;
@@ -59,8 +45,6 @@
 @code {
     private ComponentVisibilityMode FixtureFormMode { get; set; } = ComponentVisibilityMode.Hide;
 
-    private ComponentVisibilityMode FixtureUploadMode { get; set; } = ComponentVisibilityMode.Hide;
-
     private IEnumerable<CompetitionDto>? Competitions { get; set; }
 
     private IQueryable<FixtureDto>? Fixtures { get; set; }
@@ -73,8 +57,6 @@
 
     private bool IsFixtureFormVisible => FixtureFormMode == ComponentVisibilityMode.Show;
 
-    private bool IsFixtureUploadVisible => FixtureUploadMode == ComponentVisibilityMode.Show;
-
     protected override async Task OnInitializedAsync()
     {
         await InitialisePage();
@@ -82,11 +64,8 @@
 
     private async Task InitialisePage()
     {
-        //await LoadCompetitionsAsync();
-        //await LoadFixturesAsync();
         await LoadSeasonsAsync();
         HideFixtureForm();
-        HideFixtureUpload();
     }
 
     private async Task CreateFixtureAsync(CreateFixtureCommand command)
@@ -134,32 +113,10 @@
         FixtureFormMode = ComponentVisibilityMode.Hide;
     }
 
-    private void HideFixtureUpload()
-    {
-        FixtureUploadMode = ComponentVisibilityMode.Hide;
-    }
-
     private void ShowFixtureForm(FixtureDto? fixture)
     {
         SelectedFixture = fixture;
         FixtureFormMode = ComponentVisibilityMode.Show;
-    }
-
-    private void ShowFixtureUpload()
-    {
-        FixtureUploadMode = ComponentVisibilityMode.Show;
-    }
-
-    private void ToggleFixtureUpload()
-    {
-        if (IsFixtureUploadVisible)
-        {
-            HideFixtureUpload();
-        }
-        else
-        {
-            ShowFixtureUpload();
-        }
     }
 
     private async Task LoadCompetitionsAsync(SeasonDto season)
@@ -171,7 +128,7 @@
             ToastService.ShowError("Unable to load competitions");
         }
 
-        Competitions = result.Value.Select(x => x.ToDto());
+        Competitions = result.Value.Select(x => new CompetitionDto(x.Id, x.SeasonId, x.Name, x.Format));
     }
 
     private async Task LoadFixturesAsync(SeasonDto season)
@@ -195,7 +152,9 @@
             ToastService.ShowError("Unable to load seasons");
         }
 
-        Seasons = result.Value.Select(x => new SeasonDto(x.Id, x.StartDate, x.EndDate, x.Name));
+        Seasons = result.Value
+            .OrderBy(season => season.StartDate)
+            .Select(x => new SeasonDto(x.Id, x.StartDate, x.EndDate, x.Name));
                 
         var now = DateOnly.FromDateTime(DateTime.Now);
         var loadSeason = SelectedSeason ?? Seasons.FirstOrDefault(x => x.StartDate <= now && now <= x.EndDate);
@@ -247,60 +206,5 @@
         SelectedSeason = season;
         await LoadCompetitionsAsync(SelectedSeason);
         await LoadFixturesAsync(SelectedSeason);
-    }
-
-    private async Task UploadFixtures(List<FixtureUploadInputModel> fixtures)
-    {
-        // TODO: Error handling.
-
-        var seasons = fixtures.DistinctBy(f => f.Season).Select(f => f.Season).ToList();
-
-        foreach (var season in seasons)
-        {
-            if (season is null) continue;
-
-            var seasonCommand = new CreateSeasonCommand(DateOnly.FromDateTime(season.StartDate), DateOnly.FromDateTime(season.EndDate));
-
-            await Messenger.SendAsync(seasonCommand);
-
-            // TODO: New Query to get season by start and end date (or just return the created season with Id from the command handler).
-            var dbSeasons = await Messenger.SendAsync(new GetSeasonsQuery());
-            var dbSeason = dbSeasons.Value.FirstOrDefault(s => s.StartDate == DateOnly.FromDateTime(season.StartDate) && s.EndDate == DateOnly.FromDateTime(season.EndDate));
-
-            foreach (var competition in season.Competitions)
-            {
-                if (competition is null || dbSeason is null) continue;
-
-                var format = Format.List.FirstOrDefault(f => f.Name == competition.Format);
-
-                if (format is null) continue;
-
-                var competitionCommand = new CreateCompetitionCommand(dbSeason.Id, competition.Name, format.Value);
-
-                await Messenger.SendAsync(competitionCommand);
-                
-                // TODO: New Query to get competition by name and season (or just return the created competition with Id from the command handler).
-                var dbCompetitions = await Messenger.SendAsync(new GetAllCompetitionsQuery(dbSeason.Id));
-                var dbCompetition = dbCompetitions.Value.FirstOrDefault(c => c.Name == competition.Name && c.Format == competition.Format);
-
-                foreach (var fixture in fixtures.Where(f => f.Competition == competition))
-                {
-                    if (fixture is null || 
-                        fixture.Opponent is null ||
-                        fixture.KickoffDateUtc is null || 
-                        fixture.KickoffTimeUtc is null || 
-                        fixture.Location is null ||
-                        dbCompetition is null) continue;
-
-                    var kickoffTimeUtc = fixture.KickoffDateUtc.Value.Date.Add(fixture.KickoffTimeUtc.Value.TimeOfDay);
-
-                    var fixtureCommand = new CreateFixtureCommand(dbCompetition.Id, fixture.Opponent, kickoffTimeUtc, fixture.Location.Value);
-                    
-                    await Messenger.SendAsync(fixtureCommand);
-                }
-            }
-        }
-
-        await InitialisePage();
     }
 }

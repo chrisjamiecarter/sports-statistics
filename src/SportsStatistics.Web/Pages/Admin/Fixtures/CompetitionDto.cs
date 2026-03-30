@@ -1,8 +1,8 @@
 ﻿using SportsStatistics.Domain.Competitions;
 
-namespace SportsStatistics.Application.Competitions.GetAll;
+namespace SportsStatistics.Web.Pages.Admin.Fixtures;
 
-public sealed record CompetitionResponse(
+public sealed record CompetitionDto(
     Guid Id,
     Guid SeasonId,
     string Name,

@@ -1,16 +1,13 @@
-﻿using SportsStatistics.Web.Pages.Admin.Competitions;
-using SportsStatistics.Web.Pages.Admin.Seasons;
-
-namespace SportsStatistics.Web.Pages.Admin.Fixtures;
+﻿namespace SportsStatistics.Web.Pages.Admin.Fixtures;
 
 public class FixtureFormModel
 {
     public SeasonDto? Season { get; set; }
 
     public CompetitionDto? Competition { get; set; }
-    
+
     public DateTime? KickoffDateUtc { get; set; }
-    
+
     public DateTime? KickoffTimeUtc { get; set; }
 
     public LocationOptionDto? Location { get; set; }

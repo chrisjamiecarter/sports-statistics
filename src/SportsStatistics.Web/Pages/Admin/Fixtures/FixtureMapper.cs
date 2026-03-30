@@ -3,8 +3,6 @@ using SportsStatistics.Application.Fixtures.Delete;
 using SportsStatistics.Application.Fixtures.GetBySeasonId;
 using SportsStatistics.Application.Fixtures.Update;
 using SportsStatistics.Domain.Fixtures;
-using SportsStatistics.Web.Pages.Admin.Competitions;
-using SportsStatistics.Web.Pages.Admin.Seasons;
 
 namespace SportsStatistics.Web.Pages.Admin.Fixtures;
 

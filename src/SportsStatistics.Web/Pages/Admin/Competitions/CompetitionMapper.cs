@@ -9,23 +9,22 @@ namespace SportsStatistics.Web.Pages.Admin.Competitions;
 
 internal static class CompetitionMapper
 {
-    public static CreateCompetitionCommand ToCreateCommand(this CompetitionFormModel competition)
-        => new(competition.Season?.Id ?? default,
-               competition.Name,
-               competition.Format?.Value ?? -1);
+    public static CreateCompetitionCommand ToCreateCommand(this CompetitionFormModel competition) => new(
+        competition.Season?.Id ?? default,
+        competition.Name,
+        competition.Format?.Value ?? -1);
 
-    public static DeleteCompetitionCommand ToDeleteCommand(this CompetitionDto competition)
-        => new(competition.Id);
+    public static DeleteCompetitionCommand ToDeleteCommand(this CompetitionDto competition) => new(competition.Id);
 
-    public static CompetitionDto ToDto(this CompetitionResponse competition)
-        => new(competition.Id,
-               competition.SeasonId,
-               competition.Name,
-               competition.FormatId,
-               competition.Format);
+    public static CompetitionDto ToDto(this CompetitionResponse competition) => new(
+        competition.Id,
+        competition.SeasonId,
+        competition.Name,
+        competition.Format);
 
-    public static FormatOptionDto ToDto(this Format format)
-        => new(format.Value, format.Name);
+    public static FormatOptionDto ToDto(this Format format) => new(
+        format.Value, 
+        format.Name);
 
     public static CompetitionFormModel ToFormModel(this CompetitionDto? competition, SeasonDto season, IEnumerable<FormatOptionDto> formatOptions)
     {
@@ -38,7 +37,7 @@ internal static class CompetitionMapper
             {
                 Season = season,
                 Name = competition.Name,
-                Format = formatOptions.SingleOrDefault(option => option.Value == competition.FormatId),
+                Format = formatOptions.SingleOrDefault(option => option.Value == competition.Format.Value),
         };
     }
 

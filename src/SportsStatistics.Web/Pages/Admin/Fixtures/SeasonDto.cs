@@ -1,4 +1,4 @@
-﻿namespace SportsStatistics.Web.Pages.Admin.Seasons;
+﻿namespace SportsStatistics.Web.Pages.Admin.Fixtures;
 
 public sealed record SeasonDto(
     Guid Id,

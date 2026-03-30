@@ -11,6 +11,5 @@ internal static class CompetitionMapper
         => new(competition.Id,
                competition.SeasonId,
                competition.Name,
-               competition.Format.Value,
-               competition.Format.Name);
+               competition.Format);
 }
