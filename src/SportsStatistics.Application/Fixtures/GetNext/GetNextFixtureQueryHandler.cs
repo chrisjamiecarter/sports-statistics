@@ -17,7 +17,7 @@ internal sealed class GetNextFixtureQueryHandler(
         var fixture = await _dbContext.Fixtures
             .AsNoTracking()
             .Where(fixture => fixture.Status == Status.Scheduled && fixture.KickoffTimeUtc.Value >= request.TodayEnd)
-            .OrderByDescending(fixture => fixture.KickoffTimeUtc.Value)
+            .OrderBy(fixture => fixture.KickoffTimeUtc.Value)
             .Join(
                 _dbContext.Competitions.AsNoTracking(),
                 fixture => fixture.CompetitionId,
