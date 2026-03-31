@@ -1,4 +1,14 @@
-﻿<FluentGrid>
+﻿@if (IsLoading)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="6">
+            <SkeletonCard />
+        </FluentGridItem>
+    </FluentGrid>
+    return;
+}
+
+<FluentGrid>
     <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="6">
         <FluentCard AreaRestricted="false">
             <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
@@ -68,9 +78,14 @@
 </FluentGrid>
 
 @code {
-    [Parameter] public FixtureDto? TodaysFixture { get; set; }
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
 
-    [Parameter] public EventCallback<Guid> OnFixtureSelected { get; set; }
+    [Parameter]
+    public FixtureDto? TodaysFixture { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnFixtureSelected { get; set; }
 
     private async Task StartMatchTracking()
     {

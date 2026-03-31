@@ -1,4 +1,14 @@
-﻿<FluentGrid>
+﻿@if (IsLoading)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12" sm="12" md="12" lg="8" xl="8">
+            <SkeletonTable Rows="11" ColumnCount="3" />
+        </FluentGridItem>
+    </FluentGrid>
+    return;
+}
+
+<FluentGrid>
     <FluentGridItem xs="12" sm="12" md="12" lg="8" xl="8">
         <FluentCard AreaRestricted="false">
             <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
@@ -45,11 +55,17 @@
 </FluentGrid>
 
 @code {
-    [Parameter] public List<PlayerDto> Players { get; set; } = [];
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
 
-    [Parameter] public EventCallback<IReadOnlyList<PlayerDto>> OnTeamsheetConfirmed { get; set; }
+    [Parameter]
+    public List<PlayerDto> Players { get; set; } = [];
 
-    [Parameter] public EventCallback OnCancelled { get; set; }
+    [Parameter]
+    public EventCallback<IReadOnlyList<PlayerDto>> OnTeamsheetConfirmed { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancelled { get; set; }
 
     [SupplyParameterFromForm]
     private TeamsheetFormModel Input { get; set; } = default!;

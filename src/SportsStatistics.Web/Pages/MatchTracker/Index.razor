@@ -11,81 +11,66 @@
         </FluentBreadcrumbItem>
     </FluentBreadcrumb>
 
-    @if (Loading)
+    @switch (CurrentPageState)
     {
-        <FluentProgressRing />
+        case PageState.FixtureSelect:
+            <FixtureSelector TodaysFixture="@Fixture"
+                             OnFixtureSelected="FixtureSelected"
+                             IsLoading="@IsLoadingFixture" />
+            break;
+        case PageState.TeamsheetSelect:
+            <TeamsheetSelector Players="@Players"
+                               OnTeamsheetConfirmed="TeamsheetConfirmed"
+                               OnCancelled="TeamsheetCancelled"
+                               IsLoading="@(IsLoadingPlayers || IsLoadingTeamsheet)" />
+            break;
+        case PageState.MatchTracking:
+            <FluentStack Orientation="Orientation.Vertical">
+                <FluentCard AreaRestricted="false">
+                    <MatchHeader Fixture="@Fixture" GameClock="@gameClock" CurrentMatchPeriod="@currentPeriod" />
+                    <MatchEvents CurrentMatchPeriod="@currentPeriod"
+                                 IsHomeGame="@IsHomeGame"
+                                 StartingPlayers="@CurrentOnPitchPlayers"
+                                 OnStartFirstHalf="StartFirstHalf"
+                                 OnFinishFirstHalf="FinishFirstHalf"
+                                 OnStartSecondHalf="StartSecondHalf"
+                                 OnFinishSecondHalf="FinishSecondHalf"
+                                 OnOurClubGoal="TeamGoal"
+                                 OnOpponentGoal="OpponentGoal" />
+                </FluentCard>
+                <FluentCard AreaRestricted="false">
+                    <PlayerEvents Players="@StartingPlayers"
+                                  SubstitutePlayers="@AvailableSubstitutes"
+                                  PlayersSubstitutedOff="@_substitutedOffPlayerIds"
+                                  PlayersSubstitutedOn="@_substitutedOnPlayerIds"
+                                  PlayerStatuses="@_playerStatuses"
+                                  CurrentMatchPeriod="@currentPeriod"
+                                  FixtureId="@Fixture!.Id"
+                                  OnAddPlayerEvent="AddPlayerEvent"
+                                  OnAddSubstitutionEvent="AddSubstitutionEvent" />
+                </FluentCard>
+                <FluentCard AreaRestricted="false">
+                    <Overview MatchEvents="@DisplayEvents" />
+                </FluentCard>
+            </FluentStack>
+            break;
+        default:
+            break;
     }
-    else
-    {
-        @switch (CurrentPageState)
-        {
-            case PageState.FixtureSelect:
-                <FixtureSelector TodaysFixture="@Fixture" OnFixtureSelected="FixtureSelected" />
-                break;
-            case PageState.TeamsheetSelect:
-                @if (ExistingTeamsheet is null)
-                {
-                    <TeamsheetSelector Players="@Players" OnTeamsheetConfirmed="TeamsheetConfirmed" OnCancelled="TeamsheetCancelled" />
-                }
-                else
-                {
-                    <FluentStack Orientation="Orientation.Vertical">
-                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-                            Teamsheet Already Submitted
-                        </FluentLabel>
-                        <FluentLabel Typo="Typography.Body">
-                            Submitted at: @ExistingTeamsheet.SubmittedAtUtc.ToLocalTime().ToString("g")
-                        </FluentLabel>
-                        <FluentButton Appearance="Appearance.Accent" OnClick="ProceedToMatchTracking">
-                            Continue to Match Tracking
-                        </FluentButton>
-                    </FluentStack>
-                }
-                break;
-            case PageState.MatchTracking:
-                <FluentStack Orientation="Orientation.Vertical">
-                    <FluentCard AreaRestricted="false">
-                        <MatchHeader Fixture="@Fixture" GameClock="@gameClock" CurrentMatchPeriod="@currentPeriod" />
-                        <MatchEvents CurrentMatchPeriod="@currentPeriod"
-                                     IsHomeGame="@IsHomeGame"
-                                     StartingPlayers="@CurrentOnPitchPlayers"
-                                     OnStartFirstHalf="StartFirstHalf"
-                                     OnFinishFirstHalf="FinishFirstHalf"
-                                     OnStartSecondHalf="StartSecondHalf"
-                                     OnFinishSecondHalf="FinishSecondHalf"
-                                     OnOurClubGoal="TeamGoal"
-                                     OnOpponentGoal="OpponentGoal" />
-                    </FluentCard>
-                    <FluentCard AreaRestricted="false">
-                        <PlayerEvents Players="@StartingPlayers"
-                                      SubstitutePlayers="@AvailableSubstitutes"
-                                      PlayersSubstitutedOff="@_substitutedOffPlayerIds"
-                                      PlayersSubstitutedOn="@_substitutedOnPlayerIds"
-                                      PlayerStatuses="@_playerStatuses"
-                                      CurrentMatchPeriod="@currentPeriod"
-                                      FixtureId="@Fixture!.Id"
-                                      OnAddPlayerEvent="AddPlayerEvent"
-                                      OnAddSubstitutionEvent="AddSubstitutionEvent" />
-                    </FluentCard>
-                    <FluentCard AreaRestricted="false">
-                        <Overview MatchEvents="@DisplayEvents" />
-                    </FluentCard>
-                </FluentStack>
-                break;
-            default:
-                break;
-        }
-    }
-    
+
 </FluentCard>
 
-@code {
+    @code {
     private enum PageState
     {
         FixtureSelect = 0,
         TeamsheetSelect = 1,
         MatchTracking = 2,
     }
+
+    private bool IsLoadingFixture { get; set; } = true;
+    private bool IsLoadingPlayers { get; set; } = true;
+    private bool IsLoadingTeamsheet { get; set; } = true;
 
     public FixtureDto? Fixture { get; set; }
 
@@ -146,43 +131,51 @@
         }
     }
 
-    private bool Loading;
-
     protected override async Task OnInitializedAsync()
     {
-        Loading = true;
         await LoadFixtureAsync(DateOnly.FromDateTime(DateTime.UtcNow));
         await LoadPlayersAsync();
         await LoadCurrentPageState();
-        Loading = false;
     }
 
     private async Task LoadFixtureAsync(DateOnly fixtureDate)
     {
+        IsLoadingFixture = true;
+
         var request = new GetFixturesByDateQuery(fixtureDate);
         var result = await Messenger.SendAsync(request);
-        if (result.IsFailure)
+
+        if (result.IsSuccess)
+        {
+            Fixture = result.Value.FirstOrDefault()?.ToDto();
+        }
+        else
         {
             Fixture = null;
             ToastService.ShowError(result.Error.Description);
-            return;
         }
 
-        Fixture = result.Value.FirstOrDefault()?.ToDto();
+        IsLoadingFixture = false;
     }
 
     private async Task LoadPlayersAsync()
     {
+        IsLoadingPlayers = true;
+
         var request = new GetAllPlayersQuery(PlayerClubStatusFilter.AtClub);
         var result = await Messenger.SendAsync(request);
-        if (result.IsFailure)
+
+        if (result.IsSuccess)
+        {
+            Players = result.Value.Select(player => player.ToDto()).ToList();
+        }
+        else
         {
             Players = [];
             ToastService.ShowError(result.Error.Description);
-            return;
         }
 
-        Players = result.Value.Select(player => player.ToDto()).ToList();
+        IsLoadingPlayers = false;
     }
 
     private async Task LoadMatchEventsAsync()
@@ -206,15 +199,19 @@
     {
         if (Fixture is null || Players is null) return;
 
+        IsLoadingTeamsheet = true;
+
         var request = new GetTeamsheetByFixtureIdQuery(Fixture.Id);
         var result = await Messenger.SendAsync(request);
-        if (result.IsFailure)
+
+        if (result.IsSuccess)
+        {
+            ExistingTeamsheet = result.Value;
+        }
+        else
         {
             ExistingTeamsheet = null;
-            return;
         }
-
-        ExistingTeamsheet = result.Value;
 
         if (ExistingTeamsheet is not null)
         {
@@ -230,6 +227,8 @@
                 .Select(s => playerDict[s.PlayerId])
                 .ToList();
         }
+
+        IsLoadingTeamsheet = false;
     }
 
     private async Task LoadSubstitutionsAsync()
