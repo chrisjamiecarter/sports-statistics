@@ -1,4 +1,10 @@
-﻿<FluentCard>
+﻿@if (IsLoading)
+{
+    <SkeletonCard />
+    return;
+}
+
+<FluentCard>
     <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
 
         <FluentStack VerticalAlignment="VerticalAlignment.Center">
@@ -72,6 +78,9 @@
 </FluentCard>
 
 @code {
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
+
     [Parameter]
     public string Title { get; set; } = string.Empty;
 

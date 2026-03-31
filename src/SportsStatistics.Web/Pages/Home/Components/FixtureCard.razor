@@ -1,4 +1,10 @@
-﻿<FluentCard>
+﻿@if (IsLoading)
+{
+    <SkeletonCard />
+    return;
+}
+
+<FluentCard>
     <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
 
         <FluentStack VerticalAlignment="VerticalAlignment.Center">
@@ -70,15 +76,23 @@
 </FluentCard>
 
 @code {
-    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
 
-    [Parameter] public Icon? Icon { get; set; }
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
 
-    [Parameter] public FixtureCardDto? Fixture { get; set; }
+    [Parameter]
+    public Icon? Icon { get; set; }
 
-    [Parameter] public string ClubName { get; set; } = string.Empty;
+    [Parameter]
+    public FixtureCardDto? Fixture { get; set; }
 
-    [Parameter] public string EmptyMessage { get; set; } = "No fixture";
+    [Parameter]
+    public string ClubName { get; set; } = string.Empty;
+
+    [Parameter]
+    public string EmptyMessage { get; set; } = "No fixture";
 
     private bool IsPlayedOrInProgress =>
         Fixture?.OutcomeOrStatus == Outcome.Win.Name ||

@@ -18,7 +18,8 @@
                          Icon="@(new Icons.Regular.Size24.CalendarReply())"
                          Fixture="@PreviousFixture"
                          ClubName="@ClubName"
-                         EmptyMessage="No previous fixtures" />
+                         EmptyMessage="No previous fixtures"
+                         IsLoading="@IsLoading" />
         </FluentGridItem>
 
         <!-- Today's Fixture Card -->
@@ -27,7 +28,8 @@
                          Icon="@(new Icons.Regular.Size24.CalendarDate())"
                          Fixture="@TodaysFixture"
                          ClubName="@ClubName"
-                         EmptyMessage="No fixture today" />
+                         EmptyMessage="No fixture today"
+                         IsLoading="@IsLoading" />
         </FluentGridItem>
 
         <!-- Next Fixture Card -->
@@ -36,12 +38,14 @@
                          Icon="@(new Icons.Regular.Size24.CalendarArrowRight())"
                          Fixture="@NextFixture"
                          ClubName="@ClubName"
-                         EmptyMessage="No upcoming fixtures" />
+                         EmptyMessage="No upcoming fixtures"
+                         IsLoading="@IsLoading" />
         </FluentGridItem>
 
         <!-- Recent Form Card -->
         <FluentGridItem xs="12" sm="12" md="12" lg="6" xl="4">
-            <RecentFormCard Results="RecentForm?.Items" />
+            <RecentFormCard Results="RecentForm?.Items"
+                            IsLoading="@IsLoading" />
         </FluentGridItem>
         
         <!-- Top Scorers Card -->
@@ -49,7 +53,8 @@
             <TopPlayerStatsCard Title="Top Scorers"
                                 Icon="@(new Icons.Regular.Size24.SportSoccer())"
                                 TopPlayerStats="@TopScorers"
-                                EmptyMessage="No goalscorers" />
+                                EmptyMessage="No goalscorers"
+                                IsLoading="@IsLoading" />
         </FluentGridItem>
         
         <!-- Top Assists Card -->
@@ -57,13 +62,16 @@
             <TopPlayerStatsCard Title="Top Assists"
                                 Icon="@(new Icons.Regular.Size24.Handshake())"
                                 TopPlayerStats="@TopAssists"
-                                EmptyMessage="No assists" />
+                                EmptyMessage="No assists"
+                                IsLoading="@IsLoading" />
         </FluentGridItem>
     </FluentGrid>
 
 </FluentCard>
 
 @code {
+    private bool IsLoading { get; set; } = true;
+
     private FixtureCardDto? PreviousFixture { get; set; }
     private FixtureCardDto? TodaysFixture { get; set; }
     private FixtureCardDto? NextFixture { get; set; }
@@ -74,6 +82,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        IsLoading = true;
+
         ClubName = await ClubNameService.GetClubNameAsync();
 
         var recentFormResult = await Messenger.SendAsync(new GetRecentFormQuery());
@@ -170,6 +180,8 @@
                         .ToList());
             }
         }
+
+        IsLoading = false;
     }
 
     private string GetHomeTeamName(FixtureCardDto fixture) =>
