@@ -14,7 +14,7 @@
                     <FluentButton IconEnd="@(new Icons.Regular.Size20.CalendarAdd())"
                                   Appearance="Appearance.Accent"
                                   Title="Add Season"
-                                  OnClick="Add"
+                                  OnClick="OnAddClick"
                                   Disabled="@IsLoading" />
                 </FluentStack>
 
@@ -33,8 +33,8 @@
 
                         <TemplateColumn Align="Align.End">
                             <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())" Appearance="Appearance.Accent" OnClick="@(() => NavigateToCompetitions(context))" Title="Competitions" />
-                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
-                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => OnEditClick(context))" Title="Edit" />
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => OnDeleteClick(context))" Title="Delete" />
                         </TemplateColumn>
                     </FluentDataGrid>
 
@@ -53,30 +53,30 @@
     public bool IsLoading { get; set; } = true;
 
     [Parameter]
-    public EventCallback AddSeasonCallback { get; set; }
+    public EventCallback OnAddSeason { get; set; }
 
     [Parameter]
-    public EventCallback<SeasonDto> DeleteSeasonCallback { get; set; }
+    public EventCallback<SeasonDto> OnDeleteSeason { get; set; }
 
     [Parameter]
-    public EventCallback<SeasonDto> EditSeasonCallback { get; set; }
+    public EventCallback<SeasonDto> OnEditSeason { get; set; }
 
     [Parameter]
     public IQueryable<SeasonDto>? Seasons { get; set; }
 
-    private async Task Add()
+    private async Task OnAddClick()
     {
-        await AddSeasonCallback.InvokeAsync();
+        await OnAddSeason.InvokeAsync();
     }
 
-    private async Task Delete(SeasonDto season)
+    private async Task OnDeleteClick(SeasonDto season)
     {
-        await DeleteSeasonCallback.InvokeAsync(season);
+        await OnDeleteSeason.InvokeAsync(season);
     }
 
-    private async Task Edit(SeasonDto season)
+    private async Task OnEditClick(SeasonDto season)
     {
-        await EditSeasonCallback.InvokeAsync(season);
+        await OnEditSeason.InvokeAsync(season);
     }
 
     private void NavigateToCompetitions(SeasonDto season)

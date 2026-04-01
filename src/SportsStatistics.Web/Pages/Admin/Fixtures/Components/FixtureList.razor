@@ -30,7 +30,7 @@
                     <FluentButton IconEnd="@(new Icons.Regular.Size20.CalendarAdd())"
                                   Appearance="Appearance.Accent"
                                   Title="Add Fixture"
-                                  OnClick="Add"
+                                  OnClick="OnAddClick"
                                   Disabled="@IsLoading" />
                 </FluentStack>
 
@@ -50,8 +50,8 @@
                         <PropertyColumn Property="@(p => p.DisplayStatus)" Title="Status" />
 
                         <TemplateColumn Align="Align.End">
-                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="@(EditButtonText(context))" Disabled="@(!CanEditFixture(context))" />
-                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="@(DeleteButtonText(context))" Disabled="@(!CanDeleteFixture(context))" />
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => OnEditClick(context))" Title="@(EditButtonText(context))" Disabled="@(!CanEditFixture(context))" />
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => OnDeleteClick(context))" Title="@(DeleteButtonText(context))" Disabled="@(!CanDeleteFixture(context))" />
                         </TemplateColumn>
                     </FluentDataGrid>
 
@@ -70,10 +70,10 @@
     public bool IsLoading { get; set; } = true;
 
     [Parameter]
-    public EventCallback<FixtureDto?> ShowFixtureFormCallback { get; set; }
+    public EventCallback<FixtureDto?> OnShowFixtureForm { get; set; }
 
     [Parameter]
-    public EventCallback<FixtureDto> DeleteFixtureCallback { get; set; }
+    public EventCallback<FixtureDto> OnDeleteFixture { get; set; }
 
     [Parameter]
     public IQueryable<FixtureDto>? Fixtures { get; set; }
@@ -85,21 +85,21 @@
     public SeasonDto? SelectedSeason { get; set; }
     
     [Parameter]
-    public EventCallback<SeasonDto> SelectedSeasonChangedCallback { get; set; }
+    public EventCallback<SeasonDto> SelectedSeasonChanged { get; set; }
 
-    private async Task Add()
+    private async Task OnAddClick()
     {
-        await ShowFixtureFormCallback.InvokeAsync(null);
+        await OnShowFixtureForm.InvokeAsync(null);
     }
 
-    private async Task Delete(FixtureDto fixture)
+    private async Task OnDeleteClick(FixtureDto fixture)
     {
-        await DeleteFixtureCallback.InvokeAsync(fixture);
+        await OnDeleteFixture.InvokeAsync(fixture);
     }
 
-    private async Task Edit(FixtureDto fixture)
+    private async Task OnEditClick(FixtureDto fixture)
     {
-        await ShowFixtureFormCallback.InvokeAsync(fixture);
+        await OnShowFixtureForm.InvokeAsync(fixture);
     }
 
     private bool CanDeleteFixture(FixtureDto fixture)
@@ -122,8 +122,8 @@
         return CanEditFixture(fixture) ? "Edit" : "Can only edit a scheduled fixture";
     }
 
-    private async Task SelectedSeasonChanged(SeasonDto season)
+    private async Task OnSelectedSeasonChanged(SeasonDto season)
     {
-        await SelectedSeasonChangedCallback.InvokeAsync(season);
+        await SelectedSeasonChanged.InvokeAsync(season);
     }
 }

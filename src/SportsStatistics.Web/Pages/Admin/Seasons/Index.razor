@@ -25,9 +25,9 @@
             break;
         default:
             <SeasonList Seasons="@Seasons"
-                        AddSeasonCallback="@(() => ShowSeasonForm())"
-                        DeleteSeasonCallback="OnDeleteSeasonAsync"
-                        EditSeasonCallback="ShowSeasonForm"
+                        OnAddSeason="@(() => ShowSeasonForm())"
+                        OnDeleteSeason="OnDeleteSeasonAsync"
+                        OnEditSeason="ShowSeasonForm"
                         IsLoading="@IsLoading" />
             break;
     }

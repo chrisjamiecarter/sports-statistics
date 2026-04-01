@@ -24,11 +24,11 @@
             break;
         default:
             <FixtureList Fixtures="@Fixtures"
-                         ShowFixtureFormCallback="@OnShowFixtureForm"
-                         DeleteFixtureCallback="@OnDeleteFixture"
+                         OnShowFixtureForm="@OnShowFixtureForm"
+                         OnDeleteFixture="@OnDeleteFixture"
                          Seasons="@Seasons"
                          SelectedSeason="@SelectedSeason"
-                         SelectedSeasonChangedCallback="@OnSelectedSeasonChangedAsync"
+                         SelectedSeasonChanged="@OnSelectedSeasonChangedAsync"
                          IsLoading="@IsLoading" />
             break;
     }

@@ -38,7 +38,7 @@
                             <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%" Loading="IsSubmitting">
                                 @SubmitButtonText
                             </FluentButton>
-                            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="HandleCancelAsync">
+                            <FluentButton Type="ButtonType.Button" Appearance="Appearance.Stealth" Style="width: 100%" OnClick="OnCancelClick">
                                 Cancel
                             </FluentButton>
                         </FluentStack>
@@ -55,10 +55,10 @@
     private IEnumerable<FormatOptionDto> FormatOptions = Format.List.Select(format => format.ToDto());
 
     [Parameter]
-    public EventCallback CancelCallback { get; set; }
+    public EventCallback OnCancel { get; set; }
 
     [Parameter]
-    public EventCallback<CompetitionFormModel> SubmitCallback { get; set; }
+    public EventCallback<CompetitionFormModel> OnSubmit { get; set; }
 
     [Parameter]
     public CompetitionDto? SelectedCompetition { get; set; }
@@ -93,16 +93,16 @@
         }
     }
 
-    private async Task HandleCancelAsync()
+    private async Task OnCancelClick()
     {
-        await CancelCallback.InvokeAsync();
+        await OnCancel.InvokeAsync();
     }
 
     private async Task HandleValidSubmitAsync()
     {
         IsSubmitting = true;
 
-        await SubmitCallback.InvokeAsync(Input);
+        await OnSubmit.InvokeAsync(Input);
 
         IsSubmitting = false;
     }

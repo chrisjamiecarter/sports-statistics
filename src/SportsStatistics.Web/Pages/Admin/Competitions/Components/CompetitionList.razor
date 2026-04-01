@@ -22,7 +22,7 @@
                     <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())"
                                   Appearance="Appearance.Accent"
                                   Title="Add Competition"
-                                  OnClick="Add"
+                                  OnClick="OnAddClick"
                                   Disabled="@IsLoading" />
                 </FluentStack>
 
@@ -39,8 +39,8 @@
                         <PropertyColumn Property="@(p => p.Format)" Sortable="true" />
             
                         <TemplateColumn Align="Align.End">
-                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => Edit(context))" Title="Edit" />
-                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => Delete(context))" Title="Delete" />
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Edit())" Appearance="Appearance.Accent" OnClick="@(() => OnEditClick(context))" Title="Edit" />
+                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Delete())" Appearance="Appearance.Accent" OnClick="@(() => OnDeleteClick(context))" Title="Delete" />
                         </TemplateColumn>
                     </FluentDataGrid>
 
@@ -63,13 +63,13 @@
     public bool IsLoading { get; set; } = true;
 
     [Parameter]
-    public EventCallback AddCompetitionCallback { get; set; }
+    public EventCallback OnAddCompetition { get; set; }
 
     [Parameter]
-    public EventCallback<CompetitionDto> DeleteCompetitionCallback { get; set; }
+    public EventCallback<CompetitionDto> OnDeleteCompetition { get; set; }
 
     [Parameter]
-    public EventCallback<CompetitionDto> EditCompetitionCallback { get; set; }
+    public EventCallback<CompetitionDto> OnEditCompetition { get; set; }
 
     [Parameter]
     public IQueryable<CompetitionDto>? Competitions { get; set; }
@@ -90,18 +90,18 @@
         SelectedFormat ??= FormatOptions.FirstOrDefault();
     }
 
-    private async Task Add()
+    private async Task OnAddClick()
     {
-        await AddCompetitionCallback.InvokeAsync();
+        await OnAddCompetition.InvokeAsync();
     }
 
-    private async Task Delete(CompetitionDto competition)
+    private async Task OnDeleteClick(CompetitionDto competition)
     {
-        await DeleteCompetitionCallback.InvokeAsync(competition);
+        await OnDeleteCompetition.InvokeAsync(competition);
     }
 
-    private async Task Edit(CompetitionDto competition)
+    private async Task OnEditClick(CompetitionDto competition)
     {
-        await EditCompetitionCallback.InvokeAsync(competition);
+        await OnEditCompetition.InvokeAsync(competition);
     }
 }

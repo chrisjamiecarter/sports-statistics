@@ -22,16 +22,16 @@
     @switch (true)
     {
         case true when IsCompetitionFormVisible:
-            <CompetitionForm CancelCallback="HideCompetitionForm"
+            <CompetitionForm OnCancel="HideCompetitionForm"
                              SelectedCompetition="@SelectedCompetition"
                              SelectedSeason="@SelectedSeason"
-                             SubmitCallback="OnSubmitAsync" />
+                             OnSubmit="OnSubmitAsync" />
             break;
         default:
             <CompetitionList Competitions="@Competitions"
-                             AddCompetitionCallback="@(() => ShowCompetitionForm())"
-                             DeleteCompetitionCallback="OnDeleteCompetitionAsync"
-                             EditCompetitionCallback="ShowCompetitionForm"
+                             OnAddCompetition="@(() => ShowCompetitionForm())"
+                             OnDeleteCompetition="OnDeleteCompetitionAsync"
+                             OnEditCompetition="ShowCompetitionForm"
                              SelectedSeason="@SelectedSeason"
                              IsLoading="@IsLoading" />
             break;
