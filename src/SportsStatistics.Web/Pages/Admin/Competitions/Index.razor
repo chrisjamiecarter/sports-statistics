@@ -22,15 +22,25 @@
     @switch (true)
     {
         case true when IsCompetitionFormVisible:
-            <CompetitionForm CancelCallback="HideCompetitionForm" SelectedCompetition="@SelectedCompetition" SelectedSeason="@SelectedSeason" SubmitCallback="OnSubmitAsync" />
+            <CompetitionForm CancelCallback="HideCompetitionForm"
+                             SelectedCompetition="@SelectedCompetition"
+                             SelectedSeason="@SelectedSeason"
+                             SubmitCallback="OnSubmitAsync" />
             break;
         default:
-            <CompetitionList Competitions="@Competitions" AddCompetitionCallback="@(() => ShowCompetitionForm())" DeleteCompetitionCallback="OnDeleteCompetitionAsync" EditCompetitionCallback="ShowCompetitionForm" SelectedSeason="@SelectedSeason" />
+            <CompetitionList Competitions="@Competitions"
+                             AddCompetitionCallback="@(() => ShowCompetitionForm())"
+                             DeleteCompetitionCallback="OnDeleteCompetitionAsync"
+                             EditCompetitionCallback="ShowCompetitionForm"
+                             SelectedSeason="@SelectedSeason"
+                             IsLoading="@IsLoading" />
             break;
     }
 </FluentCard>
 
 @code {
+    private bool IsLoading { get; set; } = true;
+
     private ComponentVisibilityMode CompetitionFormMode { get; set; } = ComponentVisibilityMode.Hide;
 
     [Parameter]
@@ -46,8 +56,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        IsLoading = true;
+
         await LoadSeasonAsync(SeasonId);
         await LoadCompetitionsAsync(SeasonId);
+
+        IsLoading = false;
     }
 
     private void HideCompetitionForm()

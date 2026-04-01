@@ -9,36 +9,39 @@
                 </FluentStack>
 
                 <FluentDivider />
-                
-                @if (Fixtures is null)
+
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                        <FluentSelect TOption="SeasonDto"
+                                      Label="Season"
+                                      Items="@Seasons"
+                                      OptionText="@(s => s.Name)"
+                                      SelectedOption="SelectedSeason"
+                                      SelectedOptionChanged="SelectedSeasonChanged"
+                                      Disabled="@IsLoading" />
+
+                        <FluentButton IconEnd="@(new Icons.Regular.Size20.Settings())"
+                                      Title="Season Settings"
+                                      Appearance="Appearance.Neutral"
+                                      OnClick="@(() => Navigation.NavigateTo(Routes.Admin.Seasons))"
+                                      Disabled="@IsLoading" />
+                    </FluentStack>
+
+                    <FluentButton IconEnd="@(new Icons.Regular.Size20.CalendarAdd())"
+                                  Appearance="Appearance.Accent"
+                                  Title="Add Fixture"
+                                  OnClick="Add"
+                                  Disabled="@IsLoading" />
+                </FluentStack>
+
+                <FluentSpacer />
+
+                @if (IsLoading)
                 {
-                    <FluentProgressRing />
+                    <SkeletonDataGrid ColumnCount="6" />
                 }
                 else
                 {
-                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                            <FluentSelect TOption="SeasonDto"
-                                          Label="Season"
-                                          Items="@Seasons"
-                                          OptionText="@(s => s.Name)"
-                                          SelectedOption="SelectedSeason"
-                                          SelectedOptionChanged="SelectedSeasonChanged" />
-
-                            <FluentButton IconEnd="@(new Icons.Regular.Size20.Settings())"
-                                          Title="Season Settings"
-                                          Appearance="Appearance.Neutral"
-                                          OnClick="@(() => Navigation.NavigateTo(Routes.Admin.Seasons))" />
-                        </FluentStack>
-
-                        <FluentButton IconEnd="@(new Icons.Regular.Size20.CalendarAdd())"
-                                      Appearance="Appearance.Accent"
-                                      Title="Add Fixture"
-                                      OnClick="Add" />
-                    </FluentStack>
-
-                    <FluentSpacer />
-
                     <FluentDataGrid Items="@Fixtures" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
                         <PropertyColumn Property="@(p => p.Date)" Sortable="true" IsDefaultSortColumn="true" />
                         <PropertyColumn Property="@(p => p.CompetitionName)" Title="Competition" />
@@ -54,7 +57,7 @@
 
                     <FluentPaginator State="@Pagination" />
                 }
-                
+              
             </FluentStack>
         </FluentCard>
     </FluentGridItem>
@@ -62,6 +65,9 @@
 
 @code {
     private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+    
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
 
     [Parameter]
     public EventCallback<FixtureDto?> ShowFixtureFormCallback { get; set; }

@@ -9,22 +9,23 @@
                 </FluentStack>
 
                 <FluentDivider />
-                
-                @if (Seasons is null)
+               
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
+                    <FluentButton IconEnd="@(new Icons.Regular.Size20.CalendarAdd())"
+                                  Appearance="Appearance.Accent"
+                                  Title="Add Season"
+                                  OnClick="Add"
+                                  Disabled="@IsLoading" />
+                </FluentStack>
+
+                <FluentSpacer />
+
+                @if (IsLoading)
                 {
-                    <FluentProgressRing />
+                    <SkeletonDataGrid ColumnCount="4" />
                 }
                 else
                 {
-                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
-                        <FluentButton IconEnd="@(new Icons.Regular.Size20.CalendarAdd())"
-                                      Appearance="Appearance.Accent"
-                                      Title="Add Season"
-                                      OnClick="Add" />
-                    </FluentStack>
-
-                    <FluentSpacer />
-
                     <FluentDataGrid Items="@Seasons" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
                         <PropertyColumn Property="@(p => p.Name)" Sortable="true" IsDefaultSortColumn="true" />
                         <PropertyColumn Property="@(p => p.StartDate)" Sortable="true" Title="Start Date" />
@@ -47,6 +48,9 @@
 
 @code {
     private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+    
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
 
     [Parameter]
     public EventCallback AddSeasonCallback { get; set; }

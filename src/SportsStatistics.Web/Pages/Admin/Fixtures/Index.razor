@@ -28,13 +28,16 @@
                          DeleteFixtureCallback="@OnDeleteFixture"
                          Seasons="@Seasons"
                          SelectedSeason="@SelectedSeason"
-                         SelectedSeasonChangedCallback="@OnSelectedSeasonChangedAsync"/>
+                         SelectedSeasonChangedCallback="@OnSelectedSeasonChangedAsync"
+                         IsLoading="@IsLoading" />
             break;
     }
 
 </FluentCard>
 
 @code {
+    private bool IsLoading { get; set; } = true;
+
     private ComponentVisibilityMode FixtureFormMode { get; set; } = ComponentVisibilityMode.Hide;
 
     private IEnumerable<CompetitionDto>? Competitions { get; set; }
@@ -56,8 +59,12 @@
 
     private async Task InitialisePage()
     {
+        IsLoading = true;
+
         await LoadSeasonsAsync();
         HideFixtureForm();
+
+        IsLoading = false;
     }
 
     private async Task CreateFixtureAsync(CreateFixtureCommand command)

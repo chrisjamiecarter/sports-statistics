@@ -16,46 +16,53 @@
         </FluentBreadcrumbItem>
     </FluentBreadcrumb>
 
-    @if (IsSeasonFormVisible)
+    @switch (true)
     {
-        <SeasonForm OnCancel="HideSeasonForm" OnSubmit="OnSubmitAsync" SelectedSeason="@SelectedSeason" />
-    }
-    else
-    {
-        <SeasonList Seasons="@Seasons" AddSeasonCallback="@(() => ShowSeasonForm())" DeleteSeasonCallback="OnDeleteSeasonAsync" EditSeasonCallback="ShowSeasonForm" />
+        case true when IsSeasonFormVisible:
+            <SeasonForm OnCancel="HideSeasonForm"
+                        OnSubmit="OnSubmitAsync"
+                        SelectedSeason="@SelectedSeason" />
+            break;
+        default:
+            <SeasonList Seasons="@Seasons"
+                        AddSeasonCallback="@(() => ShowSeasonForm())"
+                        DeleteSeasonCallback="OnDeleteSeasonAsync"
+                        EditSeasonCallback="ShowSeasonForm"
+                        IsLoading="@IsLoading" />
+            break;
     }
 </FluentCard>
 
 @code {
-    private enum SeasonFormMode
-    {
-        Hide,
-        Show,
-    }
+    private bool IsLoading { get; set; } = true;
 
-    private SeasonFormMode FormMode { get; set; } = SeasonFormMode.Hide;
+    private ComponentVisibilityMode FormMode { get; set; } = ComponentVisibilityMode.Hide;
 
     private IQueryable<SeasonDto>? Seasons { get; set; }
 
     private SeasonDto? SelectedSeason { get; set; }
 
-    private bool IsSeasonFormVisible => FormMode == SeasonFormMode.Show;
+    private bool IsSeasonFormVisible => FormMode == ComponentVisibilityMode.Show;
 
     protected override async Task OnInitializedAsync()
     {
+        IsLoading = true;
+
         await LoadSeasonsAsync();
+
+        IsLoading = false;
     }
 
     private void HideSeasonForm()
     {
         SelectedSeason = null;
-        FormMode = SeasonFormMode.Hide;
+        FormMode = ComponentVisibilityMode.Hide;
     }
 
     private void ShowSeasonForm(SeasonDto? season = null)
     {
         SelectedSeason = season;
-        FormMode = SeasonFormMode.Show;
+        FormMode = ComponentVisibilityMode.Show;
     }
 
     private async Task LoadSeasonsAsync()

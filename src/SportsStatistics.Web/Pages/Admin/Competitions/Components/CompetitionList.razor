@@ -9,30 +9,31 @@
                 </FluentStack>
 
                 <FluentDivider />
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+                        <FluentSelect Label="Format"
+                                      Items="@FormatOptions"
+                                      OptionText="@(f => f?.Name)"
+                                      @bind-SelectedOption="@SelectedFormat"
+                                      Disabled="@IsLoading" />
 
-                @if (Competitions is null)
+                    </FluentStack>
+
+                    <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())"
+                                  Appearance="Appearance.Accent"
+                                  Title="Add Competition"
+                                  OnClick="Add"
+                                  Disabled="@IsLoading" />
+                </FluentStack>
+
+                <FluentSpacer />
+
+                @if (IsLoading)
                 {
-                    <FluentProgressRing />
+                    <SkeletonDataGrid ColumnCount="3" />
                 }
                 else
                 {
-                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
-                            <FluentSelect Label="Format"
-                                          Items="@FormatOptions"
-                                          OptionText="@(f => f?.Name)"
-                                          @bind-SelectedOption="@SelectedFormat" />
-
-                        </FluentStack>
-
-                        <FluentButton IconEnd="@(new Icons.Regular.Size20.Trophy())"
-                                      Appearance="Appearance.Accent"
-                                      Title="Add Competition"
-                                      OnClick="Add" />
-                    </FluentStack>
-
-                    <FluentSpacer />
-
                     <FluentDataGrid Items="@FilteredCompetitions" Pagination="@Pagination" RowSize="DataGridRowSize.Medium">
                         <PropertyColumn Property="@(p => p.Name)" Sortable="true" IsDefaultSortColumn="true" />
                         <PropertyColumn Property="@(p => p.Format)" Sortable="true" />
@@ -57,6 +58,9 @@
     private static readonly FormatOptionDto AllFormats = new(0, "All");
 
     private IEnumerable<FormatOptionDto?> FormatOptions = Format.List.Select(format => format.ToDto()).Prepend(AllFormats);
+
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
 
     [Parameter]
     public EventCallback AddCompetitionCallback { get; set; }
