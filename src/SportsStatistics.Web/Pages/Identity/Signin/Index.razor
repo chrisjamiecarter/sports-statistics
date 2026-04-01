@@ -36,31 +36,27 @@
                     <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width: 100%">Log in</FluentButton>
                 </FluentStack>
             </EditForm>
-
-            <FluentDivider />
-
-            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
-                <FluentAnchor Appearance="Appearance.Hypertext" Href="Account/ForgotPassword">Forgot your password?</FluentAnchor>
-            </FluentStack>
             
             @if (Environment.IsDevelopment())
             {
-                <FluentDivider Style="width: 100%; margin: 1rem;" />
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+                    <FluentDivider Style="width: 100%; margin: 0.5rem 0;" />
 
-                <FluentLabel>
-                    Try a Demo User!
-                </FluentLabel>
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
-                
-                    <FluentButton Appearance="Appearance.Accent" OnClick="DemoAdministratorSignInAsync">
-                        Administrator
-                    </FluentButton>
-                    <FluentButton Appearance="Appearance.Accent" OnClick="DemoMatchTrackerSignInAsync">
-                        Match Tracker
-                    </FluentButton>
-                    <FluentButton Appearance="Appearance.Accent" OnClick="DemoReportViewerSignInAsync">
-                        Report Viewer
-                    </FluentButton>
+                    <FluentLabel>
+                        Test the application with a demo user!
+                    </FluentLabel>
+
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Center">
+                        <FluentButton Appearance="Appearance.Accent" OnClick="DemoAdministratorSignInAsync">
+                            Administrator
+                        </FluentButton>
+                        <FluentButton Appearance="Appearance.Accent" OnClick="DemoMatchTrackerSignInAsync">
+                            Match Tracker
+                        </FluentButton>
+                        <FluentButton Appearance="Appearance.Accent" OnClick="DemoReportViewerSignInAsync">
+                            Report Viewer
+                        </FluentButton>
+                    </FluentStack>
                 </FluentStack>
             }
 
