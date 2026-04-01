@@ -13,18 +13,10 @@
         </FluentBreadcrumbItem>
     </FluentBreadcrumb>
 
-    @if (IsLoading)
-    {
-        <FluentProgressRing />
-    }
-    else if (Club is not null)
-    {
-        <ClubForm Club="@Club" OnCancel="CancelUpdate" OnSubmit="UpdateClubAsync" />
-    }
-    else
-    {
-        <FluentLabel>Unable to load club data.</FluentLabel>
-    }
+    <ClubForm Club="@Club"
+              OnCancel="CancelUpdate"
+              OnSubmit="UpdateClubAsync"
+              IsLoading="@IsLoading" />
 
 </FluentCard>
 
@@ -37,17 +29,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        IsLoading = true;
+
         await LoadClubAsync();
+
+        IsLoading = false;
     }
 
     private async Task LoadClubAsync()
     {
-        IsLoading = true;
-
         ClubFormModel ??= new();
 
         var request = new GetClubQuery();
         var result = await Messenger.SendAsync(request);
+        
         if (result.IsSuccess)
         {
             Club = result.Value.ToDto();
@@ -57,8 +52,6 @@
         {
             ToastService.ShowError("Unable to load club");
         }
-
-        IsLoading = false;
     }
 
     private void CancelUpdate()
