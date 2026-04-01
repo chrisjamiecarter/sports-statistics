@@ -12,9 +12,21 @@
 
     <FluentStack Orientation="Orientation.Vertical">
 
-        <SeasonSelector Seasons="@Seasons"
-                        SelectedSeason="@SelectedSeason"
-                        OnSelectedSeasonChanged="HandleSelectedSeasonChangedAsync" />
+        @if (IsLoading)
+        {
+            <FluentStack Orientation="Orientation.Horizontal"
+                         HorizontalAlignment="HorizontalAlignment.Stretch"
+                         VerticalAlignment="VerticalAlignment.Center">
+                <FluentLabel>Seasons</FluentLabel>
+                <FluentSkeleton Width="200px" Height="32px" Shimmer="true" />
+            </FluentStack>
+        }
+        else
+        {
+            <SeasonSelector Seasons="@Seasons"
+                            SelectedSeason="@SelectedSeason"
+                            OnSelectedSeasonChanged="HandleSelectedSeasonChangedAsync" />
+        }
 
         @if (SelectedSeason is not null)
         {
@@ -23,13 +35,13 @@
                 <FluentTab Id="tab-1" Label="Season Statistics" Style="">
                     <StatisticsView PlayerSeasonStatistics="@PlayerSeasonStatistics"
                                     OnPlayerSeasonStatisticsSelected="HandlePlayerSeasonStatisticsSelectedAsync"
-                                    IsLoading="@IsLoading" />
+                                    IsLoading="@IsLoadingStatistics" />
                 </FluentTab>
 
                 <FluentTab Id="tab-2" Label="Fixture Statistics">
                     <FixtureBreakdown SeasonFixtures="@SelectedSeasonFixtures"
                                       OnFixtureSelected="HandleFixtureSelectedAsync"
-                                      IsLoading="@IsLoading" />
+                                      IsLoading="@IsLoadingStatistics" />
                 </FluentTab>
 
             </FluentTabs>
@@ -41,6 +53,7 @@
 
 @code {
     private bool IsLoading = true;
+    private bool IsLoadingStatistics = true;
 
     private List<SeasonDto> Seasons = [];
     private SeasonDto? SelectedSeason;
@@ -51,7 +64,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        IsLoading = true;
+
         await LoadSeasonsAsync();
+
+        IsLoading = false;
     }
 
     private async Task LoadFixturesAsync(SeasonDto season)
@@ -110,12 +127,12 @@
     private async Task HandleSelectedSeasonChangedAsync(SeasonDto season)
     {
         SelectedSeason = season;
-        IsLoading = true;
+        IsLoadingStatistics = true;
 
         await LoadFixturesAsync(season);
         await LoadPlayerSeasonStatisticsAsync(season);
 
-        IsLoading = false;
+        IsLoadingStatistics = false;
     }
 
     private async Task HandlePlayerSeasonStatisticsSelectedAsync(PlayerSeasonStatisticsDto player)
