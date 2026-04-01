@@ -1,4 +1,10 @@
-﻿<FluentCard Style="padding: 1rem;">
+﻿@if (IsLoading)
+{
+    <SkeletonTable Rows="10" Columns="7" />
+    return;
+}
+
+<FluentCard Style="padding: 1rem;">
     <div style="display: table; table-layout: fixed; width: 100%;">
         <div style="overflow-x: auto;">
             <FluentDataGrid Items="@SeasonFixtures"
@@ -37,6 +43,9 @@
 
 @code {
     private PaginationState Pagination = new PaginationState() { ItemsPerPage = 10 };
+
+    [Parameter]
+    public bool IsLoading { get; set; } = true;
 
     [Parameter]
     public IQueryable<FixtureDto>? SeasonFixtures { get; set; }

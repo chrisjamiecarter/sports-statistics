@@ -10,45 +10,38 @@
         </FluentBreadcrumbItem>
     </FluentBreadcrumb>
 
-    @if (Loading)
-    {
-        <FluentProgressRing />
-    }
-    else
-    {
-        <FluentStack Orientation="Orientation.Vertical">
+    <FluentStack Orientation="Orientation.Vertical">
 
-            <SeasonSelector
-                Seasons="@Seasons"
-                SelectedSeason="@SelectedSeason"
-                OnSelectedSeasonChanged="HandleSelectedSeasonChangedAsync" />
+        <SeasonSelector Seasons="@Seasons"
+                        SelectedSeason="@SelectedSeason"
+                        OnSelectedSeasonChanged="HandleSelectedSeasonChangedAsync" />
 
-            @if (SelectedSeason is not null)
-            {
-                <FluentTabs @bind-ActiveTabId="@ActiveTabId" Width="100%" Size="TabSize.Large">
+        @if (SelectedSeason is not null)
+        {
+            <FluentTabs @bind-ActiveTabId="@ActiveTabId" Width="100%" Size="TabSize.Large">
                     
-                    <FluentTab Id="tab-1" Label="Season Statistics" Style="">
-                        <StatisticsView
-                            PlayerSeasonStatistics="@PlayerSeasonStatistics"
-                            OnPlayerSeasonStatisticsSelected="HandlePlayerSeasonStatisticsSelectedAsync" />
-                    </FluentTab>
+                <FluentTab Id="tab-1" Label="Season Statistics" Style="">
+                    <StatisticsView PlayerSeasonStatistics="@PlayerSeasonStatistics"
+                                    OnPlayerSeasonStatisticsSelected="HandlePlayerSeasonStatisticsSelectedAsync"
+                                    IsLoading="@IsLoading" />
+                </FluentTab>
 
-                    <FluentTab Id="tab-2" Label="Fixture Statistics">
-                        <FixtureBreakdown
-                            SeasonFixtures="@SelectedSeasonFixtures"
-                            OnFixtureSelected="HandleFixtureSelectedAsync" />
-                    </FluentTab>
+                <FluentTab Id="tab-2" Label="Fixture Statistics">
+                    <FixtureBreakdown SeasonFixtures="@SelectedSeasonFixtures"
+                                      OnFixtureSelected="HandleFixtureSelectedAsync"
+                                      IsLoading="@IsLoading" />
+                </FluentTab>
 
-                </FluentTabs>
-            }
+            </FluentTabs>
+        }
 
-        </FluentStack>
-    }
+    </FluentStack>
 
 </FluentCard>
 
 @code {
-    private bool Loading = true;
+    private bool IsLoading = true;
+
     private List<SeasonDto> Seasons = [];
     private SeasonDto? SelectedSeason;
     private IQueryable<PlayerSeasonStatisticsDto>? PlayerSeasonStatistics;
@@ -58,10 +51,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Loading = true;
-
         await LoadSeasonsAsync();
-        Loading = false;
     }
 
     private async Task LoadFixturesAsync(SeasonDto season)
@@ -120,8 +110,12 @@
     private async Task HandleSelectedSeasonChangedAsync(SeasonDto season)
     {
         SelectedSeason = season;
+        IsLoading = true;
+
         await LoadFixturesAsync(season);
         await LoadPlayerSeasonStatisticsAsync(season);
+
+        IsLoading = false;
     }
 
     private async Task HandlePlayerSeasonStatisticsSelectedAsync(PlayerSeasonStatisticsDto player)
