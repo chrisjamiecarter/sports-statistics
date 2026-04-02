@@ -11,7 +11,8 @@ public class UpdatePlayerCommandValidatorTests
                                                                   1,
                                                                   "Test Nationality",
                                                                   DateOnly.FromDateTime(DateTime.Today).AddYears(-15),
-                                                                  Position.Goalkeeper.Value);
+                                                                  Position.Goalkeeper.Value,
+                                                                  false);
 
     private readonly UpdatePlayerCommandValidator _validator;
 

@@ -15,7 +15,8 @@ public class UpdatePlayerCommandHandlerTests
                                                                   11,
                                                                   $"{BasePlayers.First().Nationality} Updated",
                                                                   BasePlayers.First().DateOfBirth.Value.AddDays(-1),
-                                                                  Position.Midfielder.Value);
+                                                                  Position.Midfielder.Value,
+                                                                  false);
 
     private readonly Mock<IApplicationDbContext> _dbContextMock;
     private readonly UpdatePlayerCommandHandler _handler;
