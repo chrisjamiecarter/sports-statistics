@@ -29,11 +29,7 @@ internal sealed class UpdateClubCommandHandler(IApplicationDbContext dbContext) 
             return firstFailureOrSuccess;
         }
 
-        var nameChangeResult = club.ChangeName(nameResult.Value);
-        if (nameChangeResult.IsFailure)
-        {
-            return nameChangeResult;
-        }
+        club.ChangeName(nameResult.Value);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

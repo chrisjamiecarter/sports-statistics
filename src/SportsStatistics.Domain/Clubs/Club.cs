@@ -28,17 +28,17 @@ public sealed class Club : Entity
         return club;
     }
 
-    public Result ChangeName(Name name)
+    public bool ChangeName(Name name)
     {
         if (Name == name)
         {
-            return Result.Success();
+            return false;
         }
 
         var previousName = Name;
         Name = name;
         Raise(new ClubNameChangedDomainEvent(this, previousName));
 
-        return Result.Success();
+        return true;
     }
 }
