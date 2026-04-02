@@ -117,6 +117,17 @@ public static class FixtureErrors
             "The fixture opponent cannot be null or empty.");
     }
 
+    public static class Score
+    {
+        public static Error HomeGoalsMustBeNonNegative => Error.Validation(
+            "Score.HomeGoals.MustBeNonNegative",
+            "Home goals must be greater than or equal to zero.");
+
+        public static Error AwayGoalsMustBeNonNegative => Error.Validation(
+            "Score.AwayGoals.MustBeNonNegative",
+            "Away goals must be greater than or equal to zero.");
+    }
+
     public static class Status
     {
         public static Error Unknown => Error.Validation(

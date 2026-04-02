@@ -16,7 +16,16 @@ public sealed record Score
 
     public static Result<Score> Create(int homeGoals, int awayGoals)
     {
-        // TODO: Validation.
+        if (homeGoals < 0)
+        {
+            return FixtureErrors.Score.HomeGoalsMustBeNonNegative;
+        }
+
+        if (awayGoals < 0)
+        {
+            return FixtureErrors.Score.AwayGoalsMustBeNonNegative;
+        }
+
         return new Score(homeGoals, awayGoals);
     }
 }
