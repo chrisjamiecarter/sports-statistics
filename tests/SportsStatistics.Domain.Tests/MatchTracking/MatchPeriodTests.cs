@@ -1,169 +1,145 @@
-//using SportsStatistics.Domain.MatchTracking;
-//using Shouldly;
-//using Xunit;
+using SportsStatistics.Domain.MatchTracking;
+using SportsStatistics.SharedKernel;
 
-//namespace SportsStatistics.Domain.Tests.MatchTracking;
+namespace SportsStatistics.Domain.Tests.MatchTracking;
 
-//public class MatchPeriodTests
-//{
-//    #region Enumeration Values Tests
+public class MatchPeriodTests
+{
+    [Fact]
+    public void Resolve_ShouldReturnPreMatch_WhenIdIsZero()
+    {
+        // Arrange.
+        // Act.
+        var result = MatchPeriod.Resolve(0);
 
-//    [Fact]
-//    public void MatchPeriod_ShouldHaveCorrectFirstHalfValue()
-//    {
-//        // Arrange.
-//        // Act.
-//        var period = MatchPeriod.FirstHalf;
+        // Assert.
+        result.Value.ShouldBe(MatchPeriod.PreMatch);
+    }
 
-//        // Assert.
-//        period.Value.ShouldBe(0);
-//        period.Name.ShouldBe("FirstHalf");
-//    }
+    [Fact]
+    public void Resolve_ShouldReturnFirstHalf_WhenIdIsOne()
+    {
+        // Arrange.
+        // Act.
+        var result = MatchPeriod.Resolve(1);
 
-//    [Fact]
-//    public void MatchPeriod_ShouldHaveCorrectFirstHalfStoppageValue()
-//    {
-//        // Arrange.
-//        // Act.
-//        var period = MatchPeriod.FirstHalfStoppage;
+        // Assert.
+        result.Value.ShouldBe(MatchPeriod.FirstHalf);
+    }
 
-//        // Assert.
-//        period.Value.ShouldBe(1);
-//        period.Name.ShouldBe("FirstHalfStoppage");
-//    }
+    [Fact]
+    public void Resolve_ShouldReturnHalfTime_WhenIdIsThree()
+    {
+        // Arrange.
+        // act.
+        var result = MatchPeriod.Resolve(3);
 
-//    [Fact]
-//    public void MatchPeriod_ShouldHaveCorrectSecondHalfValue()
-//    {
-//        // Arrange.
-//        // Act.
-//        var period = MatchPeriod.SecondHalf;
+        // Assert.
+        result.Value.ShouldBe(MatchPeriod.HalfTime);
+    }
 
-//        // Assert.
-//        period.Value.ShouldBe(3);
-//        period.Name.ShouldBe("SecondHalf");
-//    }
+    [Fact]
+    public void Resolve_ShouldReturnSecondHalf_WhenIdIsFour()
+    {
+        // Arrange.
+        // Act.
+        var result = MatchPeriod.Resolve(4);
 
-//    [Fact]
-//    public void MatchPeriod_ShouldHaveCorrectSecondHalfStoppageValue()
-//    {
-//        // Arrange.
-//        // Act.
-//        var period = MatchPeriod.SecondHalfStoppage;
+        // Assert.
+        result.Value.ShouldBe(MatchPeriod.SecondHalf);
+    }
 
-//        // Assert.
-//        period.Value.ShouldBe(4);
-//        period.Name.ShouldBe("SecondHalfStoppage");
-//    }
+    [Fact]
+    public void Resolve_ShouldReturnFullTime_WhenIdIsSix()
+    {
+        // Arrange.
+        // Act.
+        var result = MatchPeriod.Resolve(6);
 
-//    #endregion
+        // Assert.
+        result.Value.ShouldBe(MatchPeriod.FullTime);
+    }
 
-//    #region IsStoppageTime Tests
+    [Fact]
+    public void Resolve_ShouldReturnError_WhenIdIsInvalid()
+    {
+        // Arrange.
+        var invalidId = 999;
 
-//    public static TheoryData<MatchPeriod, bool> IsStoppageTimeTestData => new()
-//    {
-//        { MatchPeriod.FirstHalf, false },
-//        { MatchPeriod.FirstHalfStoppage, true },
-//        { MatchPeriod.HalfTime, false },
-//        { MatchPeriod.SecondHalf, false },
-//        { MatchPeriod.SecondHalfStoppage, true },
-//        { MatchPeriod.FullTime, false },
-//    };
+        // Act.
+        var result = MatchPeriod.Resolve(invalidId);
 
-//    [Theory]
-//    [MemberData(nameof(IsStoppageTimeTestData))]
-//    public void IsStoppageTime_ShouldReturnCorrectValue(MatchPeriod period, bool expected)
-//    {
-//        // Arrange.
-//        // Act.
-//        var result = period.IsStoppageTime();
+        // Assert.
+        result.Error.ShouldBe(EnumerationErrors.Unresolved);
+    }
 
-//        // Assert.
-//        result.ShouldBe(expected);
-//    }
+    [Fact]
+    public void IsPlayingPeriod_ShouldReturnTrue_WhenFirstHalf()
+    {
+        // Assert.
+        MatchPeriod.FirstHalf.IsPlayingPeriod().ShouldBeTrue();
+    }
 
-//    #endregion
+    [Fact]
+    public void IsPlayingPeriod_ShouldReturnTrue_WhenSecondHalf()
+    {
+        // Assert.
+        MatchPeriod.SecondHalf.IsPlayingPeriod().ShouldBeTrue();
+    }
 
-//    #region IsPlayingPeriod Tests
+    [Fact]
+    public void IsPlayingPeriod_ShouldReturnFalse_WhenPreMatch()
+    {
+        // Assert.
+        MatchPeriod.PreMatch.IsPlayingPeriod().ShouldBeFalse();
+    }
 
-//    public static TheoryData<MatchPeriod, bool> IsPlayingPeriodTestData => new()
-//    {
-//        { MatchPeriod.FirstHalf, true },
-//        { MatchPeriod.FirstHalfStoppage, true },
-//        { MatchPeriod.HalfTime, false },
-//        { MatchPeriod.SecondHalf, true },
-//        { MatchPeriod.SecondHalfStoppage, true },
-//        { MatchPeriod.FullTime, false },
-//    };
+    [Fact]
+    public void IsPlayingPeriod_ShouldReturnFalse_WhenHalfTime()
+    {
+        // Assert.
+        MatchPeriod.HalfTime.IsPlayingPeriod().ShouldBeFalse();
+    }
 
-//    [Theory]
-//    [MemberData(nameof(IsPlayingPeriodTestData))]
-//    public void IsPlayingPeriod_ShouldReturnCorrectValue(MatchPeriod period, bool expected)
-//    {
-//        // Arrange.
-//        // Act.
-//        var result = period.IsPlayingPeriod();
+    [Fact]
+    public void IsPlayingPeriod_ShouldReturnFalse_WhenFullTime()
+    {
+        // Assert.
+        MatchPeriod.FullTime.IsPlayingPeriod().ShouldBeFalse();
+    }
 
-//        // Assert.
-//        result.ShouldBe(expected);
-//    }
+    [Fact]
+    public void IsSubstitutionPeriod_ShouldReturnTrue_WhenFirstHalf()
+    {
+        // Assert.
+        MatchPeriod.FirstHalf.IsSubstitutionPeriod().ShouldBeTrue();
+    }
 
-//    #endregion
+    [Fact]
+    public void IsSubstitutionPeriod_ShouldReturnTrue_WhenHalfTime()
+    {
+        // Assert.
+        MatchPeriod.HalfTime.IsSubstitutionPeriod().ShouldBeTrue();
+    }
 
-//    #region IsExtraTimePeriod Tests
+    [Fact]
+    public void IsSubstitutionPeriod_ShouldReturnTrue_WhenSecondHalf()
+    {
+        // Assert.
+        MatchPeriod.SecondHalf.IsSubstitutionPeriod().ShouldBeTrue();
+    }
 
-//    public static TheoryData<MatchPeriod, bool> IsExtraTimePeriodTestData => new()
-//    {
-//        { MatchPeriod.FirstHalf, false },
-//        { MatchPeriod.FirstHalfStoppage, false },
-//        { MatchPeriod.SecondHalf, false },
-//        { MatchPeriod.SecondHalfStoppage, false },
-//    };
+    [Fact]
+    public void IsSubstitutionPeriod_ShouldReturnFalse_WhenPreMatch()
+    {
+        // Assert.
+        MatchPeriod.PreMatch.IsSubstitutionPeriod().ShouldBeFalse();
+    }
 
-//    #endregion
-
-//    #region GetStoppageBaseMinute Tests
-
-//    public static TheoryData<MatchPeriod, int?> GetStoppageBaseMinuteTestData => new()
-//    {
-//        { MatchPeriod.FirstHalf, null },
-//        { MatchPeriod.FirstHalfStoppage, 45 },
-//        { MatchPeriod.SecondHalf, null },
-//        { MatchPeriod.SecondHalfStoppage, 90 },
-//    };
-
-//    [Theory]
-//    [MemberData(nameof(GetStoppageBaseMinuteTestData))]
-//    public void GetStoppageBaseMinute_ShouldReturnCorrectValue(MatchPeriod period, int? expected)
-//    {
-//        // Arrange.
-//        // Act.
-//        var result = period.GetStoppageBaseMinute();
-
-//        // Assert.
-//        result.ShouldBe(expected);
-//    }
-
-//    #endregion
-
-//    #region List Tests
-
-//    [Fact]
-//    public void List_ShouldContainAllPeriods()
-//    {
-//        // Arrange.
-//        // Act.
-//        var periods = MatchPeriod.List;
-
-//        // Assert.
-//        periods.Count.ShouldBe(12);
-//        periods.ShouldContain(MatchPeriod.FirstHalf);
-//        periods.ShouldContain(MatchPeriod.FirstHalfStoppage);
-//        periods.ShouldContain(MatchPeriod.HalfTime);
-//        periods.ShouldContain(MatchPeriod.SecondHalf);
-//        periods.ShouldContain(MatchPeriod.SecondHalfStoppage);
-//        periods.ShouldContain(MatchPeriod.FullTime);
-//    }
-
-//    #endregion
-//}
+    [Fact]
+    public void IsSubstitutionPeriod_ShouldReturnFalse_WhenFullTime()
+    {
+        // Assert.
+        MatchPeriod.FullTime.IsSubstitutionPeriod().ShouldBeFalse();
+    }
+}

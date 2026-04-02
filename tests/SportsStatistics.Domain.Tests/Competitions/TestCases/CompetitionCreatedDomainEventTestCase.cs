@@ -9,8 +9,6 @@ public class CompetitionCreatedDomainEventTestCase : TheoryData<Season, Name, Fo
 {
     public CompetitionCreatedDomainEventTestCase()
     {
-        Add(SeasonTestData.ValidSeason,
-            NameTestData.ValidName,
-            FormatTestData.ValidFormat);
+        Add(SeasonTestData.ValidSeason, NameTestData.ValidName, FormatTestData.ValidFormat);
     }
 }

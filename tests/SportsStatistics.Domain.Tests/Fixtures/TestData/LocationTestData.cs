@@ -4,5 +4,5 @@ namespace SportsStatistics.Domain.Tests.Fixtures.TestData;
 
 public static class LocationTestData
 {
-    public static readonly Location ValidLocation = Location.Home;
+    public static Location ValidLocation => Location.List.OrderBy(_ => Random.Shared.Next()).First();
 }

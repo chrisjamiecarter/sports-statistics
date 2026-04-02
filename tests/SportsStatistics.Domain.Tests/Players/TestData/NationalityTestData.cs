@@ -4,7 +4,7 @@ namespace SportsStatistics.Domain.Tests.Players.TestData;
 
 public static class NationalityTestData
 {
-    public static readonly Nationality ValidNationality = Nationality.Create(nameof(Nationality)).Value;
+    public static Nationality ValidNationality => Nationality.Create(nameof(Nationality)).Value;
     
     public static readonly string LongerThanAllowedNationality = new('*', Nationality.MaxLength + 1);
 

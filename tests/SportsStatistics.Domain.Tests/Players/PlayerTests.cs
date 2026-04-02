@@ -1,5 +1,7 @@
-﻿using SportsStatistics.Domain.Players;
+﻿using Microsoft.Extensions.Time.Testing;
+using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Tests.Players.TestCases;
+using SportsStatistics.Domain.Tests.Players.TestData;
 
 namespace SportsStatistics.Domain.Tests.Players;
 
@@ -26,8 +28,8 @@ public class PlayerTests
         player.Nationality.ShouldBe(nationality);
         player.DateOfBirth.ShouldBe(dateOfBirth);
         player.Position.ShouldBe(position);
-        player.Deleted.ShouldBeFalse();
-        player.DeletedOnUtc.ShouldBeNull();
+        player.LeftClub.ShouldBeFalse();
+        player.LeftClubOnUtc.ShouldBeNull();
     }
 
     [Theory]
@@ -253,30 +255,66 @@ public class PlayerTests
     }
 
     [Theory]
-    [ClassData(typeof(DeletePlayerTestCase))]
-    public void Delete_ShouldDeletePlayer_WhenPlayerIsNotAlreadyDeleted(Player player, DateTime utcNow)
+    [ClassData(typeof(ChangeLeftClubTestCase))]
+    public void ChangeLeftClub_ShouldSetLeftClubToTrue_WhenPlayerLeavesClub(Player player)
     {
         // Arrange.
+        player.ChangeLeftClub(false);
+
         // Act.
-        player.Delete(utcNow);
+        player.ChangeLeftClub(true);
 
         // Assert.
-        player.Deleted.ShouldBeTrue();
-        player.DeletedOnUtc.ShouldBeEquivalentTo(utcNow);
+        player.LeftClub.ShouldBeTrue();
+        player.LeftClubOnUtc.ShouldNotBeNull();
     }
 
     [Theory]
-    [ClassData(typeof(PlayerDeletedDomainEventTestCase))]
-    public void Delete_ShouldRaisePlayerDeletedDomainEvent_WhenPlayerIsDeleted(Player player, DateTime utcNow, PlayerDeletedDomainEvent expected)
+    [ClassData(typeof(PlayerLeftClubDomainEventTestCase))]
+    public void ChangeLeftClub_ShouldRaisePlayerLeftClubDomainEvent_WhenPlayerLeavesClub(Player player, FakeTimeProvider timeProvider, PlayerLeftClubDomainEvent expected)
     {
         // Arrange.
+        player.ChangeLeftClub(false, timeProvider);
         player.ClearDomainEvents();
 
         // Act.
-        player.Delete(utcNow);
+        player.ChangeLeftClub(true, timeProvider);
 
         // Assert.
-        player.DomainEvents.ShouldHaveSingleItem()
-                           .ShouldBeEquivalentTo(expected);
+        player.DomainEvents
+            .ShouldHaveSingleItem()
+            .ShouldBeEquivalentTo(expected);
+    }
+
+    [Theory]
+    [ClassData(typeof(ChangeLeftClubTestCase))]
+    public void ChangeLeftClub_ShouldSetLeftClubToFalse_WhenPlayerRejoinsClub(Player player)
+    {
+        // Arrange.
+        player.ChangeLeftClub(true);
+
+        // Act.
+        player.ChangeLeftClub(false);
+
+        // Assert.
+        player.LeftClub.ShouldBeFalse();
+        player.LeftClubOnUtc.ShouldBeNull();
+    }
+
+    [Theory]
+    [ClassData(typeof(PlayerRejoinedClubDomainEventTestCase))]
+    public void ChangeLeftClub_ShouldRaisePlayerRejoinedClubDomainEvent_WhenPlayerRejoinsClub(Player player, FakeTimeProvider timeProvider, PlayerRejoinedClubDomainEvent expected)
+    {
+        // Arrange.
+        player.ChangeLeftClub(true, timeProvider);
+        player.ClearDomainEvents();
+
+        // Act.
+        player.ChangeLeftClub(false, timeProvider);
+
+        // Assert.
+        player.DomainEvents
+            .ShouldHaveSingleItem()
+            .ShouldBeEquivalentTo(expected);
     }
 }

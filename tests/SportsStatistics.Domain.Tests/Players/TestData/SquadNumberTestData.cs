@@ -4,7 +4,7 @@ namespace SportsStatistics.Domain.Tests.Players.TestData;
 
 public class SquadNumberTestData
 {
-    public static readonly SquadNumber ValidSquadNumber = SquadNumber.Create(SquadNumber.MinValue).Value;
+    public static SquadNumber ValidSquadNumber => SquadNumber.Create(Random.Shared.Next(SquadNumber.MinValue, SquadNumber.MaxValue + 1)).Value;
 
     public static readonly int BelowMinValueSquadNumber = SquadNumber.MinValue - 1;
 

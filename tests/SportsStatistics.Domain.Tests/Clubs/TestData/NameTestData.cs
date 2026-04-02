@@ -1,8 +1,8 @@
-﻿using SportsStatistics.Domain.Players;
+using SportsStatistics.Domain.Clubs;
 
-namespace SportsStatistics.Domain.Tests.Players.TestData;
+namespace SportsStatistics.Domain.Tests.Clubs.TestData;
 
-public class NameTestData
+public static class NameTestData
 {
     public static Name ValidName => Name.Create(nameof(Name)).Value;
 
