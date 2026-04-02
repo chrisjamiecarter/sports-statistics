@@ -122,7 +122,7 @@ public sealed class Player : Entity
         return true;
     }
 
-    public bool ChangeLeftClub(bool leftClub)
+    public bool ChangeLeftClub(bool leftClub, TimeProvider? timeProvider = null)
     {
         if (LeftClub == leftClub)
         {
@@ -131,7 +131,7 @@ public sealed class Player : Entity
 
         if (leftClub)
         {
-            LeaveClub(DateTime.UtcNow);
+            LeaveClub(timeProvider ?? TimeProvider.System);
         }
         else
         {
@@ -141,12 +141,14 @@ public sealed class Player : Entity
         return true;
     }
 
-    private void LeaveClub(DateTime utcNow)
+    private void LeaveClub(TimeProvider timeProvider)
     {
         if (LeftClub)
         {
             return;
         }
+
+        var utcNow = timeProvider.GetUtcNow().UtcDateTime;
 
         LeftClub = true;
         LeftClubOnUtc = utcNow;
