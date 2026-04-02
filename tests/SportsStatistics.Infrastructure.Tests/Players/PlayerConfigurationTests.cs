@@ -166,37 +166,37 @@ public class PlayerConfigurationTests
     }
 
     [Fact]
-    public void PlayerConfiguration_ShouldConfigureDeletedOnUtcPropertyCorrectly()
+    public void PlayerConfiguration_ShouldConfigureLeftClubPropertyCorrectly()
     {
         // Arrange.
-        var expectedColumnName = nameof(Player.DeletedOnUtc);
-        var expectedIsNullable = true;
-
-        // Act.
-        var property = _entity.FindProperty(nameof(Player.DeletedOnUtc));
-
-        // Assert.
-        property.ShouldNotBeNull();
-        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
-        property.IsNullable.ShouldBe(expectedIsNullable);
-    }
-
-    [Fact]
-    public void PlayerConfiguration_ShouldConfigureDeletedPropertyCorrectly()
-    {
-        // Arrange.
-        var expectedColumnName = nameof(Player.Deleted);
+        var expectedColumnName = nameof(Player.LeftClub);
         var expectedDefaultValue = false;
         var expectedIsNullable = false;
 
         // Act.
-        var property = _entity.FindProperty(nameof(Player.Deleted));
+        var property = _entity.FindProperty(nameof(Player.LeftClub));
 
         // Assert.
         property.ShouldNotBeNull();
         property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
         property.IsNullable.ShouldBe(expectedIsNullable);
         property.GetDefaultValue().ShouldBe(expectedDefaultValue);
+    }
+
+    [Fact]
+    public void PlayerConfiguration_ShouldConfigureLeftClubOnUtcPropertyCorrectly()
+    {
+        // Arrange.
+        var expectedColumnName = nameof(Player.LeftClubOnUtc);
+        var expectedIsNullable = true;
+
+        // Act.
+        var property = _entity.FindProperty(nameof(Player.LeftClubOnUtc));
+
+        // Assert.
+        property.ShouldNotBeNull();
+        property.GetColumnName().ShouldBeEquivalentTo(expectedColumnName);
+        property.IsNullable.ShouldBe(expectedIsNullable);
     }
 
     [Fact]
