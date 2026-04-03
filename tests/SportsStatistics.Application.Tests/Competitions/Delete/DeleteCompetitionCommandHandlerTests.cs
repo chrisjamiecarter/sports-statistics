@@ -1,7 +1,9 @@
 ﻿using MockQueryable.Moq;
 using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Application.Competitions.Delete;
+using SportsStatistics.Application.Tests.Fixtures;
 using SportsStatistics.Domain.Competitions;
+using SportsStatistics.Domain.Fixtures;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Application.Tests.Competitions.Delete;
@@ -9,6 +11,7 @@ namespace SportsStatistics.Application.Tests.Competitions.Delete;
 public class DeleteCompetitionCommandHandlerTests
 {
     private static readonly List<Competition> BaseCompetitions = CompetitionBuilder.GetDefaults();
+    private static readonly List<Fixture> BaseFixtures = FixtureBuilder.GetDefaults();
 
     private static readonly DeleteCompetitionCommand BaseCommand = new(BaseCompetitions.First().Id);
 
@@ -21,6 +24,9 @@ public class DeleteCompetitionCommandHandlerTests
 
         _dbContextMock.Setup(m => m.Competitions)
                       .Returns(BaseCompetitions.BuildMockDbSet().Object);
+
+        _dbContextMock.Setup(m => m.Fixtures)
+                      .Returns(BaseFixtures.BuildMockDbSet().Object);
 
         _dbContextMock.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
                       .ReturnsAsync(1);

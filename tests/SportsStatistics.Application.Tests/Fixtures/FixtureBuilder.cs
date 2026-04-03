@@ -1,6 +1,7 @@
 ﻿using SportsStatistics.Application.Tests.Competitions;
 using SportsStatistics.Domain.Competitions;
 using SportsStatistics.Domain.Fixtures;
+using System.Reflection;
 
 namespace SportsStatistics.Application.Tests.Fixtures;
 
@@ -10,6 +11,7 @@ public class FixtureBuilder : IBuildable<Fixture>
     private string _opponent = "Test Opponent";
     private DateTime _kickoffTimeUtc = DateTime.UtcNow;
     private Location _location = Location.Home;
+    private Status _status = Status.Scheduled;
 
     public FixtureBuilder WithCompetition(Competition competition)
     {
@@ -35,15 +37,27 @@ public class FixtureBuilder : IBuildable<Fixture>
         return this;
     }
 
-    private static Fixture Create(Competition competition, string opponent, DateTime kickoffTimeUtc, Location location) =>
-        Fixture.Create(
-            competition,
-            Opponent.Create(opponent).Value,
-            KickoffTimeUtc.Create(kickoffTimeUtc).Value,
-            location);
+    public FixtureBuilder WithStatus(Status status)
+    {
+        _status = status;
+        return this;
+    }
 
-    public Fixture Build() =>
-        Create(_competition, _opponent, _kickoffTimeUtc, _location);
+    public Fixture Build()
+    {
+        // Create base fixture
+        var fixture = Fixture.Create(
+            _competition,
+            Opponent.Create(_opponent).Value,
+            KickoffTimeUtc.Create(_kickoffTimeUtc).Value,
+            _location);
+        
+        // Use reflection to set the Status property (it's private set but we need it for testing)
+        var statusProperty = typeof(Fixture).GetProperty("Status", BindingFlags.Public | BindingFlags.Instance);
+        statusProperty?.SetValue(fixture, _status);
+        
+        return fixture;
+    }
 
     public static List<Fixture> GetDefaults()
     {
