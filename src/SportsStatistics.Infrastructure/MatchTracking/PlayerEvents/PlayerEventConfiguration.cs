@@ -28,11 +28,11 @@ internal sealed class PlayerEventConfiguration : IEntityTypeConfiguration<Player
         builder.OwnsOne(playerEvent => playerEvent.Minute, ownedBuilder =>
         {
             ownedBuilder.Property(minute => minute.BaseMinute)
-                        .HasColumnName(nameof(Minute.BaseMinute))
+                        .HasColumnName("minute_base")
                         .IsRequired();
 
             ownedBuilder.Property(minute => minute.StoppageMinute)
-                        .HasColumnName(nameof(Minute.StoppageMinute));
+                        .HasColumnName("minute_stoppage");
         });
 
         builder.Property(playerEvent => playerEvent.OccurredAtUtc)

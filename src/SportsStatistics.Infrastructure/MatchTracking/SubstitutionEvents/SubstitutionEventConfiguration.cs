@@ -27,11 +27,11 @@ internal sealed class SubstitutionEventConfiguration : IEntityTypeConfiguration<
         builder.OwnsOne(substitutionEvent => substitutionEvent.Minute, ownedBuilder =>
         {
             ownedBuilder.Property(minute => minute.BaseMinute)
-                        .HasColumnName(nameof(Minute.BaseMinute))
+                        .HasColumnName("minute_base")
                         .IsRequired();
 
             ownedBuilder.Property(minute => minute.StoppageMinute)
-                        .HasColumnName(nameof(Minute.StoppageMinute));
+                        .HasColumnName("minute_stoppage");
         });
 
         builder.Property(substitutionEvent => substitutionEvent.OccurredAtUtc)
