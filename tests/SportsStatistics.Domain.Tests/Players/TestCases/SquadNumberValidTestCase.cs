@@ -5,8 +5,9 @@ namespace SportsStatistics.Domain.Tests.Players.TestCases;
 
 public class SquadNumberValidTestCase : TheoryData<int, SquadNumber>
 {
+    private static readonly SquadNumber ValidSquadNumber = SquadNumberTestData.ValidSquadNumber;
     public SquadNumberValidTestCase()
     {
-        Add(SquadNumberTestData.ValidSquadNumber.Value, SquadNumberTestData.ValidSquadNumber);
+        Add(ValidSquadNumber.Value, ValidSquadNumber);
     }
 }
