@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using SportsStatistics.Domain.Seasons;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Web.Pages.Admin.Seasons.Models;
 
@@ -7,13 +9,13 @@ internal sealed class SeasonFormModelValidator : AbstractValidator<SeasonFormMod
     public SeasonFormModelValidator()
     {
         RuleFor(c => c.StartDate)
-            .NotEmpty()
-            .Must((model, start) => start < model.EndDate)
-            .WithMessage("'Start Date' must be before 'End Date'.");
+            .NotEmpty().WithError(SeasonErrors.DateRange.StartDate.NullOrEmpty);
 
         RuleFor(c => c.EndDate)
-            .NotEmpty()
-            .Must((model, end) => end > model.StartDate)
-            .WithMessage("'End Date' must be after 'Start Date'.");
+            .NotEmpty().WithError(SeasonErrors.DateRange.EndDate.NullOrEmpty);
+
+        RuleFor(c => c)
+            .Must(c => c.StartDate < c.EndDate)
+            .WithError(SeasonErrors.DateRange.StartDateAfterEndDate);
     }
 }

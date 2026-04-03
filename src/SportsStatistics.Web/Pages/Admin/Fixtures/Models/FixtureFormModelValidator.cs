@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.FluentUI.AspNetCore.Components.Extensions;
 using SportsStatistics.Domain.Fixtures;
+using SportsStatistics.SharedKernel;
+using SportsStatistics.Web.Models;
 
 namespace SportsStatistics.Web.Pages.Admin.Fixtures.Models;
 
@@ -9,27 +11,30 @@ internal sealed class FixtureFormModelValidator : AbstractValidator<FixtureFormM
     public FixtureFormModelValidator()
     {
         RuleFor(f => f.Season)
-            .NotNull();
+            .NotNull().WithError(FixtureFormErrors.SeasonRequired);
 
         RuleFor(f => f.Competition)
-            .NotNull();
+            .NotNull().WithError(FixtureFormErrors.CompetitionRequired);
 
         RuleFor(f => f.KickoffDateUtc)
-            .NotNull()
+            .NotNull().WithError(FixtureFormErrors.KickoffDateRequired)
             .GreaterThanOrEqualTo(model => model.Season!.StartDate.ToDateTime())
             .When(model => model.Season is not null)
-            .WithMessage(model => $"'Date' must be within the season '{model.Season!.StartDate:d}' - '{model.Season!.EndDate:d}'.")
+            .WithErrorCode(FixtureFormErrors.KickoffDateOutsideSeason(default, default).Code)
+            .WithMessage(model => $"The kickoff date must be within the season '{model.Season!.StartDate:d}' - '{model.Season!.EndDate:d}'.")
             .LessThanOrEqualTo(model => model.Season!.EndDate.ToDateTime())
             .When(model => model.Season is not null)
-            .WithMessage(model => $"'Date' must be within the season '{model.Season!.StartDate:d}' - '{model.Season!.EndDate:d}'.");
+            .WithErrorCode(FixtureFormErrors.KickoffDateOutsideSeason(default, default).Code)
+            .WithMessage(model => $"The kickoff date must be within the season '{model.Season!.StartDate:d}' - '{model.Season!.EndDate:d}'.");
+        
         RuleFor(f => f.KickoffTimeUtc)
-            .NotNull();
+            .NotNull().WithError(FixtureFormErrors.KickoffTimeRequired);
 
         RuleFor(f => f.Location)
-            .NotNull();
+            .NotNull().WithError(FixtureFormErrors.LocationRequired);
 
         RuleFor(c => c.Opponent)
-            .NotEmpty()
-            .MaximumLength(Opponent.MaxLength);
+            .NotEmpty().WithError(FixtureFormErrors.OpponentRequired)
+            .MaximumLength(Opponent.MaxLength).WithError(FixtureFormErrors.OpponentExceedsMaxLength);
     }
 }

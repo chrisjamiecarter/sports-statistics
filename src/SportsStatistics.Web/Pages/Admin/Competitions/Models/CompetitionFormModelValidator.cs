@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SportsStatistics.Domain.Competitions;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Web.Pages.Admin.Competitions.Models;
 
@@ -8,13 +9,13 @@ internal sealed class CompetitionFormModelValidator : AbstractValidator<Competit
     public CompetitionFormModelValidator()
     {
         RuleFor(c => c.Season)
-            .NotEmpty();
+            .NotEmpty().WithError(CompetitionErrors.SeasonIdIsRequired);
 
         RuleFor(c => c.Name)
-            .NotEmpty()
-            .MaximumLength(Name.MaxLength);
+            .NotEmpty().WithError(CompetitionErrors.NameIsRequired)
+            .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.NameExceedsMaxLength);
 
         RuleFor(c => c.Format)
-            .NotEmpty();
+            .NotEmpty().WithError(CompetitionErrors.FormatNotFound);
     }
 }

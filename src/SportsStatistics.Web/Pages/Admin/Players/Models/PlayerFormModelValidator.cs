@@ -9,28 +9,26 @@ internal sealed class PlayerFormModelValidator : AbstractValidator<PlayerFormMod
     public PlayerFormModelValidator()
     {
         RuleFor(c => c.Name)
-            .NotEmpty()
-            .MaximumLength(Name.MaxLength);
+            .NotEmpty().WithError(PlayerErrors.NameIsRequired)
+            .MaximumLength(Name.MaxLength).WithError(PlayerErrors.NameExceedsMaxLength);
 
         RuleFor(c => c.SquadNumber)
-            .InclusiveBetween(SquadNumber.MinValue, SquadNumber.MaxValue);
+            .InclusiveBetween(SquadNumber.MinValue, SquadNumber.MaxValue)
+            .WithError(PlayerErrors.SquadNumberOutsideRange);
 
         RuleFor(c => c.Nationality)
-            .NotEmpty()
-            .MaximumLength(Nationality.MaxLength);
+            .NotEmpty().WithError(PlayerErrors.NationalityIsRequired)
+            .MaximumLength(Nationality.MaxLength).WithError(PlayerErrors.NationalityExceedsMaxLength);
 
         RuleFor(c => c.DateOfBirth)
-            .NotEmpty()
-            .Must(dob =>
-            {
-                return dob?.CalculateAge() >= DateOfBirth.MinAge;
-            })
-            .WithMessage("Player must be at least 15 years old.");
+            .NotEmpty().WithError(PlayerErrors.DateOfBirthIsRequired)
+            .Must(dob => dob?.CalculateAge() >= DateOfBirth.MinAge)
+            .WithError(PlayerErrors.DateOfBirthBelowMinAge);
 
         RuleFor(c => c.Position)
-            .NotEmpty();
+            .NotEmpty().WithError(PlayerErrors.PositionNotFound);
 
         RuleFor(c => c.LeftClub)
-            .NotNull();
+            .NotNull().WithError(PlayerErrors.LeftClubIsRequired);
     }
 }
