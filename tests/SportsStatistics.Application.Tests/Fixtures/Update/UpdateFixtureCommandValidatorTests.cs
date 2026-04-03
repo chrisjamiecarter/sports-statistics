@@ -36,7 +36,7 @@ public class UpdateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { FixtureId = default };
-        var expected = FixtureErrors.FixtureIdIsRequired;
+        var expected = FixtureErrors.Id.IsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -54,7 +54,7 @@ public class UpdateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Opponent = opponent };
-        var expected = FixtureErrors.OpponentIsRequired;
+        var expected = FixtureErrors.Opponent.IsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -70,7 +70,7 @@ public class UpdateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Opponent = new string('a', Opponent.MaxLength + 1) };
-        var expected = FixtureErrors.OpponentExceedsMaxLength;
+        var expected = FixtureErrors.Opponent.ExceedsMaxLength;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -86,7 +86,7 @@ public class UpdateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { KickoffTimeUtc = default };
-        var expected = FixtureErrors.KickoffDateAndTimeIsRequired;
+        var expected = FixtureErrors.KickoffTimeUtc.IsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -118,7 +118,7 @@ public class UpdateFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { LocationId = -1 };
-        var expected = FixtureErrors.LocationNotFound;
+        var expected = FixtureErrors.Location.NotFound;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);

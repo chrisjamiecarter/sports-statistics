@@ -36,7 +36,7 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { SeasonId = default };
-        var expected = CompetitionErrors.SeasonIdIsRequired;
+        var expected = CompetitionErrors.SeasonId.IsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -54,7 +54,7 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Name = name };
-        var expected = CompetitionErrors.NameIsRequired;
+        var expected = CompetitionErrors.Name.IsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -70,7 +70,7 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { Name = new string('a', Name.MaxLength + 1) };
-        var expected = CompetitionErrors.NameExceedsMaxLength;
+        var expected = CompetitionErrors.Name.ExceedsMaxLength;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);
@@ -102,7 +102,7 @@ public class CreateCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { FormatId = -1 };
-        var expected = CompetitionErrors.FormatNotFound;
+        var expected = CompetitionErrors.Format.NotFound;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);

@@ -33,7 +33,7 @@ public sealed class DeleteCompetitionCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { CompetitionId = default };
-        var expected = CompetitionErrors.CompetitionIdIsRequired;
+        var expected = CompetitionErrors.Id.IsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);

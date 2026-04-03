@@ -9,9 +9,9 @@ internal sealed class UpdateFixtureStatusCommandValidator : AbstractValidator<Up
     public UpdateFixtureStatusCommandValidator()
     {
         RuleFor(command => command.FixtureId)
-            .NotEmpty().WithError(FixtureErrors.FixtureIdIsRequired);
+            .NotEmpty().WithError(FixtureErrors.Id.IsRequired);
 
         RuleFor(command => command.FixtureStatus)
-            .NotNull().WithError(FixtureErrors.FixtureStatusIsRequired);
+            .NotNull().WithError(FixtureErrors.Status.IsRequired);
     }
 }

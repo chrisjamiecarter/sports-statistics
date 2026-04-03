@@ -9,13 +9,13 @@ internal sealed class CreateCompetitionCommandValidator : AbstractValidator<Crea
     public CreateCompetitionCommandValidator()
     {
         RuleFor(c => c.SeasonId)
-            .NotEmpty().WithError(CompetitionErrors.SeasonIdIsRequired);
+            .NotEmpty().WithError(CompetitionErrors.SeasonId.IsRequired);
 
         RuleFor(c => c.Name)
-            .NotEmpty().WithError(CompetitionErrors.NameIsRequired)
-            .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.NameExceedsMaxLength);
+            .NotEmpty().WithError(CompetitionErrors.Name.IsRequired)
+            .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.Name.ExceedsMaxLength);
 
         RuleFor(c => c.FormatId)
-            .Must(Format.ContainsValue).WithError(CompetitionErrors.FormatNotFound);
+            .Must(Format.ContainsValue).WithError(CompetitionErrors.Format.NotFound);
     }
 }

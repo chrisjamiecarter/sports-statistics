@@ -4,14 +4,6 @@ namespace SportsStatistics.Domain.Players;
 
 public static class PlayerErrors
 {
-    public static Error AlreadyAtClub => Error.Conflict(
-        "Player.AlreadyAtClub",
-        "The player is already at the club.");
-
-    public static Error AlreadyLeftClub => Error.Conflict(
-        "Player.AlreadyLeftClub",
-        "The player has already left the club.");
-
     public static Error DateOfBirthBelowMinAge => Error.Validation(
         "Player.DateOfBirthBelowMinAge",
         "The date of birth is below the minimum allowed age.");

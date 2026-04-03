@@ -9,6 +9,6 @@ internal sealed class DeleteCompetitionCommandValidator : AbstractValidator<Dele
     public DeleteCompetitionCommandValidator()
     {
         RuleFor(c => c.CompetitionId)
-            .NotEmpty().WithError(CompetitionErrors.CompetitionIdIsRequired);
+            .NotEmpty().WithError(CompetitionErrors.Id.IsRequired);
     }
 }

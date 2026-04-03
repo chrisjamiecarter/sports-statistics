@@ -151,7 +151,7 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
     {
         if (status is null)
         {
-            return Result.Failure(FixtureErrors.FixtureStatusIsRequired);
+            return Result.Failure(FixtureErrors.Status.IsRequired);
         }
 
         if (Status == status)
@@ -161,17 +161,17 @@ public sealed class Fixture : Entity, ISoftDeletableEntity
 
         if (Status == Status.Completed)
         {
-            return Result.Failure(FixtureErrors.CannotUpdateFixtureStatus(Status.Name, status.Name));
+            return Result.Failure(FixtureErrors.Status.CannotUpdate(Status.Name, status.Name));
         }
 
         if (Status == Status.InProgress && status != Status.Completed)
         {
-            return Result.Failure(FixtureErrors.CannotUpdateFixtureStatus(Status.Name, status.Name));
+            return Result.Failure(FixtureErrors.Status.CannotUpdate(Status.Name, status.Name));
         }
 
         if (Status == Status.Scheduled && status != Status.InProgress)
         {
-            return Result.Failure(FixtureErrors.CannotUpdateFixtureStatus(Status.Name, status.Name));
+            return Result.Failure(FixtureErrors.Status.CannotUpdate(Status.Name, status.Name));
         }
 
         var previousStatus = Status;

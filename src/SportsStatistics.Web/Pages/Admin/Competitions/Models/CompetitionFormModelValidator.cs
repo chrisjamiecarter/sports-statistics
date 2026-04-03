@@ -9,13 +9,13 @@ internal sealed class CompetitionFormModelValidator : AbstractValidator<Competit
     public CompetitionFormModelValidator()
     {
         RuleFor(c => c.Season)
-            .NotEmpty().WithError(CompetitionErrors.SeasonIdIsRequired);
+            .NotEmpty().WithError(CompetitionErrors.SeasonId.IsRequired);
 
         RuleFor(c => c.Name)
-            .NotEmpty().WithError(CompetitionErrors.NameIsRequired)
-            .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.NameExceedsMaxLength);
+            .NotEmpty().WithError(CompetitionErrors.Name.IsRequired)
+            .MaximumLength(Name.MaxLength).WithError(CompetitionErrors.Name.ExceedsMaxLength);
 
         RuleFor(c => c.Format)
-            .NotEmpty().WithError(CompetitionErrors.FormatNotFound);
+            .NotEmpty().WithError(CompetitionErrors.Format.NotFound);
     }
 }

@@ -33,7 +33,7 @@ public sealed class DeleteFixtureCommandValidatorTests
     {
         // Arrange.
         var command = BaseCommand with { FixtureId = default };
-        var expected = FixtureErrors.FixtureIdIsRequired;
+        var expected = FixtureErrors.Id.IsRequired;
 
         // Act.
         var result = await _validator.TestValidateAsync(command);

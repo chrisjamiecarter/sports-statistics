@@ -9,6 +9,6 @@ internal sealed class DeleteFixtureCommandValidator : AbstractValidator<DeleteFi
     public DeleteFixtureCommandValidator()
     {
         RuleFor(c => c.FixtureId)
-            .NotEmpty().WithError(FixtureErrors.FixtureIdIsRequired);
+            .NotEmpty().WithError(FixtureErrors.Id.IsRequired);
     }
 }

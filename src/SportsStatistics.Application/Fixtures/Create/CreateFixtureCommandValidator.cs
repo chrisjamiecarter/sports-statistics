@@ -9,16 +9,16 @@ internal sealed class CreateFixtureCommandValidator : AbstractValidator<CreateFi
     public CreateFixtureCommandValidator()
     {
         RuleFor(c => c.CompetitionId)
-            .NotEmpty().WithError(FixtureErrors.CompetitionIdIsRequired);
+            .NotEmpty().WithError(FixtureErrors.CompetitionId.IsRequired);
 
         RuleFor(c => c.Opponent)
-            .NotEmpty().WithError(FixtureErrors.OpponentIsRequired)
-            .MaximumLength(Opponent.MaxLength).WithError(FixtureErrors.OpponentExceedsMaxLength);
+            .NotEmpty().WithError(FixtureErrors.Opponent.IsRequired)
+            .MaximumLength(Opponent.MaxLength).WithError(FixtureErrors.Opponent.ExceedsMaxLength);
 
         RuleFor(c => c.KickoffTimeUtc)
-            .NotEmpty().WithError(FixtureErrors.KickoffDateAndTimeIsRequired);
+            .NotEmpty().WithError(FixtureErrors.KickoffTimeUtc.IsRequired);
 
         RuleFor(c => c.LocationId)
-            .Must(Location.ContainsValue).WithError(FixtureErrors.LocationNotFound);
+            .Must(Location.ContainsValue).WithError(FixtureErrors.Location.NotFound);
     }
 }
