@@ -89,8 +89,8 @@ public class MatchEventConfigurationTests
     public void MatchEventConfiguration_ShouldConfigureMinutePropertyCorrectly()
     {
         // Arrange.
-        var expectedBaseMinuteColumnName = "minute_base";
-        var expectedStoppageMinuteColumnName = "minute_stoppage";
+        var expectedBaseMinuteColumnName = nameof(MatchEvent.Minute.BaseMinute);
+        var expectedStoppageMinuteColumnName = nameof(MatchEvent.Minute.StoppageMinute);
 
         // Act.
         var navigation = _entity.FindNavigation(nameof(MatchEvent.Minute));

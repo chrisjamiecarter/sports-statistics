@@ -89,8 +89,8 @@ public class SubstitutionEventConfigurationTests
     public void SubstitutionEventConfiguration_ShouldConfigureMinutePropertyCorrectly()
     {
         // Arrange.
-        var expectedBaseMinuteColumnName = "minute_base";
-        var expectedStoppageMinuteColumnName = "minute_stoppage";
+        var expectedBaseMinuteColumnName = nameof(SubstitutionEvent.Minute.BaseMinute);
+        var expectedStoppageMinuteColumnName = nameof(SubstitutionEvent.Minute.StoppageMinute);
 
         // Act.
         var navigation = _entity.FindNavigation(nameof(SubstitutionEvent.Minute));

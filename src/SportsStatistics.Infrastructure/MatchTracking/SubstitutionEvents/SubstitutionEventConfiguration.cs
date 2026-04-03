@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SportsStatistics.Domain.MatchTracking;
 using SportsStatistics.Domain.MatchTracking.SubstitutionEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
@@ -27,11 +26,11 @@ internal sealed class SubstitutionEventConfiguration : IEntityTypeConfiguration<
         builder.OwnsOne(substitutionEvent => substitutionEvent.Minute, ownedBuilder =>
         {
             ownedBuilder.Property(minute => minute.BaseMinute)
-                        .HasColumnName("minute_base")
+                        .HasColumnName(nameof(SubstitutionEvent.Minute.BaseMinute))
                         .IsRequired();
 
             ownedBuilder.Property(minute => minute.StoppageMinute)
-                        .HasColumnName("minute_stoppage");
+                        .HasColumnName(nameof(SubstitutionEvent.Minute.StoppageMinute));
         });
 
         builder.Property(substitutionEvent => substitutionEvent.OccurredAtUtc)

@@ -89,8 +89,8 @@ public class PlayerEventConfigurationTests
     public void PlayerEventConfiguration_ShouldConfigureMinutePropertyCorrectly()
     {
         // Arrange.
-        var expectedBaseMinuteColumnName = "minute_base";
-        var expectedStoppageMinuteColumnName = "minute_stoppage";
+        var expectedBaseMinuteColumnName = nameof(PlayerEvent.Minute.BaseMinute);
+        var expectedStoppageMinuteColumnName = nameof(PlayerEvent.Minute.StoppageMinute);
 
         // Act.
         var navigation = _entity.FindNavigation(nameof(PlayerEvent.Minute));

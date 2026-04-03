@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SportsStatistics.Domain.Fixtures;
-using SportsStatistics.Domain.MatchTracking;
 using SportsStatistics.Domain.MatchTracking.PlayerEvents;
 using SportsStatistics.Domain.Players;
 using SportsStatistics.Infrastructure.Database;
@@ -28,11 +27,11 @@ internal sealed class PlayerEventConfiguration : IEntityTypeConfiguration<Player
         builder.OwnsOne(playerEvent => playerEvent.Minute, ownedBuilder =>
         {
             ownedBuilder.Property(minute => minute.BaseMinute)
-                        .HasColumnName("minute_base")
+                        .HasColumnName(nameof(PlayerEvent.Minute.BaseMinute))
                         .IsRequired();
 
             ownedBuilder.Property(minute => minute.StoppageMinute)
-                        .HasColumnName("minute_stoppage");
+                        .HasColumnName(nameof(PlayerEvent.Minute.StoppageMinute));
         });
 
         builder.Property(playerEvent => playerEvent.OccurredAtUtc)
