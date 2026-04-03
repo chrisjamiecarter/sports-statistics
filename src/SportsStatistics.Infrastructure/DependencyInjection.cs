@@ -6,6 +6,7 @@ using SportsStatistics.Application.Abstractions.Data;
 using SportsStatistics.Aspire.Constants;
 using SportsStatistics.Authorization;
 using SportsStatistics.Infrastructure.Database;
+using SportsStatistics.Infrastructure.DomainEvents;
 
 namespace SportsStatistics.Infrastructure;
 
@@ -28,6 +29,8 @@ public static class DependencyInjection
         builder.EnrichSqlServerDbContext<ApplicationDbContext>();
 
         builder.AddAuthorizationInternal();
+
+        builder.Services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
         return builder;
     }

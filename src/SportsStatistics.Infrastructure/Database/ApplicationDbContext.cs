@@ -10,11 +10,14 @@ using SportsStatistics.Domain.Players;
 using SportsStatistics.Domain.Seasons;
 using SportsStatistics.Domain.Teamsheets;
 using SportsStatistics.Infrastructure.Database.Converters;
+using SportsStatistics.Infrastructure.DomainEvents;
+using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Infrastructure.Database;
 
 internal sealed class ApplicationDbContext(
-    DbContextOptions<ApplicationDbContext> options)
+    DbContextOptions<ApplicationDbContext> options,
+    IDomainEventsDispatcher domainEventsDispatcher)
     : DbContext(options), IApplicationDbContext
 {
     public DbSet<Club> Clubs { get; set; }
@@ -37,20 +40,11 @@ internal sealed class ApplicationDbContext(
 
     public DbSet<TeamsheetPlayer> TeamsheetPlayers { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        base.OnModelCreating(builder);
-
-        builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
-    }
-
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var result = await base.SaveChangesAsync(cancellationToken);
 
-        // TODO: Dispatch domain events.
+        await PublishDomainEventsAsync();
 
         return result;
     }
@@ -76,5 +70,32 @@ internal sealed class ApplicationDbContext(
                             .HaveConversion<FixtureStatusConverter>();
 
         base.ConfigureConventions(configurationBuilder);
+    }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        base.OnModelCreating(builder);
+
+        builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
+    }
+
+    private async Task PublishDomainEventsAsync()
+    {
+        var domainEvents = ChangeTracker
+            .Entries<Entity>()
+            .Select(entry => entry.Entity)
+            .SelectMany(entity =>
+            {
+                List<IDomainEvent> domainEvents = entity.DomainEvents;
+
+                entity.ClearDomainEvents();
+
+                return domainEvents;
+            })
+            .ToList();
+
+        await domainEventsDispatcher.DispatchAsync(domainEvents);
     }
 }
