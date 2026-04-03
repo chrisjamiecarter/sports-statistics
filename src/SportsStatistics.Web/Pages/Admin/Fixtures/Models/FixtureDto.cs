@@ -15,9 +15,9 @@ public sealed record FixtureDto(
 {
     public string DisplayStatus => Status switch
     {
-        "Scheduled" => $"{KickoffTimeUtc:HH:mm}",
+        "Scheduled" => $"{KickoffTimeUtc.ToLocalTime():HH:mm}",
         _ => $"{HomeGoals} - {AwayGoals}"
     };
 
-    public DateOnly Date => DateOnly.FromDateTime(KickoffTimeUtc);
+    public DateOnly Date => DateOnly.FromDateTime(KickoffTimeUtc.ToLocalTime());
 }

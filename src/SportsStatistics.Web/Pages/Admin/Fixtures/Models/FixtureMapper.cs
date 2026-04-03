@@ -9,7 +9,7 @@ namespace SportsStatistics.Web.Pages.Admin.Fixtures.Models;
 internal static class FixtureMapper
 {
     private static DateTime GetKickoffTimeUtc(this FixtureFormModel fixture)
-        => fixture.KickoffDateUtc.GetValueOrDefault().Date + fixture.KickoffTimeUtc.GetValueOrDefault().TimeOfDay;
+        => fixture.KickoffDateLocal.GetValueOrDefault().ToUniversalTime().Date + fixture.KickoffTimeLocal.GetValueOrDefault().ToUniversalTime().TimeOfDay;
 
     private static int GetLocationValue(this FixtureFormModel fixture)
         => fixture.Location?.Value ?? -1;
@@ -51,8 +51,8 @@ internal static class FixtureMapper
                 Season = season,
                 Competition = competitions.SingleOrDefault(c => c.Id == fixture.CompetitionId),
                 Opponent = fixture.Opponent,
-                KickoffDateUtc = fixture.KickoffTimeUtc,
-                KickoffTimeUtc = fixture.KickoffTimeUtc,
+                KickoffDateLocal = fixture.KickoffTimeUtc.ToLocalTime(),
+                KickoffTimeLocal = fixture.KickoffTimeUtc.ToLocalTime(),
                 Location = locations.SingleOrDefault(option => option.Value == fixture.LocationId),
             };
     }

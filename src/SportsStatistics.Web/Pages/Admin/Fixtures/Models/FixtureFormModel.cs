@@ -6,9 +6,9 @@ public class FixtureFormModel
 
     public CompetitionDto? Competition { get; set; }
 
-    public DateTime? KickoffDateUtc { get; set; }
+    public DateTime? KickoffDateLocal { get; set; }
 
-    public DateTime? KickoffTimeUtc { get; set; }
+    public DateTime? KickoffTimeLocal { get; set; }
 
     public LocationOptionDto? Location { get; set; }
 

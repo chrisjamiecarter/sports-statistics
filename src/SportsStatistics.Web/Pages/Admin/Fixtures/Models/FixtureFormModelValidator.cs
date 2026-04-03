@@ -16,7 +16,7 @@ internal sealed class FixtureFormModelValidator : AbstractValidator<FixtureFormM
         RuleFor(f => f.Competition)
             .NotNull().WithError(FixtureFormErrors.CompetitionRequired);
 
-        RuleFor(f => f.KickoffDateUtc)
+        RuleFor(f => f.KickoffDateLocal)
             .NotNull().WithError(FixtureFormErrors.KickoffDateRequired)
             .GreaterThanOrEqualTo(model => model.Season!.StartDate.ToDateTime())
             .When(model => model.Season is not null)
@@ -27,7 +27,7 @@ internal sealed class FixtureFormModelValidator : AbstractValidator<FixtureFormM
             .WithErrorCode(FixtureFormErrors.KickoffDateOutsideSeason(default, default).Code)
             .WithMessage(model => $"The kickoff date must be within the season '{model.Season!.StartDate:d}' - '{model.Season!.EndDate:d}'.");
         
-        RuleFor(f => f.KickoffTimeUtc)
+        RuleFor(f => f.KickoffTimeLocal)
             .NotNull().WithError(FixtureFormErrors.KickoffTimeRequired);
 
         RuleFor(f => f.Location)

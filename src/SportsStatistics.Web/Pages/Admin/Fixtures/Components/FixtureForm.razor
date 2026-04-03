@@ -35,12 +35,12 @@
                             }
                         </div>
                         <div class="full-width">
-                            <FluentDatePicker Name="Input.KickoffDateUtc" @bind-Value="Input.KickoffDateUtc" Required="true" Label="Date" Style="width: 100%" />
-                            <FluentValidationMessage For="() => Input.KickoffDateUtc" class="text-danger" />
+                            <FluentDatePicker Name="Input.KickoffDateUtc" @bind-Value="Input.KickoffDateLocal" Required="true" Label="Date" Style="width: 100%" />
+                            <FluentValidationMessage For="() => Input.KickoffDateLocal" class="text-danger" />
                         </div>
                         <div class="full-width">
-                            <FluentTimePicker Name="Input.KickoffTimeUtc" @bind-Value="Input.KickoffTimeUtc" Required="true" Label="Kickoff" Style="width: 100%" />
-                            <FluentValidationMessage For="() => Input.KickoffTimeUtc" class="text-danger" />
+                            <FluentTimePicker Name="Input.KickoffTimeUtc" @bind-Value="Input.KickoffTimeLocal" Required="true" Label="Kickoff" Style="width: 100%" />
+                            <FluentValidationMessage For="() => Input.KickoffTimeLocal" class="text-danger" />
                         </div>
                         <div class="full-width">
                             <FluentTextField Name="Input.Opponent" @bind-Value="Input.Opponent" Required="true" Label="Opponent" Style="width: 100%" />
