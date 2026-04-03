@@ -3,12 +3,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
-using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Application.Models;
 using SportsStatistics.Authorization.Entities;
 using SportsStatistics.SharedKernel;
 
 namespace SportsStatistics.Authorization.Services;
+
+public interface IAuthenticationService
+{
+    Task<ApplicationUserDto?> GetCurrentUserAsync();
+    Task<Result> SignInAsync(string email);
+    Task<Result> PasswordSignInAsync(string email, string password, bool isPersistant);
+    Task SignOutAsync();
+}
 
 internal sealed class AuthenticationService : IAuthenticationService
 {
@@ -67,7 +74,7 @@ internal sealed class AuthenticationService : IAuthenticationService
         {
             return Result.Failure(Error.Failure("Environment.NotAllowed", "Method unavailable in this environment."));
         }
-        
+
         var user = await GetApplicationUserByEmailAsync(email);
         if (user == null)
         {

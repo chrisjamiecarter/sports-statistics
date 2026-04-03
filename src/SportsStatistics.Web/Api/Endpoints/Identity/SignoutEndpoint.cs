@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using SportsStatistics.Application.Interfaces.Infrastructure;
+using SportsStatistics.Authorization.Services;
 using SportsStatistics.Web.Contracts.Requests;
 using SportsStatistics.Web.Contracts.Responses;
 

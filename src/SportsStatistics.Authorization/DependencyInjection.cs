@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SportsStatistics.Application.Interfaces.Infrastructure;
 using SportsStatistics.Aspire.Constants;
 using SportsStatistics.Authorization.Database;
 using SportsStatistics.Authorization.Entities;

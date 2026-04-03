@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using SportsStatistics.Application.Interfaces.Infrastructure;
+using SportsStatistics.Authorization.Services;
 using SportsStatistics.Web.Api.Mappings;
 using SportsStatistics.Web.Contracts.Requests;
 using SportsStatistics.Web.Contracts.Responses;
